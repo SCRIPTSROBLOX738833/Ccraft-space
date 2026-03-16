@@ -18,7 +18,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -44,9 +44,10 @@
         const s = scripts[id];
         const div = document.createElement('div');
         div.className = 'script-card';
+        div.dataset.id = id; // مهم جداً
         div.innerHTML = `
           <h3>${s.title}</h3>
-          <pre>${s.code}</pre>
+          <pre id="code-${id}">${s.code}</pre>
           <p>Category: ${s.category}</p>
           <button onclick="copyScript('${id}')">نسخ السكربت</button>
         `;
@@ -58,9 +59,11 @@
   }
 
   window.copyScript = (id) => {
-    const code = document.querySelector(`#scriptsList .script-card:nth-child(${Object.keys(document.querySelectorAll('.script-card')).indexOf(document.querySelector(`[data-id='${id}']`))}) pre`).innerText;
-    navigator.clipboard.writeText(code);
-    alert("تم نسخ السكربت!");
+    const codeEl = document.getElementById(`code-${id}`);
+    if (!codeEl) return alert("خطأ في السكربت");
+    navigator.clipboard.writeText(codeEl.innerText)
+      .then(() => alert("تم نسخ السكربت!"))
+      .catch(() => alert("حدث خطأ أثناء النسخ"));
   }
 
   window.addEventListener('DOMContentLoaded', loadScripts);
