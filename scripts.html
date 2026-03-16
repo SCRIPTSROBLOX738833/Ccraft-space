@@ -1,93 +1,22 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>قائمة السكربتات</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>السكربتات - CCRAFT SPACE</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>قائمة السكربتات</h1>
-    <nav>
-      <a href="index.html">الرئيسية</a>
-      <a href="publish.html">نشر سكربتات</a>
-    </nav>
-  </header>
+<header>
+  <button onclick="location.href='scripts.html'">عرض السكربتات</button>
+  <button onclick="location.href='publish.html'">نشر سكربت</button>
+</header>
 
-  <main>
-    <div id="scriptsList"></div>
-  </main>
+<main>
+  <h1>جميع السكربتات</h1>
+  <div id="scriptsList"></div>
+</main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-      authDomain: "ccraft-space-scripts.firebaseapp.com",
-      databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-      projectId: "ccraft-space-scripts",
-      storageBucket: "ccraft-space-scripts.firebasestorage.app",
-      messagingSenderId: "816078027492",
-      appId: "1:816078027492:web:6472cce474078fd4d90af1",
-      measurementId: "G-MHDM7YYYBN"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    window.loadScripts = async () => {
-      const list = document.getElementById('scriptsList');
-      list.innerHTML = '';
-      const snapshot = await get(ref(db, 'scripts'));
-      if (snapshot.exists()) {
-        const scripts = snapshot.val();
-        Object.keys(scripts).forEach(id => {
-          const s = scripts[id];
-          const div = document.createElement('div');
-          div.className = 'script-card';
-          div.dataset.id = id;
-          div.innerHTML = `
-            <h3>${s.title}</h3>
-            <pre id="code-${id}">${s.code}</pre>
-            <p>الفئة: ${s.category}</p>
-            <button onclick="copyScript('${id}')">نسخ السكربت</button>
-            <div class="rating" data-id="${id}">
-              <span class="star" data-value="1">&#9733;</span>
-              <span class="star" data-value="2">&#9733;</span>
-              <span class="star" data-value="3">&#9733;</span>
-              <span class="star" data-value="4">&#9733;</span>
-              <span class="star" data-value="5">&#9733;</span>
-              <span class="rating-info">${s.votes} تقييمات - ${s.rating.toFixed(1)} نجوم</span>
-            </div>
-          `;
-          list.appendChild(div);
-          attachRatingEvents(div, s);
-        });
-      }
-    };
-
-    window.copyScript = (id) => {
-      const code = document.getElementById(`code-${id}`).innerText;
-      navigator.clipboard.writeText(code);
-      alert("تم نسخ السكربت!");
-    };
-
-    function attachRatingEvents(div, script) {
-      const stars = div.querySelectorAll('.star');
-      stars.forEach(star => {
-        star.addEventListener('click', async () => {
-          const val = parseInt(star.dataset.value);
-          const newRating = ((script.rating * script.votes) + val) / (script.votes + 1);
-          await set(ref(db, `scripts/${div.dataset.id}/rating`), newRating);
-          await set(ref(db, `scripts/${div.dataset.id}/votes`), script.votes + 1);
-          loadScripts();
-        });
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', loadScripts);
-  </script>
+<script type="module" src="firebase-scripts.js"></script>
 </body>
 </html>
