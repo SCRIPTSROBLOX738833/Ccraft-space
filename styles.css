@@ -1,10 +1,182 @@
-body { font-family: Arial, sans-serif; background: #0d1117; color: #c9d1d9; margin: 0; padding: 0;}
-header { background: #161b22; padding: 1rem; display: flex; justify-content: center; gap: 1rem;}
-header button { padding: 0.5rem 1rem; background: #2f363d; border: none; color: #c9d1d9; cursor: pointer; border-radius: 5px;}
-header button:hover { background: #3b4252; }
-main { max-width: 900px; margin: 2rem auto; padding: 1rem;}
-input, select, textarea { width: 100%; padding: 0.5rem; margin-bottom: 1rem; border-radius: 5px; border: 1px solid #2f363d; background: #161b22; color: #c9d1d9;}
-button { cursor: pointer; }
-.script-card { background: #161b22; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;}
-.star { cursor: pointer; color: gold; font-size: 1.2rem; }
-.rating-info { margin-left: 0.5rem; font-size: 0.9rem;}
+/* ===============================
+   Global Styles
+   =============================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    font-family: inherit;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    background: #2f363d;
+    color: #c9d1d9;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background: #3b4252;
+}
+
+/* ===============================
+   Header & Navigation
+   =============================== */
+header {
+    background: #161b22;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+header button {
+    font-weight: 600;
+}
+
+/* ===============================
+   Main Content
+   =============================== */
+main {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+}
+
+h1, h2, h3 {
+    color: #58a6ff;
+    margin-bottom: 0.5rem;
+}
+
+p {
+    color: #c9d1d9;
+    margin-bottom: 1rem;
+}
+
+/* ===============================
+   Forms
+   =============================== */
+input, select, textarea {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid #2f363d;
+    background: #161b22;
+    color: #c9d1d9;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+}
+
+/* ===============================
+   Script Cards
+   =============================== */
+.script-card {
+    background: #161b22;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.script-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+}
+
+.script-card h3 {
+    margin-bottom: 0.5rem;
+}
+
+.script-card pre {
+    background: #0d1117;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 0.5rem;
+    color: #c9d1d9;
+}
+
+.script-card button {
+    background: #58a6ff;
+    color: #0d1117;
+    font-weight: bold;
+}
+
+.script-card button:hover {
+    background: #1f6feb;
+    color: #fff;
+}
+
+/* ===============================
+   Ratings
+   =============================== */
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+}
+
+.star {
+    cursor: pointer;
+    color: gold;
+    font-size: 1.3rem;
+    transition: transform 0.2s ease;
+}
+
+.star:hover {
+    transform: scale(1.3);
+}
+
+.rating-info {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+    color: #8b949e;
+}
+
+
+/* ===============================
+   Responsive
+   =============================== */
+@media (max-width: 768px) {
+    main {
+        padding: 1rem;
+    }
+    
+    header {
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .script-card pre {
+        font-size: 0.85rem;
+    }
+    
+    button {
+        width: 100%;
+    }
+}
