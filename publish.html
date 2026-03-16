@@ -1,36 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Publish Script - CCRAFT SPACE</title>
+  <title>نشر سكربت</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="nav-logo">CCRAFT SPACE</div>
-    <div class="nav-menu">
-      <a href="index.html">Home</a>
-      <a href="scripts.html">Scripts</a>
-      <a href="publish.html" class="active">Publish Script</a>
-      <a href="#">Hacks</a>
-    </div>
-  </nav>
+  <header>
+    <h1>نشر سكربت جديد</h1>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="scripts.html">قائمة السكربتات</a>
+    </nav>
+  </header>
 
-  <main class="publish-container">
-    <h1>Publish Your Script</h1>
-    <form id="publishForm">
-      <input type="text" id="scriptTitle" placeholder="Script Title" required>
-      <textarea id="scriptDesc" placeholder="Description" required></textarea>
-      <textarea id="scriptCode" placeholder="Paste your code here" required></textarea>
-      <input type="text" id="category" placeholder="Category" required>
-      <input type="text" id="tags" placeholder="Tags (comma-separated)">
-      <button type="submit">Publish Script</button>
+  <main>
+    <form id="publishForm" onsubmit="event.preventDefault(); publishScript();">
+      <input type="text" id="scriptTitle" placeholder="عنوان السكربت" required>
+      <textarea id="scriptCode" placeholder="الكود هنا" required></textarea>
+      <select id="category" required>
+        <option value="">اختر الفئة</option>
+        <option value="game">Game Scripts</option>
+        <option value="admin">Admin Scripts</option>
+        <option value="tools">Tools & Effects</option>
+      </select>
+      <button type="submit">نشر السكربت</button>
     </form>
   </main>
 
-  <!-- Firebase & JS -->
-  <script type="module" src="firebase-config.js"></script>
-  <script type="module" src="publish.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+      authDomain: "ccraft-space-scripts.firebaseapp.com",
+      databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+      projectId: "ccraft-space-scripts",
+      storageBucket: "ccraft-space-scripts.firebasestorage.app",
+      messagingSenderId: "816078027492",
+      appId: "1:816078027492:web:6472cce474078fd4d90af1",
+      measurementId: "G-MHDM7YYYBN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.publishScript = async () => {
+      const title = document.getElementById('scriptTitle').value;
+      const code = document.getElementById('scriptCode').value;
+      const category = document.getElementById('category').value;
+      if (!title || !code || !category) return alert("مطلوب كل الحقول الأساسية");
+
+      const newScriptRef = push(ref(db, 'scripts'));
+      await set(newScriptRef, { title, code, category, timestamp: Date.now(), rating: 0, votes: 0 });
+
+      alert("تم نشر السكربت بنجاح!");
+      document.getElementById('publishForm').reset();
+    };
+  </script>
 </body>
 </html>
