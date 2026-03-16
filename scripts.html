@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>قائمة السكربتات</title>
   <link rel="stylesheet" href="styles.css">
+
+  <!-- كود AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9131038282158705"
+     crossorigin="anonymous"></script>
 </head>
 <body>
 <header>
@@ -13,6 +17,18 @@
 
 <main>
   <h1>قائمة السكربتات</h1>
+
+  <!-- إعلان -->
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-9131038282158705"
+       data-ad-slot="1234567890"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+
   <div id="scriptsList"></div>
 </main>
 
@@ -44,7 +60,7 @@
         const s = scripts[id];
         const div = document.createElement('div');
         div.className = 'script-card';
-        div.dataset.id = id; // مهم جداً
+        div.dataset.id = id;
         div.innerHTML = `
           <h3>${s.title}</h3>
           <pre id="code-${id}">${s.code}</pre>
