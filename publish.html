@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publish Script - CCRAFT SPACE</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">CCRAFT SPACE</div>
+    <div class="nav-menu">
+      <a href="index.html">Home</a>
+      <a href="scripts.html">Scripts</a>
+      <a href="publish.html" class="active">Publish Script</a>
+      <a href="#">Hacks</a>
+    </div>
+  </nav>
+
+  <main class="publish-container">
+    <h1>Publish Your Script</h1>
+    <form id="publishForm">
+      <input type="text" id="scriptTitle" placeholder="Script Title" required>
+      <textarea id="scriptDesc" placeholder="Description" required></textarea>
+      <textarea id="scriptCode" placeholder="Paste your code here" required></textarea>
+      <input type="text" id="category" placeholder="Category" required>
+      <input type="text" id="tags" placeholder="Tags (comma-separated)">
+      <button type="submit">Publish Script</button>
+    </form>
+  </main>
+
+  <!-- Firebase & JS -->
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="publish.js"></script>
+</body>
+</html>
