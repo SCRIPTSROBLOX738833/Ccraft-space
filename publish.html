@@ -1,41 +1,68 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نشر سكربت - CCRAFT SPACE</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نشر سكربت</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header>
-  <button onclick="location.href='scripts.html'">عرض السكربتات</button>
-  <button onclick="location.href='publish.html'">نشر سكربت</button>
+  <button onclick="location.href='scripts.html'">قائمة السكربتات</button>
 </header>
 
 <main>
   <h1>نشر سكربت جديد</h1>
   <form id="publishForm">
-    <label>عنوان السكربت</label>
-    <input type="text" id="scriptTitle" required>
-
-    <label>كود السكربت</label>
-    <textarea id="scriptCode" rows="6" required></textarea>
-
-    <label>الفئة</label>
+    <input type="text" id="scriptTitle" placeholder="عنوان السكربت" required>
+    <textarea id="scriptCode" placeholder="كود السكربت هنا" rows="6" required></textarea>
     <select id="category" required>
-      <option value="">اختر الفئة</option>
-      <option value="game-scripts">Game Scripts</option>
+      <option value="">اختر القسم</option>
+      <option value="game">Game Scripts</option>
       <option value="admin">Admin Scripts</option>
-      <option value="effects">Effects & Tools</option>
-      <option value="data">Data & Systems</option>
-      <option value="ai">سكربتات هكر</option>
-      <option value="utilities">Utilities</option>
+      <option value="ai">سكربت هكر </option>
     </select>
-
     <button type="button" onclick="publishScript()">نشر السكربت</button>
   </form>
 </main>
 
-<script type="module" src="firebase-scripts.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain: "ccraft-space-scripts.firebaseapp.com",
+    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId: "ccraft-space-scripts",
+    storageBucket: "ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId: "816078027492",
+    appId: "1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId: "G-MHDM7YYYBN"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.publishScript = async () => {
+    const title = document.getElementById('scriptTitle').value;
+    const code = document.getElementById('scriptCode').value;
+    const category = document.getElementById('category').value;
+    if(!title || !code || !category) return alert("مطلوب كل الحقول");
+
+    const newScriptRef = push(ref(db, 'scripts'));
+    await set(newScriptRef, {
+      title,
+      code,
+      category,
+      timestamp: Date.now(),
+      rating: 0,
+      votes: 0
+    });
+
+    alert("تم نشر السكربت بنجاح!");
+    document.getElementById('publishForm').reset();
+  };
+</script>
 </body>
 </html>
