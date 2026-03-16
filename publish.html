@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>نشر سكربت</title>
   <link rel="stylesheet" href="styles.css">
+
+  <!-- كود AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9131038282158705"
+     crossorigin="anonymous"></script>
 </head>
 <body>
 <header>
@@ -13,6 +15,18 @@
 
 <main>
   <h1>نشر سكربت جديد</h1>
+
+  <!-- إعلان -->
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-9131038282158705"
+       data-ad-slot="1234567890"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+
   <form id="publishForm">
     <input type="text" id="scriptTitle" placeholder="عنوان السكربت" required>
     <textarea id="scriptCode" placeholder="كود السكربت هنا" rows="6" required></textarea>
@@ -25,44 +39,3 @@
     <button type="button" onclick="publishScript()">نشر السكربت</button>
   </form>
 </main>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-    authDomain: "ccraft-space-scripts.firebaseapp.com",
-    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-    projectId: "ccraft-space-scripts",
-    storageBucket: "ccraft-space-scripts.firebasestorage.app",
-    messagingSenderId: "816078027492",
-    appId: "1:816078027492:web:6472cce474078fd4d90af1",
-    measurementId: "G-MHDM7YYYBN"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  window.publishScript = async () => {
-    const title = document.getElementById('scriptTitle').value;
-    const code = document.getElementById('scriptCode').value;
-    const category = document.getElementById('category').value;
-    if(!title || !code || !category) return alert("مطلوب كل الحقول");
-
-    const newScriptRef = push(ref(db, 'scripts'));
-    await set(newScriptRef, {
-      title,
-      code,
-      category,
-      timestamp: Date.now(),
-      rating: 0,
-      votes: 0
-    });
-
-    alert("تم نشر السكربت بنجاح!");
-    document.getElementById('publishForm').reset();
-  };
-</script>
-</body>
-</html>
