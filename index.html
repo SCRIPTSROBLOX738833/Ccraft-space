@@ -1,72 +1,181 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CCRAFT SPACE</title>
+<title>CCRAFT SPACE - Scripts Hub</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-    body {font-family: Arial, sans-serif; margin:0; background:#111; color:#eee;}
-    nav {background:#1b1b2f; padding:1rem; display:flex; justify-content:space-between; align-items:center;}
-    nav .logo {font-size:1.5rem; font-weight:bold; color:#4a7bff;}
-    nav .menu a {margin-left:1rem; color:#eee; text-decoration:none;}
-    nav .menu a:hover {color:#4a7bff;}
-    .container {max-width:1000px; margin:2rem auto; padding:0 1rem;}
-    h1 {text-align:center; margin-bottom:1rem;}
-    .buttons {display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; margin-bottom:2rem;}
-    .buttons button {padding:0.8rem 1.2rem; font-size:1rem; border:none; border-radius:6px; cursor:pointer; background:#4a7bff; color:#fff; transition:0.2s;}
-    .buttons button:hover {background:#1f54d0;}
-    .form-group {margin-bottom:1rem; display:flex; flex-direction:column;}
-    .form-group input, .form-group textarea, .form-group select {padding:0.6rem; border-radius:6px; border:1px solid #444; background:#222; color:#eee;}
-    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {outline:none; border-color:#4a7bff;}
-    .scripts-list {display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1rem;}
-    .script-card {background:#1b1b2f; padding:1rem; border-radius:8px;}
-    .script-card img {width:100%; border-radius:6px; margin-bottom:0.5rem;}
-    .script-card h3 {margin:0 0 0.5rem 0;}
-    .script-card p {font-size:0.9rem;}
-    .hidden {display:none;}
-    button.copy-btn {margin-top:0.5rem; background:#222; color:#4a7bff;}
+  /* ========== General Styles ========== */
+  body {font-family: Arial,sans-serif;margin:0;padding:0;background:#0d1117;color:#c9d1d9;}
+  a {color: inherit;text-decoration:none;}
+  h1,h2,h3,h4,h5,h6 {margin:0;}
+  .container {max-width: 1000px;margin:auto;padding:1rem;}
+  button {cursor:pointer;}
+  .navbar {background:#161b22;padding:1rem;display:flex;justify-content:space-between;align-items:center;}
+  .navbar a {margin-left:1rem;color:#c9d1d9;font-weight:600;}
+  .navbar a.active {color:#4a7bff;}
+  .buttons {display:flex;gap:1rem;margin-top:1rem;}
+  .btn {padding:0.5rem 1rem;border:none;border-radius:5px;background:#4a7bff;color:white;font-weight:600;transition:0.3s;}
+  .btn:hover {background:#355fc0;}
+  input, select, textarea {width:100%;padding:0.5rem;margin-top:0.3rem;border-radius:5px;border:1px solid #30363d;background:#0d1117;color:#c9d1d9;}
+  .form-group {margin-bottom:1rem;}
+  .scripts-list {display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-top:2rem;}
+  .script-card {background:#161b22;padding:1rem;border-radius:8px;border:1px solid #30363d;}
+  pre {background:#0d1117;padding:0.5rem;border-radius:5px;overflow-x:auto;}
+  img {max-width:100%;border-radius:5px;}
+  .team {display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem;}
+  .team-member {background:#161b22;padding:1rem;border-radius:8px;text-align:center;width:150px;}
 </style>
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
-  import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";const firebaseConfig = { apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4", authDomain: "ccraft-space-scripts.firebaseapp.com", projectId: "ccraft-space-scripts", storageBucket: "ccraft-space-scripts.firebasestorage.app", messagingSenderId: "816078027492", appId: "1:816078027492:web:6472cce474078fd4d90af1", measurementId: "G-MHDM7YYYBN" };
-
-const app = initializeApp(firebaseConfig); const db = getDatabase(app);
-
-window.addScript = function(e){ e.preventDefault(); const title = document.getElementById('scriptTitle').value; const desc = document.getElementById('scriptDesc').value; const code = document.getElementById('scriptCode').value; const category = document.getElementById('category').value; if(!title||!desc||!code||!category){alert('اكمل كل الحقول'); return;} push(ref(db,'scripts'), {title, desc, code, category, date:new Date().toISOString()}); alert('تم نشر السكربت!'); document.getElementById('publishForm').reset(); };
-
-window.loadScripts = function(){ const container = document.getElementById('scriptsContainer'); container.innerHTML=''; onValue(ref(db,'scripts'), snapshot=>{ const data = snapshot.val(); if(data){ Object.values(data).forEach(s=>{ const div = document.createElement('div'); div.className='script-card'; div.innerHTML=<img src='https://via.placeholder.com/250x120'><h3>${s.title}</h3><p>${s.desc}</p><pre>${s.code}</pre><small>${s.category}</small>; container.appendChild(div); }); } }); }; </script>
-
 </head>
 <body>
-<nav>
-<div class="logo">CCRAFT SPACE</div>
-<div class="menu">
-<a href="#home">الرئيسية</a>
-<a href="#publish">نشر سكربتات</a>
-<a href="#scripts">السكربتات</a>
-<a href="#hacks">هاكات</a>
+
+<!-- Navbar -->
+<div class="navbar">
+  <div class="logo"><i class="fas fa-rocket"></i> CCRAFT SPACE</div>
+  <div>
+    <a href="#" class="active">Home</a>
+    <a href="#scripts">Scripts</a>
+    <a href="#publish">Publish Script</a>
+    <a href="#hacks">Hacks</a>
+  </div>
 </div>
-</nav>
-<div class="container" id="home">
-<h1>أهلا بك في CCRAFT SPACE</h1>
+
+<div class="container">
+
+<h1>Welcome to CCRAFT SPACE</h1>
+<p>Share your Roblox scripts and explore scripts from the community.</p>
+
 <div class="buttons">
-<button onclick="document.getElementById('publish').scrollIntoView()">نشر سكربت</button>
-<button onclick="document.getElementById('scripts').scrollIntoView(); loadScripts()">عرض السكربتات</button>
-<button onclick="alert('CCRAFT SPACE!')">CCRAFT SPACE</button>
-<button onclick="alert('هاكات')">هاكات</button>
-</div><!-- Publish Form --><div id="publish">
-<h2>نشر سكربت جديد</h2>
-<form id="publishForm" onsubmit="addScript(event)">
-<div class="form-group"><label>عنوان السكربت</label><input id="scriptTitle" required></div>
-<div class="form-group"><label>وصف السكربت</label><textarea id="scriptDesc" required></textarea></div>
-<div class="form-group"><label>الكود</label><textarea id="scriptCode" required></textarea></div>
-<div class="form-group"><label>الفئة</label><select id="category" required><option value="">اختار</option><option>Game Scripts</option><option>Admin Scripts</option><option>Effects</option><option>Data</option><option>AI</option><option>Utilities</option></select></div>
-<button type="submit">نشر</button>
+  <a href="#publish" class="btn"><i class="fas fa-upload"></i> Publish Script</a>
+  <a href="#scripts" class="btn"><i class="fas fa-file-code"></i> View Scripts</a>
+  <a href="#hacks" class="btn"><i class="fas fa-shield-alt"></i> Hacks</a>
+</div>
+
+<!-- Publish Form -->
+<section id="publish">
+<h2>Publish Your Script</h2>
+<form id="publishForm">
+  <div class="form-group">
+    <label>Title</label>
+    <input type="text" id="scriptTitle" placeholder="Script Title" required>
+  </div>
+  <div class="form-group">
+    <label>Description</label>
+    <textarea id="scriptDesc" rows="4" placeholder="Describe your script..." required></textarea>
+  </div>
+  <div class="form-group">
+    <label>Code</label>
+    <textarea id="scriptCode" rows="6" placeholder="Paste Lua code here..." required></textarea>
+  </div>
+  <div class="form-group">
+    <label>Category</label>
+    <select id="category" required>
+      <option value="">Select</option>
+      <option value="game-scripts">Game Scripts</option>
+      <option value="admin">Admin Scripts</option>
+      <option value="effects">Effects & Tools</option>
+      <option value="data">Data & Systems</option>
+      <option value="ai">AI & NPCs</option>
+      <option value="utilities">Utilities</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Tags (comma-separated)</label>
+    <input type="text" id="tags" placeholder="e.g., admin, roblox">
+  </div>
+  <div class="form-group">
+    <label>Image URL</label>
+    <input type="text" id="imageURL" placeholder="Paste image link">
+  </div>
+  <button type="submit" class="btn">Publish Script</button>
 </form>
-</div><!-- Scripts List --><div id="scripts">
-<h2>السكربتات المنشورة</h2>
-<div class="scripts-list" id="scriptsContainer"></div>
-</div></div>
+</section>
+
+<!-- Scripts List -->
+<section id="scripts">
+<h2>Community Scripts</h2>
+<div class="scripts-list" id="scriptsList"></div>
+</section>
+
+<!-- Team Section -->
+<section id="team">
+<h2>Our Team</h2>
+<div class="team">
+  <div class="team-member">
+    <img src="https://via.placeholder.com/100" alt="Member">
+    <p>TechMaster</p>
+  </div>
+  <div class="team-member">
+    <img src="https://via.placeholder.com/100" alt="Member">
+    <p>DevQueen</p>
+  </div>
+  <div class="team-member">
+    <img src="https://via.placeholder.com/100" alt="Member">
+    <p>ScriptKing</p>
+  </div>
+</div>
+</section>
+
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+  authDomain: "ccraft-space-scripts.firebaseapp.com",
+  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+  projectId: "ccraft-space-scripts",
+  storageBucket: "ccraft-space-scripts.appspot.com",
+  messagingSenderId: "816078027492",
+  appId: "1:816078027492:web:6472cce474078fd4d90af1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Publish Script
+const form = document.getElementById("publishForm");
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const title = document.getElementById("scriptTitle").value;
+  const desc = document.getElementById("scriptDesc").value;
+  const code = document.getElementById("scriptCode").value;
+  const category = document.getElementById("category").value;
+  const tags = document.getElementById("tags").value.split(',').map(t=>t.trim());
+  const image = document.getElementById("imageURL").value;
+
+  const scriptsRef = ref(db, "scripts");
+  const newScriptRef = push(scriptsRef);
+  set(newScriptRef, { title, desc, code, category, tags, image, timestamp: Date.now() })
+  .then(() => { alert("Script Published!"); form.reset(); })
+  .catch(err => { console.error(err); alert("Error publishing."); });
+});
+
+// Load Scripts
+const scriptsList = document.getElementById("scriptsList");
+const scriptsRef = ref(db, "scripts");
+onValue(scriptsRef, snapshot => {
+  scriptsList.innerHTML = "";
+  snapshot.forEach(child => {
+    const data = child.val();
+    const div = document.createElement("div");
+    div.className = "script-card";
+    div.innerHTML = `
+      <h3>${data.title}</h3>
+      <p><strong>Category:</strong> ${data.category}</p>
+      <p>${data.desc}</p>
+      ${data.image ? `<img src="${data.image}" alt="Script Image">` : ""}
+      <pre>${data.code}</pre>
+      ${data.tags ? `<p><strong>Tags:</strong> ${data.tags.join(', ')}</p>` : ""}
+    `;
+    scriptsList.appendChild(div);
+  });
+});
+</script>
+
 </body>
 </html>
