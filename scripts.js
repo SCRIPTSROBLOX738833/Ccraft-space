@@ -1,21 +1,50 @@
-import { db } from "./firebase-config.js";
-import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+import { db } from './firebase-config.js';
+import { ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-const scriptsContainer = document.getElementById("scriptsContainer");
-const scriptsRef = ref(db, "scripts");
+// نسخ السكربت
+window.copyScript = function(id) {
+  const code = document.getElementById(`code-${id}`).innerText;
+  navigator.clipboard.writeText(code)
+    .then(() => alert("تم نسخ السكربت!"))
+    .catch(err => alert("حدث خطأ في النسخ: " + err));
+}
 
-onValue(scriptsRef, (snapshot) => {
-  scriptsContainer.innerHTML = "";
-  snapshot.forEach(childSnap => {
-    const data = childSnap.val();
-    const div = document.createElement("div");
-    div.className = "script-item";
-    div.innerHTML = `
-      <h3>${data.title}</h3>
-      <p>${data.description}</p>
-      <pre><code>${data.code}</code></pre>
-      <p>Category: ${data.category} | Tags: ${data.tags?.join(", ")}</p>
-    `;
-    scriptsContainer.appendChild(div);
+// تفعيل نظام التقييم
+document.querySelectorAll('.rating').forEach(rating => {
+  const scriptId = rating.dataset.id;
+  const stars = rating.querySelectorAll('.star');
+  const info = rating.querySelector('.rating-info');
+
+  // جلب متوسط التقييم من Firebase
+  get(child(ref(db), `ratings/${scriptId}`)).then(snapshot => {
+    if(snapshot.exists()) {
+      const data = snapshot.val();
+      const avg = Math.round(data.total / data.count);
+      info.innerText = `(${data.count} تقييم)`;
+      stars.forEach(s => s.classList.remove('checked'));
+      stars.forEach(s => {
+        if(s.dataset.value <= avg) s.classList.add('checked');
+      });
+    }
+  });
+
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      const ratingValue = parseInt(star.dataset.value);
+      const ratingRef = ref(db, `ratings/${scriptId}`);
+      get(ratingRef).then(snapshot => {
+        let data = { total: 0, count: 0 };
+        if(snapshot.exists()) data = snapshot.val();
+        data.total += ratingValue;
+        data.count += 1;
+        set(ratingRef, data);
+        const avg = Math.round(data.total / data.count);
+        info.innerText = `(${data.count} تقييم)`;
+        stars.forEach(s => s.classList.remove('checked'));
+        stars.forEach(s => {
+          if(s.dataset.value <= avg) s.classList.add('checked');
+        });
+      });
+    });
   });
 });
