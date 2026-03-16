@@ -1,48 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CCRAFT SPACE - Scripts</title>
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="script-page-styles.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script type="module" src="firebase-config.js"></script>
-<script defer src="script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>قائمة السكربتات</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <header>
+    <h1>قائمة السكربتات</h1>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="publish.html">نشر سكربتات</a>
+    </nav>
+  </header>
 
-<nav class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo"><i class="fas fa-rocket"></i> CCRAFT SPACE</div>
-    <div class="nav-menu" id="navMenu">
-      <a href="index.html" class="nav-link">Home</a>
-      <a href="scripts.html" class="nav-link active">Scripts</a>
-      <a href="publish.html" class="nav-link">Publish</a>
-      <a href="team.html" class="nav-link">Team</a>
-    </div>
-  </div>
-</nav>
+  <main>
+    <div id="scriptsList"></div>
+  </main>
 
-<div class="scripts-list">
-  <!-- مثال سكربت -->
-  <div class="script-card" data-id="script1">
-    <h2>Advanced Admin System</h2>
-    <pre><code class="language-lua" id="code-script1">-- Advanced Admin System Code</code></pre>
-    <button class="btn btn-copy" onclick="copyScript('script1')">
-      <i class="fas fa-copy"></i> نسخ السكربت
-    </button>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-    <div class="rating" data-id="script1">
-      <span class="star" data-value="1"><i class="fas fa-star"></i></span>
-      <span class="star" data-value="2"><i class="fas fa-star"></i></span>
-      <span class="star" data-value="3"><i class="fas fa-star"></i></span>
-      <span class="star" data-value="4"><i class="fas fa-star"></i></span>
-      <span class="star" data-value="5"><i class="fas fa-star"></i></span>
-      <span class="rating-info"></span>
-    </div>
-  </div>
-</div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+      authDomain: "ccraft-space-scripts.firebaseapp.com",
+      databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+      projectId: "ccraft-space-scripts",
+      storageBucket: "ccraft-space-scripts.firebasestorage.app",
+      messagingSenderId: "816078027492",
+      appId: "1:816078027492:web:6472cce474078fd4d90af1",
+      measurementId: "G-MHDM7YYYBN"
+    };
 
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.loadScripts = async () => {
+      const list = document.getElementById('scriptsList');
+      list.innerHTML = '';
+      const snapshot = await get(ref(db, 'scripts'));
+      if (snapshot.exists()) {
+        const scripts = snapshot.val();
+        Object.keys(scripts).forEach(id => {
+          const s = scripts[id];
+          const div = document.createElement('div');
+          div.className = 'script-card';
+          div.dataset.id = id;
+          div.innerHTML = `
+            <h3>${s.title}</h3>
+            <pre id="code-${id}">${s.code}</pre>
+            <p>الفئة: ${s.category}</p>
+            <button onclick="copyScript('${id}')">نسخ السكربت</button>
+            <div class="rating" data-id="${id}">
+              <span class="star" data-value="1">&#9733;</span>
+              <span class="star" data-value="2">&#9733;</span>
+              <span class="star" data-value="3">&#9733;</span>
+              <span class="star" data-value="4">&#9733;</span>
+              <span class="star" data-value="5">&#9733;</span>
+              <span class="rating-info">${s.votes} تقييمات - ${s.rating.toFixed(1)} نجوم</span>
+            </div>
+          `;
+          list.appendChild(div);
+          attachRatingEvents(div, s);
+        });
+      }
+    };
+
+    window.copyScript = (id) => {
+      const code = document.getElementById(`code-${id}`).innerText;
+      navigator.clipboard.writeText(code);
+      alert("تم نسخ السكربت!");
+    };
+
+    function attachRatingEvents(div, script) {
+      const stars = div.querySelectorAll('.star');
+      stars.forEach(star => {
+        star.addEventListener('click', async () => {
+          const val = parseInt(star.dataset.value);
+          const newRating = ((script.rating * script.votes) + val) / (script.votes + 1);
+          await set(ref(db, `scripts/${div.dataset.id}/rating`), newRating);
+          await set(ref(db, `scripts/${div.dataset.id}/votes`), script.votes + 1);
+          loadScripts();
+        });
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', loadScripts);
+  </script>
 </body>
 </html>
