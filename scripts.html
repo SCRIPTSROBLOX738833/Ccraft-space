@@ -1,22 +1,69 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>السكربتات - CCRAFT SPACE</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>قائمة السكربتات</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header>
-  <button onclick="location.href='scripts.html'">عرض السكربتات</button>
   <button onclick="location.href='publish.html'">نشر سكربت</button>
 </header>
 
 <main>
-  <h1>جميع السكربتات</h1>
+  <h1>قائمة السكربتات</h1>
   <div id="scriptsList"></div>
 </main>
 
-<script type="module" src="firebase-scripts.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain: "ccraft-space-scripts.firebaseapp.com",
+    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId: "ccraft-space-scripts",
+    storageBucket: "ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId: "816078027492",
+    appId: "1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId: "G-MHDM7YYYBN"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  async function loadScripts() {
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = '';
+    const snapshot = await get(ref(db, 'scripts'));
+    if(snapshot.exists()) {
+      const scripts = snapshot.val();
+      Object.keys(scripts).forEach(id => {
+        const s = scripts[id];
+        const div = document.createElement('div');
+        div.className = 'script-card';
+        div.innerHTML = `
+          <h3>${s.title}</h3>
+          <pre>${s.code}</pre>
+          <p>Category: ${s.category}</p>
+          <button onclick="copyScript('${id}')">نسخ السكربت</button>
+        `;
+        list.appendChild(div);
+      });
+    } else {
+      list.innerHTML = '<p>لا توجد سكربتات حتى الآن.</p>';
+    }
+  }
+
+  window.copyScript = (id) => {
+    const code = document.querySelector(`#scriptsList .script-card:nth-child(${Object.keys(document.querySelectorAll('.script-card')).indexOf(document.querySelector(`[data-id='${id}']`))}) pre`).innerText;
+    navigator.clipboard.writeText(code);
+    alert("تم نسخ السكربت!");
+  }
+
+  window.addEventListener('DOMContentLoaded', loadScripts);
+</script>
 </body>
 </html>
