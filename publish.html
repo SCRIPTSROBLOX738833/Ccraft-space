@@ -14,7 +14,7 @@
 <main>
 <h1>نشر سكربت جديد</h1>
 
-<div id="publishFormDiv">
+<form id="publishForm" onsubmit="publishScript(event)">
   <input type="text" id="scriptTitle" placeholder="عنوان السكربت" required>
   <textarea id="scriptCode" placeholder="كود السكربت هنا" rows="6" required></textarea>
   <select id="category" required>
@@ -25,7 +25,7 @@
   </select>
   <input type="text" id="tags" placeholder="أدخل الوسوم مفصولة بفاصلة">
   <button type="button" onclick="publishScript()">نشر السكربت</button>
-</div>
+</form>
 </main>
 
 <script type="module">
