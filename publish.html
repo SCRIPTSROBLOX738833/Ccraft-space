@@ -30,21 +30,17 @@
   </script>
 
   <form id="publishForm">
-    <input type="text" id="scriptTitle" placeholder="عنوان السكربت" required>
-    <textarea id="scriptCode" placeholder="كود السكربت هنا" rows="6" required></textarea>
-    <select id="category" required>
-      <option value="">اختر القسم</option>
-      <option value="game">Game Scripts</option>
-      <option value="admin">Admin Scripts</option>
-      <option value="Delta">سكربت دلتا</option>
-    </select>
-    <input type="text" id="tags" placeholder="أدخل الوسوم مفصولة بفاصلة">
-    <button type="submit">نشر السكربت</button>
-  </form>
-</main>
+  <input type="text" id="scriptTitle" placeholder="عنوان السكربت" required>
+  <textarea id="scriptCode" placeholder="كود السكربت هنا" rows="6" required></textarea>
+  <select id="category" required>
+    <option value="">اختر القسم</option>
+    <option value="game">Game Scripts</option>
+    <option value="admin">Admin Scripts</option>
+    <option value="Delta">سكربت دلتا</option>
+  </select>
+  <input type="text" id="tags" placeholder="أدخل الوسوم مفصولة بفاصلة">
+  <button type="submit">نشر السكربت</button>
+</form>
 
-<!-- Firebase Config + Publish JS -->
 <script type="module" src="firebase-config.js"></script>
 <script type="module" src="publish.js"></script>
-</body>
-</html>
