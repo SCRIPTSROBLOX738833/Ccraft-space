@@ -1,7 +1,6 @@
 // Import Firebase functions
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getDatabase } from "firebase/database";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -17,7 +16,4 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-// **هنا مهم جدًا**: export الـ Database علشان publish.js يقدر يستخدمه
-export const db = getDatabase(app);
+export const db = getDatabase(app); // تصدير الـ db علشان publish.js يستخدمه
