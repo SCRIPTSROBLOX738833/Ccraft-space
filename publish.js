@@ -1,10 +1,8 @@
 import { db } from "./firebase-config.js";
 import { ref, push, set } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
-const publishForm = document.getElementById("publishForm");
-
-publishForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+window.publishScript = async function(e) {
+  if (e) e.preventDefault();
 
   const title = document.getElementById("scriptTitle").value;
   const code = document.getElementById("scriptCode").value;
@@ -15,9 +13,9 @@ publishForm.addEventListener("submit", async (e) => {
     const newScriptRef = push(ref(db, "scripts"));
     await set(newScriptRef, { title, code, category, tags, createdAt: Date.now() });
     alert("تم نشر السكربت بنجاح!");
-    publishForm.reset();
+    document.getElementById("publishForm").reset();
   } catch (err) {
     console.error(err);
-    alert("فشل النشر، تحقق من إعدادات ");
+    alert("فشل النشر، تحقق من إعدادات Firebase");
   }
-});
+};
