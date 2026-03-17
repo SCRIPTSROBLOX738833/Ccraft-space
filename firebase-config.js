@@ -16,6 +16,6 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
-export const database = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+export const db = getDatabase(app); // export db اللي publish.js محتاجه
