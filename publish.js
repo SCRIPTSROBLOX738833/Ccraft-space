@@ -4,22 +4,28 @@ import { ref, push, set } from "https://www.gstatic.com/firebasejs/10.4.0/fireba
 const publishForm = document.getElementById("publishForm");
 
 publishForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+  e.preventDefault(); // يمنع إعادة تحميل الصفحة
 
-  const title = document.getElementById("scriptTitle").value;
-  const description = document.getElementById("scriptDesc").value;
-  const code = document.getElementById("scriptCode").value;
+  const title = document.getElementById("scriptTitle").value.trim();
+  const code = document.getElementById("scriptCode").value.trim();
   const category = document.getElementById("category").value;
-  const tags = document.getElementById("tags").value.split(",").map(t => t.trim());
+  const tags = document.getElementById("tags") ? 
+               document.getElementById("tags").value.split(",").map(t => t.trim()) 
+               : [];
+
+  if (!title || !code || !category) {
+    alert("برجاء ملء جميع الحقول المطلوبة!");
+    return;
+  }
 
   const newScriptRef = push(ref(db, "scripts"));
-  set(newScriptRef, { title, description, code, category, tags, createdAt: Date.now() })
+  set(newScriptRef, { title, code, category, tags, createdAt: Date.now() })
     .then(() => {
-      alert("Script published successfully!");
+      alert("تم نشر السكربت بنجاح!");
       publishForm.reset();
     })
     .catch(err => {
       console.error(err);
-      alert("Failed to publish script");
+      alert("فشل في نشر السكربت. تحقق من إعدادات Firebase.");
     });
 });
