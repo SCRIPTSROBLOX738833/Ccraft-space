@@ -1,23 +1,35 @@
-// Import the functions you need from the SDKs
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
-import { getAnalytics } from "firebase/analytics";
+import { db } from "./firebase-config.js";
+import { ref, push, set } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-  authDomain: "ccraft-space-scripts.firebaseapp.com",
-  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-  projectId: "ccraft-space-scripts",
-  storageBucket: "ccraft-space-scripts.firebasestorage.app",
-  messagingSenderId: "816078027492",
-  appId: "1:816078027492:web:6472cce474078fd4d90af1",
-  measurementId: "G-MHDM7YYYBN"
-};
+const publishForm = document.getElementById("publishForm");
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const analytics = getAnalytics(app);
+publishForm.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-export { db };
+  const title = document.getElementById("scriptTitle").value.trim();
+  const code = document.getElementById("scriptCode").value.trim();
+  const category = document.getElementById("category").value;
+  const tags = document.getElementById("tags").value.split(",").map(t => t.trim());
+
+  if (!title || !code || !category) {
+    alert("من فضلك اكمل جميع الحقول المطلوبة!");
+    return;
+  }
+
+  const newScriptRef = push(ref(db, "scripts"));
+  set(newScriptRef, {
+    title,
+    code,
+    category,
+    tags,
+    createdAt: Date.now()
+  })
+  .then(() => {
+    alert("تم نشر السكربت بنجاح!");
+    publishForm.reset();
+  })
+  .catch(err => {
+    console.error(err);
+    alert("فشل نشر السكربت. تحقق من قواعد Firebase أو الانترنت.");
+  });
+});
