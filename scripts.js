@@ -48,3 +48,20 @@ document.querySelectorAll('.rating').forEach(rating => {
     });
   });
 });
+
+
+
+window.filterScripts = () => {
+  const query = document.getElementById('searchScripts').value.toLowerCase();
+  const cards = document.querySelectorAll('.script-card');
+
+  cards.forEach(card => {
+    const title = card.querySelector('h3').innerText.toLowerCase();
+    const category = card.querySelector('p').innerText.toLowerCase();
+    if(title.includes(query) || category.includes(query)){
+      card.style.display = "";
+    } else {
+      card.style.display = "none";
+    }
+  });
+};
