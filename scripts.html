@@ -20,6 +20,14 @@
 <input type="text" id="searchScripts" placeholder="ابحث عن سكربت أو قسم...">
 <button id="searchButton">بحث</button>
 <div id="scriptsList"></div>
+
+<script>
+  document.getElementById('searchButton').onclick = window.filterScripts;
+  window.addEventListener('DOMContentLoaded', () => {
+    window.loadScripts();
+    window.initRatings();
+  });
+</script>
   
   <!-- إعلان -->
   <ins class="adsbygoogle"
