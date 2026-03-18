@@ -1,3 +1,10 @@
+const password = prompt("ادخل كلمة السر");
+
+if(password !== "ac6asi6@@7"){
+  document.body.innerHTML = "ممنوع الدخول";
+}
+
+
 import { db } from "./firebase-config.js";
 import {
   ref,
