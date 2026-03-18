@@ -18,7 +18,7 @@ function updateStars(stars, avg) {
   });
 }
 
-// تحميل السكربتات + ربط البحث
+// تحميل السكربتات
 async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
@@ -26,7 +26,6 @@ async function loadScripts() {
 
   if(snapshot.exists()) {
     const scripts = snapshot.val();
-
     Object.keys(scripts).forEach(id => {
       const s = scripts[id];
       const div = document.createElement('div');
@@ -40,40 +39,36 @@ async function loadScripts() {
       `;
       list.appendChild(div);
     });
-
-    // ربط البحث بزر
-    const searchButton = document.getElementById('searchButton');
-    const searchInput = document.getElementById('searchScripts');
-
-    searchButton.onclick = () => {
-      const query = searchInput.value.toLowerCase().trim();
-      const cards = document.querySelectorAll('.script-card');
-      let anyMatch = false;
-
-      cards.forEach(card => {
-        const title = card.querySelector('h3').innerText.toLowerCase();
-        const category = card.querySelector('p').innerText.toLowerCase();
-        const match = title.includes(query) || category.includes(query);
-        card.style.display = match ? "block" : "none";
-        if(match) anyMatch = true;
-      });
-
-      let noMatchMsg = document.getElementById('noMatchMsg');
-      if(!anyMatch) {
-        if(!noMatchMsg) {
-          noMatchMsg = document.createElement('p');
-          noMatchMsg.id = 'noMatchMsg';
-          noMatchMsg.innerText = 'لا توجد سكربتات مطابقة.';
-          noMatchMsg.style.color = 'red';
-          list.appendChild(noMatchMsg);
-        }
-      } else if(noMatchMsg) {
-        noMatchMsg.remove();
-      }
-    };
-
   } else {
     list.innerHTML = '<p>لا توجد سكربتات حتى الآن.</p>';
+  }
+}
+
+// فلترة السكربتات بزر البحث
+function filterScripts() {
+  const query = document.getElementById('searchScripts').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.script-card');
+  const list = document.getElementById('scriptsList');
+  let anyMatch = false;
+
+  cards.forEach(card => {
+    const title = card.querySelector('h3').innerText.toLowerCase();
+    const category = card.querySelector('p').innerText.toLowerCase();
+    const match = title.includes(query) || category.includes(query);
+    card.style.display = match ? "block" : "none";
+    if(match) anyMatch = true;
+  });
+
+  // إزالة رسالة "لا توجد سكربتات" القديمة
+  const oldMsg = document.getElementById('noMatchMsg');
+  if(oldMsg) oldMsg.remove();
+
+  if(!anyMatch) {
+    const p = document.createElement('p');
+    p.id = 'noMatchMsg';
+    p.innerText = 'لا توجد سكربتات مطابقة.';
+    p.style.color = 'red';
+    list.appendChild(p);
   }
 }
 
@@ -117,3 +112,4 @@ function initRatings() {
 window.loadScripts = loadScripts;
 window.initRatings = initRatings;
 window.copyScript = copyScript;
+window.filterScripts = filterScripts;
