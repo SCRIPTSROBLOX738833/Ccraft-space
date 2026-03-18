@@ -4,14 +4,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة الإدارة</title>
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="loginDiv">
+    <h2>تسجيل الدخول</h2>
+    <input type="email" id="email" placeholder="البريد الإلكتروني">
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <button onclick="login()">دخول</button>
+    <p id="loginError" style="color:red;"></p>
+  </div>
 
-<h1>لوحة الإدارة</h1>
-<div id="scriptsContainer"></div>
+  <div id="adminPanel" style="display:none;">
+    <h1>مرحبا بك في لوحة الإدارة</h1>
+    <!-- هنا تضيف أدوات الإدارة -->
+  </div>
 
-<script type="module" src="admin.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+      authDomain: "ccraft-space-scripts.firebaseapp.com",
+      databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+      projectId: "ccraft-space-scripts",
+      storageBucket: "ccraft-space-scripts.firebasestorage.app",
+      messagingSenderId: "816078027492",
+      appId: "1:816078027492:web:6472cce474078fd4d90af1",
+      measurementId: "G-MHDM7YYYBN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const loginDiv = document.getElementById("loginDiv");
+    const adminPanel = document.getElementById("adminPanel");
+    const loginError = document.getElementById("loginError");
+
+    window.login = () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then(userCredential => {
+          loginDiv.style.display = "none";
+          adminPanel.style.display = "block";
+        })
+        .catch(error => {
+          loginError.textContent = "خطأ في البريد الإلكتروني أو كلمة المرور";
+        });
+    };
+
+    // تحقق تلقائيًا لو تم تسجيل الدخول مسبقًا
+    onAuthStateChanged(auth, user => {
+      if(user){
+        loginDiv.style.display = "none";
+        adminPanel.style.display = "block";
+      }
+    });
+  </script>
 </body>
 </html>
