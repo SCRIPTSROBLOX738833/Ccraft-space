@@ -10,7 +10,7 @@ window.copyScript = function(id) {
     .catch(err => alert("حدث خطأ في النسخ: " + err));
 }
 
-// تحديث عرض النجوم
+// تحديث النجوم
 function updateStars(stars, avg) {
   stars.forEach(s => s.classList.remove('checked'));
   stars.forEach(s => {
@@ -44,11 +44,10 @@ async function loadScripts() {
   }
 }
 
-// فلترة السكربتات بزر البحث
+// فلترة السكربتات
 function filterScripts() {
   const query = document.getElementById('searchScripts').value.toLowerCase().trim();
   const cards = document.querySelectorAll('.script-card');
-  const list = document.getElementById('scriptsList');
   let anyMatch = false;
 
   cards.forEach(card => {
@@ -59,7 +58,7 @@ function filterScripts() {
     if(match) anyMatch = true;
   });
 
-  // إزالة رسالة "لا توجد سكربتات" القديمة
+  // إزالة أي رسالة قديمة
   const oldMsg = document.getElementById('noMatchMsg');
   if(oldMsg) oldMsg.remove();
 
@@ -68,11 +67,11 @@ function filterScripts() {
     p.id = 'noMatchMsg';
     p.innerText = 'لا توجد سكربتات مطابقة.';
     p.style.color = 'red';
-    list.appendChild(p);
+    document.getElementById('scriptsList').appendChild(p);
   }
 }
 
-// تفعيل نظام التقييم بعد تحميل السكربتات
+// تفعيل نظام التقييم
 function initRatings() {
   document.querySelectorAll('.rating').forEach(rating => {
     const scriptId = rating.dataset.id;
@@ -108,8 +107,18 @@ function initRatings() {
   });
 }
 
-// تصدير الدوال للواجهة
+// ربط البحث بزر + تفعيل الفلترة أثناء الكتابة
+window.filterScripts = filterScripts;
 window.loadScripts = loadScripts;
 window.initRatings = initRatings;
 window.copyScript = copyScript;
-window.filterScripts = filterScripts;
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadScripts().then(() => {
+    initRatings();
+    const searchBtn = document.getElementById('searchButton');
+    const searchInput = document.getElementById('searchScripts');
+    if(searchBtn) searchBtn.onclick = filterScripts;
+    if(searchInput) searchInput.oninput = filterScripts;
+  });
+});
