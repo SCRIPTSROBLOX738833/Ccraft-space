@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تفاصيل السكربت</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.comment { background:#161b22; padding:0.8rem; border-radius:8px; margin-bottom:0.5rem; }
+.comment-author { font-weight:bold; color:#58a6ff; }
+.comment-text { margin-top:0.3rem; }
+</style>
+</head>
+<body>
+<header>
+  <button onclick="location.href='index.html'">العودة للقائمة</button>
+</header>
+
+<main>
+  <h1 id="scriptTitle"></h1>
+  <pre id="scriptCode"></pre>
+  <p>Category: <span id="scriptCategory"></span></p>
+  <button id="copyBtn">نسخ السكربت</button>
+
+  <div class="rating" id="ratingDiv"></div>
+
+  <h2>التعليقات</h2>
+  <textarea id="commentInput" placeholder="أضف تعليقك هنا..."></textarea>
+  <button id="submitComment">إرسال التعليق</button>
+  <div id="commentsList"></div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+// إعداد Firebase (نفس الإعدادات)
+const firebaseConfig = {
+  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+  authDomain: "ccraft-space-scripts.firebaseapp.com",
+  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+  projectId: "ccraft-space-scripts",
+  storageBucket: "ccraft-space-scripts.firebasestorage.app",
+  messagingSenderId: "816078027492",
+  appId: "1:816078027492:web:6472cce474078fd4d90af1",
+  measurementId: "G-MHDM7YYYBN"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// قراءة الـ ID من الرابط
+const params = new URLSearchParams(window.location.search);
+const scriptId = params.get('id');
+if(!scriptId) location.href='index.html';
+
+const titleEl = document.getElementById('scriptTitle');
+const codeEl = document.getElementById('scriptCode');
+const categoryEl = document.getElementById('scriptCategory');
+const copyBtn = document.getElementById('copyBtn');
+const ratingDiv = document.getElementById('ratingDiv');
+const commentInput = document.getElementById('commentInput');
+const submitComment = document.getElementById('submitComment');
+const commentsList = document.getElementById('commentsList');
+
+// تحميل السكربت
+async function loadScript() {
+  const snap = await get(ref(db, `scripts/${scriptId}`));
+  if(!snap.exists()) return alert('هذا السكربت غير موجود');
+
+  const s = snap.val();
+  titleEl.innerText = s.title;
+  codeEl.innerText = s.code;
+  categoryEl.innerText = s.category;
+
+  // زر نسخ
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(s.code).then(()=>alert('تم النسخ!'));
+  });
+
+  // نظام التقييم
+  ratingDiv.innerHTML = [...Array(5)].map((_,i)=>`<span class="star" data-value="${i+1}">&#9733;</span>`).join('') +
+                          `<span class="avg-rating">(${s.votes ? (s.rating/s.votes).toFixed(1) : 0})</span>`;
+  const stars = ratingDiv.querySelectorAll('.star');
+  const avgEl = ratingDiv.querySelector('.avg-rating');
+  const avg = s.votes ? s.rating/s.votes : 0;
+  stars.forEach((star,idx)=>star.style.color=(idx+1)<=avg?'gold':'#ccc');
+
+  stars.forEach(star=>{
+    star.addEventListener('click', async ()=>{
+      if(localStorage.getItem(`rated_${scriptId}`)) return;
+      const value = Number(star.dataset.value);
+      let rating = s.rating || 0, votes = s.votes || 0;
+      rating += value;
+      votes += 1;
+      await set(ref(db, `scripts/${scriptId}`), {...s, rating, votes});
+      localStorage.setItem(`rated_${scriptId}`,'true');
+      stars.forEach((st,idx)=>st.style.color=(idx+1)<=rating/votes?'gold':'#ccc');
+      avgEl.innerText = `(${(rating/votes).toFixed(1)})`;
+    });
+  });
+}
+
+// تحميل التعليقات
+async function loadComments(){
+  const snap = await get(ref(db, `comments/${scriptId}`));
+  commentsList.innerHTML='';
+  if(snap.exists()){
+    const data = snap.val();
+    Object.values(data).forEach(c=>{
+      const div = document.createElement('div');
+      div.className='comment';
+      div.innerHTML=`<span class="comment-author">مستخدم:</span>
+                     <p class="comment-text">${c.text}</p>`;
+      commentsList.appendChild(div);
+    });
+  }
+}
+
+// إضافة تعليق
+submitComment.addEventListener('click', async ()=>{
+  const text = commentInput.value.trim();
+  if(!text) return alert('اكتب تعليقك أولاً');
+  await push(ref(db, `comments/${scriptId}`), { text });
+  commentInput.value='';
+  loadComments();
+});
+
+loadScript();
+loadComments();
+
+</script>
+</body>
+</html>
