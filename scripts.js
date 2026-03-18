@@ -10,7 +10,7 @@ window.copyScript = function(id) {
     .catch(err => alert("حدث خطأ في النسخ: " + err));
 }
 
-// استخراج قيمة البحث من الرابط
+// قراءة البحث من الرابط
 function getSearchQuery() {
   const params = new URLSearchParams(window.location.search);
   return params.get('search') ? params.get('search').toLowerCase().trim() : '';
@@ -19,15 +19,12 @@ function getSearchQuery() {
 // تعديل الرابط عند البحث
 function updateURLQuery(query) {
   const url = new URL(window.location);
-  if(query) {
-    url.searchParams.set('search', query);
-  } else {
-    url.searchParams.delete('search');
-  }
+  if(query) url.searchParams.set('search', query);
+  else url.searchParams.delete('search');
   window.history.replaceState(null, '', url);
 }
 
-// تحميل السكربتات وعرضها مع فلترة
+// تحميل السكربتات وعرضها
 async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
@@ -74,28 +71,31 @@ async function loadScripts() {
   }
 }
 
-// البحث عند الضغط على الزر أو أثناء الكتابة
+// تنفيذ البحث عند الزر أو الكتابة
 function handleSearch() {
   const query = document.getElementById('searchScripts').value.toLowerCase().trim();
   updateURLQuery(query);
   loadScripts();
 }
 
-// تصدير الدوال للواجهة
-window.copyScript = copyScript;
-window.loadScripts = loadScripts;
-window.handleSearch = handleSearch;
-
-// تشغيل عند تحميل الصفحة
+// عند تحميل الصفحة
 window.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchScripts');
   const searchBtn = document.getElementById('searchButton');
 
-  if(searchInput) {
-    searchInput.value = getSearchQuery(); // عرض قيمة البحث لو موجودة في الرابط
-    searchInput.addEventListener('input', handleSearch);
-  }
+  // عرض قيمة البحث لو موجودة في الرابط
+  if(searchInput) searchInput.value = getSearchQuery();
+
+  // البحث مباشر أثناء الكتابة
+  if(searchInput) searchInput.addEventListener('input', handleSearch);
+
+  // البحث عند الضغط على الزر
   if(searchBtn) searchBtn.addEventListener('click', handleSearch);
 
+  // تحميل السكربتات أول مرة
   loadScripts();
 });
+
+// تصدير الدوال
+window.copyScript = copyScript;
+window.loadScripts = loadScripts;
