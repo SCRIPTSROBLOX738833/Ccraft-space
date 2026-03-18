@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="styles.css">
 <style>
   .star { cursor:pointer; font-size:20px; color:#ccc; margin-right:2px; }
+  .script-card { cursor:pointer; }
 </style>
 </head>
 <body>
@@ -27,7 +28,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -51,7 +51,6 @@ window.copyScript = (id) => {
     .catch(() => alert("حدث خطأ أثناء النسخ"));
 };
 
-// تحديث الرابط عند البحث
 function updateURLQuery(query) {
   const url = new URL(window.location);
   if(query) url.searchParams.set('search', query);
@@ -59,13 +58,11 @@ function updateURLQuery(query) {
   window.history.replaceState(null, '', url);
 }
 
-// قراءة البحث من الرابط
 function getSearchQuery() {
   const params = new URLSearchParams(window.location.search);
   return params.get('search') ? params.get('search').toLowerCase().trim() : '';
 }
 
-// تحميل السكربتات وعرضها
 async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
@@ -112,7 +109,7 @@ async function loadScripts() {
     list.appendChild(p);
   }
 
-  // ربط Like لكل زر مع منع النقر مرتين
+  // Like system
   document.querySelectorAll('.like-btn').forEach(btn => {
     const scriptId = btn.dataset.id;
     if(localStorage.getItem(`liked_${scriptId}`)) {
@@ -133,7 +130,7 @@ async function loadScripts() {
     });
   });
 
-  // ربط نظام التقييم
+  // Rating system
   document.querySelectorAll('.rating').forEach(async div => {
     const scriptId = div.dataset.id;
     const stars = div.querySelectorAll('.star');
@@ -174,14 +171,12 @@ async function loadScripts() {
   });
 }
 
-// البحث عند الزر أو أثناء الكتابة
 function handleSearch() {
   const query = document.getElementById('searchScripts').value.toLowerCase().trim();
   updateURLQuery(query);
   loadScripts();
 }
 
-// تهيئة الصفحة
 window.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchScripts');
   const searchBtn = document.getElementById('searchButton');
@@ -193,7 +188,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 window.loadScripts = loadScripts;
 window.copyScript = copyScript;
-
 </script>
 </body>
 </html>
