@@ -54,12 +54,40 @@ document.querySelectorAll('.rating').forEach(rating => {
 });
 
 // فلترة السكربتات (بحث مباشر)
-window.filterScripts = () => {
-  const query = document.getElementById('searchScripts')?.value.toLowerCase().trim() || "";
-  const cards = document.querySelectorAll('.script-card');
-  cards.forEach(card => {
-    const title = card.querySelector('h3')?.innerText.toLowerCase() || "";
-    const category = card.querySelector('p')?.innerText.toLowerCase() || "";
-    card.style.display = (title.includes(query) || category.includes(query)) ? "block" : "none";
-  });
-};
+// بعد تحميل السكربتات
+async function loadScripts() {
+  const list = document.getElementById('scriptsList');
+  list.innerHTML = '';
+  const snapshot = await get(ref(db, 'scripts'));
+  
+  if(snapshot.exists()) {
+    const scripts = snapshot.val();
+    Object.keys(scripts).forEach(id => {
+      const s = scripts[id];
+      const div = document.createElement('div');
+      div.className = 'script-card';
+      div.dataset.id = id;
+      div.innerHTML = `
+        <h3>${s.title}</h3>
+        <pre id="code-${id}">${s.code}</pre>
+        <p>Category: ${s.category}</p>
+        <button onclick="copyScript('${id}')">نسخ السكربت</button>
+      `;
+      list.appendChild(div);
+    });
+
+    // بعد ما الكروت ظهرت، نربط البحث
+    const searchInput = document.getElementById('searchScripts');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase().trim();
+      document.querySelectorAll('.script-card').forEach(card => {
+        const title = card.querySelector('h3').innerText.toLowerCase();
+        const category = card.querySelector('p').innerText.toLowerCase();
+        card.style.display = (title.includes(query) || category.includes(query)) ? "block" : "none";
+      });
+    });
+
+  } else {
+    list.innerHTML = '<p>لا توجد سكربتات حتى الآن.</p>';
+  }
+    }
