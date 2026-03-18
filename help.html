@@ -99,7 +99,7 @@
     }
 
     // فتح البريد الإلكتروني لإرسال الرسالة
-    const mailtoLink = `mailto:ccraftspacehelp@gmail?subject=Support Request from ${encodeURIComponent(name)}&body=${encodeURIComponent(message + "\n\nFrom: " + email)}`;
+    const mailtoLink = `mailto:ccraftspacehelp@gmail.com?subject=Support Request from ${encodeURIComponent(name)}&body=${encodeURIComponent(message + "\n\nFrom: " + email)}`;
     window.location.href = mailtoLink;
 
     statusMsg.innerText = "تم فتح بريدك لإرسال الرسالة. تحقق من بريدك وأرسل الرسالة.";
