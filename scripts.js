@@ -1,5 +1,5 @@
 import { db } from './firebase-config.js';
-import { ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 // نسخ السكربت
 window.copyScript = function(id) {
@@ -10,14 +10,23 @@ window.copyScript = function(id) {
     .catch(err => alert("حدث خطأ في النسخ: " + err));
 }
 
-// بعد تحميل السكربتات + فلترة البحث
+// تحديث عرض النجوم
+function updateStars(stars, avg) {
+  stars.forEach(s => s.classList.remove('checked'));
+  stars.forEach(s => {
+    if(parseInt(s.dataset.value) <= avg) s.classList.add('checked');
+  });
+}
+
+// تحميل السكربتات + ربط البحث
 async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
   const snapshot = await get(ref(db, 'scripts'));
-  
+
   if(snapshot.exists()) {
     const scripts = snapshot.val();
+
     Object.keys(scripts).forEach(id => {
       const s = scripts[id];
       const div = document.createElement('div');
@@ -32,12 +41,15 @@ async function loadScripts() {
       list.appendChild(div);
     });
 
-    // ربط البحث بعد ما كل الكروت اتعملت
+    // ربط البحث بزر
+    const searchButton = document.getElementById('searchButton');
     const searchInput = document.getElementById('searchScripts');
-    searchInput.oninput = () => {
+
+    searchButton.onclick = () => {
       const query = searchInput.value.toLowerCase().trim();
       const cards = document.querySelectorAll('.script-card');
       let anyMatch = false;
+
       cards.forEach(card => {
         const title = card.querySelector('h3').innerText.toLowerCase();
         const category = card.querySelector('p').innerText.toLowerCase();
@@ -45,27 +57,24 @@ async function loadScripts() {
         card.style.display = match ? "block" : "none";
         if(match) anyMatch = true;
       });
+
+      let noMatchMsg = document.getElementById('noMatchMsg');
       if(!anyMatch) {
-        list.innerHTML = '<p>لا توجد سكربتات مطابقة.</p>';
-      } else {
-        // لو فيه نتيجة، نعيد عرض كل الكروت المطابقة
-        cards.forEach(card => {
-          if(card.style.display === "block") list.appendChild(card);
-        });
+        if(!noMatchMsg) {
+          noMatchMsg = document.createElement('p');
+          noMatchMsg.id = 'noMatchMsg';
+          noMatchMsg.innerText = 'لا توجد سكربتات مطابقة.';
+          noMatchMsg.style.color = 'red';
+          list.appendChild(noMatchMsg);
+        }
+      } else if(noMatchMsg) {
+        noMatchMsg.remove();
       }
     };
 
   } else {
     list.innerHTML = '<p>لا توجد سكربتات حتى الآن.</p>';
   }
-}
-
-// تحديث عرض النجوم
-function updateStars(stars, avg) {
-  stars.forEach(s => s.classList.remove('checked'));
-  stars.forEach(s => {
-    if(parseInt(s.dataset.value) <= avg) s.classList.add('checked');
-  });
 }
 
 // تفعيل نظام التقييم بعد تحميل السكربتات
@@ -75,7 +84,6 @@ function initRatings() {
     const stars = rating.querySelectorAll('.star');
     const info = rating.querySelector('.rating-info');
 
-    // جلب متوسط التقييم من Firebase
     get(child(ref(db), `ratings/${scriptId}`)).then(snapshot => {
       if(snapshot.exists()) {
         const data = snapshot.val();
@@ -105,7 +113,7 @@ function initRatings() {
   });
 }
 
-// تصدير الدوال الرئيسية للواجهة
+// تصدير الدوال للواجهة
 window.loadScripts = loadScripts;
 window.initRatings = initRatings;
 window.copyScript = copyScript;
