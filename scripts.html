@@ -7,7 +7,9 @@
 <link rel="stylesheet" href="styles.css">
 <style>
   .star { cursor:pointer; font-size:20px; color:#ccc; margin-right:2px; }
-  .script-card { cursor:pointer; }
+  .script-card { border:1px solid #30363d; padding:1rem; margin-bottom:1rem; border-radius:8px; background:#161b22; }
+  .script-card h3 { margin:0; }
+  .script-card button { margin-top:0.5rem; }
 </style>
 </head>
 <body>
@@ -42,7 +44,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// نسخ السكربت
 window.copyScript = (id) => {
   const codeEl = document.getElementById(`code-${id}`);
   if(!codeEl) return alert("خطأ في السكربت");
@@ -86,10 +87,11 @@ async function loadScripts() {
     div.className = 'script-card';
     div.dataset.id = id;
     div.innerHTML = `
-      <h3><a href="script.html?id=${id}">${s.title}</a></h3>
-      <pre id="code-${id}">${s.code}</pre>
+      <h3>${s.title}</h3>
       <p>Category: ${s.category}</p>
+      <pre id="code-${id}">${s.code}</pre>
       <button onclick="copyScript('${id}')">نسخ السكربت</button>
+      <button onclick="location.href='script.html?id=${id}'">عرض صفحه السكربت</button>
       <button class="like-btn" data-id="${id}">👍 Like (<span class="like-count">${s.likes || 0}</span>)</button>
       <div class="rating" data-id="${id}">
         ${[1,2,3,4,5].map(n=>`<span class="star" data-value="${n}">&#9733;</span>`).join('')}
@@ -109,7 +111,6 @@ async function loadScripts() {
     list.appendChild(p);
   }
 
-  // Like system
   document.querySelectorAll('.like-btn').forEach(btn => {
     const scriptId = btn.dataset.id;
     if(localStorage.getItem(`liked_${scriptId}`)) {
@@ -119,8 +120,8 @@ async function loadScripts() {
     btn.addEventListener('click', async () => {
       if(localStorage.getItem(`liked_${scriptId}`)) return;
       const likeRef = ref(db, `scripts/${scriptId}/likes`);
-      const snapshot = await get(likeRef);
-      let likes = snapshot.exists() ? snapshot.val() : 0;
+      const snap = await get(likeRef);
+      let likes = snap.exists() ? snap.val() : 0;
       likes += 1;
       await set(likeRef, likes);
       btn.querySelector('.like-count').innerText = likes;
@@ -130,7 +131,6 @@ async function loadScripts() {
     });
   });
 
-  // Rating system
   document.querySelectorAll('.rating').forEach(async div => {
     const scriptId = div.dataset.id;
     const stars = div.querySelectorAll('.star');
@@ -152,11 +152,8 @@ async function loadScripts() {
         const value = Number(star.dataset.value);
         const ratingRef = ref(db, `scripts/${scriptId}`);
         const snap = await get(ratingRef);
-        let rating = 0, votes = 0;
-        if(snap.exists()) {
-          rating = snap.val().rating || 0;
-          votes = snap.val().votes || 0;
-        }
+        let rating = snap.exists() ? snap.val().rating || 0 : 0;
+        let votes = snap.exists() ? snap.val().votes || 0 : 0;
         rating += value;
         votes += 1;
         await set(ratingRef, { ...snap.val(), rating, votes });
