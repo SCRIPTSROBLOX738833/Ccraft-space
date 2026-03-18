@@ -89,7 +89,7 @@ async function loadScripts() {
     div.className = 'script-card';
     div.dataset.id = id;
     div.innerHTML = `
-      <h3>${s.title}</h3>
+      <h3><a href="script.html?id=${id}">${s.title}</a></h3>
       <pre id="code-${id}">${s.code}</pre>
       <p>Category: ${s.category}</p>
       <button onclick="copyScript('${id}')">نسخ السكربت</button>
