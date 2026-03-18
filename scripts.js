@@ -2,12 +2,12 @@ import { db } from './firebase-config.js';
 import { ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 // نسخ السكربت
-window.copyScript = function(id) {
+window.copyScript = (id) => {
   const codeEl = document.getElementById(`code-${id}`);
-  if(!codeEl) return alert("خطأ في السكربت");
+  if (!codeEl) return alert("خطأ في السكربت");
   navigator.clipboard.writeText(codeEl.innerText)
     .then(() => alert("تم نسخ السكربت!"))
-    .catch(err => alert("حدث خطأ في النسخ: " + err));
+    .catch(() => alert("حدث خطأ أثناء النسخ"));
 }
 
 // قراءة البحث من الرابط
@@ -25,7 +25,7 @@ function updateURLQuery(query) {
 }
 
 // تحميل السكربتات وعرضها
-async function loadScripts() {
+export async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
   const snapshot = await get(ref(db, 'scripts'));
@@ -71,14 +71,15 @@ async function loadScripts() {
   }
 }
 
-// تنفيذ البحث عند الزر أو الكتابة
+// البحث عند الزر أو الكتابة
 function handleSearch() {
-  const query = document.getElementById('searchScripts').value.toLowerCase().trim();
+  const input = document.getElementById('searchScripts');
+  const query = input.value.toLowerCase().trim();
   updateURLQuery(query);
   loadScripts();
 }
 
-// عند تحميل الصفحة
+// ربط كل حاجة عند تحميل الصفحة
 window.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchScripts');
   const searchBtn = document.getElementById('searchButton');
@@ -95,7 +96,3 @@ window.addEventListener('DOMContentLoaded', () => {
   // تحميل السكربتات أول مرة
   loadScripts();
 });
-
-// تصدير الدوال
-window.copyScript = copyScript;
-window.loadScripts = loadScripts;
