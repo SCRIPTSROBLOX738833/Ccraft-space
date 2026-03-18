@@ -4,61 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>عرض السكربت</title>
-<link rel="stylesheet" href="styles.css">
 <style>
-  body { font-family: Arial, sans-serif; background:#0d1117; color:#c9d1d9; padding:1rem; }
-  header { margin-bottom:1rem; }
-  h1 { margin-bottom:0.5rem; }
-  pre { background:#161b22; padding:1rem; border-radius:8px; overflow-x:auto; }
-  button { cursor:pointer; padding:0.5rem 1rem; border:none; border-radius:5px; background:#238636; color:white; margin-top:0.5rem; }
-  button:disabled { opacity:0.6; cursor:default; }
-  .like-section, .rating { margin-top:0.5rem; }
-  .star { cursor:pointer; font-size:20px; color:#ccc; margin-right:2px; }
-  #comments { margin-top:1rem; }
-  .comment { background:#161b22; padding:0.8rem; border-radius:8px; margin-bottom:0.5rem; }
-  .comment strong { color:#58a6ff; }
-  #addComment { display:flex; gap:0.5rem; margin-top:1rem; }
-  #addComment input { flex:1; padding:0.5rem; border-radius:5px; border:1px solid #30363d; background:#0d1117; color:#c9d1d9; }
+  body{background:#0d1117;color:#c9d1d9;font-family:sans-serif;margin:0;padding:1rem;}
+  pre{background:#161b22;padding:1rem;border-radius:8px;overflow:auto;}
+  button{padding:.5rem 1rem;border:none;border-radius:6px;background:#58a6ff;color:#0d1117;cursor:pointer;margin-top:.5rem;}
 </style>
 </head>
 <body>
 <header>
   <button onclick="location.href='index.html'">العودة للصفحة الرئيسية</button>
 </header>
-
 <main>
   <h1 id="title">جارٍ التحميل...</h1>
+  <p id="author"></p>
   <pre id="code"></pre>
   <button id="copyBtn">نسخ السكربت</button>
-
-  <div class="like-section">
-    <button id="likeBtn">👍 Like (<span id="likeCount">0</span>)</button>
-  </div>
-
-  <div class="rating" id="ratingSection">
-    <span class="star" data-value="1">&#9733;</span>
-    <span class="star" data-value="2">&#9733;</span>
-    <span class="star" data-value="3">&#9733;</span>
-    <span class="star" data-value="4">&#9733;</span>
-    <span class="star" data-value="5">&#9733;</span>
-    <span id="avgRating">(0)</span>
-  </div>
-
-  <h2>التعليقات</h2>
-  <div id="comments"></div>
-
-  <div id="addComment">
-    <input type="text" id="nameInput" placeholder="اكتب اسمك..." readonly>
-    <input type="text" id="commentInput" placeholder="اكتب تعليقك هنا...">
-    <button id="submitComment">إرسال</button>
-  </div>
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -73,122 +39,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// جلب ID السكربت من الرابط
 const params = new URLSearchParams(window.location.search);
 const scriptId = params.get('id');
 
-// عناصر الصفحة
 const titleEl = document.getElementById('title');
 const codeEl = document.getElementById('code');
+const authorEl = document.getElementById('author');
 const copyBtn = document.getElementById('copyBtn');
-const likeBtn = document.getElementById('likeBtn');
-const likeCountEl = document.getElementById('likeCount');
-const stars = document.querySelectorAll('.star');
-const avgRatingEl = document.getElementById('avgRating');
-const commentsDiv = document.getElementById('comments');
-const commentInput = document.getElementById('commentInput');
-const nameInput = document.getElementById('nameInput');
-const submitComment = document.getElementById('submitComment');
 
-// تعيين اسم المستخدم مرة واحدة فقط
-if(!localStorage.getItem('username')) {
-  let uname = prompt("اكتب اسمك (لن تستطيع تغييره لاحقًا):");
-  if(!uname) uname = "مستخدم مجهول";
-  localStorage.setItem('username', uname);
-}
-nameInput.value = localStorage.getItem('username');
-
-// تحميل السكربت
-async function loadScript() {
+async function loadScript(){
   const snap = await get(ref(db, `scripts/${scriptId}`));
-  if(!snap.exists()) {
-    titleEl.innerText = "هذا السكربت غير موجود";
-    return;
-  }
+  if(!snap.exists()){ titleEl.innerText="هذا السكربت غير موجود"; return; }
   const data = snap.val();
   titleEl.innerText = data.title;
+  authorEl.innerText = `المؤلف: ${data.author || "مجهول"}`;
   codeEl.innerText = data.code;
-
-  // Like
-  likeCountEl.innerText = data.likes || 0;
-  if(localStorage.getItem(`liked_${scriptId}`)) {
-    likeBtn.disabled = true;
-    likeBtn.style.opacity = 0.6;
-  }
-
-  likeBtn.addEventListener('click', async () => {
-    if(localStorage.getItem(`liked_${scriptId}`)) return;
-    const likesRef = ref(db, `scripts/${scriptId}/likes`);
-    const snapLikes = await get(likesRef);
-    let likes = snapLikes.exists() ? snapLikes.val() : 0;
-    likes +=1;
-    await set(likesRef, likes);
-    likeCountEl.innerText = likes;
-    localStorage.setItem(`liked_${scriptId}`, 'true');
-    likeBtn.disabled = true;
-    likeBtn.style.opacity = 0.6;
-  });
-
-  // Rating
-  const rating = data.rating || 0;
-  const votes = data.votes || 0;
-  const avg = votes ? rating / votes : 0;
-  avgRatingEl.innerText = `(${avg.toFixed(1)})`;
-  stars.forEach((star, idx) => {
-    star.style.color = (idx+1) <= avg ? 'gold' : '#ccc';
-  });
-  stars.forEach(star => {
-    star.addEventListener('click', async () => {
-      if(localStorage.getItem(`rated_${scriptId}`)) return;
-      const value = Number(star.dataset.value);
-      const ratingRef = ref(db, `scripts/${scriptId}`);
-      const snapR = await get(ratingRef);
-      let ratingVal = snapR.exists() ? snapR.val().rating || 0 : 0;
-      let votesVal = snapR.exists() ? snapR.val().votes || 0 : 0;
-      ratingVal += value;
-      votesVal += 1;
-      await set(ratingRef, { ...snapR.val(), rating: ratingVal, votes: votesVal });
-      localStorage.setItem(`rated_${scriptId}`, 'true');
-      const newAvg = ratingVal / votesVal;
-      stars.forEach((s, idx) => {
-        s.style.color = (idx+1) <= newAvg ? 'gold' : '#ccc';
-      });
-      avgRatingEl.innerText = `(${newAvg.toFixed(1)})`;
-    });
-  });
-
-  loadComments();
 }
 
-// نسخ السكربت
-copyBtn.addEventListener('click', () => {
-  navigator.clipboard.writeText(codeEl.innerText).then(() => {
-    alert("تم نسخ السكربت!");
-  });
-});
-
-// التعليقات
-async function loadComments() {
-  commentsDiv.innerHTML = '';
-  const snap = await get(ref(db, `scripts/${scriptId}/comments`));
-  if(!snap.exists()) return;
-  const data = snap.val();
-  Object.values(data).forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'comment';
-    div.innerHTML = `<strong>${c.name}:</strong> ${c.text}`;
-    commentsDiv.appendChild(div);
-  });
-}
-
-submitComment.addEventListener('click', async () => {
-  const text = commentInput.value.trim();
-  if(!text) return;
-  const username = localStorage.getItem('username');
-  const commentsRef = ref(db, `scripts/${scriptId}/comments`);
-  await push(commentsRef, { name: username, text });
-  commentInput.value = '';
-  loadComments();
+copyBtn.addEventListener('click', ()=>{
+  navigator.clipboard.writeText(codeEl.innerText).then(()=>alert("تم نسخ السكربت!"));
 });
 
 loadScript();
