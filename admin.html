@@ -4,9 +4,141 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة الإدارة</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1, h2, h3 {
+      color: #58a6ff;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ====== تسجيل الدخول ====== */
+    #loginDiv {
+      max-width: 400px;
+      margin: 5rem auto;
+      padding: 2rem;
+      background: #161b22;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    #loginDiv input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      border: 1px solid #2f363d;
+      background: #0d1117;
+      color: #c9d1d9;
+    }
+
+    #loginDiv button {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 10px;
+      border: none;
+      background: #58a6ff;
+      color: #0d1117;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #loginDiv button:hover {
+      background: #1f6feb;
+      transform: scale(1.05);
+    }
+
+    /* ====== لوحة الإدارة ====== */
+    #adminPanel {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem 2rem;
+      background: #161b22;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    #adminPanel input, 
+    #adminPanel textarea, 
+    #adminPanel select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      border: 1px solid #2f363d;
+      background: #0d1117;
+      color: #c9d1d9;
+    }
+
+    #adminPanel button {
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      background: #58a6ff;
+      color: #0d1117;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    #adminPanel button:hover {
+      background: #1f6feb;
+      transform: scale(1.05);
+      color: #fff;
+    }
+
+    /* ====== قائمة السكربتات ====== */
+    #scriptsList {
+      list-style: none;
+      padding: 0;
+    }
+
+    #scriptsList li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0d1117;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+      flex-wrap: wrap;
+    }
+
+    #scriptsList li b {
+      color: #58a6ff;
+    }
+
+    #scriptsList li button {
+      margin-left: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      #loginDiv, #adminPanel {
+        margin: 2rem 1rem;
+        padding: 1rem;
+      }
+
+      #scriptsList li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      #scriptsList li button {
+        margin: 0.3rem 0 0 0;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- تسجيل الدخول -->
   <div id="loginDiv">
     <h2>تسجيل الدخول</h2>
     <input type="email" id="email" placeholder="البريد الإلكتروني">
@@ -15,14 +147,32 @@
     <p id="loginError" style="color:red;"></p>
   </div>
 
+  <!-- لوحة الإدارة -->
   <div id="adminPanel" style="display:none;">
     <h1>لوحة الإدارة</h1>
+
+    <!-- إضافة سكربت جديد -->
+    <h3>نشر سكربت جديد</h3>
+    <input type="text" id="newTitle" placeholder="عنوان السكربت">
+    <textarea id="newCode" placeholder="كود السكربت" rows="4"></textarea>
+    <select id="newCategory">
+      <option value="">اختر القسم</option>
+      <option value="game">Game Scripts</option>
+      <option value="admin">Admin Scripts</option>
+      <option value="ai">AI & NPCs</option>
+    </select>
+    <button onclick="addScript()">نشر</button>
+
+    <hr>
+
+    <!-- قائمة السكربتات -->
+    <h3>جميع السكربتات</h3>
     <ul id="scriptsList"></ul>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getDatabase, ref, get, remove } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { getDatabase, ref, get, push, set, remove, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -45,6 +195,7 @@
     const loginError = document.getElementById("loginError");
     const scriptsList = document.getElementById("scriptsList");
 
+    // تسجيل الدخول
     window.login = () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
@@ -58,6 +209,7 @@
       if(user) loadScripts();
     });
 
+    // تحميل وعرض السكربتات
     async function loadScripts(){
       loginDiv.style.display = "none";
       adminPanel.style.display = "block";
@@ -69,8 +221,9 @@
         const scripts = snapshot.val();
         for(const key in scripts){
           const li = document.createElement("li");
-          li.textContent = scripts[key].title + " ";
+          li.innerHTML = `<b>${scripts[key].title}</b> (${scripts[key].category})`;
 
+          // زر حذف
           const delBtn = document.createElement("button");
           delBtn.textContent = "حذف";
           delBtn.onclick = async () => {
@@ -80,13 +233,50 @@
             }
           };
 
+          // زر تعديل
+          const editBtn = document.createElement("button");
+          editBtn.textContent = "تعديل";
+          editBtn.onclick = () => editScript(key, scripts[key]);
+
           li.appendChild(delBtn);
+          li.appendChild(editBtn);
           scriptsList.appendChild(li);
         }
       } else {
         scriptsList.textContent = "لا يوجد سكربتات حالياً";
       }
     }
+
+    // إضافة سكربت جديد
+    window.addScript = async () => {
+      const title = document.getElementById("newTitle").value;
+      const code = document.getElementById("newCode").value;
+      const category = document.getElementById("newCategory").value;
+
+      if(!title || !code || !category) return alert("مطلوب كل الحقول");
+
+      const newScriptRef = push(ref(db, "scripts"));
+      await set(newScriptRef, { title, code, category, timestamp: Date.now() });
+
+      alert("تم نشر السكربت بنجاح!");
+      document.getElementById("newTitle").value = "";
+      document.getElementById("newCode").value = "";
+      document.getElementById("newCategory").value = "";
+      loadScripts();
+    };
+
+    // تعديل السكربت
+    function editScript(key, script){
+      const newTitle = prompt("عدل عنوان السكربت:", script.title);
+      const newCode = prompt("عدل كود السكربت:", script.code);
+      const newCategory = prompt("عدل القسم:", script.category);
+
+      if(newTitle && newCode && newCategory){
+        update(ref(db, `scripts/${key}`), { title: newTitle, code: newCode, category: newCategory });
+        loadScripts();
+      }
+    }
+
   </script>
 </body>
 </html>
