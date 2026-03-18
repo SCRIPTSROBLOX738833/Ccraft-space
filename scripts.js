@@ -1,5 +1,5 @@
 import { db } from './firebase-config.js';
-import { ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
 // نسخ السكربت
 window.copyScript = function(id) {
@@ -10,15 +10,24 @@ window.copyScript = function(id) {
     .catch(err => alert("حدث خطأ في النسخ: " + err));
 }
 
-// تحديث النجوم
-function updateStars(stars, avg) {
-  stars.forEach(s => s.classList.remove('checked'));
-  stars.forEach(s => {
-    if(parseInt(s.dataset.value) <= avg) s.classList.add('checked');
-  });
+// استخراج قيمة البحث من الرابط
+function getSearchQuery() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('search') ? params.get('search').toLowerCase().trim() : '';
 }
 
-// تحميل السكربتات
+// تعديل الرابط عند البحث
+function updateURLQuery(query) {
+  const url = new URL(window.location);
+  if(query) {
+    url.searchParams.set('search', query);
+  } else {
+    url.searchParams.delete('search');
+  }
+  window.history.replaceState(null, '', url);
+}
+
+// تحميل السكربتات وعرضها مع فلترة
 async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
@@ -26,8 +35,15 @@ async function loadScripts() {
 
   if(snapshot.exists()) {
     const scripts = snapshot.val();
+    const query = getSearchQuery();
+    let anyMatch = false;
+
     Object.keys(scripts).forEach(id => {
       const s = scripts[id];
+      const title = s.title.toLowerCase();
+      const category = s.category.toLowerCase();
+      const match = !query || title.includes(query) || category.includes(query);
+
       const div = document.createElement('div');
       div.className = 'script-card';
       div.dataset.id = id;
@@ -37,88 +53,49 @@ async function loadScripts() {
         <p>Category: ${s.category}</p>
         <button onclick="copyScript('${id}')">نسخ السكربت</button>
       `;
+      div.style.display = match ? "block" : "none";
+      if(match) anyMatch = true;
       list.appendChild(div);
     });
+
+    // رسالة عدم وجود تطابق
+    const oldMsg = document.getElementById('noMatchMsg');
+    if(oldMsg) oldMsg.remove();
+    if(!anyMatch) {
+      const p = document.createElement('p');
+      p.id = 'noMatchMsg';
+      p.innerText = 'لا توجد سكربتات مطابقة.';
+      p.style.color = 'red';
+      list.appendChild(p);
+    }
+
   } else {
     list.innerHTML = '<p>لا توجد سكربتات حتى الآن.</p>';
   }
 }
 
-// فلترة السكربتات
-function filterScripts() {
+// البحث عند الضغط على الزر أو أثناء الكتابة
+function handleSearch() {
   const query = document.getElementById('searchScripts').value.toLowerCase().trim();
-  const cards = document.querySelectorAll('.script-card');
-  let anyMatch = false;
-
-  cards.forEach(card => {
-    const title = card.querySelector('h3').innerText.toLowerCase();
-    const category = card.querySelector('p').innerText.toLowerCase();
-    const match = title.includes(query) || category.includes(query);
-    card.style.display = match ? "block" : "none";
-    if(match) anyMatch = true;
-  });
-
-  // إزالة أي رسالة قديمة
-  const oldMsg = document.getElementById('noMatchMsg');
-  if(oldMsg) oldMsg.remove();
-
-  if(!anyMatch) {
-    const p = document.createElement('p');
-    p.id = 'noMatchMsg';
-    p.innerText = 'لا توجد سكربتات مطابقة.';
-    p.style.color = 'red';
-    document.getElementById('scriptsList').appendChild(p);
-  }
+  updateURLQuery(query);
+  loadScripts();
 }
 
-// تفعيل نظام التقييم
-function initRatings() {
-  document.querySelectorAll('.rating').forEach(rating => {
-    const scriptId = rating.dataset.id;
-    const stars = rating.querySelectorAll('.star');
-    const info = rating.querySelector('.rating-info');
-
-    get(child(ref(db), `ratings/${scriptId}`)).then(snapshot => {
-      if(snapshot.exists()) {
-        const data = snapshot.val();
-        const avg = Math.round(data.total / data.count);
-        info.innerText = `(${data.count} تقييم)`;
-        updateStars(stars, avg);
-      }
-    });
-
-    stars.forEach(star => {
-      star.addEventListener('click', () => {
-        const ratingValue = parseInt(star.dataset.value);
-        const ratingRef = ref(db, `ratings/${scriptId}`);
-        get(ratingRef).then(snapshot => {
-          let data = { total: 0, count: 0 };
-          if(snapshot.exists()) data = snapshot.val();
-          data.total += ratingValue;
-          data.count += 1;
-          set(ratingRef, data);
-
-          const avg = Math.round(data.total / data.count);
-          info.innerText = `(${data.count} تقييم)`;
-          updateStars(stars, avg);
-        });
-      });
-    });
-  });
-}
-
-// ربط البحث بزر + تفعيل الفلترة أثناء الكتابة
-window.filterScripts = filterScripts;
-window.loadScripts = loadScripts;
-window.initRatings = initRatings;
+// تصدير الدوال للواجهة
 window.copyScript = copyScript;
+window.loadScripts = loadScripts;
+window.handleSearch = handleSearch;
 
+// تشغيل عند تحميل الصفحة
 window.addEventListener('DOMContentLoaded', () => {
-  loadScripts().then(() => {
-    initRatings();
-    const searchBtn = document.getElementById('searchButton');
-    const searchInput = document.getElementById('searchScripts');
-    if(searchBtn) searchBtn.onclick = filterScripts;
-    if(searchInput) searchInput.oninput = filterScripts;
-  });
+  const searchInput = document.getElementById('searchScripts');
+  const searchBtn = document.getElementById('searchButton');
+
+  if(searchInput) {
+    searchInput.value = getSearchQuery(); // عرض قيمة البحث لو موجودة في الرابط
+    searchInput.addEventListener('input', handleSearch);
+  }
+  if(searchBtn) searchBtn.addEventListener('click', handleSearch);
+
+  loadScripts();
 });
