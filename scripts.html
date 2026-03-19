@@ -3,48 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>عرض السكربتات</title>
-
-<style>
-body{
-font-family:Arial;
-background:#0d1117;
-color:white;
-padding:20px;
-}
-
-.script{
-background:#161b22;
-padding:15px;
-margin-bottom:15px;
-border-radius:10px;
-}
-
-button{
-padding:8px 14px;
-cursor:pointer;
-}
-
-#userPoints{
-margin-bottom:20px;
-font-size:20px;
-}
-</style>
-
+<title>قائمة السكربتات</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<header>
+  <button onclick="location.href='publish.html'">نشر سكربت</button>
+</header>
 
-<h1>عرض السكربتات</h1>
+<main>
+  <h1>قائمة السكربتات</h1>
 
-<p id="userPoints">🔥 نقاطك: 0</p>
-<button class="nav-button" onclick="location.href='ranking.html'">ترتيب المستخدمين </button>
+  <input type="text" id="searchScripts" placeholder="ابحث عن سكربت أو قسم...">
+  <button id="searchButton">بحث</button>
 
-<div id="scriptsContainer"></div>
+  <div id="scriptsList"></div>
+</main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
+// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -59,50 +39,130 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const container = document.getElementById("scriptsContainer");
+// نسخ السكربت
+window.copyScript = (id) => {
+  const codeEl = document.getElementById(`code-${id}`);
+  if(!codeEl) return alert("خطأ في السكربت");
+  navigator.clipboard.writeText(codeEl.innerText)
+    .then(() => alert("تم نسخ السكربت!"))
+    .catch(() => alert("حدث خطأ أثناء النسخ"));
+};
 
-async function loadPoints() {
-  const username = localStorage.getItem("username");
-
-  if (!username) return;
-
-  const snap = await get(ref(db, 'users/' + username));
-
-  if (snap.exists()) {
-    document.getElementById("userPoints").innerText =
-      `🔥 نقاطك: ${snap.val().points || 0}`;
-  }
+// تحديث الرابط عند البحث
+function updateURLQuery(query) {
+  const url = new URL(window.location);
+  if(query) url.searchParams.set('search', query);
+  else url.searchParams.delete('search');
+  window.history.replaceState(null, '', url);
 }
 
-async function loadScripts() {
-  const snap = await get(ref(db, 'scripts'));
+// قراءة البحث من الرابط
+function getSearchQuery() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('search') ? params.get('search').toLowerCase().trim() : '';
+}
 
-  if (!snap.exists()) {
-    container.innerHTML = "لا يوجد سكربتات";
+// تحميل السكربتات وعرضها
+async function loadScripts() {
+  const list = document.getElementById('scriptsList');
+  list.innerHTML = '';
+  const snapshot = await get(ref(db, 'scripts'));
+  if(!snapshot.exists()) {
+    list.innerHTML = '<p>لا توجد سكربتات حتى الآن.</p>';
     return;
   }
 
-  const data = snap.val();
+  const scripts = snapshot.val();
+  const query = getSearchQuery();
+  let anyMatch = false;
 
-  Object.entries(data).forEach(([id, script]) => {
-    const div = document.createElement("div");
-    div.className = "script";
+  Object.keys(scripts).forEach(id => {
+    const s = scripts[id];
+    const title = s.title.toLowerCase();
+    const category = s.category.toLowerCase();
+    const match = !query || title.includes(query) || category.includes(query);
 
+    const div = document.createElement('div');
+    div.className = 'script-card';
+    div.dataset.id = id;
     div.innerHTML = `
-      <h3>${script.title}</h3>
-      <p>الناشر: ${script.username || "غير معروف"}</p>
-      <p>القسم: ${script.category || "عام"}</p>
-      <button onclick="location.href='script.html?id=${id}'">عرض السكربت</button>
+      <h3>${s.title}</h3>
+      <pre id="code-${id}">${s.code}</pre>
+      <p>Category: ${s.category}</p>
+      <button onclick="copyScript('${id}')">نسخ السكربت</button>
+      <button class="like-btn" data-id="${id}">👍 Like (<span class="like-count">${s.likes || 0}</span>)</button>
     `;
+    div.style.display = match ? "block" : "none";
+    if(match) anyMatch = true;
+    list.appendChild(div);
+  });
 
-    container.appendChild(div);
+  if(!anyMatch) {
+    const p = document.createElement('p');
+    p.id = 'noMatchMsg';
+    p.innerText = 'لا توجد سكربتات مطابقة.';
+    p.style.color = 'red';
+    list.appendChild(p);
+  }
+
+  // ربط Like لكل زر مع منع النقر مرتين
+  document.querySelectorAll('.like-btn').forEach(btn => {
+    const scriptId = btn.dataset.id;
+
+    // تعطيل الزر إذا المستخدم عمل Like سابقاً
+    if(localStorage.getItem(`liked_${scriptId}`)) {
+      btn.disabled = true;
+      btn.style.opacity = 0.6;
+    }
+
+    btn.addEventListener('click', async () => {
+      if(localStorage.getItem(`liked_${scriptId}`)) return;
+
+      const likeRef = ref(db, `scripts/${scriptId}/likes`);
+      const snapshot = await get(likeRef);
+      let likes = 0;
+      if(snapshot.exists()) likes = snapshot.val();
+      likes += 1;
+      await set(likeRef, likes);
+
+      btn.querySelector('.like-count').innerText = likes;
+
+      // تسجيل Like في localStorage
+      localStorage.setItem(`liked_${scriptId}`, 'true');
+      btn.disabled = true;
+      btn.style.opacity = 0.6;
+    });
   });
 }
 
-loadPoints();
-loadScripts();
+// البحث عند الزر أو أثناء الكتابة
+function handleSearch() {
+  const query = document.getElementById('searchScripts').value.toLowerCase().trim();
+  updateURLQuery(query);
+  loadScripts();
+}
+
+// تهيئة الصفحة
+window.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('searchScripts');
+  const searchBtn = document.getElementById('searchButton');
+
+  // عرض قيمة البحث لو موجودة في الرابط
+  if(searchInput) searchInput.value = getSearchQuery();
+
+  // البحث مباشر أثناء الكتابة
+  if(searchInput) searchInput.addEventListener('input', handleSearch);
+
+  // البحث عند الضغط على الزر
+  if(searchBtn) searchBtn.addEventListener('click', handleSearch);
+
+  // تحميل السكربتات أول مرة
+  loadScripts();
+});
+
+window.loadScripts = loadScripts;
+window.copyScript = copyScript;
 
 </script>
-
 </body>
 </html>
