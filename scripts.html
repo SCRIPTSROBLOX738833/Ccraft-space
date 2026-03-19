@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>قائمة السكربتات</title>
 <link rel="stylesheet" href="styles.css">
+<style>
+  .star { cursor:pointer; font-size:20px; color:#ccc; margin-right:2px; }
+  .script-card { border:1px solid #30363d; padding:1rem; margin-bottom:1rem; border-radius:8px; background:#161b22; }
+  .script-card h3 { margin:0; }
+  .script-card button { margin-top:0.5rem; }
+</style>
 </head>
 <body>
 <header>
@@ -24,7 +30,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -39,7 +44,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// نسخ السكربت
 window.copyScript = (id) => {
   const codeEl = document.getElementById(`code-${id}`);
   if(!codeEl) return alert("خطأ في السكربت");
@@ -48,7 +52,6 @@ window.copyScript = (id) => {
     .catch(() => alert("حدث خطأ أثناء النسخ"));
 };
 
-// تحديث الرابط عند البحث
 function updateURLQuery(query) {
   const url = new URL(window.location);
   if(query) url.searchParams.set('search', query);
@@ -56,13 +59,11 @@ function updateURLQuery(query) {
   window.history.replaceState(null, '', url);
 }
 
-// قراءة البحث من الرابط
 function getSearchQuery() {
   const params = new URLSearchParams(window.location.search);
   return params.get('search') ? params.get('search').toLowerCase().trim() : '';
 }
 
-// تحميل السكربتات وعرضها
 async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
@@ -76,7 +77,7 @@ async function loadScripts() {
   const query = getSearchQuery();
   let anyMatch = false;
 
-  Object.keys(scripts).forEach(id => {
+  for(const id of Object.keys(scripts)) {
     const s = scripts[id];
     const title = s.title.toLowerCase();
     const category = s.category.toLowerCase();
@@ -87,15 +88,20 @@ async function loadScripts() {
     div.dataset.id = id;
     div.innerHTML = `
       <h3>${s.title}</h3>
-      <pre id="code-${id}">${s.code}</pre>
       <p>Category: ${s.category}</p>
+      <pre id="code-${id}">${s.code}</pre>
       <button onclick="copyScript('${id}')">نسخ السكربت</button>
+      <button onclick="location.href='script.html?id=${id}'">عرض السكربت</button>
       <button class="like-btn" data-id="${id}">👍 Like (<span class="like-count">${s.likes || 0}</span>)</button>
+      <div class="rating" data-id="${id}">
+        ${[1,2,3,4,5].map(n=>`<span class="star" data-value="${n}">&#9733;</span>`).join('')}
+        <span class="avg-rating">(${s.votes ? (s.rating/s.votes).toFixed(1) : 0})</span>
+      </div>
     `;
     div.style.display = match ? "block" : "none";
     if(match) anyMatch = true;
     list.appendChild(div);
-  });
+  }
 
   if(!anyMatch) {
     const p = document.createElement('p');
@@ -105,64 +111,80 @@ async function loadScripts() {
     list.appendChild(p);
   }
 
-  // ربط Like لكل زر مع منع النقر مرتين
   document.querySelectorAll('.like-btn').forEach(btn => {
     const scriptId = btn.dataset.id;
-
-    // تعطيل الزر إذا المستخدم عمل Like سابقاً
     if(localStorage.getItem(`liked_${scriptId}`)) {
       btn.disabled = true;
       btn.style.opacity = 0.6;
     }
-
     btn.addEventListener('click', async () => {
       if(localStorage.getItem(`liked_${scriptId}`)) return;
-
       const likeRef = ref(db, `scripts/${scriptId}/likes`);
-      const snapshot = await get(likeRef);
-      let likes = 0;
-      if(snapshot.exists()) likes = snapshot.val();
+      const snap = await get(likeRef);
+      let likes = snap.exists() ? snap.val() : 0;
       likes += 1;
       await set(likeRef, likes);
-
       btn.querySelector('.like-count').innerText = likes;
-
-      // تسجيل Like في localStorage
       localStorage.setItem(`liked_${scriptId}`, 'true');
       btn.disabled = true;
       btn.style.opacity = 0.6;
     });
   });
+
+  document.querySelectorAll('.rating').forEach(async div => {
+    const scriptId = div.dataset.id;
+    const stars = div.querySelectorAll('.star');
+    const avgEl = div.querySelector('.avg-rating');
+
+    const snap = await get(ref(db, `scripts/${scriptId}`));
+    if(snap.exists()) {
+      const data = snap.val();
+      const avg = data.votes ? data.rating / data.votes : 0;
+      stars.forEach((star, idx) => {
+        star.style.color = (idx+1) <= avg ? 'gold' : '#ccc';
+      });
+      avgEl.innerText = `(${avg.toFixed(1)})`;
+    }
+
+    stars.forEach(star => {
+      star.addEventListener('click', async () => {
+        if(localStorage.getItem(`rated_${scriptId}`)) return;
+        const value = Number(star.dataset.value);
+        const ratingRef = ref(db, `scripts/${scriptId}`);
+        const snap = await get(ratingRef);
+        let rating = snap.exists() ? snap.val().rating || 0 : 0;
+        let votes = snap.exists() ? snap.val().votes || 0 : 0;
+        rating += value;
+        votes += 1;
+        await set(ratingRef, { ...snap.val(), rating, votes });
+        localStorage.setItem(`rated_${scriptId}`, 'true');
+        const avg = rating / votes;
+        stars.forEach((s, idx) => {
+          s.style.color = (idx+1) <= avg ? 'gold' : '#ccc';
+        });
+        avgEl.innerText = `(${avg.toFixed(1)})`;
+      });
+    });
+  });
 }
 
-// البحث عند الزر أو أثناء الكتابة
 function handleSearch() {
   const query = document.getElementById('searchScripts').value.toLowerCase().trim();
   updateURLQuery(query);
   loadScripts();
 }
 
-// تهيئة الصفحة
 window.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchScripts');
   const searchBtn = document.getElementById('searchButton');
-
-  // عرض قيمة البحث لو موجودة في الرابط
   if(searchInput) searchInput.value = getSearchQuery();
-
-  // البحث مباشر أثناء الكتابة
   if(searchInput) searchInput.addEventListener('input', handleSearch);
-
-  // البحث عند الضغط على الزر
   if(searchBtn) searchBtn.addEventListener('click', handleSearch);
-
-  // تحميل السكربتات أول مرة
   loadScripts();
 });
 
 window.loadScripts = loadScripts;
 window.copyScript = copyScript;
-
 </script>
 </body>
 </html>
