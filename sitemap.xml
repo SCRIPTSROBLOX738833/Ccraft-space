@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-<url>
-  <loc>https://ccraftspace.ddnsking.com/</loc>
-</url>
-
-<url>
-  <loc>https://ccraftspace.ddnsking.com/index.html</loc>
-</url>
-
-<url>
-  <loc>https://ccraftspace.ddnsking.com/scripts.html</loc>
-</url>
+  <url>
+    <loc>https://ccraftspace.ddnsking.com/</loc>
+  </url>
 
   <url>
-  <loc>https://ccraftspace.ddnsking.com/help.html</loc>
-</url>
-    
+    <loc>https://ccraftspace.ddnsking.com/scripts.html</loc>
+  </url>
+
+  <url>
+    <loc>https://ccraftspace.ddnsking.com/help.html</loc>
+  </url>
+
 </urlset>
