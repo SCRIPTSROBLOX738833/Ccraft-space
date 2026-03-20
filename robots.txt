@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://ccraftspace.ddnsking.com/sitemap.xml
+Ads: https://ccraftspace.ddnsking.com/ads.txt
