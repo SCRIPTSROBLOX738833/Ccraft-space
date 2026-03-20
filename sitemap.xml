@@ -1,16 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+import { getDatabase, ref, get, child } from "firebase/database";
+import fs from "fs"; // Node.js فقط
 
-  <url>
-    <loc>https://ccraftspace.ddnsking.com/</loc>
-  </url>
+const db = getDatabase(app);
 
-  <url>
-    <loc>https://ccraftspace.ddnsking.com/scripts.html</loc>
-  </url>
+async function generateSitemap() {
+  // نفترض إن كل السكربتات مخزنة تحت "scripts"
+  const scriptsRef = ref(db, "scripts");
+  const snapshot = await get(scriptsRef);
 
-  <url>
-    <loc>https://ccraftspace.ddnsking.com/help.html</loc>
-  </url>
+  if (!snapshot.exists()) {
+    console.log("No scripts found");
+    return;
+  }
 
-</urlset>
+  let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  sitemap += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+  snapshot.forEach((childSnapshot) => {
+    const id = childSnapshot.key; // معرّف السكربت
+    const lastMod = childSnapshot.val().lastModified || new Date().toISOString().split("T")[0];
+
+    sitemap += `  <url>\n`;
+    sitemap += `    <loc>https://ccraftspace.ddnsking.com/script.html?id=${id}</loc>\n`;
+    sitemap += `    <lastmod>${lastMod}</lastmod>\n`;
+    sitemap += `  </url>\n`;
+  });
+
+  sitemap += `</urlset>`;
+
+  // لو تستخدم Node.js، احفظ الملف
+  fs.writeFileSync("sitemap.xml", sitemap, "utf8");
+  console.log("Sitemap generated successfully!");
+}
+
+generateSitemap();
