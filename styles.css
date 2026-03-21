@@ -37,17 +37,119 @@ button:hover {
 }
 
 /* ===============================
-   Header & Navigation
+   Header & Navigation (Modified by LEX-Ω)
    =============================== */
 header {
     background: #161b22;
-    padding: 1rem 2rem;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column; /* ترتيب العناصر عمودياً */
+    align-items: center;    /* توسيط الشعار والأزرار */
+    gap: 1.5rem;            /* مسافة بين الشعار والأزرار */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    border-bottom: 1px solid #30363d;
+}
+
+/* حاوية الشعار لضبط الأبعاد */
+.brand-container {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    align-items: center;
+    width: 100%;
 }
+
+/* تنسيق صورة الشعار لمنع التشويه */
+.site-logo {
+    max-width: 220px;       /* حجم متوازن للشعار */
+    height: auto;           /* الحفاظ على التناسب */
+    border-radius: 12px;    /* زوايا متناسقة مع الأزرار */
+    filter: drop-shadow(0 0 10px rgba(88, 166, 255, 0.2)); /* وهج أزرق خفيف */
+    transition: transform 0.3s ease;
+}
+
+.site-logo:hover {
+    transform: scale(1.02); /* حركة تفاعلية بسيطة */
+}
+
+/* حاوية الأزرار داخل الـ Header */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+/* ===============================
+   Main Navigation Buttons (تحديث التنسيق)
+   =============================== */
+.nav-button {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    min-width: 140px; /* توحيد حجم الأزرار قليلاً */
+}
+
+/* زر نشر السكربتات */
+#publish-btn {
+    background: linear-gradient(135deg, #ff7f50, #ff4500);
+    color: #fff;
+}
+
+/* زر عرض السكربتات */
+#view-btn {
+    background: linear-gradient(135deg, #1e90ff, #00bfff);
+    color: #fff;
+}
+
+/* زر الهاكات */
+#hacks-btn {
+    background: linear-gradient(135deg, #32cd32, #228b22);
+    color: #fff;
+}
+
+/* زر الدعم الفني (إضافة مقترحة) */
+#help-btn {
+    background: linear-gradient(135deg, #8b949e, #484f58);
+    color: #fff;
+}
+
+.nav-button:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+}
+
+/* ===============================
+   Responsive (تعديل للموبايل)
+   =============================== */
+@media (max-width: 768px) {
+    header {
+        padding: 1rem;
+    }
+    
+    .site-logo {
+        max-width: 160px; /* تصغير الشعار على الموبايل */
+    }
+
+    nav {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    .nav-button {
+        width: 100%;
+        margin: 0;
+    }
+}
+
 
 /* ===============================
    Main Content
