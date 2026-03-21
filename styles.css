@@ -37,38 +37,16 @@ button:hover {
 }
 
 /* ===============================
-   Header & Navigation (تعديل LEX-Ω لتوسيط الصورة)
+   Header & Navigation
    =============================== */
 header {
     background: #161b22;
-    padding: 2rem 1rem;
-    display: flex;
-    flex-direction: column; /* ترتيب عمودي لوضع الصورة فوق الأزرار */
-    align-items: center;    /* توسيط كل شيء */
-    gap: 1.5rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-}
-
-/* حاوية الصورة المضافة */
-.brand-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.site-logo {
-    max-width: 220px; /* حجم مريح ومثالي */
-    height: auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-/* حاوية الأزرار داخل الهيدر */
-nav {
+    padding: 1rem 2rem;
     display: flex;
     justify-content: center;
     gap: 1rem;
     flex-wrap: wrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 
 /* ===============================
@@ -128,6 +106,34 @@ input:focus, select:focus, textarea:focus {
     box-shadow: 0 10px 20px rgba(0,0,0,0.6);
 }
 
+.script-card h3 {
+    margin-bottom: 0.5rem;
+}
+
+.script-card pre {
+    background: #0d1117;
+    padding: 1rem;
+    border-radius: 10px;
+    overflow-x: auto;
+    margin-bottom: 0.5rem;
+    color: #c9d1d9;
+    font-size: 0.95rem;
+}
+
+.script-card button {
+    background: #58a6ff;
+    color: #0d1117;
+    font-weight: bold;
+    margin-top: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.script-card button:hover {
+    background: #1f6feb;
+    color: #fff;
+    transform: scale(1.05);
+}
+
 /* ===============================
    Ratings
    =============================== */
@@ -145,14 +151,39 @@ input:focus, select:focus, textarea:focus {
     transition: transform 0.2s ease;
 }
 
+.star:hover {
+    transform: scale(1.3);
+}
+
+.rating-info {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+    color: #8b949e;
+}
+
 /* ===============================
    Responsive
    =============================== */
 @media (max-width: 768px) {
-    main { padding: 1rem; }
-    header { gap: 1rem; }
-    .site-logo { max-width: 160px; } /* تصغير الشعار للموبايل */
+    main {
+        padding: 1rem;
+    }
+
+    header {
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .script-card pre {
+        font-size: 0.85rem;
+    }
+
+    button {
+        width: 100%;
+    }
 }
+
+
 
 /* ===============================
    Main Navigation Buttons
@@ -162,6 +193,7 @@ input:focus, select:focus, textarea:focus {
     font-weight: 700;
     font-size: 1.1rem;
     padding: 0.8rem 2rem;
+    margin: 0 0.5rem;
     border-radius: 12px;
     border: none;
     cursor: pointer;
@@ -169,15 +201,47 @@ input:focus, select:focus, textarea:focus {
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-#publish-btn { background: linear-gradient(135deg, #ff7f50, #ff4500); color: #fff; }
-#publish-btn:hover { background: linear-gradient(135deg, #ff6333, #ff2200); transform: translateY(-3px) scale(1.05); }
+/* زر نشر السكربتات */
+#publish-btn {
+    background: linear-gradient(135deg, #ff7f50, #ff4500);
+    color: #fff;
+}
 
-#view-btn { background: linear-gradient(135deg, #1e90ff, #00bfff); color: #fff; }
-#view-btn:hover { background: linear-gradient(135deg, #1c86ee, #009acd); transform: translateY(-3px) scale(1.05); }
+#publish-btn:hover {
+    background: linear-gradient(135deg, #ff6333, #ff2200);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
 
-#hacks-btn { background: linear-gradient(135deg, #32cd32, #228b22); color: #fff; }
-#hacks-btn:hover { background: linear-gradient(135deg, #2eb82e, #196619); transform: translateY(-3px) scale(1.05); }
+/* زر عرض السكربتات */
+#view-btn {
+    background: linear-gradient(135deg, #1e90ff, #00bfff);
+    color: #fff;
+}
 
+#view-btn:hover {
+    background: linear-gradient(135deg, #1c86ee, #009acd);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+/* زر الهاكات */
+#hacks-btn {
+    background: linear-gradient(135deg, #32cd32, #228b22);
+    color: #fff;
+}
+
+#hacks-btn:hover {
+    background: linear-gradient(135deg, #2eb82e, #196619);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+/* Responsive للأزرار */
 @media (max-width: 768px) {
-    .nav-button { width: 100%; margin: 0.5rem 0; font-size: 1rem; }
+    .nav-button {
+        width: 100%;
+        margin: 0.5rem 0;
+        font-size: 1rem;
+    }
 }
