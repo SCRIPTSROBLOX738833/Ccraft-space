@@ -1,31 +1,146 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CCRAFT SPACE | الرئيسية</title>
-  <link rel="stylesheet" href="styles.css">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9131038282158705" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCRAFT SPACE | الرئيسية</title>
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9131038282158705" crossorigin="anonymous"></script>
+
+    <style>
+        /* ===============================
+           الستايل القديم المعتمد (LEX-Ω Update)
+           =============================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Header & Logo Setup --- */
+        header {
+            background: #161b22;
+            padding: 2.5rem 1rem;
+            display: flex;
+            flex-direction: column; /* وضع الشعار فوق الأزرار */
+            align-items: center;    /* توسيط كل شيء */
+            gap: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border-bottom: 1px solid #30363d;
+        }
+
+        .brand-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .site-logo {
+            max-width: 240px; /* حجم مريح للعين */
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .site-logo:hover {
+            transform: scale(1.03);
+        }
+
+        /* --- Navigation Buttons --- */
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            max-width: 1000px;
+        }
+
+        .nav-button {
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 0.8rem 1.8rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            color: #fff;
+            min-width: 150px;
+        }
+
+        /* ألوان الأزرار المتدرجة (الستايل القديم) */
+        #publish-btn { background: linear-gradient(135deg, #ff7f50, #ff4500); }
+        #view-btn { background: linear-gradient(135deg, #1e90ff, #00bfff); }
+        #hacks-btn { background: linear-gradient(135deg, #32cd32, #228b22); }
+        
+        /* أزرار إضافية بتنسيق متناسق */
+        #help-btn { background: linear-gradient(135deg, #8b949e, #484f58); }
+        #rank-btn { background: linear-gradient(135deg, #6e40aa, #4c2b91); }
+
+        .nav-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            filter: brightness(1.1);
+        }
+
+        /* --- Main Content --- */
+        main {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        h2 {
+            color: #58a6ff;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #8b949e;
+            font-size: 1.1rem;
+        }
+
+        /* --- Responsive Section --- */
+        @media (max-width: 768px) {
+            header { padding: 1.5rem 1rem; }
+            .site-logo { max-width: 180px; }
+            nav { flex-direction: column; width: 100%; padding: 0 1rem; }
+            .nav-button { width: 100%; margin: 0.3rem 0; }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="brand-container">
-      <img src="https://i.pinimg.com/736x/8f/3e/32/8f3e3288593452674395874395874395.jpg" alt="CCRAFT SPACE" class="site-logo">
-    </div>
-    <nav>
-      <button id="publish-btn" class="nav-button" onclick="location.href='publish.html'">نشر سكربتات</button>
-      <button id="view-btn" class="nav-button" onclick="location.href='scripts.html'">عرض السكربتات</button>
-      <button id="hacks-btn" class="nav-button" onclick="location.href='hacks.html'">هاكات</button>
-      <button id="help-btn" class="nav-button" onclick="location.href='help.html'">الدعم الفني</button>
-      <button id="rank-btn" class="nav-button" onclick="location.href='ranking.html'">ترتيب المستخدمين</button>
-    </nav>
-  </header>
 
-  <main>
-    <section style="text-align: center; margin-top: 2rem;">
-      <h2>مرحباً بك في CCRAFT SPACE</h2>
-      <p>المنصة الموثوقة لسكربتات وهاكات روبلوكس.</p>
-    </section>
-  </main>
+    <header>
+        <div class="brand-container">
+            <img src="https://i.pinimg.com/originals/8f/3e/32/8f3e3288593452674395874395874395.jpg" alt="CCRAFT SPACE" class="site-logo">
+        </div>
+        
+        <nav>
+            <button id="publish-btn" class="nav-button" onclick="location.href='publish.html'">نشر سكربتات</button>
+            <button id="view-btn" class="nav-button" onclick="location.href='scripts.html'">عرض السكربتات</button>
+            <button id="hacks-btn" class="nav-button" onclick="location.href='hacks.html'">هاكات</button>
+            <button id="help-btn" class="nav-button" onclick="location.href='help.html'">الدعم الفني</button>
+            <button id="rank-btn" class="nav-button" onclick="location.href='ranking.html'">ترتيب المستخدمين</button>
+        </nav>
+    </header>
+
+    <main>
+        <h2>مرحباً بك في CCRAFT SPACE</h2>
+        <p>المنصة المعتمدة لنشر وعرض أحدث سكريبتات روبلوكس المفحوصة والموثوقة.</p>
+    </main>
+
 </body>
 </html>
