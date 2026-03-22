@@ -3,54 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الإدارة</title>
+<title>تسجيل الدخول / لوحة الإدارة</title>
 <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<!-- تسجيل دخول الادمن -->
-<div id="loginDiv">
-  <h2>تسجيل دخول الادمن</h2>
-  <input type="email" id="email" placeholder="البريد الإلكتروني">
-  <input type="password" id="password" placeholder="كلمة المرور">
-  <button id="loginBtn">دخول</button>
-  <p id="loginError" style="color:red;"></p>
-</div>
-
-<!-- لوحة الإدارة -->
-<div id="adminPanel" style="display:none;">
-  <h1>لوحة الإدارة</h1>
-
-  <h3>نشر سكربت جديد</h3>
-  <input type="text" id="newTitle" placeholder="عنوان السكربت">
-  <textarea id="newCode" placeholder="كود السكربت" rows="4"></textarea>
-  <select id="newCategory">
-    <option value="">اختر القسم</option>
-    <option value="game">Game Scripts</option>
-    <option value="admin">Admin Scripts</option>
-    <option value="سكربت من الادارة">سكربت من الادارة</option>
-  </select>
-  <button id="addScriptBtn">نشر</button>
-
-  <hr>
-
-  <h3>جميع السكربتات</h3>
-  <ul id="scriptsList"></ul>
-
-  <hr>
-
-  <h3>شات المستخدمين</h3>
-  <div id="chatContainer" style="max-height:300px; overflow:auto; background:#161b22; padding:1rem; border-radius:10px;"></div>
-
-  <button id="logoutBtn" style="margin-top:1rem;">تسجيل خروج</button>
-</div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, push, set, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, getIdTokenResult } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getDatabase, ref, get, set, push, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-// Firebase Config
+// --- Firebase Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -63,51 +23,139 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 const auth = getAuth(app);
+const db = getDatabase(app);
 
-// عناصر HTML
-const loginDiv = document.getElementById("loginDiv");
-const adminPanel = document.getElementById("adminPanel");
-const loginError = document.getElementById("loginError");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const scriptsList = document.getElementById("scriptsList");
-const chatContainer = document.getElementById("chatContainer");
+// --- عناصر HTML ---
+const loginDiv = document.createElement("div");
+const adminPanel = document.createElement("div");
+const userPanel = document.createElement("div");
 
-// --- تسجيل دخول الادمن ---
-document.getElementById("loginBtn").addEventListener("click", async ()=>{
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  if(!email || !password) return loginError.textContent="ادخل البريد وكلمة المرور";
+// ---- إعداد loginDiv ----
+loginDiv.innerHTML=`
+<h2>تسجيل الدخول / إنشاء حساب</h2>
+<input type="email" id="email" placeholder="البريد الإلكتروني"><br><br>
+<input type="password" id="password" placeholder="كلمة المرور"><br><br>
+<button id="loginBtn">دخول</button>
+<button id="registerBtn">إنشاء حساب</button>
+<p id="loginError" style="color:red;"></p>
+`;
+document.body.appendChild(loginDiv);
+
+// ---- إعداد userPanel ----
+userPanel.innerHTML=`
+<h1>مرحبا بالمستخدم</h1>
+<button id="userLogoutBtn">تسجيل خروج</button>
+`;
+userPanel.style.display="none";
+document.body.appendChild(userPanel);
+
+// ---- إعداد adminPanel ----
+adminPanel.innerHTML=`
+<h1>لوحة الإدارة</h1>
+<h3>نشر سكربت جديد</h3>
+<input type="text" id="newTitle" placeholder="عنوان السكربت">
+<textarea id="newCode" placeholder="كود السكربت" rows="4"></textarea>
+<select id="newCategory">
+  <option value="">اختر القسم</option>
+  <option value="game">Game Scripts</option>
+  <option value="admin">Admin Scripts</option>
+  <option value="سكربت من الادارة">سكربت من الإدارة</option>
+</select>
+<button id="addScriptBtn">نشر</button>
+<hr>
+<h3>جميع السكربتات</h3>
+<ul id="scriptsList"></ul>
+<hr>
+<h3>شات المستخدمين</h3>
+<div id="chatContainer" style="max-height:300px; overflow:auto; background:#161b22; padding:1rem; border-radius:10px;"></div>
+<button id="adminLogoutBtn" style="margin-top:1rem;">تسجيل خروج</button>
+`;
+adminPanel.style.display="none";
+document.body.appendChild(adminPanel);
+
+// --- تسجيل دخول ---
+document.getElementById("loginBtn").onclick = async ()=>{
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const loginError = document.getElementById("loginError");
+  if(!email || !password){ loginError.textContent="ادخل البريد وكلمة المرور"; return; }
 
   try{
-    await signInWithEmailAndPassword(auth,email,password);
+    const userCredential = await signInWithEmailAndPassword(auth,email,password);
+    const tokenResult = await getIdTokenResult(userCredential.user);
+    if(tokenResult.claims.admin){
+      // ادمن
+      loginDiv.style.display="none";
+      adminPanel.style.display="block";
+      loadScripts();
+      loadChat();
+    } else {
+      // مستخدم عادي
+      loginDiv.style.display="none";
+      userPanel.style.display="block";
+    }
   }catch(err){
-    loginError.textContent="خطأ في البريد الإلكتروني أو كلمة المرور";
+    loginError.textContent="خطأ في البريد أو كلمة المرور";
   }
-});
+};
+
+// --- تسجيل مستخدم جديد ---
+document.getElementById("registerBtn").onclick = async ()=>{
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const loginError = document.getElementById("loginError");
+  if(!email || !password){ loginError.textContent="ادخل البريد وكلمة المرور"; return; }
+
+  try{
+    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+    alert("تم إنشاء الحساب بنجاح، الآن سجل الدخول");
+  }catch(err){
+    loginError.textContent="حدث خطأ أو البريد مستخدم بالفعل";
+  }
+};
 
 // --- تسجيل خروج ---
-document.getElementById("logoutBtn").addEventListener("click", async ()=>{
-  await signOut(auth);
-  window.location.reload();
-});
+document.getElementById("userLogoutBtn").onclick = async ()=>{ await signOut(auth); window.location.reload(); };
+document.getElementById("adminLogoutBtn").onclick = async ()=>{ await signOut(auth); window.location.reload(); };
 
-// --- مراقبة حالة تسجيل الدخول ---
-onAuthStateChanged(auth, user=>{
+// --- مراقبة حالة تسجيل الدخول عند تحميل الصفحة ---
+onAuthStateChanged(auth, async (user)=>{
   if(user){
-    loginDiv.style.display="none";
-    adminPanel.style.display="block";
-    loadScripts();
-    loadChat();
-  }else{
+    const tokenResult = await getIdTokenResult(user);
+    if(tokenResult.claims.admin){
+      loginDiv.style.display="none";
+      adminPanel.style.display="block";
+      loadScripts();
+      loadChat();
+    } else {
+      loginDiv.style.display="none";
+      userPanel.style.display="block";
+    }
+  } else {
     loginDiv.style.display="block";
+    userPanel.style.display="none";
     adminPanel.style.display="none";
   }
 });
 
 // --- إدارة السكربتات ---
+const scriptsList = document.getElementById("scriptsList");
+document.getElementById("addScriptBtn").onclick = async ()=>{
+  const title = document.getElementById("newTitle").value.trim();
+  const code = document.getElementById("newCode").value.trim();
+  const category = document.getElementById("newCategory").value;
+  if(!title||!code||!category) return alert("مطلوب كل الحقول");
+
+  const newScriptRef = push(ref(db,"scripts"));
+  await set(newScriptRef,{ title, code, category, author:"سكربت من الإدارة", timestamp:Date.now() });
+
+  document.getElementById("newTitle").value="";
+  document.getElementById("newCode").value="";
+  document.getElementById("newCategory").value="";
+  loadScripts();
+};
+
 async function loadScripts(){
   scriptsList.innerHTML="";
   const snapshot = await get(ref(db,"scripts"));
@@ -137,23 +185,6 @@ async function loadScripts(){
   } else scriptsList.textContent="لا يوجد سكربتات حالياً";
 }
 
-document.getElementById("addScriptBtn").addEventListener("click", async ()=>{
-  const title = document.getElementById("newTitle").value.trim();
-  const code = document.getElementById("newCode").value.trim();
-  const category = document.getElementById("newCategory").value;
-  if(!title||!code||!category) return alert("مطلوب كل الحقول");
-
-  const newScriptRef = push(ref(db,"scripts"));
-  await set(newScriptRef,{
-    title, code, category, author:"سكربت من الإدارة", timestamp:Date.now()
-  });
-
-  document.getElementById("newTitle").value="";
-  document.getElementById("newCode").value="";
-  document.getElementById("newCategory").value="";
-  loadScripts();
-});
-
 function editScript(key, script){
   const newTitle = prompt("عدل عنوان السكربت:", script.title);
   const newCode = prompt("عدل كود السكربت:", script.code);
@@ -166,6 +197,7 @@ function editScript(key, script){
 }
 
 // --- إدارة الشات ---
+const chatContainer = document.getElementById("chatContainer");
 async function loadChat(){
   chatContainer.innerHTML="";
   const chatRef = ref(db,"chat");
@@ -203,5 +235,7 @@ async function loadChat(){
   });
 }
 </script>
+</head>
+<body>
 </body>
 </html>
