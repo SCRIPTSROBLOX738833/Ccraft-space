@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شات مباشر</title>
+<style>
+  body { font-family: Arial, sans-serif; display:flex; flex-direction:column; height:100vh; margin:0; }
+  #chatContainer { flex:1; overflow-y:auto; border:1px solid #000; padding:10px; margin:10px; background:#f9f9f9; }
+  #messageForm { display:flex; padding:10px; }
+  #messageInput { flex:1; padding:8px; }
+  #sendBtn { padding:8px 12px; }
+  .message { margin-bottom:8px; }
+  .message strong { color:#333; }
+</style>
+</head>
+<body>
+
+<div id="chatContainer"></div>
+
+<form id="messageForm">
+  <input type="text" id="messageInput" placeholder="اكتب رسالتك..." required />
+  <button type="submit" id="sendBtn">ارسال</button>
+</form>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+// بيانات Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+  authDomain: "ccraft-space-scripts.firebaseapp.com",
+  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+  projectId: "ccraft-space-scripts",
+  storageBucket: "ccraft-space-scripts.firebasestorage.app",
+  messagingSenderId: "816078027492",
+  appId: "1:816078027492:web:6472cce474078fd4d90af1",
+  measurementId: "G-MHDM7YYYBN"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getDatabase(app);
+
+const chatContainer = document.getElementById("chatContainer");
+const messageForm = document.getElementById("messageForm");
+const messageInput = document.getElementById("messageInput");
+
+// اطلب من المستخدم كتابة اسمه مرة واحدة فقط
+let username = localStorage.getItem("chatUsername");
+if (!username) {
+  username = prompt("اكتب اسمك:");
+  if (!username) username = "ضيف";
+  localStorage.setItem("chatUsername", username);
+}
+
+// مرجع قاعدة البيانات للشات
+const chatRef = ref(db, "chat");
+
+// عرض الرسائل الجديدة تلقائياً
+onChildAdded(chatRef, (snapshot) => {
+  const msg = snapshot.val();
+  const div = document.createElement("div");
+  div.classList.add("message");
+  div.innerHTML = `<strong>${msg.user}:</strong> ${msg.text}`;
+  chatContainer.appendChild(div);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+});
+
+// ارسال رسالة
+messageForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const text = messageInput.value.trim();
+  if (text) {
+    push(chatRef, { user: username, text });
+    messageInput.value = "";
+  }
+});
+</script>
+
+</body>
+</html>
