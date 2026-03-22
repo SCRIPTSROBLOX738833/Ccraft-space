@@ -4,99 +4,92 @@
 <meta charset="UTF-8">
 <title>تسجيل الدخول</title>
 <link rel="stylesheet" href="styles.css">
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
     authDomain: "ccraft-space-scripts.firebaseapp.com",
-    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-    projectId: "ccraft-space-scripts",
-    storageBucket: "ccraft-space-scripts.firebasestorage.app",
-    messagingSenderId: "816078027492",
-    appId: "1:816078027492:web:6472cce474078fd4d90af1",
-    measurementId: "G-MHDM7YYYBN"
+    projectId: "ccraft-space-scripts"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const auth = getAuth(app);
 
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
-const registerBtn = document.getElementById("registerBtn");
+const adminEmail = "ضع_ايميل_الادمن_هنا";
 
-// زر تسجيل خروج سيتم إضافته ديناميكياً
-let logoutBtn = null;
-
-function showLogoutButton() {
-    emailInput.style.display = "none";
-    passwordInput.style.display = "none";
-    loginBtn.style.display = "none";
-    registerBtn.style.display = "none";
-
-    if(!logoutBtn){
-        logoutBtn = document.createElement("button");
-        logoutBtn.innerText = "تسجيل خروج";
-        logoutBtn.onclick = () => {
-            localStorage.removeItem("currentUser");
-            window.location.reload();
-        };
-        document.body.appendChild(logoutBtn);
-    } else {
-        logoutBtn.style.display = "block";
-    }
-}
-
-// التحقق إذا المستخدم مسجل دخول مسبقاً
-let currentUserId = localStorage.getItem("currentUser");
-if(currentUserId){
-    showLogoutButton();
-}
-
-// تسجيل الدخول
 window.login = async function() {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-    if (!email || !password) return alert("ادخل البريد وكلمة المرور");
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    const usersSnap = await get(ref(db, "users"));
-    const users = usersSnap.val() || {};
-    const userId = Object.keys(users).find(id => users[id].email === email && users[id].password === password);
+    if (!email || !password) {
+        alert("ادخل البريد وكلمة المرور");
+        return;
+    }
 
-    if (userId) {
-        localStorage.setItem("currentUser", userId);
-        window.location.href = "index.html";
-    } else {
-        alert("بيانات غير صحيحة، حاول مرة أخرى");
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        if (user.email === adminEmail) {
+            window.location.href = "admin.html";
+        } else {
+            window.location.href = "index.html";
+        }
+
+    } catch {
+        alert("بيانات غير صحيحة");
     }
 };
 
-// إنشاء حساب جديد
 window.register = async function() {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-    if (!email || !password) return alert("ادخل البريد وكلمة المرور");
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    const usersSnap = await get(ref(db, "users"));
-    const users = usersSnap.val() || {};
-    const exists = Object.values(users).some(u => u.email === email);
+    if (!email || !password) {
+        alert("ادخل البريد وكلمة المرور");
+        return;
+    }
 
-    if (exists) return alert("هذا البريد مستخدم بالفعل");
-
-    const newUserRef = push(ref(db, "users"));
-    await set(newUserRef, { email, password });
-    localStorage.setItem("currentUser", newUserRef.key);
-    window.location.href = "index.html";
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        window.location.href = "index.html";
+    } catch {
+        alert("فشل إنشاء الحساب");
+    }
 };
+
+window.logout = async function() {
+    await signOut(auth);
+    location.reload();
+};
+
+onAuthStateChanged(auth, user => {
+    if(user){
+        console.log("مسجل دخول:", user.email);
+    }
+});
 </script>
 </head>
+
 <body>
+
 <h1>تسجيل الدخول أو إنشاء حساب</h1>
+<p>هذه صفحة تسجيل دخول خاصة بموقع CCRAFT SPACE</p>
+
 <input type="email" id="email" placeholder="البريد الإلكتروني"><br><br>
 <input type="password" id="password" placeholder="كلمة المرور"><br><br>
-<button id="loginBtn" onclick="login()">تسجيل الدخول</button>
-<button id="registerBtn" onclick="register()">إنشاء حساب</button>
+
+<button onclick="login()">تسجيل الدخول</button>
+<button onclick="register()">إنشاء حساب</button>
+
 </body>
 </html>
