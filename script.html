@@ -19,16 +19,19 @@
 
   <h2>التعليقات</h2>
   <div id="comments"></div>
+
   <div id="addComment">
-    <input type="text" id="commentInput" placeholder="اكتب تعليقك...">
+    <input type="text" id="commentInput" placeholder="اكتب تعليقك..." />
     <button id="submitComment">إرسال</button>
   </div>
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
+// إعداد Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
     authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -42,6 +45,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
 const params = new URLSearchParams(window.location.search);
 const scriptId = params.get('id');
@@ -50,64 +54,58 @@ const titleEl = document.getElementById('title');
 const codeEl = document.getElementById('code');
 const authorEl = document.getElementById('author');
 const copyBtn = document.getElementById('copyBtn');
+
 const commentsDiv = document.getElementById('comments');
 const commentInput = document.getElementById('commentInput');
 const submitComment = document.getElementById('submitComment');
 
-let currentUserId = localStorage.getItem("currentUser");
-if(!currentUserId) window.location.href="login.html";
+let currentUser = null;
 
-async function getCurrentUserName() {
-    const snap = await get(ref(db, `users/${currentUserId}`));
-    if(!snap.exists()) {
-        localStorage.removeItem("currentUser");
+// تحقق المستخدم
+onAuthStateChanged(auth, user => {
+    if(!user){
+        alert("يجب تسجيل الدخول أولاً");
         window.location.href="login.html";
         return;
     }
-    return snap.val().email.split("@")[0];
-}
-
-// تحميل السكربت
-async function loadScript(){
-  const snap = await get(ref(db, `scripts/${scriptId}`));
-  if(!snap.exists()){ titleEl.innerText="هذا السكربت غير موجود"; return; }
-  const data = snap.val();
-  titleEl.innerText = data.title;
-  authorEl.innerText = `المؤلف: ${data.author || "مجهول"}`;
-  codeEl.innerText = data.code;
-  loadComments();
-}
-
-// تحميل التعليقات
-async function loadComments(){
-  commentsDiv.innerHTML='';
-  const snap = await get(ref(db, `scripts/${scriptId}/comments`));
-  if(!snap.exists()) return;
-  Object.values(snap.val()).forEach(c=>{
-    const div = document.createElement('div');
-    div.innerText=`${c.name}: ${c.text}`;
-    commentsDiv.appendChild(div);
-  });
-}
-
-// نسخ السكربت
-copyBtn.addEventListener('click', ()=>{
-  navigator.clipboard.writeText(codeEl.innerText).then(()=>alert("تم نسخ السكربت!"));
+    currentUser = user;
+    loadScript();
 });
+
+async function loadScript(){
+    const snap = await get(ref(db, `scripts/${scriptId}`));
+    if(!snap.exists()){ titleEl.innerText="هذا السكربت غير موجود"; return; }
+    const data = snap.val();
+    titleEl.innerText = data.title;
+    authorEl.innerText = `المؤلف: ${data.author || "مجهول"}`;
+    codeEl.innerText = data.code;
+    loadComments();
+}
+
+function loadComments(){
+    commentsDiv.innerHTML='';
+    const commentsRef = ref(db, `scripts/${scriptId}/comments`);
+    onChildAdded(commentsRef, snapshot => {
+        const c = snapshot.val();
+        const div = document.createElement('div');
+        div.innerText = `${c.name}: ${c.text}`;
+        commentsDiv.appendChild(div);
+    });
+}
 
 // إرسال تعليق
-submitComment.addEventListener('click', async ()=>{
-  const text = commentInput.value.trim();
-  if(!text) return alert("مطلوب كتابة نص التعليق!");
-  const username = await getCurrentUserName();
-  if(!username) return;
-  const commentsRef = ref(db, `scripts/${scriptId}/comments`);
-  await push(commentsRef, { name: username, text });
-  commentInput.value='';
-  loadComments();
+submitComment.addEventListener('click', async () => {
+    const text = commentInput.value.trim();
+    if(!text) return alert("مطلوب كتابة نص التعليق!");
+    await push(ref(db, `scripts/${scriptId}/comments`), {
+        name: currentUser.email.split("@")[0],
+        text
+    });
+    commentInput.value='';
 });
-
-loadScript();
+copyBtn.addEventListener('click', ()=>{
+    navigator.clipboard.writeText(codeEl.innerText).then(()=>alert("تم نسخ السكربت!"));
+});
 </script>
 </body>
 </html>
