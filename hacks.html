@@ -44,9 +44,7 @@ const statusText = document.getElementById("status");
 let androidLink = "";
 let iosLink = "";
 
-// جلب الروابط من Firebase مع Debug كامل
-statusText.textContent = "جارٍ تحميل الروابط 
-  ...";
+// جلب الروابط من Firebase
 get(ref(db, "delta"))
   .then(snapshot => {
     console.log("Snapshot data:", snapshot.val());
