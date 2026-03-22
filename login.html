@@ -1,70 +1,72 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <title>تسجيل الدخول</title>
+<meta charset="UTF-8">
+<title>تسجيل الدخول</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module">
-        // Firebase setup
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-analytics.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-            authDomain: "ccraft-space-scripts.firebaseapp.com",
-            databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-            projectId: "ccraft-space-scripts",
-            storageBucket: "ccraft-space-scripts.firebasestorage.app",
-            messagingSenderId: "816078027492",
-            appId: "1:816078027492:web:6472cce474078fd4d90af1",
-            measurementId: "G-MHDM7YYYBN"
-        };
+const firebaseConfig = {
+    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain: "ccraft-space-scripts.firebaseapp.com",
+    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId: "ccraft-space-scripts",
+    storageBucket: "ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId: "816078027492",
+    appId: "1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId: "G-MHDM7YYYBN"
+};
 
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth();
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-        // تسجيل الدخول
-        window.login = function() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+// تسجيل الدخول
+window.login = async function() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    if (!email || !password) return alert("ادخل البريد وكلمة المرور");
 
-            signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                // تحويل المستخدم بعد تسجيل الدخول
-                window.location.href = "index.html";
-            })
-            .catch((error) => {
-                alert("خطأ في تسجيل الدخول: " + error.message);
-            });
-        };
+    const usersSnap = await get(ref(db, "users"));
+    const users = usersSnap.val() || {};
 
-        // إنشاء حساب جديد
-        window.register = function() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+    // البحث عن المستخدم
+    const userId = Object.keys(users).find(id => users[id].email === email && users[id].password === password);
+    if (userId) {
+        localStorage.setItem("currentUser", userId); // حفظ الجلسة
+        window.location.href = "index.html";
+    } else {
+        alert("بيانات غير صحيحة، حاول مرة أخرى");
+    }
+};
 
-            createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                // تحويل المستخدم بعد إنشاء الحساب
-                window.location.href = "index.html";
-            })
-            .catch((error) => {
-                alert("خطأ في إنشاء الحساب: " + error.message);
-            });
-        };
-    </script>
+// إنشاء حساب جديد
+window.register = async function() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    if (!email || !password) return alert("ادخل البريد وكلمة المرور");
+
+    const usersSnap = await get(ref(db, "users"));
+    const users = usersSnap.val() || {};
+
+    // التحقق من أن الإيميل مش موجود مسبقاً
+    const exists = Object.values(users).some(u => u.email === email);
+    if (exists) return alert("هذا البريد مستخدم بالفعل");
+
+    // حفظ المستخدم الجديد
+    const newUserRef = push(ref(db, "users"));
+    await set(newUserRef, { email, password });
+    localStorage.setItem("currentUser", newUserRef.key); // حفظ الجلسة
+    window.location.href = "index.html";
+};
+</script>
 </head>
 <body>
-    <h1>تسجيل الدخول أو إنشاء حساب</h1>
-
-    <input type="email" id="email" placeholder="البريد الإلكتروني"><br><br>
-    <input type="password" id="password" placeholder="كلمة المرور"><br><br>
-
-    <button onclick="login()">تسجيل الدخول</button>
-    <button onclick="register()">إنشاء حساب</button>
+<h1>تسجيل الدخول أو إنشاء حساب</h1>
+<input type="email" id="email" placeholder="البريد الإلكتروني"><br><br>
+<input type="password" id="password" placeholder="كلمة المرور"><br><br>
+<button onclick="login()">تسجيل الدخول</button>
+<button onclick="register()">إنشاء حساب</button>
 </body>
 </html>
