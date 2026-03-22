@@ -3,20 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
 <title>تحميل هاك دلتا</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <div style="display:flex;justify-content:center;align-items:center;height:100vh;">
   <div style="border:1px solid black;padding:20px;text-align:center;width:300px;">
-
     <h2>تحميل هاك دلتا</h2>
-    <p>هاك دلتا</p>
-
-    <button id="androidBtn">تحميل للأندرويد</button>
-    <button id="iosBtn">تحميل للأيفون</button>
-
+    <p>اختر جهازك لتحميل الهاك:</p>
+    <button id="androidBtn" disabled>تحميل للأندرويد</button>
+    <button id="iosBtn" disabled>تحميل للأيفون</button>
   </div>
 </div>
 
@@ -24,6 +21,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+// إعدادات Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -38,24 +36,40 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+const androidBtn = document.getElementById("androidBtn");
+const iosBtn = document.getElementById("iosBtn");
+
 let androidLink = "";
 let iosLink = "";
 
-get(ref(db, "delta")).then((snapshot) => {
-  if (snapshot.exists()) {
-    const data = snapshot.val();
-    androidLink = data.android;
-    iosLink = data.ios;
-  }
-});
+// جلب الروابط من Firebase
+get(ref(db, "delta"))
+  .then(snapshot => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      androidLink = data.android;
+      iosLink = data.ios;
 
-document.getElementById("androidBtn").onclick = function() {
-  if(androidLink) window.location.href = androidLink;
+      // تفعيل الأزرار بعد التحميل
+      androidBtn.disabled = false;
+      iosBtn.disabled = false;
+    } else {
+      alert("لا توجد بيانات متاحة للتحميل الآن");
+    }
+  })
+  .catch(error => {
+    console.error("خطأ في جلب البيانات:", error);
+    alert("حدث خطأ أثناء تحميل الروابط");
+  });
+
+// التعامل مع الضغط على الأزرار
+androidBtn.onclick = () => {
+  if (androidLink) window.location.href = androidLink;
   else alert("رابط الأندرويد غير جاهز");
 };
 
-document.getElementById("iosBtn").onclick = function() {
-  if(iosLink) window.location.href = iosLink;
+iosBtn.onclick = () => {
+  if (iosLink) window.location.href = iosLink;
   else alert("رابط الآيفون غير جاهز");
 };
 </script>
