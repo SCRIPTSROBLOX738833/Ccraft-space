@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
 <title>شات cCraft space</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header>شات cCraft space <button onclick="logout()">تسجيل خروج</button></header>
-<div id="chatContainer" style="max-height:300px; overflow:auto; border:1px solid #ccc; padding:10px;"></div>
+<header>شات cCraft space</header>
+<div id="chatContainer" style="max-height:400px; overflow-y:auto;"></div>
 <form id="messageForm">
-  <input type="text" id="messageInput" placeholder="اكتب رسالتك..." required autocomplete="off"/>
-  <button type="submit">ارسال</button>
+  <input type="text" id="messageInput" placeholder="اكتب رسالتك..." required autocomplete="off" />
+  <button type="submit" id="sendBtn">ارسال</button>
 </form>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, push, onChildAdded, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -26,7 +26,9 @@ const firebaseConfig = {
     storageBucket: "ccraft-space-scripts.firebasestorage.app",
     messagingSenderId: "816078027492",
     appId: "1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId: "G-MHDM7YYYBN"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -39,34 +41,36 @@ if(!currentUserId) window.location.href="login.html";
 
 async function getCurrentUserName() {
     const snap = await get(ref(db, `users/${currentUserId}`));
-    if(!snap.exists()){ window.location.href="login.html"; return; }
+    if(!snap.exists()) {
+        localStorage.removeItem("currentUser");
+        window.location.href="login.html";
+        return;
+    }
     return snap.val().email.split("@")[0];
 }
 
-const chatRef = ref(db,"chat");
+const chatRef = ref(db, "chat");
 
-onChildAdded(chatRef,(snapshot)=>{
-    const msg = snapshot.val();
-    const div = document.createElement("div");
-    div.innerText = `${msg.username}: ${msg.text}`;
-    chatContainer.appendChild(div);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+// عرض الرسائل
+onChildAdded(chatRef, (snapshot) => {
+  const msg = snapshot.val();
+  const div = document.createElement("div");
+  div.innerText = `${msg.username}: ${msg.text}`;
+  chatContainer.appendChild(div);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
 });
 
-messageForm.addEventListener("submit", async (e)=>{
-    e.preventDefault();
-    const text = messageInput.value.trim();
-    if(!text) return;
-    const username = await getCurrentUserName();
-    push(chatRef,{ userId: currentUserId, username, text })
-        .then(()=>{ messageInput.value=""; messageInput.focus(); })
-        .catch(()=>alert("حدث خطأ، حاول مرة أخرى"));
+// إرسال رسالة
+messageForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = messageInput.value.trim();
+  if(!text) return;
+  const username = await getCurrentUserName();
+  if(!username) return;
+  push(chatRef, { userId: currentUserId, username, text })
+    .then(()=>{ messageInput.value=""; messageInput.focus(); })
+    .catch(()=>alert("حدث خطأ، سجل دخول مرة أخرى"));
 });
-
-function logout(){
-    localStorage.removeItem("currentUser");
-    window.location.href="login.html";
-}
 </script>
 </body>
 </html>
