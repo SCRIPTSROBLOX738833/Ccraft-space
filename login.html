@@ -59,7 +59,7 @@ loginBtn.addEventListener("click", async ()=>{
     try{
         const userCred = await signInWithEmailAndPassword(auth,email,pass);
         localStorage.setItem("currentUser", userCred.user.uid);
-        window.location.href="chat.html";
+        window.location.href="index.html";
     }catch(e){
         msg.textContent = "خطأ في البريد أو كلمة المرور";
     }
@@ -74,7 +74,7 @@ regBtn.addEventListener("click", async ()=>{
         localStorage.setItem("currentUser", userCred.user.uid);
         // أضف المستخدم للداتا بيس
         await set(ref(db, `users/${userCred.user.uid}`), { email });
-        window.location.href="chat.html";
+        window.location.href="index.html";
     }catch(e){
         msg.textContent = "حدث خطأ، حاول مرة أخرى";
     }
