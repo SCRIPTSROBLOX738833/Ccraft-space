@@ -4,19 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>عرض السكربت</title>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9131038282158705"
-     crossorigin="anonymous"></script>
-<style>
-  body{background:#0d1117;color:#c9d1d9;font-family:sans-serif;margin:0;padding:1rem;}
-  pre{background:#161b22;padding:1rem;border-radius:8px;overflow:auto;}
-  button{padding:.5rem 1rem;border:none;border-radius:6px;background:#58a6ff;color:#0d1117;cursor:pointer;margin-top:.5rem;}
-  #comments{margin-top:1rem;}
-  .comment{background:#161b22;padding:.8rem;border-radius:8px;margin-bottom:.5rem;}
-  #addComment{display:flex;gap:.5rem;margin-top:1rem;}
-  #addComment input{flex:1;padding:.5rem;border-radius:6px;border:1px solid #2f363d;background:#0d1117;color:#c9d1d9;}
-</style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9131038282158705"
-     crossorigin="anonymous"></script>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header>
@@ -32,7 +20,7 @@
   <h2>التعليقات</h2>
   <div id="comments"></div>
   <div id="addComment">
-    <input type="text" id="nameInput" placeholder="اسمك">
+    <input type="text" id="nameInput" placeholder="اسمك" disabled>
     <input type="text" id="commentInput" placeholder="اكتب تعليقك...">
     <button id="submitComment">إرسال</button>
   </div>
@@ -43,14 +31,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/fireba
 import { getDatabase, ref, get, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-  authDomain: "ccraft-space-scripts.firebaseapp.com",
-  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-  projectId: "ccraft-space-scripts",
-  storageBucket: "ccraft-space-scripts.firebasestorage.app",
-  messagingSenderId: "816078027492",
-  appId: "1:816078027492:web:6472cce474078fd4d90af1",
-  measurementId: "G-MHDM7YYYBN"
+    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain: "ccraft-space-scripts.firebaseapp.com",
+    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId: "ccraft-space-scripts",
+    storageBucket: "ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId: "816078027492",
+    appId: "1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId: "G-MHDM7YYYBN"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -69,6 +57,15 @@ const nameInput = document.getElementById('nameInput');
 const commentInput = document.getElementById('commentInput');
 const submitComment = document.getElementById('submitComment');
 
+let currentUserId = localStorage.getItem("currentUser");
+if(!currentUserId) window.location.href="login.html";
+
+async function getCurrentUserName() {
+    const snap = await get(ref(db, `users/${currentUserId}`));
+    if(!snap.exists()) { window.location.href="login.html"; return; }
+    return snap.val().email.split("@")[0];
+}
+
 async function loadScript(){
   const snap = await get(ref(db, `scripts/${scriptId}`));
   if(!snap.exists()){ titleEl.innerText="هذا السكربت غير موجود"; return; }
@@ -76,33 +73,31 @@ async function loadScript(){
   titleEl.innerText = data.title;
   authorEl.innerText = `المؤلف: ${data.author || "مجهول"}`;
   codeEl.innerText = data.code;
-
   loadComments();
+}
+
+async function loadComments(){
+  commentsDiv.innerHTML='';
+  const snap = await get(ref(db, `scripts/${scriptId}/comments`));
+  if(!snap.exists()) return;
+  const data = snap.val();
+  Object.values(data).forEach(c=>{
+    const div = document.createElement('div');
+    div.innerText=`${c.name}: ${c.text}`;
+    commentsDiv.appendChild(div);
+  });
 }
 
 copyBtn.addEventListener('click', ()=>{
   navigator.clipboard.writeText(codeEl.innerText).then(()=>alert("تم نسخ السكربت!"));
 });
 
-async function loadComments(){
-  commentsDiv.innerHTML = '';
-  const snap = await get(ref(db, `scripts/${scriptId}/comments`));
-  if(!snap.exists()) return;
-  const data = snap.val();
-  Object.values(data).forEach(c=>{
-    const div = document.createElement('div');
-    div.className='comment';
-    div.innerText=`${c.name}: ${c.text}`;
-    commentsDiv.appendChild(div);
-  });
-}
-
 submitComment.addEventListener('click', async ()=>{
-  const name = nameInput.value.trim();
   const text = commentInput.value.trim();
-  if(!name || !text) return alert("مطلوب الاسم والنص!");
+  if(!text) return alert("مطلوب كتابة نص التعليق!");
+  const username = await getCurrentUserName();
   const commentsRef = ref(db, `scripts/${scriptId}/comments`);
-  await push(commentsRef, { name, text });
+  await push(commentsRef, { name: username, text });
   commentInput.value='';
   loadComments();
 });
