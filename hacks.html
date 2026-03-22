@@ -12,7 +12,6 @@
   <div style="border:1px solid black;padding:20px;text-align:center;width:300px;">
 
     <h2>تحميل هاك دلتا</h2>
-
     <p>هاك دلتا</p>
 
     <button id="androidBtn">تحميل للأندرويد</button>
@@ -39,19 +38,26 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-get(ref(db, 'delta')).then((snapshot) => {
+let androidLink = "";
+let iosLink = "";
+
+get(ref(db, "delta")).then((snapshot) => {
   if (snapshot.exists()) {
     const data = snapshot.val();
-
-    document.getElementById("androidBtn").onclick = function() {
-      window.location.href = data.android;
-    };
-
-    document.getElementById("iosBtn").onclick = function() {
-      window.location.href = data.ios;
-    };
+    androidLink = data.android;
+    iosLink = data.ios;
   }
 });
+
+document.getElementById("androidBtn").onclick = function() {
+  if(androidLink) window.location.href = androidLink;
+  else alert("رابط الأندرويد غير جاهز");
+};
+
+document.getElementById("iosBtn").onclick = function() {
+  if(iosLink) window.location.href = iosLink;
+  else alert("رابط الآيفون غير جاهز");
+};
 </script>
 
 </body>
