@@ -16,7 +16,7 @@
     <button id="androidBtn" disabled>تحميل للأندرويد</button>
     <button id="iosBtn" disabled>تحميل للأيفون</button>
 
-    <p id="status"></p>
+    <p id="status">جارٍ تحميل البيانات...</p>
   </div>
 </div>
 
@@ -24,19 +24,17 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// إعدادات Firebase
+// ضع هنا إعدادات Firebase الخاصة بك
 const firebaseConfig = {
-  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-  authDomain: "ccraft-space-scripts.firebaseapp.com",
-  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-  projectId: "ccraft-space-scripts",
-  storageBucket: "ccraft-space-scripts.firebasestorage.app",
-  messagingSenderId: "816078027492",
-  appId: "1:816078027492:web:6472cce474078fd4d90af1",
-  measurementId: "G-MHDM7YYYBN"
+  apiKey: "ضع_المفتاح_هنا",
+  authDomain: "ضع_المفتاح_هنا.firebaseapp.com",
+  databaseURL: "https://ضع_المفتاح_هنا-default-rtdb.firebaseio.com",
+  projectId: "ضع_المفتاح_هنا",
+  storageBucket: "ضع_المفتاح_هنا.appspot.com",
+  messagingSenderId: "ضع_المفتاح_هنا",
+  appId: "ضع_المفتاح_هنا"
 };
 
-// تهيئة Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -47,27 +45,34 @@ const statusText = document.getElementById("status");
 let androidLink = "";
 let iosLink = "";
 
-// جلب روابط التحميل من Firebase
-get(ref(db, "delta?t=" + Date.now()))
-  .then(snapshot => {
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      androidLink = data.android || "";
-      iosLink = data.ios || "";
-      if (androidLink) androidBtn.disabled = false;
-      if (iosLink) iosBtn.disabled = false;
-    } else {
-      statusText.textContent = "لا توجد بيانات";
-    }
-  })
-  .catch(error => {
-    console.error(error);
-    statusText.textContent = "حدث خطأ";
-  });
+// جلب الروابط من Firebase
+get(ref(db, "delta"))
+.then(snapshot => {
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    androidLink = data.android || "";
+    iosLink = data.ios || "";
 
-// التعامل مع الضغط على الأزرار
-androidBtn.onclick = () => { if (androidLink) window.location.href = androidLink; };
-iosBtn.onclick = () => { if (iosLink) window.location.href = iosLink; };
+    if (androidLink) androidBtn.disabled = false;
+    if (iosLink) iosBtn.disabled = false;
+
+    statusText.textContent = "جاهز للتحميل";
+  } else {
+    statusText.textContent = "لا توجد بيانات";
+  }
+})
+.catch(error => {
+  console.error(error);
+  statusText.textContent = "حدث خطأ: " + error.message;
+});
+
+// أحداث الضغط على الأزرار
+androidBtn.onclick = () => {
+  if (androidLink) window.location.href = androidLink;
+};
+iosBtn.onclick = () => {
+  if (iosLink) window.location.href = iosLink;
+};
 </script>
 
 </body>
