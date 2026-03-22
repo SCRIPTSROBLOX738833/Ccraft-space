@@ -8,8 +8,7 @@
 </head>
 <body>
 <header>شات cCraft space</header>
-<div id="chatContainer" style="max-height:400px; overflow:auto; padding:1rem; border:1px solid #ccc;"></div>
-
+<div id="chatContainer" style="max-height:400px; overflow:auto; padding:1rem; background:#161b22; border-radius:10px;"></div>
 <form id="messageForm">
   <input type="text" id="messageInput" placeholder="اكتب رسالتك..." required autocomplete="off" />
   <button type="submit" id="sendBtn">ارسال</button>
@@ -17,8 +16,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getDatabase, ref, push, onChildAdded, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -33,61 +32,49 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const auth = getAuth(app);
+const auth = getAuth();
 
 const chatContainer = document.getElementById("chatContainer");
 const messageForm = document.getElementById("messageForm");
 const messageInput = document.getElementById("messageInput");
 
-let currentUserId;
-let currentUsername;
+let currentUserId = localStorage.getItem("currentUser");
+if(!currentUserId) window.location.href="login.html";
 
-// --- التحقق من تسجيل الدخول ---
-onAuthStateChanged(auth, async (user) => {
-  if(!user) {
-    window.location.href = "login.html"; // لو مش مسجل دخول، رجعه للصفحة
-    return;
-  }
-  currentUserId = user.uid;
+// جلب اسم المستخدم أو إضافته إذا جديد
+async function getCurrentUserName() {
+    const snap = await get(ref(db, `users/${currentUserId}`));
+    if(!snap.exists()){
+        // أضف المستخدم تلقائيًا
+        const email = prompt("اكتب بريدك للتسجيل"); // أو خليه متوفر من صفحة التسجيل
+        await set(ref(db, `users/${currentUserId}`), { email });
+        return email.split("@")[0];
+    }
+    return snap.val().email.split("@")[0];
+}
 
-  // جلب اسم المستخدم
-  const snap = await get(ref(db, `users/${currentUserId}`));
-  if(!snap.exists()){
-    alert("حدث خطأ، حاول تسجيل الدخول مرة أخرى");
-    await auth.signOut();
-    window.location.href = "login.html";
-    return;
-  }
-  currentUsername = snap.val().email.split("@")[0];
-});
-
-// --- تحميل الشات ---
+// تحميل الرسائل مباشرة
 const chatRef = ref(db, "chat");
-
 onChildAdded(chatRef, (snapshot) => {
   const msg = snapshot.val();
   const div = document.createElement("div");
-  div.style.padding="6px";
-  div.style.margin="4px 0";
-  div.style.borderRadius="6px";
-  div.style.background = (msg.userId === currentUserId) ? "#cce5ff" : "#f1f1f1";
+  div.style.background="#0d1117";
+  div.style.color="#c9d1d9";
+  div.style.padding="8px";
+  div.style.borderRadius="8px";
+  div.style.marginBottom="4px";
   div.innerText = `${msg.username}: ${msg.text}`;
   chatContainer.appendChild(div);
   chatContainer.scrollTop = chatContainer.scrollHeight;
 });
 
-// --- ارسال رسالة ---
+// إرسال الرسائل
 messageForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const text = messageInput.value.trim();
   if(!text) return;
-
-  if(!currentUserId || !currentUsername){
-    alert("جارٍ التحقق من حسابك، حاول ثانية");
-    return;
-  }
-
-  push(chatRef, { userId: currentUserId, username: currentUsername, text })
+  const username = await getCurrentUserName();
+  push(chatRef, { userId: currentUserId, username, text })
     .then(()=>{ messageInput.value=""; messageInput.focus(); })
     .catch(()=>alert("حدث خطأ، حاول مرة أخرى"));
 });
