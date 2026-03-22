@@ -14,6 +14,7 @@
     <p>اختر جهازك لتحميل الهاك:</p>
     <button id="androidBtn" disabled>تحميل للأندرويد</button>
     <button id="iosBtn" disabled>تحميل للأيفون</button>
+    <p id="status" style="color:red;margin-top:10px;"></p>
   </div>
 </div>
 
@@ -38,28 +39,33 @@ const db = getDatabase(app);
 
 const androidBtn = document.getElementById("androidBtn");
 const iosBtn = document.getElementById("iosBtn");
+const statusText = document.getElementById("status");
 
 let androidLink = "";
 let iosLink = "";
 
-// جلب الروابط من Firebase
+// جلب الروابط من Firebase مع Debug كامل
+statusText.textContent = "جارٍ تحميل الروابط من Firebase...";
 get(ref(db, "delta"))
   .then(snapshot => {
+    console.log("Snapshot data:", snapshot.val());
     if (snapshot.exists()) {
       const data = snapshot.val();
       androidLink = data.android;
       iosLink = data.ios;
 
-      // تفعيل الأزرار بعد التحميل
       androidBtn.disabled = false;
       iosBtn.disabled = false;
+
+      statusText.style.color = "green";
+      statusText.textContent = "تم تحميل الروابط بنجاح. اضغط الزر المناسب.";
     } else {
-      alert("لا توجد بيانات متاحة للتحميل الآن");
+      statusText.textContent = "Node 'delta' موجود بس فاضي.";
     }
   })
   .catch(error => {
-    console.error("خطأ في جلب البيانات:", error);
-    alert("حدث خطأ أثناء تحميل الروابط");
+    console.error("Firebase DB Error:", error);
+    statusText.textContent = "حدث خطأ أثناء تحميل الروابط. افتح Console لرؤية التفاصيل.";
   });
 
 // التعامل مع الضغط على الأزرار
