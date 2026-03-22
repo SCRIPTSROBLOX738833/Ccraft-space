@@ -1,201 +1,181 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة الإدارة</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0d1117;
-      color: #c9d1d9;
-      margin: 0;
-      padding: 0;
-    }
-    h1,h2,h3{ color:#58a6ff; margin-bottom:0.5rem; }
-
-    #loginDiv{
-      max-width:400px; margin:5rem auto; padding:2rem;
-      background:#161b22; border-radius:12px;
-      text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.5);
-    }
-    #loginDiv input{
-      width:100%; padding:.75rem; margin-bottom:1rem;
-      border-radius:10px; border:1px solid #2f363d;
-      background:#0d1117; color:#c9d1d9;
-    }
-    #loginDiv button{
-      width:100%; padding:.75rem; border-radius:10px;
-      border:none; background:#58a6ff; color:#0d1117;
-      font-weight:bold; cursor:pointer;
-    }
-    #loginDiv button:hover{ background:#1f6feb; transform:scale(1.05); }
-
-    #adminPanel{
-      max-width:900px; margin:2rem auto; padding:1rem 2rem;
-      background:#161b22; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.5);
-    }
-    #adminPanel input, #adminPanel textarea, #adminPanel select{
-      width:100%; padding:.75rem; margin-bottom:1rem; border-radius:10px;
-      border:1px solid #2f363d; background:#0d1117; color:#c9d1d9;
-    }
-    #adminPanel button{
-      padding:.6rem 1.2rem; border-radius:8px; border:none;
-      background:#58a6ff; color:#0d1117; font-weight:bold;
-      cursor:pointer; transition:.2s ease;
-    }
-    #adminPanel button:hover{ background:#1f6feb; transform:scale(1.05); }
-
-    #scriptsList{ list-style:none; padding:0; }
-    #scriptsList li{
-      display:flex; justify-content:space-between; align-items:center;
-      background:#0d1117; margin-bottom:1rem; padding:1rem;
-      border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.4);
-      flex-wrap:wrap;
-    }
-    #scriptsList li b{ color:#58a6ff; }
-    #scriptsList li button{ margin-left:.5rem; }
-    @media (max-width:768px){
-      #loginDiv,#adminPanel{ margin:2rem 1rem; padding:1rem; }
-      #scriptsList li{ flex-direction:column; align-items:flex-start; }
-      #scriptsList li button{ margin:.3rem 0 0 0; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- تسجيل الدخول -->
-  <div id="loginDiv">
-    <h2>تسجيل الدخول</h2>
-    <input type="email" id="email" placeholder="البريد الإلكتروني">
-    <input type="password" id="password" placeholder="كلمة المرور">
-    <button onclick="login()">دخول</button>
-    <p id="loginError" style="color:red;"></p>
-  </div>
 
-  <!-- لوحة الإدارة -->
-  <div id="adminPanel" style="display:none;">
-    <h1>لوحة الإدارة</h1>
+<div id="loginDiv">
+  <h2>تسجيل دخول الادمن</h2>
+  <input type="email" id="email" placeholder="البريد الإلكتروني">
+  <input type="password" id="password" placeholder="كلمة المرور">
+  <button onclick="login()">دخول</button>
+  <p id="loginError" style="color:red;"></p>
+</div>
 
-    <h3>نشر سكربت جديد</h3>
-    <input type="text" id="newTitle" placeholder="عنوان السكربت">
-    <textarea id="newCode" placeholder="كود السكربت" rows="4"></textarea>
-    <select id="newCategory">
-      <option value="">اختر القسم</option>
-      <option value="game">Game Scripts</option>
-      <option value="admin">Admin Scripts</option>
-      <option value="سكربت من الادارة">سكربت من الادارة</option>
-    </select>
-    <button onclick="addScript()">نشر</button>
+<div id="adminPanel" style="display:none;">
+  <h1>لوحة الإدارة</h1>
 
-    <hr>
+  <h3>نشر سكربت جديد</h3>
+  <input type="text" id="newTitle" placeholder="عنوان السكربت">
+  <textarea id="newCode" placeholder="كود السكربت" rows="4"></textarea>
+  <select id="newCategory">
+    <option value="">اختر القسم</option>
+    <option value="game">Game Scripts</option>
+    <option value="admin">Admin Scripts</option>
+    <option value="سكربت من الادارة">سكربت من الادارة</option>
+  </select>
+  <button onclick="addScript()">نشر</button>
 
-    <h3>جميع السكربتات</h3>
-    <ul id="scriptsList"></ul>
-  </div>
+  <hr>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getDatabase, ref, get, push, set, remove, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+  <h3>جميع السكربتات</h3>
+  <ul id="scriptsList"></ul>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-      authDomain: "ccraft-space-scripts.firebaseapp.com",
-      databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-      projectId: "ccraft-space-scripts",
-      storageBucket: "ccraft-space-scripts.firebasestorage.app",
-      messagingSenderId: "816078027492",
-      appId: "1:816078027492:web:6472cce474078fd4d90af1",
-      measurementId: "G-MHDM7YYYBN"
-    };
+  <hr>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
+  <h3>شات المستخدمين</h3>
+  <div id="chatContainer" style="max-height:300px; overflow:auto; background:#161b22; padding:1rem; border-radius:10px;"></div>
+</div>
 
-    const loginDiv = document.getElementById("loginDiv");
-    const adminPanel = document.getElementById("adminPanel");
-    const loginError = document.getElementById("loginError");
-    const scriptsList = document.getElementById("scriptsList");
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, get, push, set, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-    window.login = () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      signInWithEmailAndPassword(auth, email, password)
-        .then(()=>loadScripts())
-        .catch(()=> loginError.textContent = "خطأ في البريد الإلكتروني أو كلمة المرور");
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+  authDomain: "ccraft-space-scripts.firebaseapp.com",
+  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+  projectId: "ccraft-space-scripts",
+  storageBucket: "ccraft-space-scripts.firebasestorage.app",
+  messagingSenderId: "816078027492",
+  appId: "1:816078027492:web:6472cce474078fd4d90af1",
+  measurementId: "G-MHDM7YYYBN"
+};
 
-    onAuthStateChanged(auth, user=>{
-      if(user) loadScripts();
-    });
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    async function loadScripts(){
-      loginDiv.style.display="none";
-      adminPanel.style.display="block";
+const loginDiv = document.getElementById("loginDiv");
+const adminPanel = document.getElementById("adminPanel");
+const loginError = document.getElementById("loginError");
+const scriptsList = document.getElementById("scriptsList");
+const chatContainer = document.getElementById("chatContainer");
 
-      const snapshot = await get(ref(db,"scripts"));
-      scriptsList.innerHTML="";
+const ADMIN_EMAIL = "admin@example.com";
+const ADMIN_PASSWORD = "admin123";
 
-      if(snapshot.exists()){
-        const scripts = snapshot.val();
-        for(const key in scripts){
-          const li = document.createElement("li");
-          li.innerHTML=`<b>${scripts[key].title}</b> (${scripts[key].category}) - المؤلف: ${scripts[key].author || 'مجهول'}`;
+window.login = () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-          const delBtn = document.createElement("button");
-          delBtn.textContent="حذف";
-          delBtn.onclick=async ()=>{
-            if(confirm("هل أنت متأكد من حذف هذا السكربت؟")){
-              await remove(ref(db, `scripts/${key}`));
-              loadScripts();
-            }
-          };
+  if(email===ADMIN_EMAIL && password===ADMIN_PASSWORD){
+    loginDiv.style.display="none";
+    adminPanel.style.display="block";
+    loadScripts();
+    loadChat();
+  } else {
+    loginError.textContent="خطأ في البريد الإلكتروني أو كلمة المرور";
+  }
+};
 
-          const editBtn = document.createElement("button");
-          editBtn.textContent="تعديل";
-          editBtn.onclick=()=> editScript(key, scripts[key]);
+// --- إدارة السكربتات ---
+async function loadScripts(){
+  scriptsList.innerHTML="";
+  const snapshot = await get(ref(db,"scripts"));
+  if(snapshot.exists()){
+    const scripts = snapshot.val();
+    for(const key in scripts){
+      const li = document.createElement("li");
+      li.innerHTML=`<b>${scripts[key].title}</b> (${scripts[key].category}) - المؤلف: ${scripts[key].author || 'مجهول'}`;
 
-          li.appendChild(delBtn);
-          li.appendChild(editBtn);
-          scriptsList.appendChild(li);
+      const delBtn = document.createElement("button");
+      delBtn.textContent="حذف";
+      delBtn.onclick=async ()=>{
+        if(confirm("هل أنت متأكد من حذف هذا السكربت؟")){
+          await remove(ref(db, `scripts/${key}`));
+          loadScripts();
         }
-      }else scriptsList.textContent="لا يوجد سكربتات حالياً";
+      };
+
+      const editBtn = document.createElement("button");
+      editBtn.textContent="تعديل";
+      editBtn.onclick=()=> editScript(key, scripts[key]);
+
+      li.appendChild(delBtn);
+      li.appendChild(editBtn);
+      scriptsList.appendChild(li);
     }
+  } else scriptsList.textContent="لا يوجد سكربتات حالياً";
+}
 
-    window.addScript=async ()=>{
-      const title = document.getElementById("newTitle").value;
-      const code = document.getElementById("newCode").value;
-      const category = document.getElementById("newCategory").value;
+window.addScript = async ()=>{
+  const title = document.getElementById("newTitle").value;
+  const code = document.getElementById("newCode").value;
+  const category = document.getElementById("newCategory").value;
 
-      if(!title || !code || !category) return alert("مطلوب كل الحقول");
+  if(!title||!code||!category) return alert("مطلوب كل الحقول");
 
-      const newScriptRef = push(ref(db,"scripts"));
-      await set(newScriptRef,{
-        title,
-        code,
-        category,
-        author:"سكربت من الإدارة",
-        timestamp:Date.now()
-      });
+  const newScriptRef = push(ref(db,"scripts"));
+  await set(newScriptRef,{ title, code, category, author:"سكربت من الإدارة", timestamp:Date.now() });
 
-      alert("تم نشر السكربت بنجاح!");
-      document.getElementById("newTitle").value="";
-      document.getElementById("newCode").value="";
-      document.getElementById("newCategory").value="";
-      loadScripts();
+  document.getElementById("newTitle").value="";
+  document.getElementById("newCode").value="";
+  document.getElementById("newCategory").value="";
+  loadScripts();
+};
+
+function editScript(key, script){
+  const newTitle = prompt("عدل عنوان السكربت:", script.title);
+  const newCode = prompt("عدل كود السكربت:", script.code);
+  const newCategory = prompt("عدل القسم:", script.category);
+
+  if(newTitle && newCode && newCategory){
+    update(ref(db, `scripts/${key}`), { title:newTitle, code:newCode, category:newCategory, author:script.author });
+    loadScripts();
+  }
+}
+
+// --- إدارة الشات ---
+async function loadChat(){
+  chatContainer.innerHTML="";
+  const chatRef = ref(db,"chat");
+
+  onChildAdded(chatRef,(snapshot)=>{
+    const msg = snapshot.val();
+    const div = document.createElement("div");
+    div.style.background="#0d1117";
+    div.style.color="#c9d1d9";
+    div.style.padding="8px";
+    div.style.borderRadius="8px";
+    div.style.marginBottom="4px";
+
+    div.innerHTML=`<b>${msg.username}</b>: ${msg.text} <button style="margin-left:8px;">حذف</button> <button style="margin-left:4px;">تعديل</button>`;
+
+    const delBtn = div.querySelectorAll("button")[0];
+    delBtn.onclick = async ()=>{
+      if(confirm("هل تريد حذف الرسالة؟")){
+        await remove(ref(db, `chat/${snapshot.key}`));
+        div.remove();
+      }
     };
 
-    function editScript(key, script){
-      const newTitle = prompt("عدل عنوان السكربت:", script.title);
-      const newCode = prompt("عدل كود السكربت:", script.code);
-      const newCategory = prompt("عدل القسم:", script.category);
-
-      if(newTitle && newCode && newCategory){
-        update(ref(db, `scripts/${key}`), { title:newTitle, code:newCode, category:newCategory, author:script.author });
-        loadScripts();
+    const editBtn = div.querySelectorAll("button")[1];
+    editBtn.onclick = async ()=>{
+      const newText = prompt("عدل الرسالة:", msg.text);
+      if(newText){
+        await update(ref(db, `chat/${snapshot.key}`), { text:newText });
+        div.innerHTML=`<b>${msg.username}</b>: ${newText} <button style="margin-left:8px;">حذف</button> <button style="margin-left:4px;">تعديل</button>`;
       }
-    }
-  </script>
+    };
+
+    chatContainer.appendChild(div);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  });
+}
+</script>
 </body>
 </html>
