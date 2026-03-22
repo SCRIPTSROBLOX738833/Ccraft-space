@@ -3,24 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
 <title>عرض السكربت</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header><button onclick="location.href='chat.html'">العودة للشات</button></header>
-<h1 id="title">جارٍ التحميل...</h1>
-<p id="author"></p>
-<pre id="code"></pre>
-<button id="copyBtn">نسخ السكربت</button>
+<header>
+  <button onclick="location.href='index.html'">العودة للصفحة الرئيسية</button>
+</header>
 
-<h2>التعليقات</h2>
-<div id="comments"></div>
-<input type="text" id="commentInput" placeholder="اكتب تعليقك...">
-<button id="submitComment">إرسال</button>
+<main>
+  <h1 id="title">جارٍ التحميل...</h1>
+  <p id="author"></p>
+  <pre id="code"></pre>
+  <button id="copyBtn">نسخ السكربت</button>
+
+  <h2>التعليقات</h2>
+  <div id="comments"></div>
+  <div id="addComment">
+    <input type="text" id="commentInput" placeholder="اكتب تعليقك...">
+    <button id="submitComment">إرسال</button>
+  </div>
+</main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -30,6 +37,7 @@ const firebaseConfig = {
     storageBucket: "ccraft-space-scripts.firebasestorage.app",
     messagingSenderId: "816078027492",
     appId: "1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId: "G-MHDM7YYYBN"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -51,43 +59,52 @@ if(!currentUserId) window.location.href="login.html";
 
 async function getCurrentUserName() {
     const snap = await get(ref(db, `users/${currentUserId}`));
-    if(!snap.exists()) { window.location.href="login.html"; return; }
+    if(!snap.exists()) {
+        localStorage.removeItem("currentUser");
+        window.location.href="login.html";
+        return;
+    }
     return snap.val().email.split("@")[0];
 }
 
+// تحميل السكربت
 async function loadScript(){
-    const snap = await get(ref(db, `scripts/${scriptId}`));
-    if(!snap.exists()){ titleEl.innerText="هذا السكربت غير موجود"; return; }
-    const data = snap.val();
-    titleEl.innerText = data.title;
-    authorEl.innerText = `المؤلف: ${data.author || "مجهول"}`;
-    codeEl.innerText = data.code;
-    loadComments();
+  const snap = await get(ref(db, `scripts/${scriptId}`));
+  if(!snap.exists()){ titleEl.innerText="هذا السكربت غير موجود"; return; }
+  const data = snap.val();
+  titleEl.innerText = data.title;
+  authorEl.innerText = `المؤلف: ${data.author || "مجهول"}`;
+  codeEl.innerText = data.code;
+  loadComments();
 }
 
+// تحميل التعليقات
 async function loadComments(){
-    commentsDiv.innerHTML='';
-    const snap = await get(ref(db, `scripts/${scriptId}/comments`));
-    if(!snap.exists()) return;
-    Object.values(snap.val()).forEach(c=>{
-        const div = document.createElement('div');
-        div.innerText=`${c.name}: ${c.text}`;
-        commentsDiv.appendChild(div);
-    });
+  commentsDiv.innerHTML='';
+  const snap = await get(ref(db, `scripts/${scriptId}/comments`));
+  if(!snap.exists()) return;
+  Object.values(snap.val()).forEach(c=>{
+    const div = document.createElement('div');
+    div.innerText=`${c.name}: ${c.text}`;
+    commentsDiv.appendChild(div);
+  });
 }
 
-submitComment.addEventListener('click', async ()=>{
-    const text = commentInput.value.trim();
-    if(!text) return alert("اكتب تعليقك!");
-    const username = await getCurrentUserName();
-    const commentsRef = ref(db, `scripts/${scriptId}/comments`);
-    await push(commentsRef,{ name: username, text });
-    commentInput.value='';
-    loadComments();
+// نسخ السكربت
+copyBtn.addEventListener('click', ()=>{
+  navigator.clipboard.writeText(codeEl.innerText).then(()=>alert("تم نسخ السكربت!"));
 });
 
-copyBtn.addEventListener('click', ()=>{
-    navigator.clipboard.writeText(codeEl.innerText).then(()=>alert("تم نسخ السكربت!"));
+// إرسال تعليق
+submitComment.addEventListener('click', async ()=>{
+  const text = commentInput.value.trim();
+  if(!text) return alert("مطلوب كتابة نص التعليق!");
+  const username = await getCurrentUserName();
+  if(!username) return;
+  const commentsRef = ref(db, `scripts/${scriptId}/comments`);
+  await push(commentsRef, { name: username, text });
+  commentInput.value='';
+  loadComments();
 });
 
 loadScript();
