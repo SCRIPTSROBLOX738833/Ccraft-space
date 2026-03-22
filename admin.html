@@ -8,14 +8,16 @@
 </head>
 <body>
 
+<!-- تسجيل دخول الادمن -->
 <div id="loginDiv">
   <h2>تسجيل دخول الادمن</h2>
   <input type="email" id="email" placeholder="البريد الإلكتروني">
   <input type="password" id="password" placeholder="كلمة المرور">
-  <button onclick="login()">دخول</button>
+  <button id="loginBtn">دخول</button>
   <p id="loginError" style="color:red;"></p>
 </div>
 
+<!-- لوحة الإدارة -->
 <div id="adminPanel" style="display:none;">
   <h1>لوحة الإدارة</h1>
 
@@ -28,7 +30,7 @@
     <option value="admin">Admin Scripts</option>
     <option value="سكربت من الادارة">سكربت من الادارة</option>
   </select>
-  <button onclick="addScript()">نشر</button>
+  <button id="addScriptBtn">نشر</button>
 
   <hr>
 
@@ -39,12 +41,16 @@
 
   <h3>شات المستخدمين</h3>
   <div id="chatContainer" style="max-height:300px; overflow:auto; background:#161b22; padding:1rem; border-radius:10px;"></div>
+
+  <button id="logoutBtn" style="margin-top:1rem;">تسجيل خروج</button>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, push, set, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -58,29 +64,48 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
+// عناصر HTML
 const loginDiv = document.getElementById("loginDiv");
 const adminPanel = document.getElementById("adminPanel");
 const loginError = document.getElementById("loginError");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 const scriptsList = document.getElementById("scriptsList");
 const chatContainer = document.getElementById("chatContainer");
 
-const ADMIN_EMAIL = "admin@example.com";
-const ADMIN_PASSWORD = "admin123";
+// --- تسجيل دخول الادمن ---
+document.getElementById("loginBtn").addEventListener("click", async ()=>{
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  if(!email || !password) return loginError.textContent="ادخل البريد وكلمة المرور";
 
-window.login = () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+  try{
+    await signInWithEmailAndPassword(auth,email,password);
+  }catch(err){
+    loginError.textContent="خطأ في البريد الإلكتروني أو كلمة المرور";
+  }
+});
 
-  if(email===ADMIN_EMAIL && password===ADMIN_PASSWORD){
+// --- تسجيل خروج ---
+document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+  await signOut(auth);
+  window.location.reload();
+});
+
+// --- مراقبة حالة تسجيل الدخول ---
+onAuthStateChanged(auth, user=>{
+  if(user){
     loginDiv.style.display="none";
     adminPanel.style.display="block";
     loadScripts();
     loadChat();
-  } else {
-    loginError.textContent="خطأ في البريد الإلكتروني أو كلمة المرور";
+  }else{
+    loginDiv.style.display="block";
+    adminPanel.style.display="none";
   }
-};
+});
 
 // --- إدارة السكربتات ---
 async function loadScripts(){
@@ -95,7 +120,7 @@ async function loadScripts(){
       const delBtn = document.createElement("button");
       delBtn.textContent="حذف";
       delBtn.onclick=async ()=>{
-        if(confirm("هل أنت متأكد من حذف هذا السكربت؟")){
+        if(confirm("هل تريد حذف هذا السكربت؟")){
           await remove(ref(db, `scripts/${key}`));
           loadScripts();
         }
@@ -112,21 +137,22 @@ async function loadScripts(){
   } else scriptsList.textContent="لا يوجد سكربتات حالياً";
 }
 
-window.addScript = async ()=>{
-  const title = document.getElementById("newTitle").value;
-  const code = document.getElementById("newCode").value;
+document.getElementById("addScriptBtn").addEventListener("click", async ()=>{
+  const title = document.getElementById("newTitle").value.trim();
+  const code = document.getElementById("newCode").value.trim();
   const category = document.getElementById("newCategory").value;
-
   if(!title||!code||!category) return alert("مطلوب كل الحقول");
 
   const newScriptRef = push(ref(db,"scripts"));
-  await set(newScriptRef,{ title, code, category, author:"سكربت من الإدارة", timestamp:Date.now() });
+  await set(newScriptRef,{
+    title, code, category, author:"سكربت من الإدارة", timestamp:Date.now()
+  });
 
   document.getElementById("newTitle").value="";
   document.getElementById("newCode").value="";
   document.getElementById("newCategory").value="";
   loadScripts();
-};
+});
 
 function editScript(key, script){
   const newTitle = prompt("عدل عنوان السكربت:", script.title);
