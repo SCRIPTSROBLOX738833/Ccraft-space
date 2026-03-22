@@ -33,7 +33,8 @@
             signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                alert("تم تسجيل الدخول بنجاح: " + user.email);
+                // تحويل المستخدم بعد تسجيل الدخول
+                window.location.href = "index.html";
             })
             .catch((error) => {
                 alert("خطأ في تسجيل الدخول: " + error.message);
@@ -48,7 +49,8 @@
             createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                alert("تم إنشاء الحساب بنجاح: " + user.email);
+                // تحويل المستخدم بعد إنشاء الحساب
+                window.location.href = "index.html";
             })
             .catch((error) => {
                 alert("خطأ في إنشاء الحساب: " + error.message);
@@ -65,4 +67,4 @@
     <button onclick="login()">تسجيل الدخول</button>
     <button onclick="register()">إنشاء حساب</button>
 </body>
-  </html>
+</html>
