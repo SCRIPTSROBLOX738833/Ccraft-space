@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
 <title>تحميل هاك دلتا</title>
 </head>
 <body>
@@ -23,19 +22,22 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
-// ضع هنا إعدادات Firebase الخاصة بك
+// بيانات Firebase الخاصة بك
 const firebaseConfig = {
-  apiKey: "ضع_المفتاح_هنا",
-  authDomain: "ضع_المفتاح_هنا.firebaseapp.com",
-  databaseURL: "https://ضع_المفتاح_هنا-default-rtdb.firebaseio.com",
-  projectId: "ضع_المفتاح_هنا",
-  storageBucket: "ضع_المفتاح_هنا.appspot.com",
-  messagingSenderId: "ضع_المفتاح_هنا",
-  appId: "ضع_المفتاح_هنا"
+  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+  authDomain: "ccraft-space-scripts.firebaseapp.com",
+  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+  projectId: "ccraft-space-scripts",
+  storageBucket: "ccraft-space-scripts.firebasestorage.app",
+  messagingSenderId: "816078027492",
+  appId: "1:816078027492:web:6472cce474078fd4d90af1",
+  measurementId: "G-MHDM7YYYBN"
 };
 
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 const db = getDatabase(app);
 
 const androidBtn = document.getElementById("androidBtn");
