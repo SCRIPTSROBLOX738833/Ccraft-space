@@ -12,9 +12,11 @@
   <div style="border:1px solid black;padding:20px;text-align:center;width:300px;">
     <h2>تحميل هاك دلتا</h2>
     <p>اختر جهازك لتحميل الهاك:</p>
+
     <button id="androidBtn" disabled>تحميل للأندرويد</button>
     <button id="iosBtn" disabled>تحميل للأيفون</button>
-    <p id="status" style="color:red;margin-top:10px;"></p>
+
+    <p id="status"></p>
   </div>
 </div>
 
@@ -22,16 +24,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// إعدادات Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+  apiKey: "YOUR_API_KEY",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
   databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
   projectId: "ccraft-space-scripts",
   storageBucket: "ccraft-space-scripts.firebasestorage.app",
   messagingSenderId: "816078027492",
-  appId: "1:816078027492:web:6472cce474078fd4d90af1",
-  measurementId: "G-MHDM7YYYBN"
+  appId: "1:816078027492:web:6472cce474078fd4d90af1"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -44,38 +44,35 @@ const statusText = document.getElementById("status");
 let androidLink = "";
 let iosLink = "";
 
-// جلب الروابط من Firebase
-get(ref(db, "delta"))
-  .then(snapshot => {
-    console.log("Snapshot data:", snapshot.val());
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      androidLink = data.android;
-      iosLink = data.ios;
+get(ref(db, "delta?t=" + Date.now()))
+.then(snapshot => {
+  if (snapshot.exists()) {
+    const data = snapshot.val();
 
-      androidBtn.disabled = false;
-      iosBtn.disabled = false;
+    androidLink = data.android || "";
+    iosLink = data.ios || "";
 
-      statusText.style.color = "green";
-      statusText.textContent = "تم تحميل الروابط بنجاح. اضغط الزر المناسب.";
-    } else {
-      statusText.textContent = "Node 'delta' موجود بس فاضي.";
-    }
-  })
-  .catch(error => {
-    console.error("Firebase DB Error:", error);
-    statusText.textContent = "حدث خطأ أثناء تحميل الروابط. افتح Console لرؤية التفاصيل.";
-  });
+    if (androidLink) androidBtn.disabled = false;
+    if (iosLink) iosBtn.disabled = false;
+  } else {
+    statusText.textContent = "لا توجد بيانات";
+  }
+})
+.catch(error => {
+  console.error(error);
+  statusText.textContent = "حدث خطأ";
+});
 
-// التعامل مع الضغط على الأزرار
 androidBtn.onclick = () => {
-  if (androidLink) window.location.href = androidLink;
-  else alert("رابط الأندرويد غير جاهز");
+  if (androidLink) {
+    window.location.href = androidLink;
+  }
 };
 
 iosBtn.onclick = () => {
-  if (iosLink) window.location.href = iosLink;
-  else alert("رابط الآيفون غير جاهز");
+  if (iosLink) {
+    window.location.href = iosLink;
+  }
 };
 </script>
 
