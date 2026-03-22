@@ -3,32 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الإدارة</title>
+<title>لوحة الأدمن</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- تسجيل دخول الادمن -->
-<div id="loginDiv">
-  <h2>تسجيل دخول الادمن</h2>
-  <input type="email" id="email" placeholder="البريد الإلكتروني">
-  <input type="password" id="password" placeholder="كلمة المرور">
-  <button id="loginBtn">دخول</button>
-  <p id="loginError" style="color:red;"></p>
-</div>
+<h1>لوحة الأدمن</h1>
+<button id="logoutBtn">تسجيل خروج</button>
 
-<!-- لوحة الإدارة -->
-<div id="adminPanel" style="display:none;">
-  <h1>لوحة الإدارة</h1>
-
+<!-- إدارة السكربتات -->
+<div id="adminPanelContent">
   <h3>نشر سكربت جديد</h3>
   <input type="text" id="newTitle" placeholder="عنوان السكربت">
-  <textarea id="newCode" placeholder="كود السكربت" rows="4"></textarea>
+  <textarea id="newCode" id="newCode" placeholder="كود السكربت" rows="4"></textarea>
   <select id="newCategory">
     <option value="">اختر القسم</option>
     <option value="game">Game Scripts</option>
     <option value="admin">Admin Scripts</option>
-    <option value="سكربت من الادارة">سكربت من الادارة</option>
+    <option value="سكربت من الادارة">سكربت من الإدارة</option>
   </select>
   <button id="addScriptBtn">نشر</button>
 
@@ -41,16 +33,14 @@
 
   <h3>شات المستخدمين</h3>
   <div id="chatContainer" style="max-height:300px; overflow:auto; background:#161b22; padding:1rem; border-radius:10px;"></div>
-
-  <button id="logoutBtn" style="margin-top:1rem;">تسجيل خروج</button>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, push, set, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-// Firebase Config
+// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -67,59 +57,51 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 
 // عناصر HTML
-const loginDiv = document.getElementById("loginDiv");
-const adminPanel = document.getElementById("adminPanel");
-const loginError = document.getElementById("loginError");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
+const logoutBtn = document.getElementById("logoutBtn");
 const scriptsList = document.getElementById("scriptsList");
 const chatContainer = document.getElementById("chatContainer");
+const newTitle = document.getElementById("newTitle");
+const newCode = document.getElementById("newCode");
+const newCategory = document.getElementById("newCategory");
+const addScriptBtn = document.getElementById("addScriptBtn");
 
-// --- تسجيل دخول الادمن ---
-document.getElementById("loginBtn").addEventListener("click", async ()=>{
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  if(!email || !password) return loginError.textContent="ادخل البريد وكلمة المرور";
-
-  try{
-    await signInWithEmailAndPassword(auth,email,password);
-  }catch(err){
-    loginError.textContent="خطأ في البريد الإلكتروني أو كلمة المرور";
-  }
-});
-
-// --- تسجيل خروج ---
-document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+// تسجيل خروج الأدمن
+logoutBtn.addEventListener("click", async ()=>{
   await signOut(auth);
-  window.location.reload();
+  window.location.href = "login.html";
 });
 
-// --- مراقبة حالة تسجيل الدخول ---
-onAuthStateChanged(auth, user=>{
-  if(user){
-    loginDiv.style.display="none";
-    adminPanel.style.display="block";
-    loadScripts();
-    loadChat();
-  }else{
-    loginDiv.style.display="block";
-    adminPanel.style.display="none";
+// حماية صفحة الأدمن + تحميل البيانات
+onAuthStateChanged(auth, async user=>{
+  if(!user){
+    window.location.href = "login.html";
+    return;
   }
+
+  const idTokenResult = await user.getIdTokenResult();
+  if(!idTokenResult.claims.admin){
+    alert("غير مسموح بالدخول");
+    window.location.href = "index.html";
+    return;
+  }
+
+  loadScripts();
+  loadChat();
 });
 
 // --- إدارة السكربتات ---
 async function loadScripts(){
-  scriptsList.innerHTML="";
-  const snapshot = await get(ref(db,"scripts"));
+  scriptsList.innerHTML = "";
+  const snapshot = await get(ref(db, "scripts"));
   if(snapshot.exists()){
     const scripts = snapshot.val();
     for(const key in scripts){
       const li = document.createElement("li");
-      li.innerHTML=`<b>${scripts[key].title}</b> (${scripts[key].category}) - المؤلف: ${scripts[key].author || 'مجهول'}`;
+      li.innerHTML = `<b>${scripts[key].title}</b> (${scripts[key].category}) - المؤلف: ${scripts[key].author || 'مجهول'}`;
 
       const delBtn = document.createElement("button");
       delBtn.textContent="حذف";
-      delBtn.onclick=async ()=>{
+      delBtn.onclick = async ()=>{
         if(confirm("هل تريد حذف هذا السكربت؟")){
           await remove(ref(db, `scripts/${key}`));
           loadScripts();
@@ -128,7 +110,7 @@ async function loadScripts(){
 
       const editBtn = document.createElement("button");
       editBtn.textContent="تعديل";
-      editBtn.onclick=()=> editScript(key, scripts[key]);
+      editBtn.onclick = ()=> editScript(key, scripts[key]);
 
       li.appendChild(delBtn);
       li.appendChild(editBtn);
@@ -137,30 +119,27 @@ async function loadScripts(){
   } else scriptsList.textContent="لا يوجد سكربتات حالياً";
 }
 
-document.getElementById("addScriptBtn").addEventListener("click", async ()=>{
-  const title = document.getElementById("newTitle").value.trim();
-  const code = document.getElementById("newCode").value.trim();
-  const category = document.getElementById("newCategory").value;
-  if(!title||!code||!category) return alert("مطلوب كل الحقول");
+addScriptBtn.addEventListener("click", async ()=>{
+  const title = newTitle.value.trim();
+  const code = newCode.value.trim();
+  const category = newCategory.value;
+  if(!title || !code || !category) return alert("مطلوب كل الحقول");
 
   const newScriptRef = push(ref(db,"scripts"));
-  await set(newScriptRef,{
-    title, code, category, author:"سكربت من الإدارة", timestamp:Date.now()
-  });
+  await set(newScriptRef, { title, code, category, author:"سكربت من الإدارة", timestamp:Date.now() });
 
-  document.getElementById("newTitle").value="";
-  document.getElementById("newCode").value="";
-  document.getElementById("newCategory").value="";
+  newTitle.value="";
+  newCode.value="";
+  newCategory.value="";
   loadScripts();
 });
 
 function editScript(key, script){
-  const newTitle = prompt("عدل عنوان السكربت:", script.title);
-  const newCode = prompt("عدل كود السكربت:", script.code);
-  const newCategory = prompt("عدل القسم:", script.category);
-
-  if(newTitle && newCode && newCategory){
-    update(ref(db, `scripts/${key}`), { title:newTitle, code:newCode, category:newCategory, author:script.author });
+  const newT = prompt("عدل عنوان السكربت:", script.title);
+  const newC = prompt("عدل كود السكربت:", script.code);
+  const newCat = prompt("عدل القسم:", script.category);
+  if(newT && newC && newCat){
+    update(ref(db, `scripts/${key}`), { title:newT, code:newC, category:newCat, author:script.author });
     loadScripts();
   }
 }
@@ -169,7 +148,6 @@ function editScript(key, script){
 async function loadChat(){
   chatContainer.innerHTML="";
   const chatRef = ref(db,"chat");
-
   onChildAdded(chatRef,(snapshot)=>{
     const msg = snapshot.val();
     const div = document.createElement("div");
@@ -179,7 +157,7 @@ async function loadChat(){
     div.style.borderRadius="8px";
     div.style.marginBottom="4px";
 
-    div.innerHTML=`<b>${msg.username}</b>: ${msg.text} <button style="margin-left:8px;">حذف</button> <button style="margin-left:4px;">تعديل</button>`;
+    div.innerHTML = `<b>${msg.username}</b>: ${msg.text} <button style="margin-left:8px;">حذف</button> <button style="margin-left:4px;">تعديل</button>`;
 
     const delBtn = div.querySelectorAll("button")[0];
     delBtn.onclick = async ()=>{
@@ -194,7 +172,7 @@ async function loadChat(){
       const newText = prompt("عدل الرسالة:", msg.text);
       if(newText){
         await update(ref(db, `chat/${snapshot.key}`), { text:newText });
-        div.innerHTML=`<b>${msg.username}</b>: ${newText} <button style="margin-left:8px;">حذف</button> <button style="margin-left:4px;">تعديل</button>`;
+        div.innerHTML = `<b>${msg.username}</b>: ${newText} <button style="margin-left:8px;">حذف</button> <button style="margin-left:4px;">تعديل</button>`;
       }
     };
 
