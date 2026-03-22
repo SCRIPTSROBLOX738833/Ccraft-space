@@ -1,60 +1,70 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>تسجيل الدخول</title>
     <link rel="stylesheet" href="styles.css">
-<title>تسجيل الدخول</title>
+    <script type="module">
+        // Firebase setup
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-analytics.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+            authDomain: "ccraft-space-scripts.firebaseapp.com",
+            databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+            projectId: "ccraft-space-scripts",
+            storageBucket: "ccraft-space-scripts.firebasestorage.app",
+            messagingSenderId: "816078027492",
+            appId: "1:816078027492:web:6472cce474078fd4d90af1",
+            measurementId: "G-MHDM7YYYBN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth();
+
+        // تسجيل الدخول
+        window.login = function() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                // تحويل المستخدم بعد تسجيل الدخول
+                window.location.href = "index.html";
+            })
+            .catch((error) => {
+                alert("خطأ في تسجيل الدخول: " + error.message);
+            });
+        };
+
+        // إنشاء حساب جديد
+        window.register = function() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                // تحويل المستخدم بعد إنشاء الحساب
+                window.location.href = "index.html";
+            })
+            .catch((error) => {
+                alert("خطأ في إنشاء الحساب: " + error.message);
+            });
+        };
+    </script>
 </head>
 <body>
-<h1>تسجيل الدخول</h1>
-<input type="email" id="email" placeholder="البريد الإلكتروني"><br><br>
-<input type="password" id="password" placeholder="كلمة المرور"><br><br>
-<button id="loginBtn">دخول</button>
-<p id="loginError" style="color:red;"></p>
+    <h1>تسجيل الدخول أو إنشاء حساب</h1>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    <input type="email" id="email" placeholder="البريد الإلكتروني"><br><br>
+    <input type="password" id="password" placeholder="كلمة المرور"><br><br>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-  authDomain: "ccraft-space-scripts.firebaseapp.com",
-  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-  projectId: "ccraft-space-scripts",
-  storageBucket: "ccraft-space-scripts.firebasestorage.app",
-  messagingSenderId: "816078027492",
-  appId: "1:816078027492:web:6472cce474078fd4d90af1",
-  measurementId: "G-MHDM7YYYBN"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-const loginBtn = document.getElementById("loginBtn");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const loginError = document.getElementById("loginError");
-
-loginBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  if(!email || !password) return loginError.textContent = "ادخل البريد وكلمة المرور";
-
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    const idTokenResult = await user.getIdTokenResult();
-
-    if(idTokenResult.claims.admin){
-      window.location.href = "admin.html"; // لوحة الأدمن
-    } else {
-      window.location.href = "index.html"; // صفحة المستخدم العادي
-    }
-  } catch(err) {
-    loginError.textContent = "خطأ في البريد أو كلمة المرور";
-  }
-});
-</script>
+    <button onclick="login()">تسجيل الدخول</button>
+    <button onclick="register()">إنشاء حساب</button>
 </body>
 </html>
