@@ -3,25 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-<title>قائمة هاكات</title>
-
-
+<title>تحميل هاك دلتا</title>
 </head>
 <body>
 
-<h2 class="download-title">تحميل هاك دلتا</h2>
+<div style="display:flex;justify-content:center;align-items:center;height:100vh;">
+  <div style="border:1px solid black;padding:20px;text-align:center;width:300px;">
 
-<ul>
-  <li>
-    <div>
-    هاك دلتا
-    <br><br>
-    <button onclick="window.location.href='https://delta-executor.com'">تحميل للأندرويد</button>
-    <button onclick="window.location.href='https://delta-executor.com/ios'">تحميل للأيفون</button>
-    </div>
-  </li>
-</ul>
+    <h2>تحميل هاك دلتا</h2>
+
+    <p>هاك دلتا</p>
+
+    <button id="androidBtn">تحميل للأندرويد</button>
+    <button id="iosBtn">تحميل للأيفون</button>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+  authDomain: "ccraft-space-scripts.firebaseapp.com",
+  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+  projectId: "ccraft-space-scripts",
+  storageBucket: "ccraft-space-scripts.firebasestorage.app",
+  messagingSenderId: "816078027492",
+  appId: "1:816078027492:web:6472cce474078fd4d90af1",
+  measurementId: "G-MHDM7YYYBN"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+get(ref(db, 'delta')).then((snapshot) => {
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+
+    document.getElementById("androidBtn").onclick = function() {
+      window.location.href = data.android;
+    };
+
+    document.getElementById("iosBtn").onclick = function() {
+      window.location.href = data.ios;
+    };
+  }
+});
+</script>
 
 </body>
 </html>
