@@ -4,92 +4,86 @@
 <meta charset="UTF-8">
 <title>تسجيل الدخول</title>
 <link rel="stylesheet" href="styles.css">
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-    authDomain: "ccraft-space-scripts.firebaseapp.com",
-    projectId: "ccraft-space-scripts"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-const adminEmail = "ضع_ايميل_الادمن_هنا";
-
-window.login = async function() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    if (!email || !password) {
-        alert("ادخل البريد وكلمة المرور");
-        return;
-    }
-
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        if (user.email === adminEmail) {
-            window.location.href = "admin.html";
-        } else {
-            window.location.href = "index.html";
-        }
-
-    } catch {
-        alert("بيانات غير صحيحة");
-    }
-};
-
-window.register = async function() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    if (!email || !password) {
-        alert("ادخل البريد وكلمة المرور");
-        return;
-    }
-
-    try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        window.location.href = "index.html";
-    } catch {
-        alert("فشل إنشاء الحساب");
-    }
-};
-
-window.logout = async function() {
-    await signOut(auth);
-    location.reload();
-};
-
-onAuthStateChanged(auth, user => {
-    if(user){
-        console.log("مسجل دخول:", user.email);
-    }
-});
-</script>
 </head>
-
 <body>
 
 <h1>تسجيل الدخول أو إنشاء حساب</h1>
-<p>هذه صفحة تسجيل دخول خاصة بموقع CCRAFT SPACE</p>
 
 <input type="email" id="email" placeholder="البريد الإلكتروني"><br><br>
 <input type="password" id="password" placeholder="كلمة المرور"><br><br>
 
-<button onclick="login()">تسجيل الدخول</button>
-<button onclick="register()">إنشاء حساب</button>
+<button id="loginBtn">تسجيل الدخول</button>
+<button id="registerBtn">إنشاء حساب</button>
+
+<script type="module">
+  // استيراد Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+  // إعدادات Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain: "ccraft-space-scripts.firebaseapp.com",
+    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId: "ccraft-space-scripts",
+    storageBucket: "ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId: "816078027492",
+    appId: "1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId: "G-MHDM7YYYBN"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+
+  // بريد الأدمن الحقيقي
+  const ADMIN_EMAIL = "youradmin@gmail.com";
+
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+
+  // تسجيل دخول
+  document.getElementById("loginBtn").onclick = async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+
+      if(email === ADMIN_EMAIL){
+        window.location.href = "admin.html"; // لوحة الأدمن
+      } else {
+        window.location.href = "index.html"; // صفحة المستخدم العادي
+      }
+
+    } catch {
+      alert("خطأ في البريد الإلكتروني أو كلمة المرور");
+    }
+  };
+
+  // إنشاء حساب
+  document.getElementById("registerBtn").onclick = async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if(email === ADMIN_EMAIL){
+      alert("غير مسموح إنشاء حساب بهذا البريد");
+      return;
+    }
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      window.location.href = "index.html";
+    } catch {
+      alert("فشل إنشاء الحساب");
+    }
+  };
+</script>
 
 </body>
 </html>
