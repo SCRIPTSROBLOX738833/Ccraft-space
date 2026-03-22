@@ -2,85 +2,76 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>تسجيل الدخول </title>
-      <link rel="stylesheet" href="styles.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول أو إنشاء حساب</title>
+</head>
+<body>
+<h2>تسجيل الدخول</h2>
+<input type="email" id="loginEmail" placeholder="البريد الإلكتروني">
+<input type="password" id="loginPass" placeholder="كلمة المرور">
+<button id="loginBtn">دخول</button>
+
+<h2>أو إنشاء حساب جديد</h2>
+<input type="email" id="regEmail" placeholder="البريد الإلكتروني">
+<input type="password" id="regPass" placeholder="كلمة المرور">
+<button id="regBtn">إنشاء حساب</button>
+
+<p id="msg" style="color:red;"></p>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-  authDomain: "ccraft-space-scripts.firebaseapp.com",
-  projectId: "ccraft-space-scripts",
-  storageBucket: "ccraft-space-scripts.firebasestorage.app",
-  messagingSenderId: "816078027492",
-  appId: "1:816078027492:web:6472cce474078fd4d90af1"
+    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain: "ccraft-space-scripts.firebaseapp.com",
+    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId: "ccraft-space-scripts",
+    storageBucket: "ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId: "816078027492",
+    appId: "1:816078027492:web:6472cce474078fd4d90af1",
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getDatabase(app);
 
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
+const loginEmail = document.getElementById("loginEmail");
+const loginPass = document.getElementById("loginPass");
 const loginBtn = document.getElementById("loginBtn");
-const registerBtn = document.getElementById("registerBtn");
+const regEmail = document.getElementById("regEmail");
+const regPass = document.getElementById("regPass");
+const regBtn = document.getElementById("regBtn");
+const msg = document.getElementById("msg");
 
-// دالة لتغيير الواجهة إذا المستخدم مسجل دخول
-function showLogoutButton(user) {
-  emailInput.style.display = "none";
-  passwordInput.style.display = "none";
-  loginBtn.style.display = "none";
-  registerBtn.style.display = "none";
-
-  let logoutBtn = document.getElementById("logoutBtn");
-  if (!logoutBtn) {
-    logoutBtn = document.createElement("button");
-    logoutBtn.id = "logoutBtn";
-    logoutBtn.innerText = "تسجيل خروج";
-    logoutBtn.onclick = async () => {
-      await signOut(auth);
-      window.location.reload();
-    };
-    document.body.appendChild(logoutBtn);
-  } else {
-    logoutBtn.style.display = "block";
-  }
-}
-
-// متابعة حالة تسجيل الدخول عند تحميل الصفحة
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // لو المستخدم موجود، نعرض زر تسجيل الخروج
-    showLogoutButton(user);
-  }
+loginBtn.addEventListener("click", async ()=>{
+    const email = loginEmail.value.trim();
+    const pass = loginPass.value.trim();
+    if(!email||!pass){ msg.textContent="ادخل البريد وكلمة المرور"; return; }
+    try{
+        const userCred = await signInWithEmailAndPassword(auth,email,pass);
+        localStorage.setItem("currentUser", userCred.user.uid);
+        window.location.href="chat.html";
+    }catch(e){
+        msg.textContent = "خطأ في البريد أو كلمة المرور";
+    }
 });
 
-loginBtn.onclick = async () => {
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-    localStorage.setItem("currentUser", userCredential.user.uid);
-    window.location.href = "index.html"; // تحويل بعد تسجيل الدخول
-  } catch(e) {
-    alert("بيانات غير صحيحة أو المستخدم غير موجود");
-  }
-};
-
-registerBtn.onclick = async () => {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-    localStorage.setItem("currentUser", userCredential.user.uid);
-    window.location.href = "index.html"; // تحويل بعد إنشاء الحساب
-  } catch(e) {
-    alert("حدث خطأ أو البريد مستخدم بالفعل");
-  }
-};
+regBtn.addEventListener("click", async ()=>{
+    const email = regEmail.value.trim();
+    const pass = regPass.value.trim();
+    if(!email||!pass){ msg.textContent="ادخل البريد وكلمة المرور"; return; }
+    try{
+        const userCred = await createUserWithEmailAndPassword(auth,email,pass);
+        localStorage.setItem("currentUser", userCred.user.uid);
+        // أضف المستخدم للداتا بيس
+        await set(ref(db, `users/${userCred.user.uid}`), { email });
+        window.location.href="chat.html";
+    }catch(e){
+        msg.textContent = "حدث خطأ، حاول مرة أخرى";
+    }
+});
 </script>
-</head>
-<body>
-<h1>تسجيل الدخول أو إنشاء حساب</h1>
-<input type="email" id="email" placeholder="البريد الإلكتروني"><br><br>
-<input type="password" id="password" placeholder="كلمة المرور"><br><br>
-<button id="loginBtn">تسجيل الدخول</button>
-<button id="registerBtn">إنشاء حساب</button>
 </body>
 </html>
