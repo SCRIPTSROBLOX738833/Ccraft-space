@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css">
 <title>تحميل هاك دلتا</title>
 </head>
 <body>
@@ -15,6 +15,7 @@
 
     <button id="androidBtn" disabled>تحميل للأندرويد</button>
     <button id="iosBtn" disabled>تحميل للأيفون</button>
+    <button id="vpnBtn" disabled>VPN 1.1.1.1 نسخة قوية لفتح روبلوكس</button>
 
     <p id="status">جارٍ تحميل البيانات...</p>
   </div>
@@ -25,7 +26,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
-// بيانات Firebase الخاصة بك
+// بيانات Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -43,10 +44,12 @@ const db = getDatabase(app);
 
 const androidBtn = document.getElementById("androidBtn");
 const iosBtn = document.getElementById("iosBtn");
+const vpnBtn = document.getElementById("vpnBtn");
 const statusText = document.getElementById("status");
 
 let androidLink = "";
 let iosLink = "";
+let vpnLink = "";
 
 // جلب الروابط من Firebase
 get(ref(db, "delta"))
@@ -55,9 +58,11 @@ get(ref(db, "delta"))
     const data = snapshot.val();
     androidLink = data.android || "";
     iosLink = data.ios || "";
+    vpnLink = data.vpn || ""; // الرابط الجديد
 
     if (androidLink) androidBtn.disabled = false;
     if (iosLink) iosBtn.disabled = false;
+    if (vpnLink) vpnBtn.disabled = false;
 
     statusText.textContent = "جاهز للتحميل";
   } else {
@@ -70,12 +75,9 @@ get(ref(db, "delta"))
 });
 
 // أحداث الضغط على الأزرار
-androidBtn.onclick = () => {
-  if (androidLink) window.location.href = androidLink;
-};
-iosBtn.onclick = () => {
-  if (iosLink) window.location.href = iosLink;
-};
+androidBtn.onclick = () => { if (androidLink) window.location.href = androidLink; };
+iosBtn.onclick = () => { if (iosLink) window.location.href = iosLink; };
+vpnBtn.onclick = () => { if (vpnLink) window.location.href = vpnLink; };
 </script>
 
 </body>
