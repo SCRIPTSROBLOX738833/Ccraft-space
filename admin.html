@@ -4,11 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تسجيل الدخول / لوحة الإدارة</title>
-<link rel="stylesheet" href="styles.css">
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, getIdTokenResult } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import { getDatabase, ref, get, set, push, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 // --- Firebase Config ---
 const firebaseConfig = {
@@ -18,8 +17,7 @@ const firebaseConfig = {
   projectId: "ccraft-space-scripts",
   storageBucket: "ccraft-space-scripts.firebasestorage.app",
   messagingSenderId: "816078027492",
-  appId: "1:816078027492:web:6472cce474078fd4d90af1",
-  measurementId: "G-MHDM7YYYBN"
+  appId: "1:816078027492:web:6472cce474078fd4d90af1"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -83,15 +81,16 @@ document.getElementById("loginBtn").onclick = async ()=>{
 
   try{
     const userCredential = await signInWithEmailAndPassword(auth,email,password);
-    const tokenResult = await getIdTokenResult(userCredential.user);
-    if(tokenResult.claims.admin){
-      // ادمن
+    const uid = userCredential.user.uid;
+
+    // تحقق إذا المستخدم أدمن من قاعدة البيانات
+    const adminSnap = await get(ref(db, `admins/${uid}`));
+    if(adminSnap.exists() && adminSnap.val() === true){
       loginDiv.style.display="none";
       adminPanel.style.display="block";
       loadScripts();
       loadChat();
     } else {
-      // مستخدم عادي
       loginDiv.style.display="none";
       userPanel.style.display="block";
     }
@@ -108,7 +107,7 @@ document.getElementById("registerBtn").onclick = async ()=>{
   if(!email || !password){ loginError.textContent="ادخل البريد وكلمة المرور"; return; }
 
   try{
-    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+    await createUserWithEmailAndPassword(auth,email,password);
     alert("تم إنشاء الحساب بنجاح، الآن سجل الدخول");
   }catch(err){
     loginError.textContent="حدث خطأ أو البريد مستخدم بالفعل";
@@ -122,8 +121,9 @@ document.getElementById("adminLogoutBtn").onclick = async ()=>{ await signOut(au
 // --- مراقبة حالة تسجيل الدخول عند تحميل الصفحة ---
 onAuthStateChanged(auth, async (user)=>{
   if(user){
-    const tokenResult = await getIdTokenResult(user);
-    if(tokenResult.claims.admin){
+    const uid = user.uid;
+    const adminSnap = await get(ref(db, `admins/${uid}`));
+    if(adminSnap.exists() && adminSnap.val() === true){
       loginDiv.style.display="none";
       adminPanel.style.display="block";
       loadScripts();
@@ -236,6 +236,5 @@ async function loadChat(){
 }
 </script>
 </head>
-<body>
-</body>
+<body></body>
 </html>
