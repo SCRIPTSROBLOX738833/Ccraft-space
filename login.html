@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css">
 <title>تسجيل الدخول أو إنشاء حساب</title>
 </head>
 <body>
-<h2>تسجيل الدخول</h2>
-      <h1>تسجيل الدخول إلى CCRAFT SPACE</h1>
-<p>هذه الصفحة خاصة بحسابات موقع CCRAFT SPACE فقط</p>
-<input type="email" id="loginEmail" placeholder="البريد الإلكتروني">
-<input type="password" id="loginPass" placeholder="كلمة المرور">
-<button id="loginBtn">دخول</button>
 
-<h2>أو إنشاء حساب جديد</h2>
-<input type="email" id="regEmail" placeholder="البريد الإلكتروني">
-<input type="password" id="regPass" placeholder="كلمة المرور">
-<button id="regBtn">إنشاء حساب</button>
+<div id="authContainer">
+    <h2>تسجيل الدخول</h2>
+    <h1>تسجيل الدخول إلى CCRAFT SPACE</h1>
+    <p>هذه الصفحة خاصة بحسابات موقع CCRAFT SPACE فقط</p>
+    <input type="email" id="loginEmail" placeholder="البريد الإلكتروني">
+    <input type="password" id="loginPass" placeholder="كلمة المرور">
+    <button id="loginBtn">دخول</button>
 
-<p id="msg" style="color:red;"></p>
+    <h2>أو إنشاء حساب جديد</h2>
+    <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
+    <input type="password" id="regPass" placeholder="كلمة المرور">
+    <button id="regBtn">إنشاء حساب</button>
 
+    <p id="msg" style="color:red;"></p>
+    <button id="privacy" class="nav-button" onclick="location.href='privacy.html'">سياسة الخصوصية</button>
+</div>
 
-<button id="privacy" class="nav-button" onclick="location.href='privacy.html'">سياسة الخصوصية</button>
-
-      
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
@@ -51,7 +51,36 @@ const regEmail = document.getElementById("regEmail");
 const regPass = document.getElementById("regPass");
 const regBtn = document.getElementById("regBtn");
 const msg = document.getElementById("msg");
+const authContainer = document.getElementById("authContainer");
 
+// تحقق عند تحميل الصفحة إذا المستخدم مسجل دخول مسبقًا
+window.addEventListener("DOMContentLoaded", () => {
+    const currentUser = localStorage.getItem("currentUser");
+    if(currentUser){
+        showLoggedInView();
+    }
+});
+
+// عرض زر تسجيل خروج + الصفحة الرئيسية
+function showLoggedInView(){
+    authContainer.innerHTML = `
+        <h2>مرحبا بك!</h2>
+        <button id="logoutBtn">تسجيل خروج</button>
+        <button onclick="location.href='index.html'">الصفحة الرئيسية</button>
+    `;
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", async ()=>{
+        try{
+            await auth.signOut();
+            localStorage.removeItem("currentUser");
+            window.location.reload();
+        }catch(e){
+            alert("حدث خطأ أثناء تسجيل الخروج");
+        }
+    });
+}
+
+// تسجيل الدخول
 loginBtn.addEventListener("click", async ()=>{
     const email = loginEmail.value.trim();
     const pass = loginPass.value.trim();
@@ -59,12 +88,13 @@ loginBtn.addEventListener("click", async ()=>{
     try{
         const userCred = await signInWithEmailAndPassword(auth,email,pass);
         localStorage.setItem("currentUser", userCred.user.uid);
-        window.location.href="index.html";
+        showLoggedInView();
     }catch(e){
         msg.textContent = "خطأ في البريد أو كلمة المرور";
     }
 });
 
+// إنشاء حساب جديد
 regBtn.addEventListener("click", async ()=>{
     const email = regEmail.value.trim();
     const pass = regPass.value.trim();
@@ -74,7 +104,7 @@ regBtn.addEventListener("click", async ()=>{
         localStorage.setItem("currentUser", userCred.user.uid);
         // أضف المستخدم للداتا بيس
         await set(ref(db, `users/${userCred.user.uid}`), { email });
-        window.location.href="index.html";
+        showLoggedInView();
     }catch(e){
         msg.textContent = "حدث خطأ، حاول مرة أخرى";
     }
