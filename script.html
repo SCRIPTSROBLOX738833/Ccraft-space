@@ -84,8 +84,9 @@ async function loadScript(){
     titleEl.innerText = data.title;
     authorEl.innerText = `المؤلف: ${data.author || "مجهول"}`;
     codeEl.innerText = data.code;
+    document.getElementById('description').innerText = data.description || "لا يوجد وصف";
     loadComments();
-}
+  }
 
 function loadComments(){
     commentsDiv.innerHTML='';
