@@ -23,6 +23,7 @@
 
   <input type="text" id="searchScripts" placeholder="ابحث عن سكربت أو قسم...">
   <button id="searchButton">بحث</button>
+  <p>عدد السكربتات في الموقع: <span id="scriptCount">جارٍ التحميل...</span></p>
 
   <div id="scriptsList"></div>
 </main>
@@ -183,6 +184,19 @@ window.addEventListener('DOMContentLoaded', () => {
   if(searchBtn) searchBtn.addEventListener('click', handleSearch);
   loadScripts();
 });
+  import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+const db = getDatabase(app);
+
+async function updateScriptCount(){
+    const scriptsRef = ref(db, 'scripts');
+    const snapshot = await get(scriptsRef);
+    const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+    document.getElementById('scriptCount').innerText = count;
+}
+
+// نفذها فور تحميل الصفحة
+updateScriptCount();
 
 window.loadScripts = loadScripts;
 window.copyScript = copyScript;
