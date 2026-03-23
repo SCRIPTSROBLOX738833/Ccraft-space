@@ -55,6 +55,9 @@ const titleEl = document.getElementById('title');
 const codeEl = document.getElementById('code');
 const authorEl = document.getElementById('author');
 const copyBtn = document.getElementById('copyBtn');
+document.getElementById("rawBtn").addEventListener("click", ()=>{
+    window.location.href = `raw.html?id=${scriptId}`;
+});
 
 const commentsDiv = document.getElementById('comments');
 const commentInput = document.getElementById('commentInput');
