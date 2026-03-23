@@ -50,13 +50,16 @@
     const title = document.getElementById('scriptTitle').value;
     const code = document.getElementById('scriptCode').value;
     const category = document.getElementById('category').value;
-    if(!title || !code || !category) return alert("مطلوب كل الحقول");
+    const description = document.getElementById('scriptDescription').value;
+
+    if(!title || !code || !category || !description) return alert("مطلوب كل الحقول");
 
     const newScriptRef = push(ref(db, 'scripts'));
     await set(newScriptRef, {
       title,
       code,
       category,
+      description,       // ✅ هنا أضفنا الوصف
       timestamp: Date.now(),
       rating: 0,
       votes: 0
@@ -64,7 +67,7 @@
 
     alert("تم نشر السكربت بنجاح!");
     document.getElementById('publishForm').reset();
-  };
+};
 </script>
 </body>
 </html>
