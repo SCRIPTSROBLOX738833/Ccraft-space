@@ -19,11 +19,12 @@
 </header>
 
 <main>
+    <p>عدد السكربتات في الموقع: <span id="scriptCount">جارٍ التحميل...</span></p>
   <h1>قائمة السكربتات</h1>
 
   <input type="text" id="searchScripts" placeholder="ابحث عن سكربت أو قسم...">
   <button id="searchButton">بحث</button>
-  <p>عدد السكربتات في الموقع: <span id="scriptCount">جارٍ التحميل...</span></p>
+
 
   <div id="scriptsList"></div>
 </main>
@@ -32,6 +33,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
+// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -46,6 +48,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// نسخ السكربت
 window.copyScript = (id) => {
   const codeEl = document.getElementById(`code-${id}`);
   if(!codeEl) return alert("خطأ في السكربت");
@@ -54,6 +57,7 @@ window.copyScript = (id) => {
     .catch(() => alert("حدث خطأ أثناء النسخ"));
 };
 
+// تحديث رابط البحث في URL
 function updateURLQuery(query) {
   const url = new URL(window.location);
   if(query) url.searchParams.set('search', query);
@@ -66,16 +70,16 @@ function getSearchQuery() {
   return params.get('search') ? params.get('search').toLowerCase().trim() : '';
 }
 
+// تحميل السكربتات وعرضها
 async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
   const snapshot = await get(ref(db, 'scripts'));
-  if(!snapshot.exists()) {
-    list.innerHTML = '<p>لا توجد سكربتات حتى الآن.</p>';
-    return;
-  }
+  const scripts = snapshot.exists() ? snapshot.val() : {};
+  
+  // تحديث العدد
+  document.getElementById('scriptCount').innerText = Object.keys(scripts).length;
 
-  const scripts = snapshot.val();
   const query = getSearchQuery();
   let anyMatch = false;
 
@@ -113,6 +117,7 @@ async function loadScripts() {
     list.appendChild(p);
   }
 
+  // التعامل مع زر الإعجاب
   document.querySelectorAll('.like-btn').forEach(btn => {
     const scriptId = btn.dataset.id;
     if(localStorage.getItem(`liked_${scriptId}`)) {
@@ -133,6 +138,7 @@ async function loadScripts() {
     });
   });
 
+  // التعامل مع التقييم
   document.querySelectorAll('.rating').forEach(async div => {
     const scriptId = div.dataset.id;
     const stars = div.querySelectorAll('.star');
@@ -170,12 +176,14 @@ async function loadScripts() {
   });
 }
 
+// البحث
 function handleSearch() {
   const query = document.getElementById('searchScripts').value.toLowerCase().trim();
   updateURLQuery(query);
   loadScripts();
 }
 
+// عند تحميل الصفحة
 window.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchScripts');
   const searchBtn = document.getElementById('searchButton');
@@ -184,22 +192,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if(searchBtn) searchBtn.addEventListener('click', handleSearch);
   loadScripts();
 });
-  import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-const db = getDatabase(app);
-
-async function updateScriptCount(){
-    const scriptsRef = ref(db, 'scripts');
-    const snapshot = await get(scriptsRef);
-    const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
-    document.getElementById('scriptCount').innerText = count;
-}
-
-// نفذها فور تحميل الصفحة
-updateScriptCount();
-
-window.loadScripts = loadScripts;
-window.copyScript = copyScript;
 </script>
 </body>
 </html>
