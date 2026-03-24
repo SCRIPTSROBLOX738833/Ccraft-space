@@ -111,7 +111,7 @@ async function sendMessage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message })
         });
-        if (!res.ok) throw new Error("Network response was not ok");
+        if (!res.ok) throw new Error("خطأ في الشبكة");
         const data = await res.json();
         addMessage(data.reply, "nova");
     } catch (err) {
@@ -120,7 +120,7 @@ async function sendMessage() {
     }
 }
 
-// ارسال عند الضغط على زر او Enter
+// إرسال عند الضغط على زر أو Enter
 sendBtn.addEventListener("click", sendMessage);
 userInput.addEventListener("keypress", function(e) {
     if (e.key === "Enter") sendMessage();
