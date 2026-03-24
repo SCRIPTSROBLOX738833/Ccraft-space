@@ -106,7 +106,7 @@ async function sendMessage() {
     userInput.value = "";
 
     try {
-        const res = await fetch("https://anas9qos9.pythonanywhere.com/nova_api", {
+        const res = await fetch("https://anas9qos9.pythonanywhere.com/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message })
