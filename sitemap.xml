@@ -3,7 +3,7 @@
 
   <!-- الصفحة الرئيسية -->
   <url>
-    <loc>https://ccraftspace.netlify.app/</loc>
+    <loc>https://ccraftspace.ddnsking.com</loc>
     <lastmod>2026-03-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -11,7 +11,8 @@
 
   <!-- صفحة السكربتات -->
   <url>
-    <loc>https://ccraftspace.netlify.app/scripts.html</loc>
+    <loc>https://ccraftspace.ddnsking.com/scripts.html</loc>
+    <loc>https://ccraftspace.ddnsking.com/hacks.html</loc>
     <lastmod>2026-03-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
