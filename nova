@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nova Chatbot</title>
+<title>Nova Chatbot 🤖</title>
 <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,6 +13,9 @@
         flex-direction: column;
         align-items: center;
         padding: 20px;
+    }
+    h2 {
+        margin-bottom: 20px;
     }
     #chatbox {
         width: 100%;
@@ -103,18 +106,21 @@ async function sendMessage() {
     userInput.value = "";
 
     try {
-        const res = await fetch("http://127.0.0.1:5000/chat", {
+        const res = await fetch("https://anas9qos9.pythonanywhere.com/nova_api", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message })
         });
+        if (!res.ok) throw new Error("Network response was not ok");
         const data = await res.json();
         addMessage(data.reply, "nova");
     } catch (err) {
+        console.error(err);
         addMessage("Nova: خطأ في الاتصال بالخادم 😢", "nova");
     }
 }
 
+// ارسال عند الضغط على زر او Enter
 sendBtn.addEventListener("click", sendMessage);
 userInput.addEventListener("keypress", function(e) {
     if (e.key === "Enter") sendMessage();
