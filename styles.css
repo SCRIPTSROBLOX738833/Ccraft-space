@@ -727,3 +727,179 @@ main,
 .delta-box {
     animation: fadeIn 0.5s ease both;
 }
+
+
+/* ============================================================
+   12. script.html — عرض السكربت
+   ============================================================ */
+
+/* العنوان والمؤلف */
+
+#title {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+
+#author {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin-bottom: 28px;
+}
+
+
+/* بلوك الكود */
+
+#code {
+    background: #000;
+    border: 1px solid #1a1a28;
+    border-right: 4px solid var(--primary);
+    border-radius: var(--radius-card);
+    padding: 22px 24px;
+    color: var(--success);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    direction: ltr;
+    text-align: left;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    margin-bottom: 28px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+
+/* عناوين الأقسام */
+
+main h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    margin-top: 32px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    -webkit-text-fill-color: unset;
+    background: none;
+}
+
+
+/* الوصف */
+
+#description {
+    color: var(--text-main);
+    font-size: 1rem;
+    line-height: 1.8;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-card);
+    padding: 18px 22px;
+    margin-bottom: 28px;
+}
+
+
+/* أزرار النسخ والـ raw */
+
+#copyBtn {
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-btn);
+    padding: 12px 28px;
+    margin-left: 10px;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+}
+
+#copyBtn:hover {
+    box-shadow: 0 12px 28px rgba(139, 92, 246, 0.5);
+}
+
+#rawBtn {
+    background: rgba(0, 242, 254, 0.07);
+    color: var(--secondary);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    border-radius: var(--radius-btn);
+    padding: 12px 28px;
+}
+
+#rawBtn:hover {
+    background: var(--secondary);
+    color: var(--bg-base);
+    box-shadow: 0 0 18px rgba(0, 242, 254, 0.4);
+}
+
+
+/* التعليقات */
+
+#comments {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+#comments div {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 14px 18px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    transition: var(--transition);
+}
+
+#comments div:hover {
+    border-color: var(--border-hover);
+}
+
+
+/* حقل إضافة تعليق */
+
+#addComment {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+#commentInput {
+    flex: 1;
+    margin: 0;
+    border-radius: var(--radius-btn);
+    padding: 14px 22px;
+}
+
+#submitComment {
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-btn);
+    padding: 14px 26px;
+    white-space: nowrap;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+    margin: 0;
+}
+
+#submitComment:hover {
+    box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+}
+
+
+@media (max-width: 600px) {
+
+    #addComment {
+        flex-direction: column;
+    }
+
+    #commentInput,
+    #submitComment {
+        width: 100%;
+    }
+
+}
