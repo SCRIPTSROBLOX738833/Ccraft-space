@@ -1,7 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Tajawal:wght@400;500;700;800;900&display=swap');
 
+
+/* ============================================================
+   🎨 CSS Variables (المتغيرات)
+   ============================================================ */
+
 :root {
-    /* لوحة الألوان الأساسية */
     --bg-base: #030305;
     --bg-surface: #0a0a0f;
     --primary: #8b5cf6;
@@ -15,9 +19,157 @@
 }
 
 
-/* ==================================
-   💎 تطوير الـ Textarea (محرر النصوص)
-   ================================== */
+/* ============================================================
+   1. Reset & Global (الأساسيات)
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2d2d3d;
+    border-radius: 10px;
+    border: 2px solid var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    overflow-x: hidden;
+    background-image:
+        radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(0, 242, 254, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+
+/* ============================================================
+   2. Layout — Nav & Hero
+   ============================================================ */
+
+nav {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 15px 35px;
+    border-radius: 50px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 20px;
+    z-index: 1000;
+}
+
+
+.logo {
+    font-weight: 900;
+    font-size: 1.7rem;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+}
+
+
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 900;
+    margin-bottom: 15px;
+    text-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+}
+
+
+/* ============================================================
+   3. Form Container
+   ============================================================ */
+
+.controls {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+
+/* ============================================================
+   💎 Input[type="text"] — حقل النص
+   ============================================================ */
+
+input[type="text"] {
+    width: 100%;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 18px 30px;
+    color: var(--text-main);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: var(--transition);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    outline: none;
+}
+
+input[type="text"]::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+input[type="text"]:hover {
+    border-color: rgba(139, 92, 246, 0.3);
+    background: #0d0d14;
+}
+
+input[type="text"]:focus {
+    border-color: var(--primary);
+    background: #0d0d14;
+    box-shadow:
+        0 0 0 3px rgba(139, 92, 246, 0.15),
+        inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+    color: white;
+}
+
+input[type="text"]:focus::placeholder {
+    opacity: 0.4;
+}
+
+
+/* ============================================================
+   💎 Textarea — محرر النصوص
+   ============================================================ */
 
 textarea {
     width: 100%;
@@ -36,10 +188,16 @@ textarea {
     outline: none;
 }
 
+textarea:hover {
+    border-color: rgba(139, 92, 246, 0.25);
+}
+
 textarea:focus {
     border-color: var(--primary);
     background: #0a0a0f;
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.15), inset 0 2px 10px rgba(0, 0, 0, 0.7);
+    box-shadow:
+        0 0 0 3px rgba(139, 92, 246, 0.12),
+        inset 0 2px 10px rgba(0, 0, 0, 0.7);
     transform: translateY(-2px);
 }
 
@@ -49,9 +207,9 @@ textarea::-webkit-resizer {
 }
 
 
-/* ==================================
-   🔮 تطوير الـ Select & Option (القوائم)
-   ================================== */
+/* ============================================================
+   🔮 Select & Option — القوائم المنسدلة
+   ============================================================ */
 
 select {
     appearance: none;
@@ -71,12 +229,19 @@ select {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    outline: none;
+}
+
+select:hover {
+    border-color: rgba(139, 92, 246, 0.3);
+    background-color: #0d0d14;
 }
 
 select:focus {
-    outline: none;
     border-color: var(--secondary);
-    box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+    box-shadow:
+        0 0 0 3px rgba(0, 242, 254, 0.12),
+        0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 option {
@@ -87,13 +252,12 @@ option {
 }
 
 
-/* ==================================
-   🚀 زر الإرسال / النشر (Button)
-   بلمسة الـ "Breathing" (التنفس)
-   ================================== */
+/* ============================================================
+   🚀 Main Button — زر الإرسال الرئيسي
+   ============================================================ */
 
 .main-button {
-    margin: 8px; /* ✅ تم إصلاح الفاصلة المنقوطة */
+    margin: 8px;
     background: var(--accent-gradient);
     color: white;
     padding: 15px 35px;
@@ -117,165 +281,15 @@ option {
 }
 
 @keyframes breathing {
-    0%   { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
-    70%  { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+    0%   { box-shadow: 0 0 0 0    rgba(139, 92, 246, 0.4); }
+    70%  { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);   }
+    100% { box-shadow: 0 0 0 0    rgba(139, 92, 246, 0);   }
 }
 
 
-/* ==================================
-   1. Reset & Global (الأساسيات)
-   ================================== */
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-base);
-}
-
-::-webkit-scrollbar-thumb {
-    background: #2d2d3d;
-    border-radius: 10px;
-    border: 2px solid var(--bg-base);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
-}
-
-body {
-    font-family: 'Tajawal', sans-serif;
-    background-color: var(--bg-base);
-    color: var(--text-main);
-    overflow-x: hidden;
-    background-image:
-        radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 85% 30%, rgba(0, 242, 254, 0.05) 0%, transparent 50%);
-    background-attachment: fixed;
-}
-
-
-/* ==================================
-   2. Layout (الناف بار والقسم العلوي)
-   ================================== */
-
-nav {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    width: 90%;
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 15px 35px;
-    border-radius: 50px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 20px;
-    z-index: 1000;
-}
-
-.logo {
-    font-weight: 900;
-    font-size: 1.7rem;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 2px;
-}
-
-.hero {
-    text-align: center;
-    padding: 60px 20px;
-}
-
-.hero h1 {
-    font-size: clamp(2.5rem, 6vw, 4rem);
-    font-weight: 900;
-    margin-bottom: 15px;
-    text-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
-}
-
-
-/* ==================================
-   3. Form Elements (الحقول والقوائم)
-   ================================== */
-
-.controls {
-    max-width: 800px;
-    margin: 0 auto 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 0 20px;
-}
-
-input[type="text"],
-textarea,
-select {
-    width: 100%;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    color: white;
-    font-family: inherit;
-    transition: var(--transition);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-input[type="text"] {
-    padding: 18px 30px;
-    border-radius: 50px;
-    font-size: 1.1rem;
-}
-
-textarea {
-    border-radius: 20px;
-    padding: 20px;
-    min-height: 150px;
-    font-family: 'Fira Code', monospace;
-    resize: vertical;
-}
-
-select {
-    padding: 15px 25px;
-    border-radius: 15px;
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: left 20px center;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
-    transform: translateY(-2px);
-}
-
-option {
-    background: var(--bg-surface);
-    color: white;
-    padding: 10px;
-}
-
-
-/* ==================================
-   4. Buttons (نظام الأزرار المطور)
-   ================================== */
+/* ============================================================
+   4. Buttons — نظام الأزرار
+   ============================================================ */
 
 button,
 .btn-view {
@@ -293,12 +307,14 @@ button,
     font-family: 'Tajawal', sans-serif;
 }
 
+
 .btn-primary,
 #modal button {
     background: var(--accent-gradient);
     color: white;
     box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
 }
+
 
 .btn-view {
     background: rgba(255, 255, 255, 0.05);
@@ -312,6 +328,7 @@ button,
     box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
 }
 
+
 button:hover {
     transform: translateY(-4px) scale(1.02);
     filter: brightness(1.1);
@@ -322,9 +339,9 @@ button:active {
 }
 
 
-/* ==================================
-   5. Cards (شبكة السكربتات)
-   ================================== */
+/* ============================================================
+   5. Cards — شبكة السكربتات
+   ============================================================ */
 
 .grid {
     display: grid;
@@ -332,6 +349,7 @@ button:active {
     gap: 30px;
     padding: 20px;
 }
+
 
 .card {
     background: var(--bg-surface);
@@ -366,6 +384,7 @@ button:active {
     opacity: 1;
 }
 
+
 .card-tag {
     font-size: 0.7rem;
     background: rgba(139, 92, 246, 0.15);
@@ -376,14 +395,15 @@ button:active {
 }
 
 
-/* ==================================
-   6. Modal & Code (نافذة الكود)
-   ================================== */
+/* ============================================================
+   6. Modal & Code — نافذة الكود
+   ============================================================ */
 
 #modal {
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(12px);
 }
+
 
 .modal-content {
     background: #0a0a0f;
@@ -404,6 +424,7 @@ button:active {
     }
 }
 
+
 pre {
     background: #000 !important;
     border: 1px solid #1a1a24;
@@ -414,6 +435,7 @@ pre {
     direction: ltr;
     font-family: 'Fira Code', monospace;
 }
+
 
 .close-btn {
     float: left;
@@ -432,9 +454,9 @@ pre {
 }
 
 
-/* ==================================
-   7. Animations (التحريكات)
-   ================================== */
+/* ============================================================
+   7. Animations — التحريكات
+   ============================================================ */
 
 @keyframes fadeIn {
     from {
