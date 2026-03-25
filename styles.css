@@ -4,8 +4,8 @@
     /* لوحة الألوان الأساسية */
     --bg-base: #030305;
     --bg-surface: #0a0a0f;
-    --primary: #8b5cf6;
-    --secondary: #00f2fe;
+    --primary: #8b5cf6; 
+    --secondary: #00f2fe; 
     --accent-gradient: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
     --text-main: #f8fafc;
     --text-muted: #8b949e;
@@ -25,10 +25,10 @@ textarea {
     border-radius: 16px;
     padding: 18px;
     color: #4ade80; /* لون كودي مريح للعين */
-    font-family: 'Fira Code', monospace;
+    font-family: 'Fira Code', monospace; /* خط المبرمجين */
     font-size: 0.95rem;
     line-height: 1.6;
-    resize: vertical;
+    resize: vertical; /* يمنع التخريب العرضي للتصميم */
     transition: all 0.3s ease;
     box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
     outline: none;
@@ -50,14 +50,17 @@ textarea::-webkit-resizer {
 /* ==================================
    🔮 تطوير الـ Select & Option (القوائم)
    ================================== */
+/* ملاحظة: الـ Option نفسه محدود في التعديل بالـ CSS العادي، 
+   لذا سنركز على الـ Select لجعله يبدو احترافياً */
+
 select {
-    appearance: none;
+    appearance: none; /* إخفاء سهم المتصفح الافتراضي البشع */
     -webkit-appearance: none;
     width: 100%;
     background: var(--bg-surface);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: left 15px center;
+    background-position: left 15px center; /* السهم جهة اليسار لأن الموقع RTL */
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 14px 20px 14px 45px;
@@ -67,7 +70,7 @@ select {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 select:focus {
@@ -76,6 +79,7 @@ select:focus {
     box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
 }
 
+/* تنسيق الـ Option (بقدر ما تسمح به المتصفحات) */
 option {
     background-color: #0f0f16;
     color: var(--text-main);
@@ -85,6 +89,7 @@ option {
 
 /* ==================================
    🚀 زر الإرسال / النشر (Button) 
+   بلمسة الـ "Breathing" (التنفس)
    ================================== */
 .main-button {
     background: var(--accent-gradient);
@@ -100,7 +105,6 @@ option {
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
-    animation: breathing 2.5s infinite;
 }
 
 .main-button:hover {
@@ -109,11 +113,17 @@ option {
     filter: brightness(1.1);
 }
 
+/* تأثير الوميض الدائم الخفيف لجذب الانتباه */
 @keyframes breathing {
     0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
     70% { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
     100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
 }
+
+.main-button {
+    animation: breathing 2.5s infinite;
+}
+
 
 /* ==================================
    1. Reset & Global (الأساسيات)
@@ -124,23 +134,10 @@ option {
     padding: 0;
 }
 
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-base);
-}
-
-::-webkit-scrollbar-thumb {
-    background: #2d2d3d;
-    border-radius: 10px;
-    border: 2px solid var(--bg-base);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: #2d2d3d; border-radius: 10px; border: 2px solid var(--bg-base); }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
 body {
     font-family: 'Tajawal', sans-serif;
@@ -208,16 +205,14 @@ nav {
     padding: 0 20px;
 }
 
-input[type="text"], 
-textarea, 
-select {
+input[type="text"], textarea, select {
     width: 100%;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: white;
     font-family: inherit;
     transition: var(--transition);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
 }
 
 input[type="text"] {
@@ -226,11 +221,37 @@ input[type="text"] {
     font-size: 1.1rem;
 }
 
+textarea {
+    border-radius: 20px;
+    padding: 20px;
+    min-height: 150px;
+    font-family: 'Fira Code', monospace;
+    resize: vertical;
+}
+
+select {
+    padding: 15px 25px;
+    border-radius: 15px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 20px center;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+option { background: var(--bg-surface); color: white; padding: 10px; }
+
 /* ==================================
    4. Buttons (نظام الأزرار المطور)
    ================================== */
-button, 
-.btn-view {
+button, .btn-view {
     padding: 12px 28px;
     border-radius: 14px;
     border: none;
@@ -245,13 +266,14 @@ button,
     font-family: 'Tajawal', sans-serif;
 }
 
-.btn-primary, 
-#modal button {
+/* الزر الرئيسي (توهج بنفسجي) */
+.btn-primary, #modal button {
     background: var(--accent-gradient);
     color: white;
     box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
 }
 
+/* زر عرض السكربت (زجاجي نيون) */
 .btn-view {
     background: rgba(255, 255, 255, 0.05);
     color: var(--secondary);
@@ -269,9 +291,7 @@ button:hover {
     filter: brightness(1.1);
 }
 
-button:active {
-    transform: scale(0.95);
-}
+button:active { transform: scale(0.95); }
 
 /* ==================================
    5. Cards (شبكة السكربتات)
@@ -291,30 +311,23 @@ button:active {
     position: relative;
     transition: var(--transition);
     overflow: hidden;
-    animation: fadeIn 0.6s ease backwards;
 }
 
 .card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
+    top: 0; left: 0; width: 100%; height: 4px;
     background: var(--accent-gradient);
-    opacity: 0;
-    transition: 0.3s;
+    opacity: 0; transition: 0.3s;
 }
 
 .card:hover {
     transform: translateY(-10px);
     border-color: rgba(139, 92, 246, 0.4);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-.card:hover::before {
-    opacity: 1;
-}
+.card:hover::before { opacity: 1; }
 
 .card-tag {
     font-size: 0.7rem;
@@ -349,34 +362,29 @@ button:active {
 pre {
     background: #000 !important;
     border: 1px solid #1a1a24;
-    border-right: 4px solid var(--primary);
+    border-right: 4px solid var(--primary); /* ميز لجهة اليمين لأننا RTL */
     padding: 25px;
     border-radius: 18px;
     color: #4ade80;
-    direction: ltr;
+    direction: ltr; /* الكود دائماً يسار */
     font-family: 'Fira Code', monospace;
 }
 
 .close-btn {
     float: left;
-    background: rgba(255, 255, 255, 0.05);
-    width: 40px;
-    height: 40px;
+    background: rgba(255,255,255,0.05);
+    width: 40px; height: 40px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
 }
 
-.close-btn:hover {
-    background: #ef4444;
-    color: white;
-}
+.close-btn:hover { background: #ef4444; color: white; }
 
 /* ==================================
    7. Animations (التحريكات)
    ================================== */
+.card { animation: fadeIn 0.6s ease backwards; }
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
-}
+    }
