@@ -1,107 +1,279 @@
-/* ==================================
-   🔥 نظام الأزرار الاحترافية (Premium Buttons)
-   ================================== */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Tajawal:wght@400;500;700;800;900&display=swap');
 
-/* 1. الأساسيات المشتركة (تُطبق على كل الأزرار) */
-.btn {
-    position: relative;
+:root {
+    /* لوحة الألوان الأساسية */
+    --bg-base: #030305;
+    --bg-surface: #0a0a0f;
+    --primary: #8b5cf6; 
+    --secondary: #00f2fe; 
+    --accent-gradient: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+    --text-main: #f8fafc;
+    --text-muted: #8b949e;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(10, 10, 15, 0.7);
+    --transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==================================
+   1. Reset & Global (الأساسيات)
+   ================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: #2d2d3d; border-radius: 10px; border: 2px solid var(--bg-base); }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    overflow-x: hidden;
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(0, 242, 254, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+/* ==================================
+   2. Layout (الناف بار والقسم العلوي)
+   ================================== */
+nav {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 15px 35px;
+    border-radius: 50px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 20px;
+    z-index: 1000;
+}
+
+.logo {
+    font-weight: 900;
+    font-size: 1.7rem;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+}
+
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 900;
+    margin-bottom: 15px;
+    text-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+}
+
+/* ==================================
+   3. Form Elements (الحقول والقوائم)
+   ================================== */
+.controls {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+input[type="text"], textarea, select {
+    width: 100%;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: white;
+    font-family: inherit;
+    transition: var(--transition);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+input[type="text"] {
+    padding: 18px 30px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+}
+
+textarea {
+    border-radius: 20px;
+    padding: 20px;
+    min-height: 150px;
+    font-family: 'Fira Code', monospace;
+    resize: vertical;
+}
+
+select {
+    padding: 15px 25px;
+    border-radius: 15px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 20px center;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+option { background: var(--bg-surface); color: white; padding: 10px; }
+
+/* ==================================
+   4. Buttons (نظام الأزرار المطور)
+   ================================== */
+button, .btn-view {
+    padding: 12px 28px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 14px 32px;
-    font-family: 'Tajawal', sans-serif;
-    font-weight: 800;
-    font-size: 1rem;
-    border-radius: 14px;
-    border: none;
-    cursor: pointer;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-transform: uppercase;
     letter-spacing: 1px;
-    z-index: 1;
+    font-family: 'Tajawal', sans-serif;
 }
 
-/* تأثير الضغط (الارتداد) لكل الأزرار */
-.btn:active {
-    transform: scale(0.92) !important;
+/* الزر الرئيسي (توهج بنفسجي) */
+.btn-primary, #modal button {
+    background: var(--accent-gradient);
+    color: white;
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
 }
 
-/* ----------------------------------
-   2. الزر الرئيسي (Neon Glow) 
-   (استخدمه للنسخ أو الأكشن الأساسي)
-   ---------------------------------- */
-.btn-primary {
-    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-    color: #ffffff;
-    box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3), inset 0 2px 0 rgba(255,255,255,0.2);
+/* زر عرض السكربت (زجاجي نيون) */
+.btn-view {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--secondary);
+    border: 1px solid rgba(0, 242, 254, 0.2);
 }
 
-.btn-primary:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 15px 35px rgba(139, 92, 246, 0.6), inset 0 2px 0 rgba(255,255,255,0.3);
-    letter-spacing: 3px; /* تباعد الحروف يعطي شعور فخم */
+.card:hover .btn-view {
+    background: var(--secondary);
+    color: var(--bg-base);
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
 }
 
-/* لمعة متحركة (Sweep Light) داخل الزر */
-.btn-primary::before {
+button:hover {
+    transform: translateY(-4px) scale(1.02);
+    filter: brightness(1.1);
+}
+
+button:active { transform: scale(0.95); }
+
+/* ==================================
+   5. Cards (شبكة السكربتات)
+   ================================== */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+.card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 30px;
+    position: relative;
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card::before {
     content: '';
     position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.6s ease;
-    z-index: -1;
+    top: 0; left: 0; width: 100%; height: 4px;
+    background: var(--accent-gradient);
+    opacity: 0; transition: 0.3s;
 }
 
-.btn-primary:hover::before {
-    left: 100%;
+.card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-/* ----------------------------------
-   3. الزر الزجاجي (Ghost/Glass)
-   (استخدمه لعرض التفاصيل أو الأزرار الثانوية)
-   ---------------------------------- */
-.btn-ghost {
-    background: rgba(255, 255, 255, 0.03);
-    color: #00f2fe; /* أزرق سماوي نيون */
-    border: 1px solid rgba(0, 242, 254, 0.3);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+.card:hover::before { opacity: 1; }
+
+.card-tag {
+    font-size: 0.7rem;
+    background: rgba(139, 92, 246, 0.15);
+    color: #b48bf8;
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-weight: 800;
 }
 
-.btn-ghost:hover {
-    background: rgba(0, 242, 254, 0.15);
-    border-color: #00f2fe;
-    color: #ffffff;
-    box-shadow: 0 0 25px rgba(0, 242, 254, 0.5), inset 0 0 10px rgba(0, 242, 254, 0.2);
-    transform: translateY(-3px);
+/* ==================================
+   6. Modal & Code (نافذة الكود)
+   ================================== */
+#modal {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
 }
 
-/* ----------------------------------
-   4. زر السايبر (Cyberpunk / Matrix)
-   (استخدمه لتشغيل السكربتات أو الهاكات)
-   ---------------------------------- */
-.btn-cyber {
-    background: #050505;
-    color: #4ade80; /* أخضر هكر */
-    border: 1px solid #4ade80;
-    border-radius: 6px; /* حواف شبه حادة */
-    text-shadow: 0 0 5px rgba(74, 222, 128, 0.5);
-    /* ظل صلب يعطي طابع الـ Retro/Cyber */
-    box-shadow: 4px 4px 0px rgba(74, 222, 128, 0.3);
+.modal-content {
+    background: #0a0a0f;
+    border-radius: 30px;
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 50px rgba(139, 92, 246, 0.2);
+    animation: modalSlide 0.5s ease;
 }
 
-.btn-cyber:hover {
-    background: #4ade80;
-    color: #050505;
-    box-shadow: 0px 0px 25px rgba(74, 222, 128, 0.8);
-    transform: translate(-3px, -3px);
-    font-weight: 900;
+@keyframes modalSlide {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.btn-cyber:active {
-    box-shadow: 0px 0px 0px rgba(74, 222, 128, 0);
-    transform: translate(3px, 3px) !important;
+pre {
+    background: #000 !important;
+    border: 1px solid #1a1a24;
+    border-right: 4px solid var(--primary); /* ميز لجهة اليمين لأننا RTL */
+    padding: 25px;
+    border-radius: 18px;
+    color: #4ade80;
+    direction: ltr; /* الكود دائماً يسار */
+    font-family: 'Fira Code', monospace;
+}
+
+.close-btn {
+    float: left;
+    background: rgba(255,255,255,0.05);
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.close-btn:hover { background: #ef4444; color: white; }
+
+/* ==================================
+   7. Animations (التحريكات)
+   ================================== */
+.card { animation: fadeIn 0.6s ease backwards; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
 }
