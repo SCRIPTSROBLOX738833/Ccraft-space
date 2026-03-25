@@ -92,6 +92,7 @@ option {
    بلمسة الـ "Breathing" (التنفس)
    ================================== */
 .main-button {
+    margin: 8px
     background: var(--accent-gradient);
     color: white;
     padding: 15px 35px;
