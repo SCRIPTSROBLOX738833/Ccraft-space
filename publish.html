@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="styles.css">
   <style>
 
-    /* إشعار تسجيل الدخول */
     #authNotice {
         max-width: 800px;
         margin: 40px auto;
@@ -65,7 +64,6 @@
         box-shadow: none;
     }
 
-    /* بادج النجاح */
     #successBadge {
         display: none;
         max-width: 800px;
@@ -81,6 +79,7 @@
         display: flex;
         align-items: center;
         gap: 14px;
+        margin-bottom: 10px;
         animation: fadeIn 0.4s ease both;
     }
 
@@ -99,7 +98,6 @@
         margin: 0;
     }
 
-    /* معلومات اليوزر في الفورم */
     #userInfo {
         display: none;
         max-width: 800px;
@@ -117,7 +115,7 @@
         padding: 12px 18px;
     }
 
-    .user-bar .ub-avatar {
+    .ub-avatar {
         width: 36px; height: 36px;
         border-radius: 50%;
         background: var(--accent-gradient);
@@ -130,10 +128,10 @@
         flex-shrink: 0;
     }
 
-    .user-bar .ub-name  { font-weight: 800; font-size: 0.9rem; }
-    .user-bar .ub-email { color: var(--text-muted); font-size: 0.78rem; }
+    .ub-name  { font-weight: 800; font-size: 0.9rem; }
+    .ub-email { color: var(--text-muted); font-size: 0.78rem; }
 
-    .user-bar .ub-badge {
+    .ub-badge {
         margin-right: auto;
         background: var(--primary-dim);
         color: var(--primary);
@@ -142,6 +140,116 @@
         padding: 4px 12px;
         border-radius: 50px;
     }
+
+
+    /* ============================================================
+       Map Selector
+       ============================================================ */
+
+    .map-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .map-toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .no-map-btn {
+        background: rgba(255,255,255,0.04);
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-btn);
+        padding: 10px 20px;
+        font-size: 0.88rem;
+        font-family: 'Tajawal', sans-serif;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+        margin: 0;
+    }
+
+    .no-map-btn.active {
+        background: rgba(74,222,128,0.1);
+        color: var(--success);
+        border-color: rgba(74,222,128,0.4);
+    }
+
+    .no-map-btn:hover { transform: translateY(-2px); filter: none; }
+
+    /* شبكة الماباتالمشهورة */
+    .map-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 8px;
+    }
+
+    .map-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 10px 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .map-card:hover {
+        border-color: rgba(139,92,246,0.4);
+        color: var(--text-main);
+        transform: translateY(-2px);
+    }
+
+    .map-card.selected {
+        background: var(--primary-dim);
+        border-color: rgba(139,92,246,0.5);
+        color: var(--primary);
+    }
+
+    .map-card .map-icon { font-size: 1.4rem; }
+
+    /* حقل ماب مخصص */
+    .custom-map-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .custom-map-row input {
+        flex: 1;
+        margin: 0;
+        border-radius: 14px;
+        padding: 12px 18px;
+        font-size: 0.9rem;
+    }
+
+    /* معاينة الماب المختار */
+    .map-preview {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        background: rgba(139,92,246,0.07);
+        border: 1px solid rgba(139,92,246,0.25);
+        border-radius: 12px;
+        padding: 10px 16px;
+        font-size: 0.85rem;
+        color: var(--text-main);
+        font-weight: 700;
+    }
+
+    .map-preview.show { display: flex; }
+    .map-preview .mp-icon { font-size: 1.2rem; }
 
   </style>
 </head>
@@ -153,15 +261,11 @@
 </header>
 
 
-<!-- إشعار لو مش مسجل دخول -->
 <div id="authNotice">
     <div class="notice-card">
         <span class="n-icon">🔐</span>
         <h2>محتاج تسجّل دخول الأول</h2>
-        <p>
-            عشان تنشر سكربت وتحسب في بروفايلك وتاخد البادجات،<br>
-            لازم يكون عندك حساب على CCRAFT SPACE.
-        </p>
+        <p>عشان تنشر سكربت وتحسب في بروفايلك وتاخد البادجات،<br>لازم يكون عندك حساب على CCRAFT SPACE.</p>
         <div class="notice-btns">
             <button onclick="location.href='login.html'">🚀 تسجيل الدخول</button>
             <button class="ghost" onclick="location.href='index.html'">رجوع للرئيسية</button>
@@ -170,7 +274,6 @@
 </div>
 
 
-<!-- معلومات اليوزر -->
 <div id="userInfo">
     <div class="user-bar">
         <div class="ub-avatar" id="ubAvatar">أ</div>
@@ -183,24 +286,100 @@
 </div>
 
 
-<!-- بادج مكتسب -->
 <div id="successBadge"></div>
 
 
-<!-- الفورم -->
 <main id="publishMain" style="display:none">
   <h1>📤 نشر سكربت جديد</h1>
 
   <form id="publishForm">
+
     <input    type="text" id="scriptTitle"       placeholder="عنوان السكربت" required>
     <textarea             id="scriptCode"        placeholder="كود السكربت هنا..." rows="6" required></textarea>
     <textarea             id="scriptDescription" placeholder="اكتب وصف للسكربت..." rows="3" required></textarea>
-    <select               id="category" required>
+
+    <select id="category" required>
       <option value="">اختر القسم</option>
       <option value="game">Game Scripts</option>
       <option value="admin">Admin Scripts</option>
       <option value="ai">AI & NPCs</option>
     </select>
+
+
+    <!-- ============================================================
+         🗺️ اختيار الماب
+         ============================================================ -->
+
+    <div style="margin-top:4px">
+        <label style="display:block;color:var(--text-muted);font-size:0.85rem;font-weight:700;margin-bottom:10px">
+            🗺️ الماب المخصص للسكربت
+        </label>
+
+        <div class="map-section">
+
+            <!-- زر "ليس لماب محدد" -->
+            <div class="map-toggle-row">
+                <button type="button" class="no-map-btn active" id="noMapBtn">
+                    🌐 ليس لماب محدد
+                </button>
+                <span style="color:var(--text-muted);font-size:0.78rem">أو اختر ماب من الأسفل</span>
+            </div>
+
+            <!-- مابات Roblox الشهيرة -->
+            <div class="map-grid" id="mapGrid">
+                <div class="map-card" data-map="Adopt Me">
+                    <span class="map-icon">🏡</span>Adopt Me
+                </div>
+                <div class="map-card" data-map="Bloxburg">
+                    <span class="map-icon">🏗️</span>Bloxburg
+                </div>
+                <div class="map-card" data-map="Brookhaven">
+                    <span class="map-icon">🌆</span>Brookhaven
+                </div>
+                <div class="map-card" data-map="Arsenal">
+                    <span class="map-icon">🔫</span>Arsenal
+                </div>
+                <div class="map-card" data-map="Bedwars">
+                    <span class="map-icon">🛏️</span>Bedwars
+                </div>
+                <div class="map-card" data-map="Murder Mystery 2">
+                    <span class="map-icon">🔪</span>MM2
+                </div>
+                <div class="map-card" data-map="Jailbreak">
+                    <span class="map-icon">🚔</span>Jailbreak
+                </div>
+                <div class="map-card" data-map="Pet Simulator X">
+                    <span class="map-icon">🐾</span>Pet Sim X
+                </div>
+                <div class="map-card" data-map="Doors">
+                    <span class="map-icon">🚪</span>Doors
+                </div>
+                <div class="map-card" data-map="Da Hood">
+                    <span class="map-icon">🏙️</span>Da Hood
+                </div>
+                <div class="map-card" data-map="Anime Fighting Sim">
+                    <span class="map-icon">⚔️</span>Anime Fight
+                </div>
+                <div class="map-card" data-map="Tower of Hell">
+                    <span class="map-icon">🗼</span>Tower of Hell
+                </div>
+            </div>
+
+            <!-- ماب مخصص -->
+            <div class="custom-map-row">
+                <input type="text" id="customMap" placeholder="أو اكتب اسم الماب يدوياً...">
+            </div>
+
+            <!-- معاينة الاختيار -->
+            <div class="map-preview" id="mapPreview">
+                <span class="mp-icon">🗺️</span>
+                <span id="mapPreviewText">—</span>
+            </div>
+
+        </div>
+    </div>
+
+
     <button type="button" id="publishBtn">📤 نشر السكربت</button>
   </form>
 </main>
@@ -208,7 +387,7 @@
 
 <script type="module">
   import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+  import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -227,28 +406,24 @@
   const auth = getAuth(app);
 
   let currentUser = null;
-
-
-  /* ============================================================
-     تعريف البادجات (نفس profile.html)
-     ============================================================ */
+  let selectedMap = null; // null = ليس لماب محدد
 
   const ALL_BADGES = [
-    { id: 'first_script',  icon: '🚀', name: 'الانطلاقة',  desc: 'نشر أول سكربت',    check: s => s.scripts >= 1  },
-    { id: 'five_scripts',  icon: '📦', name: 'مجموعة',     desc: 'نشر 5 سكربتات',    check: s => s.scripts >= 5  },
-    { id: 'ten_scripts',   icon: '💎', name: 'محترف',       desc: 'نشر 10 سكربتات',   check: s => s.scripts >= 10 },
-    { id: 'first_like',    icon: '👍', name: 'محبوب',       desc: 'أول لايك',          check: s => s.totalLikes >= 1  },
-    { id: 'ten_likes',     icon: '🔥', name: 'مشهور',       desc: '10 لايكات',         check: s => s.totalLikes >= 10 },
-    { id: 'fifty_likes',   icon: '⭐', name: 'نجم',         desc: '50 لايك',           check: s => s.totalLikes >= 50 },
-    { id: 'hundred_likes', icon: '👑', name: 'أسطورة',      desc: '100 لايك',          check: s => s.totalLikes >= 100},
-    { id: 'good_rating',   icon: '🏆', name: 'تقييم ممتاز', desc: 'متوسط تقييم 4+',   check: s => s.avgRating >= 4   },
-    { id: 'all_categories',icon: '🌈', name: 'متنوع',       desc: '3 أقسام مختلفة',   check: s => s.categories >= 3  },
-    { id: 'veteran',       icon: '🎖️', name: 'مخضرم',      desc: 'عضو أكثر من 30 يوم',check: s => s.daysOld >= 30   },
+    { id: 'first_script',  icon: '🚀', name: 'الانطلاقة',   desc: 'نشر أول سكربت',      check: s => s.scripts >= 1   },
+    { id: 'five_scripts',  icon: '📦', name: 'مجموعة',      desc: 'نشر 5 سكربتات',      check: s => s.scripts >= 5   },
+    { id: 'ten_scripts',   icon: '💎', name: 'محترف',        desc: 'نشر 10 سكربتات',     check: s => s.scripts >= 10  },
+    { id: 'first_like',    icon: '👍', name: 'محبوب',        desc: 'أول لايك',            check: s => s.totalLikes >= 1   },
+    { id: 'ten_likes',     icon: '🔥', name: 'مشهور',        desc: '10 لايكات',           check: s => s.totalLikes >= 10  },
+    { id: 'fifty_likes',   icon: '⭐', name: 'نجم',          desc: '50 لايك',             check: s => s.totalLikes >= 50  },
+    { id: 'hundred_likes', icon: '👑', name: 'أسطورة',       desc: '100 لايك',            check: s => s.totalLikes >= 100 },
+    { id: 'good_rating',   icon: '🏆', name: 'تقييم ممتاز',  desc: 'متوسط تقييم 4+',     check: s => s.avgRating >= 4    },
+    { id: 'all_categories',icon: '🌈', name: 'متنوع',        desc: '3 أقسام مختلفة',     check: s => s.categories >= 3   },
+    { id: 'veteran',       icon: '🎖️', name: 'مخضرم',       desc: 'عضو أكثر من 30 يوم', check: s => s.daysOld >= 30     },
   ];
 
 
   /* ============================================================
-     Auth — تحقق من تسجيل الدخول
+     Auth
      ============================================================ */
 
   onAuthStateChanged(auth, user => {
@@ -256,7 +431,6 @@
         currentUser = user;
         showForm(user);
     } else {
-        // مش مسجل دخول
         document.getElementById('authNotice').style.display = 'block';
         document.getElementById('publishMain').style.display = 'none';
         document.getElementById('userInfo').style.display   = 'none';
@@ -265,15 +439,65 @@
 
   function showForm(user) {
     const name = user.email.split('@')[0];
-
-    // معلومات اليوزر
-    document.getElementById('ubAvatar').innerText = name.charAt(0).toUpperCase();
-    document.getElementById('ubName').innerText   = name;
-    document.getElementById('ubEmail').innerText  = user.email;
-    document.getElementById('userInfo').style.display   = 'block';
+    document.getElementById('ubAvatar').innerText        = name.charAt(0).toUpperCase();
+    document.getElementById('ubName').innerText          = name;
+    document.getElementById('ubEmail').innerText         = user.email;
+    document.getElementById('userInfo').style.display    = 'block';
     document.getElementById('publishMain').style.display = 'block';
     document.getElementById('authNotice').style.display  = 'none';
   }
+
+
+  /* ============================================================
+     Map Logic
+     ============================================================ */
+
+  const noMapBtn    = document.getElementById('noMapBtn');
+  const mapPreview  = document.getElementById('mapPreview');
+  const mapPrevText = document.getElementById('mapPreviewText');
+  const customMap   = document.getElementById('customMap');
+
+  function setMap(name) {
+    selectedMap = name;
+    // أزل active من كل cards
+    document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
+    if (name) {
+        noMapBtn.classList.remove('active');
+        mapPreview.classList.add('show');
+        mapPrevText.innerText = name;
+    } else {
+        noMapBtn.classList.add('active');
+        mapPreview.classList.remove('show');
+        customMap.value = '';
+    }
+  }
+
+  // زر "ليس لماب محدد"
+  noMapBtn.addEventListener('click', () => setMap(null));
+
+  // كاردز المابات
+  document.querySelectorAll('.map-card').forEach(card => {
+    card.addEventListener('click', () => {
+        document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        customMap.value = '';
+        setMap(card.dataset.map);
+    });
+  });
+
+  // الماب المخصص
+  customMap.addEventListener('input', () => {
+    const val = customMap.value.trim();
+    if (val) {
+        document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
+        noMapBtn.classList.remove('active');
+        mapPreview.classList.add('show');
+        mapPrevText.innerText = val;
+        selectedMap = val;
+    } else {
+        setMap(null);
+    }
+  });
 
 
   /* ============================================================
@@ -294,18 +518,18 @@
     }
 
     const btn = document.getElementById('publishBtn');
-    btn.disabled    = true;
-    btn.innerText   = '⏳ جارٍ النشر...';
+    btn.disabled  = true;
+    btn.innerText = '⏳ جارٍ النشر...';
 
     const username = currentUser.email.split('@')[0];
 
-    // نشر السكربت مع معلومات المؤلف
     const newRef = push(ref(db, 'scripts'));
     await set(newRef, {
         title,
         code,
         category,
         description,
+        map:         selectedMap || null,   // ← الماب (null لو مش محدد)
         author:      username,
         authorEmail: currentUser.email,
         authorUid:   currentUser.uid,
@@ -315,26 +539,24 @@
         likes:       0,
     });
 
-    // تحسيب البادجات بعد النشر
     await checkAndAwardBadges();
 
     btn.disabled  = false;
     btn.innerText = '📤 نشر السكربت';
     document.getElementById('publishForm').reset();
+    setMap(null);
   });
 
 
   /* ============================================================
-     حساب البادجات
+     البادجات
      ============================================================ */
 
   async function checkAndAwardBadges() {
     const uid      = currentUser.uid;
     const username = currentUser.email.split('@')[0];
-
-    // جيب كل سكربتات اليوزر
     const scriptsSnap = await get(ref(db, 'scripts'));
-    const all = scriptsSnap.exists() ? scriptsSnap.val() : {};
+    const all  = scriptsSnap.exists() ? scriptsSnap.val() : {};
     const mine = Object.values(all).filter(s =>
         s.author === username || s.authorEmail === currentUser.email
     );
@@ -348,71 +570,40 @@
         if (s.category) cats.add(s.category);
     });
 
-    const daysOld = (Date.now() - parseInt(currentUser.metadata.createdAt)) / (86400000);
     const stats = {
         scripts:    mine.length,
         totalLikes,
         avgRating:  totalVotes > 0 ? totalRating / totalVotes : 0,
         categories: cats.size,
-        daysOld,
+        daysOld:    (Date.now() - parseInt(currentUser.metadata.createdAt)) / 86400000,
     };
 
-    // جيب البادجات المحفوظة
     const savedSnap = await get(ref(db, `users/${uid}/badges`));
     const saved = savedSnap.exists() ? savedSnap.val() : {};
-
     const newlyEarned = [];
 
     for (const badge of ALL_BADGES) {
         if (badge.check(stats) && !saved[badge.id]) {
-            // بادج جديد!
             await set(ref(db, `users/${uid}/badges/${badge.id}`), { earnedAt: Date.now() });
             newlyEarned.push(badge);
         }
     }
 
-    // عرض البادجات الجديدة
-    if (newlyEarned.length > 0) {
-        showNewBadges(newlyEarned);
-    } else {
-        showSuccessOnly();
-    }
+    newlyEarned.length > 0 ? showNewBadges(newlyEarned) : showSuccessOnly();
   }
 
-
-  /* ============================================================
-     عرض البادجات الجديدة
-     ============================================================ */
-
   function showNewBadges(badges) {
-    const container = document.getElementById('successBadge');
-    container.style.display = 'block';
-    container.innerHTML = '';
-
-    // رسالة نجاح النشر
-    const successDiv = document.createElement('div');
-    successDiv.style.cssText = `
-        background: linear-gradient(135deg, rgba(74,222,128,0.1), rgba(59,130,246,0.05));
-        border: 1px solid rgba(74,222,128,0.3);
-        border-radius: 16px;
-        padding: 16px 22px;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        animation: fadeIn 0.4s ease both;
-        font-family: Tajawal, sans-serif;
-    `;
-    successDiv.innerHTML = `
-        <span style="font-size:1.5rem">✅</span>
-        <div>
-            <div style="font-weight:800;color:#4ade80;font-size:0.9rem">تم نشر السكربت بنجاح!</div>
-            <div style="color:var(--text-muted);font-size:0.78rem">ظهر في قائمة السكربتات وفي بروفايلك</div>
+    const c = document.getElementById('successBadge');
+    c.style.display = 'block';
+    c.innerHTML = `
+        <div class="badge-earned">
+            <div class="be-icon">✅</div>
+            <div class="be-text">
+                <h4>تم نشر السكربت بنجاح!</h4>
+                <p>ظهر في قائمة السكربتات وفي بروفايلك</p>
+            </div>
         </div>
     `;
-    container.appendChild(successDiv);
-
-    // البادجات الجديدة
     badges.forEach((badge, i) => {
         const div = document.createElement('div');
         div.className = 'badge-earned';
@@ -424,17 +615,16 @@
                 <p>${badge.desc} — ظهر على بروفايلك</p>
             </div>
         `;
-        container.appendChild(div);
+        c.appendChild(div);
     });
-
-    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    c.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function showSuccessOnly() {
-    const container = document.getElementById('successBadge');
-    container.style.display = 'block';
-    container.innerHTML = `
-        <div class="badge-earned" style="animation: fadeIn 0.4s ease both">
+    const c = document.getElementById('successBadge');
+    c.style.display = 'block';
+    c.innerHTML = `
+        <div class="badge-earned">
             <div class="be-icon">✅</div>
             <div class="be-text">
                 <h4>تم نشر السكربت بنجاح!</h4>
@@ -442,7 +632,7 @@
             </div>
         </div>
     `;
-    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    c.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
 </script>
