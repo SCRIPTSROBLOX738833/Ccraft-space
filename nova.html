@@ -103,10 +103,18 @@
        Chatbox
        ============================================================ */
 
-    ##chatbox {
-    flex: 1;
-    min-height: 250px;
-    max-height: calc(100vh - 220px);
+    #chatbox {
+        flex: 1;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 20px 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 0;
+        margin-bottom: 14px;
     }
 
     /* رسالة */
