@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
 Sitemap: https://ccraftspace.ddnsking.com/sitemap.xml
