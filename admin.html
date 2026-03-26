@@ -1,241 +1,1307 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الإدارة</title>
+<title>CCRAFT SPACE | لوحة الإدارة</title>
 <link rel="stylesheet" href="styles.css">
+<style>
+
+/* ============================================================
+   Admin — Layout
+   ============================================================ */
+
+body { overflow-x: hidden; }
+
+/* ---- Login Screen ---- */
+
+#loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 28px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease both;
+}
+
+.login-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+    background: var(--accent-gradient);
+}
+
+.login-box h1 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+}
+
+.login-box p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-bottom: 32px;
+}
+
+.login-box input {
+    margin-bottom: 14px;
+    border-radius: 14px;
+    text-align: right;
+}
+
+#loginBtn {
+    width: 100%;
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-btn);
+    padding: 14px;
+    font-size: 1rem;
+    margin-top: 4px;
+    box-shadow: 0 8px 22px rgba(139,92,246,0.35);
+}
+
+#loginError {
+    color: var(--danger);
+    font-size: 0.85rem;
+    margin-top: 12px;
+    min-height: 20px;
+}
+
+
+/* ---- Admin Layout ---- */
+
+#adminPanel {
+    display: none;
+    min-height: 100vh;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* ---- Sidebar ---- */
+
+.sidebar {
+    width: 260px;
+    background: var(--bg-card);
+    border-left: 1px solid var(--border-color);
+    padding: 28px 0;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; right: 0;
+    height: 100vh;
+    z-index: 50;
+    overflow-y: auto;
+}
+
+.sidebar-logo {
+    text-align: center;
+    padding: 0 20px 28px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.sidebar-logo h2 {
+    font-size: 1rem;
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+}
+
+.sidebar-logo p {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    margin: 0;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.92rem;
+    border: 1px solid transparent;
+    background: none;
+    width: 100%;
+    text-align: right;
+    font-family: 'Tajawal', sans-serif;
+    margin: 0;
+}
+
+.nav-item:hover {
+    background: rgba(139,92,246,0.07);
+    color: var(--text-main);
+    transform: none;
+    filter: none;
+}
+
+.nav-item.active {
+    background: var(--primary-dim);
+    color: var(--primary);
+    border-color: rgba(139,92,246,0.25);
+}
+
+.nav-item .nav-icon { font-size: 1.1rem; }
+
+.nav-item .nav-badge {
+    margin-right: auto;
+    background: var(--primary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 50px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 20px 12px 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: 12px;
+}
+
+#adminLogoutBtn {
+    width: 100%;
+    background: rgba(248,113,113,0.08);
+    color: var(--danger);
+    border: 1px solid rgba(248,113,113,0.2);
+    border-radius: 14px;
+    padding: 11px 16px;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+#adminLogoutBtn:hover {
+    background: var(--danger);
+    color: white;
+    filter: none;
+    transform: none;
+}
+
+
+/* ---- Main Content ---- */
+
+.admin-main {
+    flex: 1;
+    margin-right: 260px;
+    padding: 32px 28px 80px;
+    max-width: calc(100vw - 260px);
+}
+
+/* Top bar */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.topbar h1 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.admin-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 8px 16px 8px 8px;
+}
+
+.admin-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.9rem;
+    color: white;
+}
+
+.admin-email {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+
+/* ---- Sections ---- */
+
+.section { display: none; animation: fadeIn 0.4s ease both; }
+.section.active { display: block; }
+
+
+/* ---- Stats Cards ---- */
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 22px 20px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-box:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+
+.stat-box::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 3px;
+    background: var(--accent-gradient);
+    opacity: 0.5;
+}
+
+.stat-box .s-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+.stat-box .s-num  { font-size: 2rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; }
+.stat-box .s-label{ color: var(--text-muted); font-size: 0.8rem; font-weight: 700; }
+
+
+/* ---- Panel Card ---- */
+
+.panel-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 24px;
+}
+
+.panel-card h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.82rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel-card h3::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
+
+
+/* ---- Publish Form ---- */
+
+.pub-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.pub-grid .full { grid-column: 1 / -1; }
+
+.pub-grid input,
+.pub-grid textarea,
+.pub-grid select {
+    margin: 0;
+}
+
+.pub-grid textarea { min-height: 160px; }
+
+#addScriptBtn {
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-btn);
+    padding: 13px 32px;
+    margin-top: 8px;
+    box-shadow: 0 8px 20px rgba(139,92,246,0.3);
+}
+
+
+/* ---- Scripts Table ---- */
+
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.search-bar input {
+    flex: 1;
+    margin: 0;
+    border-radius: var(--radius-btn);
+    padding: 12px 20px;
+    font-size: 0.9rem;
+}
+
+.scripts-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.scripts-table th {
+    text-align: right;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.scripts-table td {
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+}
+
+.scripts-table tr:hover td { background: rgba(139,92,246,0.04); }
+
+.scripts-table .t-title {
+    font-weight: 700;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scripts-table .t-cat {
+    background: var(--primary-dim);
+    color: #b48bf8;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.t-actions { display: flex; gap: 6px; }
+
+.t-btn {
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    margin: 0;
+    transition: var(--transition);
+}
+
+.t-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.t-btn:active { transform: scale(0.95); }
+
+.t-btn.edit { background: rgba(0,242,254,0.1); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
+.t-btn.del  { background: rgba(248,113,113,0.1); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+
+.t-btn.edit:hover { background: var(--secondary); color: var(--bg-base); }
+.t-btn.del:hover  { background: var(--danger); color: white; }
+
+.empty-row td { text-align: center; color: var(--text-muted); padding: 40px; }
+
+
+/* ---- Chat ---- */
+
+#chatContainer {
+    height: 360px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px;
+    margin-bottom: 4px;
+}
+
+.chat-msg {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: var(--transition);
+}
+
+.chat-msg:hover { border-color: var(--border-hover); }
+
+.msg-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: white;
+    flex-shrink: 0;
+}
+
+.msg-body { flex: 1; min-width: 0; }
+.msg-user { font-size: 0.82rem; font-weight: 800; color: var(--primary); margin-bottom: 3px; }
+.msg-text { font-size: 0.9rem; color: var(--text-main); line-height: 1.5; word-break: break-word; }
+.msg-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+
+.msg-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+
+/* ---- Users Table ---- */
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th {
+    text-align: right;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.users-table td {
+    padding: 14px 16px;
+    font-size: 0.88rem;
+    color: var(--text-main);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.users-table tr:hover td { background: rgba(139,92,246,0.03); }
+
+.u-role {
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.u-role.admin { background: rgba(139,92,246,0.15); color: var(--primary); }
+.u-role.user  { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+
+
+/* ---- Announcement ---- */
+
+#annText { min-height: 100px; color: var(--text-main); }
+
+#sendAnnBtn {
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-btn);
+    padding: 13px 32px;
+    margin-top: 8px;
+    box-shadow: 0 8px 20px rgba(139,92,246,0.3);
+}
+
+.ann-history {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.ann-item {
+    background: rgba(139,92,246,0.06);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.ann-item p { color: var(--text-main); font-size: 0.9rem; margin: 0; flex: 1; }
+.ann-item .ann-time { color: var(--text-muted); font-size: 0.72rem; white-space: nowrap; }
+
+
+/* ---- Modal (Edit) ---- */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--primary);
+    border-radius: 24px;
+    padding: 32px;
+    width: 100%;
+    max-width: 520px;
+    animation: fadeIn 0.3s ease both;
+}
+
+.modal-box h3 {
+    font-size: 1.1rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.modal-box input,
+.modal-box textarea,
+.modal-box select { margin-bottom: 12px; }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 8px; }
+
+#saveEditBtn {
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--radius-btn);
+    padding: 12px 28px;
+    margin: 0;
+    box-shadow: 0 6px 16px rgba(139,92,246,0.3);
+}
+
+#cancelEditBtn {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-btn);
+    padding: 12px 20px;
+    margin: 0;
+}
+
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    .sidebar {
+        width: 220px;
+    }
+
+    .admin-main {
+        margin-right: 220px;
+        max-width: calc(100vw - 220px);
+        padding: 24px 16px 60px;
+    }
+
+}
+
+@media (max-width: 680px) {
+
+    .sidebar { display: none; }
+    .admin-main { margin-right: 0; max-width: 100vw; padding: 20px 14px 60px; }
+    .pub-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+
+}
+
+</style>
 </head>
 <body>
 
-<!-- تسجيل دخول الادمن -->
-<div id="loginDiv">
-  <h2>تسجيل دخول الأدمن</h2>
-  <input type="email" id="email" placeholder="البريد الإلكتروني"><br><br>
-  <input type="password" id="password" placeholder="كلمة المرور"><br><br>
-  <button id="loginBtn">دخول</button>
-  <button id="logoutBtn" style="display:none;">تسجيل خروج</button>
-  <p id="loginError" style="color:red;"></p>
+
+<!-- ============================================================
+     Login Screen
+     ============================================================ -->
+
+<div id="loginScreen">
+    <div class="login-box">
+        <div style="font-size:2.5rem;margin-bottom:12px">🛡️</div>
+        <h1>لوحة الإدارة</h1>
+        <p>هذه الصفحة للأدمن فقط</p>
+
+        <input type="email"    id="email"    placeholder="البريد الإلكتروني">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button id="loginBtn">دخول</button>
+        <p id="loginError"></p>
+    </div>
 </div>
 
-<!-- لوحة الإدارة -->
-<div id="adminPanel" style="display:none;">
-  <h1>لوحة الإدارة</h1>
 
-  <h3>نشر سكربت جديد</h3>
-  <input type="text" id="newTitle" placeholder="عنوان السكربت">
-  <textarea id="newCode" placeholder="كود السكربت" rows="4"></textarea>
-  <select id="newCategory">
-    <option value="">اختر القسم</option>
-    <option value="game">Game Scripts</option>
-    <option value="admin">Admin Scripts</option>
-    <option value="سكربت من الادارة">سكربت من الإدارة</option>
-  </select>
-  <button id="addScriptBtn">نشر</button>
+<!-- ============================================================
+     Admin Panel
+     ============================================================ -->
 
-  <hr>
+<div id="adminPanel">
+<div class="admin-layout">
 
-  <h3>جميع السكربتات</h3>
-  <ul id="scriptsList"></ul>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h2>⚡ CCRAFT ADMIN</h2>
+            <p>لوحة التحكم الكاملة</p>
+        </div>
 
-  <hr>
+        <nav class="sidebar-nav">
+            <button class="nav-item active" data-section="overview">
+                <span class="nav-icon">📊</span> نظرة عامة
+            </button>
+            <button class="nav-item" data-section="scripts">
+                <span class="nav-icon">📜</span> السكربتات
+                <span class="nav-badge" id="scriptsBadge">0</span>
+            </button>
+            <button class="nav-item" data-section="publish">
+                <span class="nav-icon">📤</span> نشر سكربت
+            </button>
+            <button class="nav-item" data-section="users">
+                <span class="nav-icon">👥</span> المستخدمون
+                <span class="nav-badge" id="usersBadge">0</span>
+            </button>
+            <button class="nav-item" data-section="chat">
+                <span class="nav-icon">💬</span> الشات
+            </button>
+            <button class="nav-item" data-section="announce">
+                <span class="nav-icon">📢</span> إعلانات
+            </button>
+        </nav>
 
-  <h3>شات المستخدمين</h3>
-  <div id="chatContainer" style="max-height:300px; overflow:auto; background:#161b22; padding:1rem; border-radius:10px;"></div>
+        <div class="sidebar-footer">
+            <div class="admin-user" style="margin-bottom:12px;border-radius:14px;padding:12px;">
+                <div class="admin-avatar" id="sideAvatar">A</div>
+                <div>
+                    <div style="font-size:0.78rem;font-weight:800;color:var(--text-main)" id="sideEmail">أدمن</div>
+                    <div style="font-size:0.68rem;color:var(--primary)">✅ صلاحيات كاملة</div>
+                </div>
+            </div>
+            <button id="adminLogoutBtn">🚪 تسجيل خروج</button>
+        </div>
+    </aside>
 
-  <button id="adminLogoutBtn" style="margin-top:1rem;">تسجيل خروج</button>
+
+    <!-- Main -->
+    <main class="admin-main">
+
+        <div class="topbar">
+            <h1 id="pageTitle">📊 نظرة عامة</h1>
+            <div class="admin-user">
+                <div class="admin-avatar" id="topAvatar">A</div>
+                <span class="admin-email" id="topEmail">admin</span>
+            </div>
+        </div>
+
+
+        <!-- ======= Overview ======= -->
+        <div class="section active" id="sec-overview">
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <span class="s-icon">📜</span>
+                    <span class="s-num"  id="st-scripts">0</span>
+                    <span class="s-label">سكربت</span>
+                </div>
+                <div class="stat-box">
+                    <span class="s-icon">👥</span>
+                    <span class="s-num"  id="st-users">0</span>
+                    <span class="s-label">مستخدم</span>
+                </div>
+                <div class="stat-box">
+                    <span class="s-icon">👍</span>
+                    <span class="s-num"  id="st-likes">0</span>
+                    <span class="s-label">إجمالي اللايكات</span>
+                </div>
+                <div class="stat-box">
+                    <span class="s-icon">💬</span>
+                    <span class="s-num"  id="st-msgs">0</span>
+                    <span class="s-label">رسالة شات</span>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <h3>📜 آخر 5 سكربتات</h3>
+                <table class="scripts-table" id="recentTable">
+                    <thead>
+                        <tr>
+                            <th>العنوان</th>
+                            <th>القسم</th>
+                            <th>المؤلف</th>
+                            <th>اللايكات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentBody"></tbody>
+                </table>
+            </div>
+
+        </div>
+
+
+        <!-- ======= Scripts ======= -->
+        <div class="section" id="sec-scripts">
+
+            <div class="search-bar">
+                <input type="text" id="scriptSearch" placeholder="🔍 ابحث في السكربتات...">
+            </div>
+
+            <div class="panel-card" style="padding:0;overflow:hidden">
+                <div style="overflow-x:auto">
+                    <table class="scripts-table" id="fullScriptsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>العنوان</th>
+                                <th>القسم</th>
+                                <th>المؤلف</th>
+                                <th>👍</th>
+                                <th>⭐</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fullScriptsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ======= Publish ======= -->
+        <div class="section" id="sec-publish">
+            <div class="panel-card">
+                <h3>📤 نشر سكربت جديد</h3>
+                <div class="pub-grid">
+                    <input type="text" id="newTitle"       placeholder="عنوان السكربت" class="full">
+                    <textarea         id="newCode"         placeholder="كود السكربت..." class="full"></textarea>
+                    <textarea         id="newDesc"         placeholder="وصف السكربت..." style="min-height:80px"></textarea>
+                    <select           id="newCategory">
+                        <option value="">اختر القسم</option>
+                        <option value="game">Game Scripts</option>
+                        <option value="admin">Admin Scripts</option>
+                        <option value="ai">AI & NPCs</option>
+                        <option value="سكربت من الادارة">سكربت من الإدارة</option>
+                    </select>
+                </div>
+                <button id="addScriptBtn">📤 نشر السكربت</button>
+            </div>
+        </div>
+
+
+        <!-- ======= Users ======= -->
+        <div class="section" id="sec-users">
+            <div class="panel-card" style="padding:0;overflow:hidden">
+                <div style="overflow-x:auto">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>البريد الإلكتروني</th>
+                                <th>الاسم</th>
+                                <th>السكربتات</th>
+                                <th>الدور</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ======= Chat ======= -->
+        <div class="section" id="sec-chat">
+            <div class="panel-card">
+                <h3>💬 رسائل الشات</h3>
+                <div id="chatContainer"></div>
+            </div>
+        </div>
+
+
+        <!-- ======= Announce ======= -->
+        <div class="section" id="sec-announce">
+            <div class="panel-card">
+                <h3>📢 إرسال إعلان</h3>
+                <textarea id="annText" placeholder="اكتب نص الإعلان هنا..."></textarea>
+                <button id="sendAnnBtn">📢 إرسال الإعلان</button>
+            </div>
+
+            <div class="panel-card">
+                <h3>📋 سجل الإعلانات</h3>
+                <div class="ann-history" id="annHistory"></div>
+            </div>
+        </div>
+
+    </main>
 </div>
+</div>
+
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-box">
+        <h3>✏️ تعديل السكربت</h3>
+        <input    type="hidden" id="editId">
+        <input    type="text"   id="editTitle"    placeholder="العنوان">
+        <textarea              id="editCode"     placeholder="الكود" style="min-height:140px"></textarea>
+        <textarea              id="editDesc"     placeholder="الوصف" style="min-height:70px"></textarea>
+        <select               id="editCategory">
+            <option value="game">Game Scripts</option>
+            <option value="admin">Admin Scripts</option>
+            <option value="ai">AI & NPCs</option>
+            <option value="سكربت من الادارة">سكربت من الإدارة</option>
+        </select>
+        <div class="modal-actions">
+            <button id="saveEditBtn">💾 حفظ</button>
+            <button id="cancelEditBtn">إلغاء</button>
+        </div>
+    </div>
+</div>
+
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, push, set, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, get, push, set, remove, update, onChildAdded, onValue }
+    from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-// --- إعداد Firebase ---
 const firebaseConfig = {
-  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-  authDomain: "ccraft-space-scripts.firebaseapp.com",
-  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-  projectId: "ccraft-space-scripts",
-  storageBucket: "ccraft-space-scripts.firebasestorage.app",
-  messagingSenderId: "816078027492",
-  appId: "1:816078027492:web:6472cce474078fd4d90af1"
+    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain: "ccraft-space-scripts.firebaseapp.com",
+    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId: "ccraft-space-scripts",
+    storageBucket: "ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId: "816078027492",
+    appId: "1:816078027492:web:6472cce474078fd4d90af1"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getDatabase(app);
 const auth = getAuth(app);
 
-// --- عناصر HTML ---
-const loginDiv = document.getElementById("loginDiv");
-const adminPanel = document.getElementById("adminPanel");
-const loginError = document.getElementById("loginError");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const scriptsList = document.getElementById("scriptsList");
-const chatContainer = document.getElementById("chatContainer");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+let allScripts = {};
+let allUsers   = {};
+let chatLoaded = false;
 
-// --- تسجيل خروج ---
-logoutBtn.onclick = async ()=>{
-  await signOut(auth);
-  window.location.reload();
-};
-adminLogoutBtn.onclick = async ()=>{
-  await signOut(auth);
-  window.location.reload();
-};
 
-// --- تسجيل دخول الأدمن مع التحقق من قاعدة admins ---
-loginBtn.onclick = async ()=>{
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  if(!email || !password){ loginError.textContent="ادخل البريد وكلمة المرور"; return; }
+/* ============================================================
+   Auth
+   ============================================================ */
 
-  try{
-    const userCredential = await signInWithEmailAndPassword(auth,email,password);
-    const uid = userCredential.user.uid;
-
-    const adminSnap = await get(ref(db, `admins/${uid}`));
-    const isAdmin = adminSnap.exists() && adminSnap.val() === true;
-
-    if(isAdmin){
-      loginDiv.style.display="none";
-      adminPanel.style.display="block";
-      logoutBtn.style.display = "block";
-      loadScripts();
-      loadChat();
-    } else {
-      loginError.textContent="أنت لا تملك صلاحيات الأدمن";
-      await signOut(auth);
+document.getElementById('loginBtn').onclick = async () => {
+    const email = document.getElementById('email').value.trim();
+    const pass  = document.getElementById('password').value.trim();
+    const err   = document.getElementById('loginError');
+    if (!email || !pass) { err.textContent = 'ادخل البريد وكلمة المرور'; return; }
+    try {
+        const cred = await signInWithEmailAndPassword(auth, email, pass);
+        const snap = await get(ref(db, `admins/${cred.user.uid}`));
+        if (snap.exists() && snap.val() === true) {
+            showAdmin(cred.user);
+        } else {
+            err.textContent = 'ليس لديك صلاحيات أدمن';
+            await signOut(auth);
+        }
+    } catch {
+        document.getElementById('loginError').textContent = 'بريد أو كلمة مرور خاطئة';
     }
-  }catch(err){
-    loginError.textContent="خطأ في البريد الإلكتروني أو كلمة المرور";
-  }
 };
 
-// --- مراقبة حالة تسجيل الدخول عند تحميل الصفحة ---
-onAuthStateChanged(auth, async (user)=>{
-  if(user){
-    const uid = user.uid;
-    const adminSnap = await get(ref(db, `admins/${uid}`));
-    const isAdmin = adminSnap.exists() && adminSnap.val() === true;
-
-    if(isAdmin){
-      loginDiv.style.display="none";
-      adminPanel.style.display="block";
-      logoutBtn.style.display = "block";
-      loadScripts();
-      loadChat();
-    } else {
-      loginDiv.style.display="block";
-      adminPanel.style.display="none";
-      logoutBtn.style.display = "block"; // يظهر تسجيل خروج لو مستخدم عادي
-    }
-  } else {
-    loginDiv.style.display="block";
-    adminPanel.style.display="none";
-    logoutBtn.style.display = "none";
-  }
+onAuthStateChanged(auth, async user => {
+    if (!user) return;
+    const snap = await get(ref(db, `admins/${user.uid}`));
+    if (snap.exists() && snap.val() === true) showAdmin(user);
 });
 
-// --- إدارة السكربتات ---
-async function loadScripts(){
-  scriptsList.innerHTML="";
-  const snapshot = await get(ref(db,"scripts"));
-  if(snapshot.exists()){
-    const scripts = snapshot.val();
-    for(const key in scripts){
-      const li = document.createElement("li");
-      li.innerHTML=`<b>${scripts[key].title}</b> (${scripts[key].category}) - المؤلف: ${scripts[key].author || 'مجهول'}`;
-
-      const delBtn = document.createElement("button");
-      delBtn.textContent="حذف";
-      delBtn.onclick=async ()=>{
-        if(confirm("هل تريد حذف هذا السكربت؟")){
-          await remove(ref(db, `scripts/${key}`));
-          loadScripts();
-        }
-      };
-
-      const editBtn = document.createElement("button");
-      editBtn.textContent="تعديل";
-      editBtn.onclick=()=> editScript(key, scripts[key]);
-
-      li.appendChild(delBtn);
-      li.appendChild(editBtn);
-      scriptsList.appendChild(li);
-    }
-  } else scriptsList.textContent="لا يوجد سكربتات حالياً";
+function showAdmin(user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display  = 'block';
+    const name = user.email.split('@')[0];
+    document.getElementById('sideAvatar').innerText = name.charAt(0).toUpperCase();
+    document.getElementById('topAvatar').innerText  = name.charAt(0).toUpperCase();
+    document.getElementById('sideEmail').innerText  = user.email;
+    document.getElementById('topEmail').innerText   = user.email;
+    loadAll();
 }
 
-document.getElementById("addScriptBtn").onclick = async ()=>{
-  const title = document.getElementById("newTitle").value.trim();
-  const code = document.getElementById("newCode").value.trim();
-  const category = document.getElementById("newCategory").value;
-  if(!title||!code||!category) return alert("مطلوب كل الحقول");
-
-  const newScriptRef = push(ref(db,"scripts"));
-  await set(newScriptRef,{
-    title, code, category, author:"سكربت من الإدارة", timestamp:Date.now()
-  });
-
-  document.getElementById("newTitle").value="";
-  document.getElementById("newCode").value="";
-  document.getElementById("newCategory").value="";
-  loadScripts();
+document.getElementById('adminLogoutBtn').onclick = async () => {
+    await signOut(auth);
+    location.reload();
 };
 
-function editScript(key, script){
-  const newTitle = prompt("عدل عنوان السكربت:", script.title);
-  const newCode = prompt("عدل كود السكربت:", script.code);
-  const newCategory = prompt("عدل القسم:", script.category);
 
-  if(newTitle && newCode && newCategory){
-    update(ref(db, `scripts/${key}`), { title:newTitle, code:newCode, category:newCategory, author:script.author });
-    loadScripts();
-  }
+/* ============================================================
+   Navigation
+   ============================================================ */
+
+const titles = {
+    overview: '📊 نظرة عامة',
+    scripts:  '📜 السكربتات',
+    publish:  '📤 نشر سكربت',
+    users:    '👥 المستخدمون',
+    chat:     '💬 الشات',
+    announce: '📢 الإعلانات',
+};
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const sec = btn.dataset.section;
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(`sec-${sec}`).classList.add('active');
+        document.getElementById('pageTitle').innerText = titles[sec];
+        if (sec === 'chat' && !chatLoaded) { loadChat(); chatLoaded = true; }
+    });
+});
+
+
+/* ============================================================
+   Load All Data
+   ============================================================ */
+
+async function loadAll() {
+    const [scriptsSnap, usersSnap, chatSnap, annSnap] = await Promise.all([
+        get(ref(db, 'scripts')),
+        get(ref(db, 'users')),
+        get(ref(db, 'chat')),
+        get(ref(db, 'announcements')),
+    ]);
+
+    allScripts = scriptsSnap.exists() ? scriptsSnap.val() : {};
+    allUsers   = usersSnap.exists()   ? usersSnap.val()   : {};
+    const chatMsgs = chatSnap.exists() ? Object.keys(chatSnap.val()).length : 0;
+
+    // Stats
+    let totalLikes = 0;
+    Object.values(allScripts).forEach(s => totalLikes += s.likes || 0);
+    document.getElementById('st-scripts').innerText = Object.keys(allScripts).length;
+    document.getElementById('st-users').innerText   = Object.keys(allUsers).length;
+    document.getElementById('st-likes').innerText   = totalLikes;
+    document.getElementById('st-msgs').innerText    = chatMsgs;
+    document.getElementById('scriptsBadge').innerText = Object.keys(allScripts).length;
+    document.getElementById('usersBadge').innerText   = Object.keys(allUsers).length;
+
+    renderRecentScripts();
+    renderFullScripts();
+    renderUsers();
+    if (annSnap.exists()) renderAnnouncements(annSnap.val());
 }
 
-// --- إدارة الشات ---
-async function loadChat(){
-  chatContainer.innerHTML="";
-  const chatRef = ref(db,"chat");
 
-  onChildAdded(chatRef,(snapshot)=>{
-    const msg = snapshot.val();
-    const div = document.createElement("div");
-    div.style.background="#0d1117";
-    div.style.color="#c9d1d9";
-    div.style.padding="8px";
-    div.style.borderRadius="8px";
-    div.style.marginBottom="4px";
+/* ============================================================
+   Recent Scripts (Overview)
+   ============================================================ */
 
-    div.innerHTML=`<b>${msg.username}</b>: ${msg.text} <button style="margin-left:8px;">حذف</button> <button style="margin-left:4px;">تعديل</button>`;
-
-    const delBtn = div.querySelectorAll("button")[0];
-    delBtn.onclick = async ()=>{
-      if(confirm("هل تريد حذف الرسالة؟")){
-        await remove(ref(db, `chat/${snapshot.key}`));
-        div.remove();
-      }
-    };
-
-    const editBtn = div.querySelectorAll("button")[1];
-    editBtn.onclick = async ()=>{
-      const newText = prompt("عدل الرسالة:", msg.text);
-      if(newText){
-        await update(ref(db, `chat/${snapshot.key}`), { text:newText });
-        div.innerHTML=`<b>${msg.username}</b>: ${newText} <button style="margin-left:8px;">حذف</button> <button style="margin-left:4px;">تعديل</button>`;
-      }
-    };
-
-    chatContainer.appendChild(div);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-  });
+function renderRecentScripts() {
+    const body = document.getElementById('recentBody');
+    body.innerHTML = '';
+    const entries = Object.entries(allScripts)
+        .sort((a,b) => (b[1].timestamp||0) - (a[1].timestamp||0))
+        .slice(0, 5);
+    if (!entries.length) {
+        body.innerHTML = '<tr class="empty-row"><td colspan="4">لا توجد سكربتات</td></tr>';
+        return;
+    }
+    entries.forEach(([, s]) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="t-title">${s.title || '—'}</td>
+            <td><span class="t-cat">${s.category || '—'}</span></td>
+            <td style="color:var(--text-muted)">${s.author || 'مجهول'}</td>
+            <td>👍 ${s.likes || 0}</td>
+        `;
+        body.appendChild(tr);
+    });
 }
+
+
+/* ============================================================
+   Full Scripts Table
+   ============================================================ */
+
+function renderFullScripts(filter = '') {
+    const body = document.getElementById('fullScriptsBody');
+    body.innerHTML = '';
+    const entries = Object.entries(allScripts)
+        .filter(([, s]) => !filter ||
+            (s.title||'').toLowerCase().includes(filter) ||
+            (s.category||'').toLowerCase().includes(filter) ||
+            (s.author||'').toLowerCase().includes(filter)
+        )
+        .sort((a,b) => (b[1].timestamp||0) - (a[1].timestamp||0));
+
+    if (!entries.length) {
+        body.innerHTML = '<tr class="empty-row"><td colspan="7">لا توجد نتائج</td></tr>';
+        return;
+    }
+
+    entries.forEach(([id, s], i) => {
+        const avg = s.votes ? (s.rating/s.votes).toFixed(1) : '—';
+        const tr  = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="color:var(--text-muted);font-size:0.8rem">${i+1}</td>
+            <td class="t-title">${s.title || '—'}</td>
+            <td><span class="t-cat">${s.category || '—'}</span></td>
+            <td style="color:var(--text-muted);font-size:0.82rem">${s.author || 'مجهول'}</td>
+            <td>👍 ${s.likes||0}</td>
+            <td>⭐ ${avg}</td>
+            <td>
+                <div class="t-actions">
+                    <button class="t-btn edit" data-id="${id}">✏️ تعديل</button>
+                    <button class="t-btn del"  data-id="${id}">🗑️ حذف</button>
+                </div>
+            </td>
+        `;
+        tr.querySelector('.edit').onclick = () => openEdit(id, s);
+        tr.querySelector('.del').onclick  = () => deleteScript(id, tr);
+        body.appendChild(tr);
+    });
+}
+
+document.getElementById('scriptSearch').addEventListener('input', e => {
+    renderFullScripts(e.target.value.toLowerCase().trim());
+});
+
+async function deleteScript(id, row) {
+    if (!confirm('هل تريد حذف هذا السكربت نهائياً؟')) return;
+    await remove(ref(db, `scripts/${id}`));
+    delete allScripts[id];
+    row.style.cssText += 'opacity:0;transition:0.3s';
+    setTimeout(() => { row.remove(); renderRecentScripts(); updateCount(); }, 300);
+}
+
+function updateCount() {
+    const n = Object.keys(allScripts).length;
+    document.getElementById('st-scripts').innerText   = n;
+    document.getElementById('scriptsBadge').innerText = n;
+}
+
+
+/* ============================================================
+   Edit Modal
+   ============================================================ */
+
+function openEdit(id, s) {
+    document.getElementById('editId').value        = id;
+    document.getElementById('editTitle').value     = s.title    || '';
+    document.getElementById('editCode').value      = s.code     || '';
+    document.getElementById('editDesc').value      = s.description || '';
+    document.getElementById('editCategory').value  = s.category || '';
+    document.getElementById('editModal').classList.add('open');
+}
+
+document.getElementById('cancelEditBtn').onclick = () =>
+    document.getElementById('editModal').classList.remove('open');
+
+document.getElementById('editModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('editModal'))
+        document.getElementById('editModal').classList.remove('open');
+});
+
+document.getElementById('saveEditBtn').onclick = async () => {
+    const id  = document.getElementById('editId').value;
+    const upd = {
+        title:       document.getElementById('editTitle').value.trim(),
+        code:        document.getElementById('editCode').value.trim(),
+        description: document.getElementById('editDesc').value.trim(),
+        category:    document.getElementById('editCategory').value,
+    };
+    if (!upd.title || !upd.code) return alert('العنوان والكود مطلوبان');
+    await update(ref(db, `scripts/${id}`), upd);
+    Object.assign(allScripts[id], upd);
+    renderFullScripts(document.getElementById('scriptSearch').value.toLowerCase());
+    renderRecentScripts();
+    document.getElementById('editModal').classList.remove('open');
+};
+
+
+/* ============================================================
+   Publish Script
+   ============================================================ */
+
+document.getElementById('addScriptBtn').onclick = async () => {
+    const title    = document.getElementById('newTitle').value.trim();
+    const code     = document.getElementById('newCode').value.trim();
+    const desc     = document.getElementById('newDesc').value.trim();
+    const category = document.getElementById('newCategory').value;
+    if (!title || !code || !category) return alert('العنوان والكود والقسم مطلوبين');
+    const newRef = push(ref(db, 'scripts'));
+    const data   = { title, code, description: desc, category, author: 'سكربت من الإدارة', timestamp: Date.now(), likes: 0, rating: 0, votes: 0 };
+    await set(newRef, data);
+    allScripts[newRef.key] = data;
+    alert('✅ تم نشر السكربت!');
+    document.getElementById('newTitle').value    = '';
+    document.getElementById('newCode').value     = '';
+    document.getElementById('newDesc').value     = '';
+    document.getElementById('newCategory').value = '';
+    renderFullScripts();
+    renderRecentScripts();
+    updateCount();
+};
+
+
+/* ============================================================
+   Users
+   ============================================================ */
+
+function renderUsers() {
+    const body = document.getElementById('usersBody');
+    body.innerHTML = '';
+    const entries = Object.entries(allUsers);
+    if (!entries.length) {
+        body.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted)">لا يوجد مستخدمون</td></tr>';
+        return;
+    }
+    entries.forEach(([uid, u]) => {
+        const tr = document.createElement('tr');
+        const isAdmin = false; // يمكن التحقق من admins node
+        const scriptCount = Object.values(allScripts).filter(s => s.authorEmail === u.email).length;
+        tr.innerHTML = `
+            <td>${u.email || '—'}</td>
+            <td>${(u.email||'').split('@')[0]}</td>
+            <td>${scriptCount}</td>
+            <td><span class="u-role ${isAdmin?'admin':'user'}">${isAdmin?'أدمن':'مستخدم'}</span></td>
+        `;
+        body.appendChild(tr);
+    });
+    document.getElementById('st-users').innerText   = entries.length;
+    document.getElementById('usersBadge').innerText = entries.length;
+}
+
+
+/* ============================================================
+   Chat
+   ============================================================ */
+
+function loadChat() {
+    const container = document.getElementById('chatContainer');
+    container.innerHTML = '';
+    const chatRef = ref(db, 'chat');
+    onChildAdded(chatRef, snapshot => {
+        const msg = snapshot.val();
+        const key = snapshot.key;
+        const div = document.createElement('div');
+        div.className = 'chat-msg';
+        const name = msg.username || 'مجهول';
+        const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString('ar-EG') : '';
+        div.innerHTML = `
+            <div class="msg-avatar">${name.charAt(0).toUpperCase()}</div>
+            <div class="msg-body">
+                <div class="msg-user">${name}</div>
+                <div class="msg-text" id="mt-${key}">${msg.text}</div>
+                <div class="msg-time">${time}</div>
+            </div>
+            <div class="msg-actions">
+                <button class="t-btn edit">✏️</button>
+                <button class="t-btn del">🗑️</button>
+            </div>
+        `;
+        div.querySelector('.del').onclick = async () => {
+            if (!confirm('حذف الرسالة؟')) return;
+            await remove(ref(db, `chat/${key}`));
+            div.remove();
+        };
+        div.querySelector('.edit').onclick = async () => {
+            const cur  = document.getElementById(`mt-${key}`).innerText;
+            const text = prompt('عدل الرسالة:', cur);
+            if (!text) return;
+            await update(ref(db, `chat/${key}`), { text });
+            document.getElementById(`mt-${key}`).innerText = text;
+        };
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    });
+}
+
+
+/* ============================================================
+   Announcements
+   ============================================================ */
+
+document.getElementById('sendAnnBtn').onclick = async () => {
+    const text = document.getElementById('annText').value.trim();
+    if (!text) return alert('اكتب نص الإعلان');
+    const newRef = push(ref(db, 'announcements'));
+    await set(newRef, { text, timestamp: Date.now() });
+    document.getElementById('annText').value = '';
+    alert('✅ تم إرسال الإعلان!');
+    const snap = await get(ref(db, 'announcements'));
+    if (snap.exists()) renderAnnouncements(snap.val());
+};
+
+function renderAnnouncements(data) {
+    const container = document.getElementById('annHistory');
+    container.innerHTML = '';
+    Object.entries(data)
+        .sort((a,b) => (b[1].timestamp||0) - (a[1].timestamp||0))
+        .forEach(([id, ann]) => {
+            const d = new Date(ann.timestamp || 0);
+            const div = document.createElement('div');
+            div.className = 'ann-item';
+            div.innerHTML = `
+                <p>${ann.text}</p>
+                <span class="ann-time">${d.toLocaleDateString('ar-EG')}</span>
+            `;
+            container.appendChild(div);
+        });
+}
+
 </script>
 </body>
 </html>
