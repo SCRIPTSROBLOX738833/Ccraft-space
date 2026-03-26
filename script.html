@@ -1,40 +1,141 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>عرض السكربت</title>
+<title>عرض السكربت | CCRAFT SPACE</title>
 <link rel="stylesheet" href="styles.css">
+<style>
+
+    /* Map info box */
+    .map-info-box {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: rgba(0,242,254,0.06);
+        border: 1px solid rgba(0,242,254,0.2);
+        border-radius: 16px;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        animation: fadeIn 0.4s ease both;
+    }
+
+    .map-info-box.no-map {
+        background: rgba(255,255,255,0.03);
+        border-color: var(--border-color);
+    }
+
+    .map-info-box .mib-icon {
+        font-size: 1.8rem;
+        flex-shrink: 0;
+    }
+
+    .map-info-box .mib-text h4 {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 3px;
+    }
+
+    .map-info-box .mib-text p {
+        font-size: 1rem;
+        font-weight: 900;
+        color: var(--secondary);
+        margin: 0;
+    }
+
+    .map-info-box.no-map .mib-text p {
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    /* Comments */
+    #comments div {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        font-size: 0.92rem;
+        color: var(--text-main);
+        transition: var(--transition);
+    }
+
+    #comments div:hover { border-color: var(--border-hover); }
+
+    #addComment {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 8px;
+    }
+
+    #commentInput {
+        flex: 1;
+        margin: 0;
+        border-radius: var(--radius-btn);
+        padding: 13px 20px;
+    }
+
+    #submitComment {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        border-radius: var(--radius-btn);
+        padding: 13px 22px;
+        white-space: nowrap;
+        box-shadow: 0 6px 16px rgba(139,92,246,0.3);
+        margin: 0;
+    }
+
+    @media (max-width: 600px) {
+        #addComment { flex-direction: column; }
+        #commentInput, #submitComment { width: 100%; }
+    }
+
+</style>
 </head>
 <body>
+
 <header>
-  <button onclick="location.href='index.html'">العودة للصفحة الرئيسية</button>
+  <button onclick="location.href='scripts.html'">📜 قائمة السكربتات</button>
+  <button class="nav-button" onclick="location.href='index.html'">العودة للرئيسية</button>
 </header>
 
 <main>
   <h1 id="title">جارٍ التحميل...</h1>
-  <p id="author"></p>
+  <p id="author" style="color:var(--text-muted);font-size:0.88rem;margin-bottom:20px"></p>
+
+  <!-- Map Info -->
+  <div id="mapInfoBox"></div>
+
   <pre id="code"></pre>
+
   <h2>الوصف</h2>
   <p id="description"></p>
-  <button id="copyBtn">نسخ السكربت</button>
-  <button id="rawBtn">raw</button>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin:20px 0">
+      <button id="copyBtn">📋 نسخ السكربت</button>
+      <button id="rawBtn">📄 Raw</button>
+  </div>
 
   <h2>التعليقات</h2>
   <div id="comments"></div>
 
   <div id="addComment">
-    <input type="text" id="commentInput" placeholder="اكتب تعليقك..." />
+    <input type="text" id="commentInput" placeholder="اكتب تعليقك...">
     <button id="submitComment">إرسال</button>
   </div>
 </main>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-// إعداد Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
     authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -47,71 +148,102 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const db  = getDatabase(app);
 const auth = getAuth(app);
 
-const params = new URLSearchParams(window.location.search);
+const params   = new URLSearchParams(window.location.search);
 const scriptId = params.get('id');
-
-const titleEl = document.getElementById('title');
-const codeEl = document.getElementById('code');
-const authorEl = document.getElementById('author');
-const copyBtn = document.getElementById('copyBtn');
-document.getElementById("rawBtn").addEventListener("click", ()=>{
-    window.location.href = `raw.html?id=${scriptId}`;
-});
-
-const commentsDiv = document.getElementById('comments');
-const commentInput = document.getElementById('commentInput');
-const submitComment = document.getElementById('submitComment');
 
 let currentUser = null;
 
-// تحقق المستخدم
+// map icons
+const MAP_ICONS = {
+    'Adopt Me': '🏡', 'Bloxburg': '🏗️', 'Brookhaven': '🌆',
+    'Arsenal': '🔫', 'Bedwars': '🛏️', 'Murder Mystery 2': '🔪',
+    'Jailbreak': '🚔', 'Pet Simulator X': '🐾', 'Doors': '🚪',
+    'Da Hood': '🏙️', 'Anime Fighting Sim': '⚔️', 'Tower of Hell': '🗼',
+};
+
 onAuthStateChanged(auth, user => {
-    if(!user){
+    if (!user) {
         alert("يجب تسجيل الدخول أولاً");
-        window.location.href="login.html";
+        window.location.href = "login.html";
         return;
     }
     currentUser = user;
     loadScript();
 });
 
-async function loadScript(){
+async function loadScript() {
     const snap = await get(ref(db, `scripts/${scriptId}`));
-    if(!snap.exists()){ titleEl.innerText="هذا السكربت غير موجود"; return; }
+    if (!snap.exists()) {
+        document.getElementById('title').innerText = "هذا السكربت غير موجود";
+        return;
+    }
     const data = snap.val();
-    titleEl.innerText = data.title;
-    authorEl.innerText = `المؤلف: ${data.author || "مجهول"}`;
-    codeEl.innerText = data.code;
-    document.getElementById('description').innerText = data.description || "لا يوجد وصف";
-    loadComments();
-  }
 
-function loadComments(){
-    commentsDiv.innerHTML='';
-    const commentsRef = ref(db, `scripts/${scriptId}/comments`);
-    onChildAdded(commentsRef, snapshot => {
-        const c = snapshot.val();
+    document.getElementById('title').innerText       = data.title;
+    document.getElementById('author').innerText      = `✍️ المؤلف: ${data.author || "مجهول"}`;
+    document.getElementById('code').innerText        = data.code;
+    document.getElementById('description').innerText = data.description || "لا يوجد وصف";
+
+    // Map info box
+    const mapBox = document.getElementById('mapInfoBox');
+    if (data.map) {
+        const icon = MAP_ICONS[data.map] || '🗺️';
+        mapBox.innerHTML = `
+            <div class="map-info-box">
+                <span class="mib-icon">${icon}</span>
+                <div class="mib-text">
+                    <h4>🗺️ مخصص لماب</h4>
+                    <p>${data.map}</p>
+                </div>
+            </div>
+        `;
+    } else {
+        mapBox.innerHTML = `
+            <div class="map-info-box no-map">
+                <span class="mib-icon">🌐</span>
+                <div class="mib-text">
+                    <h4>الماب</h4>
+                    <p>ليس لماب محدد — يعمل على أي لعبة</p>
+                </div>
+            </div>
+        `;
+    }
+
+    loadComments();
+}
+
+function loadComments() {
+    const commentsDiv = document.getElementById('comments');
+    commentsDiv.innerHTML = '';
+    onChildAdded(ref(db, `scripts/${scriptId}/comments`), snapshot => {
+        const c   = snapshot.val();
         const div = document.createElement('div');
-        div.innerText = `${c.name}: ${c.text}`;
+        div.innerHTML = `<strong style="color:var(--primary)">${c.name}</strong>: ${c.text}`;
         commentsDiv.appendChild(div);
     });
 }
 
-// إرسال تعليق
-submitComment.addEventListener('click', async () => {
-    const text = commentInput.value.trim();
-    if(!text) return alert("مطلوب كتابة نص التعليق!");
+document.getElementById('submitComment').addEventListener('click', async () => {
+    const text = document.getElementById('commentInput').value.trim();
+    if (!text) return alert("مطلوب كتابة نص التعليق!");
     await push(ref(db, `scripts/${scriptId}/comments`), {
         name: currentUser.email.split("@")[0],
-        text
+        text,
+        timestamp: Date.now(),
     });
-    commentInput.value='';
+    document.getElementById('commentInput').value = '';
 });
-copyBtn.addEventListener('click', ()=>{
-    navigator.clipboard.writeText(codeEl.innerText).then(()=>alert("تم نسخ السكربت!"));
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('code').innerText)
+        .then(() => alert("تم نسخ السكربت!"));
+});
+
+document.getElementById('rawBtn').addEventListener('click', () => {
+    window.location.href = `raw.html?id=${scriptId}`;
 });
 </script>
 </body>
