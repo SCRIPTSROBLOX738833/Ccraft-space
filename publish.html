@@ -1,36 +1,215 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نشر سكربت</title>
+  <title>نشر سكربت | CCRAFT SPACE</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+
+    /* إشعار تسجيل الدخول */
+    #authNotice {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 24px;
+        display: none;
+    }
+
+    .notice-card {
+        background: var(--bg-card);
+        border: 1px solid rgba(139,92,246,0.3);
+        border-radius: 20px;
+        padding: 40px 32px;
+        text-align: center;
+        animation: fadeIn 0.5s ease both;
+    }
+
+    .notice-card .n-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
+
+    .notice-card h2 {
+        font-size: 1.4rem;
+        font-weight: 900;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+    }
+
+    .notice-card p {
+        color: var(--text-muted);
+        margin-bottom: 24px;
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .notice-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .notice-btns button {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        border-radius: var(--radius-btn);
+        padding: 13px 28px;
+        box-shadow: 0 8px 20px rgba(139,92,246,0.3);
+    }
+
+    .notice-btns .ghost {
+        background: rgba(255,255,255,0.05);
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+        box-shadow: none;
+    }
+
+    /* بادج النجاح */
+    #successBadge {
+        display: none;
+        max-width: 800px;
+        margin: 0 auto 24px;
+        padding: 0 24px;
+    }
+
+    .badge-earned {
+        background: linear-gradient(135deg, rgba(74,222,128,0.1) 0%, rgba(59,130,246,0.05) 100%);
+        border: 1px solid rgba(74,222,128,0.3);
+        border-radius: 16px;
+        padding: 16px 22px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: fadeIn 0.4s ease both;
+    }
+
+    .badge-earned .be-icon { font-size: 1.8rem; flex-shrink: 0; }
+
+    .badge-earned .be-text h4 {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--success);
+        margin-bottom: 2px;
+    }
+
+    .badge-earned .be-text p {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* معلومات اليوزر في الفورم */
+    #userInfo {
+        display: none;
+        max-width: 800px;
+        margin: 0 auto 20px;
+        padding: 0 24px;
+    }
+
+    .user-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 12px 18px;
+    }
+
+    .user-bar .ub-avatar {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: var(--accent-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        color: white;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .user-bar .ub-name  { font-weight: 800; font-size: 0.9rem; }
+    .user-bar .ub-email { color: var(--text-muted); font-size: 0.78rem; }
+
+    .user-bar .ub-badge {
+        margin-right: auto;
+        background: var(--primary-dim);
+        color: var(--primary);
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 4px 12px;
+        border-radius: 50px;
+    }
+
+  </style>
 </head>
 <body>
+
 <header>
-  <button onclick="location.href='scripts.html'">قائمة السكربتات</button>
-  <button id="home" class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
+  <button onclick="location.href='scripts.html'">📜 قائمة السكربتات</button>
+  <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
-<main>
-  <h1>نشر سكربت جديد</h1>
+
+<!-- إشعار لو مش مسجل دخول -->
+<div id="authNotice">
+    <div class="notice-card">
+        <span class="n-icon">🔐</span>
+        <h2>محتاج تسجّل دخول الأول</h2>
+        <p>
+            عشان تنشر سكربت وتحسب في بروفايلك وتاخد البادجات،<br>
+            لازم يكون عندك حساب على CCRAFT SPACE.
+        </p>
+        <div class="notice-btns">
+            <button onclick="location.href='login.html'">🚀 تسجيل الدخول</button>
+            <button class="ghost" onclick="location.href='index.html'">رجوع للرئيسية</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- معلومات اليوزر -->
+<div id="userInfo">
+    <div class="user-bar">
+        <div class="ub-avatar" id="ubAvatar">أ</div>
+        <div>
+            <div class="ub-name"  id="ubName">—</div>
+            <div class="ub-email" id="ubEmail">—</div>
+        </div>
+        <span class="ub-badge">✅ مسجل دخول</span>
+    </div>
+</div>
+
+
+<!-- بادج مكتسب -->
+<div id="successBadge"></div>
+
+
+<!-- الفورم -->
+<main id="publishMain" style="display:none">
+  <h1>📤 نشر سكربت جديد</h1>
+
   <form id="publishForm">
-    <input type="text" id="scriptTitle" placeholder="عنوان السكربت" required>
-    <textarea id="scriptCode" placeholder="كود السكربت هنا" rows="6" required></textarea>
-    <textarea id="scriptDescription" placeholder="اكتب وصف للسكربت..." rows="3" required></textarea>
-    <select id="category" required>
+    <input    type="text" id="scriptTitle"       placeholder="عنوان السكربت" required>
+    <textarea             id="scriptCode"        placeholder="كود السكربت هنا..." rows="6" required></textarea>
+    <textarea             id="scriptDescription" placeholder="اكتب وصف للسكربت..." rows="3" required></textarea>
+    <select               id="category" required>
       <option value="">اختر القسم</option>
       <option value="game">Game Scripts</option>
       <option value="admin">Admin Scripts</option>
       <option value="ai">AI & NPCs</option>
     </select>
-    <button type="button" onclick="publishScript()">نشر السكربت</button>
+    <button type="button" id="publishBtn">📤 نشر السكربت</button>
   </form>
 </main>
 
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+  import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -43,31 +222,229 @@
     measurementId: "G-MHDM7YYYBN"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  const app  = initializeApp(firebaseConfig);
+  const db   = getDatabase(app);
+  const auth = getAuth(app);
 
-  window.publishScript = async () => {
-    const title = document.getElementById('scriptTitle').value;
-    const code = document.getElementById('scriptCode').value;
-    const category = document.getElementById('category').value;
-    const description = document.getElementById('scriptDescription').value;
+  let currentUser = null;
 
-    if(!title || !code || !category || !description) return alert("مطلوب كل الحقول");
 
-    const newScriptRef = push(ref(db, 'scripts'));
-    await set(newScriptRef, {
-      title,
-      code,
-      category,
-      description,       // ✅ هنا أضفنا الوصف
-      timestamp: Date.now(),
-      rating: 0,
-      votes: 0
+  /* ============================================================
+     تعريف البادجات (نفس profile.html)
+     ============================================================ */
+
+  const ALL_BADGES = [
+    { id: 'first_script',  icon: '🚀', name: 'الانطلاقة',  desc: 'نشر أول سكربت',    check: s => s.scripts >= 1  },
+    { id: 'five_scripts',  icon: '📦', name: 'مجموعة',     desc: 'نشر 5 سكربتات',    check: s => s.scripts >= 5  },
+    { id: 'ten_scripts',   icon: '💎', name: 'محترف',       desc: 'نشر 10 سكربتات',   check: s => s.scripts >= 10 },
+    { id: 'first_like',    icon: '👍', name: 'محبوب',       desc: 'أول لايك',          check: s => s.totalLikes >= 1  },
+    { id: 'ten_likes',     icon: '🔥', name: 'مشهور',       desc: '10 لايكات',         check: s => s.totalLikes >= 10 },
+    { id: 'fifty_likes',   icon: '⭐', name: 'نجم',         desc: '50 لايك',           check: s => s.totalLikes >= 50 },
+    { id: 'hundred_likes', icon: '👑', name: 'أسطورة',      desc: '100 لايك',          check: s => s.totalLikes >= 100},
+    { id: 'good_rating',   icon: '🏆', name: 'تقييم ممتاز', desc: 'متوسط تقييم 4+',   check: s => s.avgRating >= 4   },
+    { id: 'all_categories',icon: '🌈', name: 'متنوع',       desc: '3 أقسام مختلفة',   check: s => s.categories >= 3  },
+    { id: 'veteran',       icon: '🎖️', name: 'مخضرم',      desc: 'عضو أكثر من 30 يوم',check: s => s.daysOld >= 30   },
+  ];
+
+
+  /* ============================================================
+     Auth — تحقق من تسجيل الدخول
+     ============================================================ */
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+        currentUser = user;
+        showForm(user);
+    } else {
+        // مش مسجل دخول
+        document.getElementById('authNotice').style.display = 'block';
+        document.getElementById('publishMain').style.display = 'none';
+        document.getElementById('userInfo').style.display   = 'none';
+    }
+  });
+
+  function showForm(user) {
+    const name = user.email.split('@')[0];
+
+    // معلومات اليوزر
+    document.getElementById('ubAvatar').innerText = name.charAt(0).toUpperCase();
+    document.getElementById('ubName').innerText   = name;
+    document.getElementById('ubEmail').innerText  = user.email;
+    document.getElementById('userInfo').style.display   = 'block';
+    document.getElementById('publishMain').style.display = 'block';
+    document.getElementById('authNotice').style.display  = 'none';
+  }
+
+
+  /* ============================================================
+     نشر السكربت
+     ============================================================ */
+
+  document.getElementById('publishBtn').addEventListener('click', async () => {
+    if (!currentUser) { location.href = 'login.html'; return; }
+
+    const title       = document.getElementById('scriptTitle').value.trim();
+    const code        = document.getElementById('scriptCode').value.trim();
+    const category    = document.getElementById('category').value;
+    const description = document.getElementById('scriptDescription').value.trim();
+
+    if (!title || !code || !category || !description) {
+        alert('مطلوب كل الحقول!');
+        return;
+    }
+
+    const btn = document.getElementById('publishBtn');
+    btn.disabled    = true;
+    btn.innerText   = '⏳ جارٍ النشر...';
+
+    const username = currentUser.email.split('@')[0];
+
+    // نشر السكربت مع معلومات المؤلف
+    const newRef = push(ref(db, 'scripts'));
+    await set(newRef, {
+        title,
+        code,
+        category,
+        description,
+        author:      username,
+        authorEmail: currentUser.email,
+        authorUid:   currentUser.uid,
+        timestamp:   Date.now(),
+        rating:      0,
+        votes:       0,
+        likes:       0,
     });
 
-    alert("تم نشر السكربت بنجاح!");
+    // تحسيب البادجات بعد النشر
+    await checkAndAwardBadges();
+
+    btn.disabled  = false;
+    btn.innerText = '📤 نشر السكربت';
     document.getElementById('publishForm').reset();
-};
+  });
+
+
+  /* ============================================================
+     حساب البادجات
+     ============================================================ */
+
+  async function checkAndAwardBadges() {
+    const uid      = currentUser.uid;
+    const username = currentUser.email.split('@')[0];
+
+    // جيب كل سكربتات اليوزر
+    const scriptsSnap = await get(ref(db, 'scripts'));
+    const all = scriptsSnap.exists() ? scriptsSnap.val() : {};
+    const mine = Object.values(all).filter(s =>
+        s.author === username || s.authorEmail === currentUser.email
+    );
+
+    let totalLikes = 0, totalRating = 0, totalVotes = 0;
+    const cats = new Set();
+    mine.forEach(s => {
+        totalLikes  += s.likes  || 0;
+        totalRating += s.rating || 0;
+        totalVotes  += s.votes  || 0;
+        if (s.category) cats.add(s.category);
+    });
+
+    const daysOld = (Date.now() - parseInt(currentUser.metadata.createdAt)) / (86400000);
+    const stats = {
+        scripts:    mine.length,
+        totalLikes,
+        avgRating:  totalVotes > 0 ? totalRating / totalVotes : 0,
+        categories: cats.size,
+        daysOld,
+    };
+
+    // جيب البادجات المحفوظة
+    const savedSnap = await get(ref(db, `users/${uid}/badges`));
+    const saved = savedSnap.exists() ? savedSnap.val() : {};
+
+    const newlyEarned = [];
+
+    for (const badge of ALL_BADGES) {
+        if (badge.check(stats) && !saved[badge.id]) {
+            // بادج جديد!
+            await set(ref(db, `users/${uid}/badges/${badge.id}`), { earnedAt: Date.now() });
+            newlyEarned.push(badge);
+        }
+    }
+
+    // عرض البادجات الجديدة
+    if (newlyEarned.length > 0) {
+        showNewBadges(newlyEarned);
+    } else {
+        showSuccessOnly();
+    }
+  }
+
+
+  /* ============================================================
+     عرض البادجات الجديدة
+     ============================================================ */
+
+  function showNewBadges(badges) {
+    const container = document.getElementById('successBadge');
+    container.style.display = 'block';
+    container.innerHTML = '';
+
+    // رسالة نجاح النشر
+    const successDiv = document.createElement('div');
+    successDiv.style.cssText = `
+        background: linear-gradient(135deg, rgba(74,222,128,0.1), rgba(59,130,246,0.05));
+        border: 1px solid rgba(74,222,128,0.3);
+        border-radius: 16px;
+        padding: 16px 22px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: fadeIn 0.4s ease both;
+        font-family: Tajawal, sans-serif;
+    `;
+    successDiv.innerHTML = `
+        <span style="font-size:1.5rem">✅</span>
+        <div>
+            <div style="font-weight:800;color:#4ade80;font-size:0.9rem">تم نشر السكربت بنجاح!</div>
+            <div style="color:var(--text-muted);font-size:0.78rem">ظهر في قائمة السكربتات وفي بروفايلك</div>
+        </div>
+    `;
+    container.appendChild(successDiv);
+
+    // البادجات الجديدة
+    badges.forEach((badge, i) => {
+        const div = document.createElement('div');
+        div.className = 'badge-earned';
+        div.style.animationDelay = `${i * 0.15}s`;
+        div.innerHTML = `
+            <div class="be-icon">${badge.icon}</div>
+            <div class="be-text">
+                <h4>🎉 بادج جديد: ${badge.name}!</h4>
+                <p>${badge.desc} — ظهر على بروفايلك</p>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showSuccessOnly() {
+    const container = document.getElementById('successBadge');
+    container.style.display = 'block';
+    container.innerHTML = `
+        <div class="badge-earned" style="animation: fadeIn 0.4s ease both">
+            <div class="be-icon">✅</div>
+            <div class="be-text">
+                <h4>تم نشر السكربت بنجاح!</h4>
+                <p>ظهر في قائمة السكربتات وفي بروفايلك</p>
+            </div>
+        </div>
+    `;
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
 </script>
 </body>
 </html>
