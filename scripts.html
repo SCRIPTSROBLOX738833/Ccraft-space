@@ -1,39 +1,65 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>قائمة السكربتات</title>
+<title>قائمة السكربتات | CCRAFT SPACE</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-  .star { cursor:pointer; font-size:20px; color:#ccc; margin-right:2px; }
-  .script-card { border:1px solid #30363d; padding:1rem; margin-bottom:1rem; border-radius:8px; background:#161b22; }
-  .script-card h3 { margin:0; }
-  .script-card button { margin-top:0.5rem; }
+  .star { cursor:pointer; font-size:20px; color:#3a3a4a; margin-right:2px; transition: color 0.2s, transform 0.2s; }
+  .star:hover { transform: scale(1.2); color: gold; }
+
+  /* Map badge على الكارد */
+  .map-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    color: var(--secondary);
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 50px;
+    margin-bottom: 10px;
+  }
+
+  .no-map-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 50px;
+    margin-bottom: 10px;
+  }
 </style>
 </head>
 <body>
+
 <header>
-  <button onclick="location.href='publish.html'">نشر سكربت</button>
-  <button id="home" class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
+  <button onclick="location.href='publish.html'">📤 نشر سكربت</button>
+  <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
 <main>
     <p>عدد السكربتات في الموقع: <span id="scriptCount">جارٍ التحميل...</span></p>
-  <h1>قائمة السكربتات</h1>
+    <h1>قائمة السكربتات</h1>
 
-  <input type="text" id="searchScripts" placeholder="ابحث عن سكربت أو قسم...">
-  <button id="searchButton">بحث</button>
+    <input type="text" id="searchScripts" placeholder="🔍 ابحث عن سكربت أو قسم أو ماب...">
+    <button id="searchButton">بحث</button>
 
-
-  <div id="scriptsList"></div>
+    <div id="scriptsList"></div>
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
   authDomain: "ccraft-space-scripts.firebaseapp.com",
@@ -46,21 +72,19 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const db  = getDatabase(app);
 
-// نسخ السكربت
 window.copyScript = (id) => {
   const codeEl = document.getElementById(`code-${id}`);
-  if(!codeEl) return alert("خطأ في السكربت");
+  if (!codeEl) return alert("خطأ في السكربت");
   navigator.clipboard.writeText(codeEl.innerText)
     .then(() => alert("تم نسخ السكربت!"))
     .catch(() => alert("حدث خطأ أثناء النسخ"));
 };
 
-// تحديث رابط البحث في URL
 function updateURLQuery(query) {
   const url = new URL(window.location);
-  if(query) url.searchParams.set('search', query);
+  if (query) url.searchParams.set('search', query);
   else url.searchParams.delete('search');
   window.history.replaceState(null, '', url);
 }
@@ -70,66 +94,75 @@ function getSearchQuery() {
   return params.get('search') ? params.get('search').toLowerCase().trim() : '';
 }
 
-// تحميل السكربتات وعرضها
+function mapBadgeHTML(map) {
+  if (!map) return `<span class="no-map-badge">🌐 ليس لماب محدد</span>`;
+  return `<span class="map-badge">🗺️ ${map}</span>`;
+}
+
 async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
   const snapshot = await get(ref(db, 'scripts'));
-  const scripts = snapshot.exists() ? snapshot.val() : {};
-  
-  // تحديث العدد
+  const scripts  = snapshot.exists() ? snapshot.val() : {};
+
   document.getElementById('scriptCount').innerText = Object.keys(scripts).length;
 
   const query = getSearchQuery();
   let anyMatch = false;
 
-  for(const id of Object.keys(scripts)) {
+  for (const id of Object.keys(scripts)) {
     const s = scripts[id];
-    const title = s.title.toLowerCase();
-    const category = s.category.toLowerCase();
-    const match = !query || title.includes(query) || category.includes(query);
+    const title    = (s.title    || '').toLowerCase();
+    const category = (s.category || '').toLowerCase();
+    const map      = (s.map      || '').toLowerCase();
+
+    const match = !query ||
+        title.includes(query) ||
+        category.includes(query) ||
+        map.includes(query);
 
     const div = document.createElement('div');
     div.className = 'script-card';
     div.dataset.id = id;
     div.innerHTML = `
       <h3>${s.title}</h3>
-      <p>Category: ${s.category}</p>
+      ${mapBadgeHTML(s.map)}
+      <p>📁 ${s.category}</p>
       <pre id="code-${id}">${s.code}</pre>
       <button onclick="copyScript('${id}')">نسخ السكربت</button>
       <button onclick="location.href='script.html?id=${id}'">عرض السكربت</button>
       <button class="like-btn" data-id="${id}">👍 Like (<span class="like-count">${s.likes || 0}</span>)</button>
       <div class="rating" data-id="${id}">
-        ${[1,2,3,4,5].map(n=>`<span class="star" data-value="${n}">&#9733;</span>`).join('')}
-        <span class="avg-rating">(${s.votes ? (s.rating/s.votes).toFixed(1) : 0})</span>
+        ${[1,2,3,4,5].map(n => `<span class="star" data-value="${n}">&#9733;</span>`).join('')}
+        <span class="avg-rating">(${s.votes ? (s.rating / s.votes).toFixed(1) : 0})</span>
       </div>
     `;
     div.style.display = match ? "block" : "none";
-    if(match) anyMatch = true;
+    if (match) anyMatch = true;
     list.appendChild(div);
   }
 
-  if(!anyMatch) {
+  if (!anyMatch) {
     const p = document.createElement('p');
     p.id = 'noMatchMsg';
     p.innerText = 'لا توجد سكربتات مطابقة.';
-    p.style.color = 'red';
+    p.style.color = 'var(--danger)';
     list.appendChild(p);
   }
 
-  // التعامل مع زر الإعجاب
+  // لايك
   document.querySelectorAll('.like-btn').forEach(btn => {
     const scriptId = btn.dataset.id;
-    if(localStorage.getItem(`liked_${scriptId}`)) {
+    if (localStorage.getItem(`liked_${scriptId}`)) {
       btn.disabled = true;
       btn.style.opacity = 0.6;
     }
     btn.addEventListener('click', async () => {
-      if(localStorage.getItem(`liked_${scriptId}`)) return;
+      if (localStorage.getItem(`liked_${scriptId}`)) return;
       const likeRef = ref(db, `scripts/${scriptId}/likes`);
       const snap = await get(likeRef);
       let likes = snap.exists() ? snap.val() : 0;
-      likes += 1;
+      likes++;
       await set(likeRef, likes);
       btn.querySelector('.like-count').innerText = likes;
       localStorage.setItem(`liked_${scriptId}`, 'true');
@@ -138,61 +171,53 @@ async function loadScripts() {
     });
   });
 
-  // التعامل مع التقييم
+  // تقييم
   document.querySelectorAll('.rating').forEach(async div => {
     const scriptId = div.dataset.id;
     const stars = div.querySelectorAll('.star');
     const avgEl = div.querySelector('.avg-rating');
 
     const snap = await get(ref(db, `scripts/${scriptId}`));
-    if(snap.exists()) {
+    if (snap.exists()) {
       const data = snap.val();
-      const avg = data.votes ? data.rating / data.votes : 0;
-      stars.forEach((star, idx) => {
-        star.style.color = (idx+1) <= avg ? 'gold' : '#ccc';
-      });
+      const avg  = data.votes ? data.rating / data.votes : 0;
+      stars.forEach((star, idx) => { star.style.color = (idx+1) <= avg ? 'gold' : '#3a3a4a'; });
       avgEl.innerText = `(${avg.toFixed(1)})`;
     }
 
     stars.forEach(star => {
       star.addEventListener('click', async () => {
-        if(localStorage.getItem(`rated_${scriptId}`)) return;
+        if (localStorage.getItem(`rated_${scriptId}`)) return;
         const value = Number(star.dataset.value);
         const ratingRef = ref(db, `scripts/${scriptId}`);
-        const snap = await get(ratingRef);
-        let rating = snap.exists() ? snap.val().rating || 0 : 0;
-        let votes = snap.exists() ? snap.val().votes || 0 : 0;
-        rating += value;
-        votes += 1;
+        const snap  = await get(ratingRef);
+        let rating  = snap.exists() ? snap.val().rating || 0 : 0;
+        let votes   = snap.exists() ? snap.val().votes  || 0 : 0;
+        rating += value; votes++;
         await set(ratingRef, { ...snap.val(), rating, votes });
         localStorage.setItem(`rated_${scriptId}`, 'true');
         const avg = rating / votes;
-        stars.forEach((s, idx) => {
-          s.style.color = (idx+1) <= avg ? 'gold' : '#ccc';
-        });
+        stars.forEach((s, idx) => { s.style.color = (idx+1) <= avg ? 'gold' : '#3a3a4a'; });
         avgEl.innerText = `(${avg.toFixed(1)})`;
       });
     });
   });
 }
 
-// البحث
 function handleSearch() {
-  const query = document.getElementById('searchScripts').value.toLowerCase().trim();
-  updateURLQuery(query);
+  updateURLQuery(document.getElementById('searchScripts').value.toLowerCase().trim());
   loadScripts();
 }
 
-// عند تحميل الصفحة
 window.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchScripts');
-  const searchBtn = document.getElementById('searchButton');
-  if(searchInput) searchInput.value = getSearchQuery();
-  if(searchInput) searchInput.addEventListener('input', handleSearch);
-  if(searchBtn) searchBtn.addEventListener('click', handleSearch);
+  const searchBtn   = document.getElementById('searchButton');
+  if (searchInput) searchInput.value = getSearchQuery();
+  if (searchInput) searchInput.addEventListener('input', handleSearch);
+  if (searchBtn)   searchBtn.addEventListener('click', handleSearch);
   loadScripts();
 });
-
 </script>
 </body>
 </html>
+ 
