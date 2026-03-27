@@ -498,7 +498,6 @@
 <body>
 
 <header>
-    <button onclick="location.href='scripts.html'">📜 قائمة السكربتات</button>
     <button class="nav-button" onclick="location.href='index.html'">العودة للرئيسية</button>
 </header>
 
@@ -693,6 +692,7 @@ async function loadScript() {
     document.getElementById('authorAvatarSide').innerHTML   = avatarSVG_lg;
 
     // Click author → profile
+    // تم الإصلاح: استخدام data.authorUid بدلاً من currentUser.uid
     const goProfile = () => { if (data.authorUid) location.href = `profile.html?uid=${data.authorUid}`; };
     document.getElementById('authorRow').onclick      = goProfile;
     document.getElementById('authorCardSide').onclick = goProfile;
@@ -776,6 +776,7 @@ async function loadComments(scriptData) {
         `;
 
         // كليك على الأفاتار أو الاسم → بروفايل
+        // تم الإصلاح: استخدام c.uid (معرف صاحب التعليق) بدلاً من currentUser.uid
         const goCommentProfile = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
         item.querySelector('.comment-avatar').onclick = goCommentProfile;
         item.querySelector('.comment-name').onclick   = goCommentProfile;
