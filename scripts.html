@@ -112,15 +112,25 @@ async function loadScripts() {
   const list = document.getElementById('scriptsList');
   list.innerHTML = '';
   const snapshot = await get(ref(db, 'scripts'));
-  const scripts  = snapshot.exists() ? snapshot.val() : {};
+  const scriptsData = snapshot.exists() ? snapshot.val() : {};
 
-  document.getElementById('scriptCount').innerText = Object.keys(scripts).length;
+  document.getElementById('scriptCount').innerText = Object.keys(scriptsData).length;
 
   const query = getSearchQuery();
   let anyMatch = false;
 
-  for (const id of Object.keys(scripts)) {
-    const s = scripts[id];
+  // تحويل الكائن إلى مصفوفة لتمكين الترتيب
+  const scriptsArray = Object.keys(scriptsData).map(id => ({
+    id: id,
+    ...scriptsData[id]
+  }));
+
+  // ترتيب السكربتات: الأحدث أولاً (تنازلياً)
+  // ملاحظة: إذا كان لديك حقل timestamp يفضل استخدامه، وإلا سنعتمد على ترتيب المفاتيح التلقائي لـ Firebase
+  scriptsArray.reverse(); 
+
+  for (const s of scriptsArray) {
+    const id = s.id;
     const title    = (s.title    || '').toLowerCase();
     const category = (s.category || '').toLowerCase();
     const map      = (s.map      || '').toLowerCase();
@@ -229,4 +239,3 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
- 
