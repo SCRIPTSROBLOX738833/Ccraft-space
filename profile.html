@@ -330,6 +330,125 @@
 
 
         /* ============================================================
+           Points & Referral
+           ============================================================ */
+
+        .points-referral {
+            max-width: 820px;
+            margin: 20px auto 0;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            animation: fadeIn 0.5s 0.12s ease both;
+        }
+
+        .points-card {
+            background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.05));
+            border: 1px solid rgba(251,191,36,0.3);
+            border-radius: 18px;
+            padding: 22px 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .points-card:hover { border-color: rgba(251,191,36,0.5); transform: translateY(-3px); }
+
+        .points-card .pc-icon  { font-size: 2rem; display: block; margin-bottom: 8px; }
+        .points-card .pc-value {
+            font-size: 2.4rem; font-weight: 900; color: #fbbf24;
+            display: block; margin-bottom: 4px; line-height: 1;
+        }
+        .points-card .pc-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 700; }
+
+        .referral-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: var(--transition);
+        }
+
+        .referral-card:hover { border-color: var(--border-hover); }
+
+        .referral-card h4 {
+            font-size: 0.78rem; font-weight: 800; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .ref-link-box { display: flex; gap: 8px; align-items: center; }
+
+        .ref-link-input {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-family: 'Fira Code', monospace;
+            outline: none;
+            direction: ltr;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .copy-ref-btn {
+            background: var(--primary-dim);
+            color: var(--primary);
+            border: 1px solid rgba(139,92,246,0.25);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .copy-ref-btn:hover  { background: var(--primary); color: white; transform: none; filter: none; }
+        .copy-ref-btn.copied { background: rgba(74,222,128,0.12); color: var(--success); border-color: rgba(74,222,128,0.3); }
+
+        .ref-stats { display: flex; gap: 14px; font-size: 0.78rem; flex-wrap: wrap; }
+        .ref-stat  { color: var(--text-muted); }
+        .ref-stat span { color: var(--text-main); font-weight: 800; }
+
+        /* سجل النقاط */
+        .points-log {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .log-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            animation: fadeIn 0.4s ease both;
+        }
+
+        .log-item .li-icon { font-size: 1.1rem; flex-shrink: 0; }
+        .log-item .li-text { flex: 1; color: var(--text-muted); }
+        .log-item .li-pts  { font-weight: 900; color: #fbbf24; white-space: nowrap; }
+        .log-item .li-time { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; }
+
+
+        /* ============================================================
            Responsive
            ============================================================ */
 
@@ -339,6 +458,7 @@
             .stat-num { font-size: 1.5rem; }
             #badgesGrid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
             .mini-card { flex-wrap: wrap; }
+            .points-referral { grid-template-columns: 1fr; }
         }
 
     </style>
@@ -398,6 +518,47 @@
     <div class="section-title">🏅 البادجات</div>
     <div class="badges-count">حصل على <span id="earnedCount">0</span> من <span id="totalCount">0</span> بادج</div>
     <div id="badgesGrid"></div>
+
+
+    <!-- Points & Referral (بروفايلي بس) -->
+    <div id="pointsSection" style="display:none">
+
+        <div class="section-title" style="margin-top:36px">⭐ النقاط والإحالة</div>
+
+        <div class="points-referral">
+
+            <!-- النقاط -->
+            <div class="points-card">
+                <span class="pc-icon">⭐</span>
+                <span class="pc-value" id="myPoints">0</span>
+                <span class="pc-label">نقطة مكتسبة</span>
+            </div>
+
+            <!-- رابط الإحالة -->
+            <div class="referral-card">
+                <h4>🔗 رابط الدعوة الخاص بك</h4>
+                <div class="ref-link-box">
+                    <input class="ref-link-input" id="refLinkInput" type="text" readonly>
+                    <button class="copy-ref-btn" id="copyRefBtn">📋 نسخ</button>
+                </div>
+                <div class="ref-stats">
+                    <div class="ref-stat">دعوات: <span id="refCount">0</span></div>
+                    <div class="ref-stat">مكتسب منها: <span id="refPoints">0</span> نقطة</div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);line-height:1.5">
+                    كل شخص يفتح رابطك يضيف <strong style="color:#fbbf24">15 نقطة</strong> لرصيدك
+                </div>
+            </div>
+
+        </div>
+
+        <!-- سجل النقاط -->
+        <div class="section-title" style="margin-top:28px">📋 سجل النقاط</div>
+        <div class="points-log" id="pointsLog">
+            <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:0.85rem">لا توجد نقاط بعد — شارك رابطك!</div>
+        </div>
+
+    </div>
 
 
     <!-- Scripts -->
@@ -512,7 +673,18 @@
             // عنوان السكربتات
             document.getElementById('scriptsTitle').innerText = '📜 سكربتاتي';
 
+            // إظهار قسم النقاط (بروفايلي أنا فقط)
+            document.getElementById('pointsSection').style.display = 'block';
+
+            // لو في رابط إحالة معلق من قبل التسجيل
+            const pendingRef = localStorage.getItem('pendingRef');
+            if (pendingRef && pendingRef !== user.uid) {
+                localStorage.removeItem('pendingRef');
+                await awardReferralPoints(pendingRef, user.uid);
+            }
+
             await loadData(user.uid, user.email, user.metadata.createdAt, true);
+            await loadPoints(user.uid);
         }
 
 
@@ -691,6 +863,96 @@
 
                 container.appendChild(card);
             });
+        }
+
+
+        /* ============================================================
+           النقاط وسجلها
+           ============================================================ */
+
+        async function loadPoints(uid) {
+            // رابط الإحالة
+            const refLink = `${location.origin}/referral.html?ref=${uid}`;
+            document.getElementById('refLinkInput').value = refLink;
+
+            // نسخ الرابط
+            document.getElementById('copyRefBtn').onclick = () => {
+                navigator.clipboard.writeText(refLink).then(() => {
+                    const btn = document.getElementById('copyRefBtn');
+                    btn.innerText = '✅ تم';
+                    btn.classList.add('copied');
+                    setTimeout(() => { btn.innerText = '📋 نسخ'; btn.classList.remove('copied'); }, 2000);
+                });
+            };
+
+            // النقاط الحالية
+            const pointsSnap = await get(ref(db, `users/${uid}/points`));
+            const points = pointsSnap.exists() ? pointsSnap.val() : 0;
+            document.getElementById('myPoints').innerText = points;
+
+            // عدد الدعوات
+            const visitorsSnap = await get(ref(db, `referrals/${uid}/visitors`));
+            const refCount = visitorsSnap.exists() ? Object.keys(visitorsSnap.val()).length : 0;
+            document.getElementById('refCount').innerText  = refCount;
+            document.getElementById('refPoints').innerText = refCount * 15;
+
+            // سجل النقاط
+            const logSnap = await get(ref(db, `users/${uid}/pointsLog`));
+            const logDiv  = document.getElementById('pointsLog');
+            logDiv.innerHTML = '';
+
+            if (!logSnap.exists()) {
+                logDiv.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:0.85rem">
+                    لا توجد نقاط بعد — شارك رابطك!
+                </div>`;
+                return;
+            }
+
+            const logs = Object.entries(logSnap.val())
+                .sort((a, b) => b[0] - a[0]) // الأحدث أولاً
+                .slice(0, 10);
+
+            logs.forEach(([ts, log]) => {
+                const item = document.createElement('div');
+                item.className = 'log-item';
+                const date = new Date(parseInt(ts)).toLocaleString('ar-EG', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+                item.innerHTML = `
+                    <span class="li-icon">🎁</span>
+                    <span class="li-text">شخص فتح رابط الدعوة الخاص بك</span>
+                    <span class="li-pts">+${log.points} ⭐</span>
+                    <span class="li-time">${date}</span>
+                `;
+                logDiv.appendChild(item);
+            });
+        }
+
+
+        /* ============================================================
+           إضافة نقاط الإحالة (لو في pendingRef)
+           ============================================================ */
+
+        async function awardReferralPoints(refUid, visitorUid) {
+            if (!refUid || !visitorUid || refUid === visitorUid) return;
+            try {
+                // تحقق ما اتحسبوش قبل
+                const alreadySnap = await get(ref(db, `referrals/${refUid}/visitors/${visitorUid}`));
+                if (alreadySnap.exists()) return;
+
+                // سجّل الزيارة
+                await set(ref(db, `referrals/${refUid}/visitors/${visitorUid}`), {
+                    timestamp: Date.now(), points: 15
+                });
+
+                // اضف 15 نقطة
+                const currentSnap = await get(ref(db, `users/${refUid}/points`));
+                const current = currentSnap.exists() ? currentSnap.val() : 0;
+                await set(ref(db, `users/${refUid}/points`), current + 15);
+
+                // سجل النقاط
+                await set(ref(db, `users/${refUid}/pointsLog/${Date.now()}`), {
+                    type: 'referral', points: 15, from: visitorUid, timestamp: Date.now()
+                });
+            } catch (e) { console.error(e); }
         }
 
     </script>
