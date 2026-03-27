@@ -5,6 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="styles.css">
 <title>تسجيل الدخول أو إنشاء حساب</title>
+<style>
+    /* تحسين بسيط لشكل زر جوجل */
+    #googleLoginBtn {
+        background-color: #fff;
+        color: #757575;
+        border: 1px solid #ddd;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-weight: bold;
+        margin-top: 10px;
+        width: 100%;
+    }
+    #googleLoginBtn:hover {
+        background-color: #f1f1f1;
+    }
+    .divider {
+        margin: 20px 0;
+        text-align: center;
+        position: relative;
+    }
+    .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #ddd;
+        z-index: 1;
+    }
+    .divider span {
+        background: #fff;
+        padding: 0 10px;
+        position: relative;
+        z-index: 2;
+        color: #888;
+        font-size: 14px;
+    }
+</style>
 </head>
 <body>
 
@@ -15,6 +59,13 @@
     <input type="email" id="loginEmail" placeholder="البريد الإلكتروني">
     <input type="password" id="loginPass" placeholder="كلمة المرور">
     <button id="loginBtn">دخول</button>
+
+    <div class="divider"><span>أو</span></div>
+    
+    <button id="googleLoginBtn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" width="18">
+        تسجيل الدخول عبر جوجل
+    </button>
 
     <h2>أو إنشاء حساب جديد</h2>
     <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
@@ -28,7 +79,15 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword, 
+    GoogleAuthProvider, 
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -44,36 +103,39 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
+const googleProvider = new GoogleAuthProvider();
 
 const loginEmail = document.getElementById("loginEmail");
 const loginPass = document.getElementById("loginPass");
 const loginBtn = document.getElementById("loginBtn");
+const googleLoginBtn = document.getElementById("googleLoginBtn");
 const regEmail = document.getElementById("regEmail");
 const regPass = document.getElementById("regPass");
 const regBtn = document.getElementById("regBtn");
 const msg = document.getElementById("msg");
 const authContainer = document.getElementById("authContainer");
 
-// تحقق عند تحميل الصفحة إذا المستخدم مسجل دخول مسبقًا
-window.addEventListener("DOMContentLoaded", () => {
-    const currentUser = localStorage.getItem("currentUser");
-    if(currentUser){
-        showLoggedInView();
+// مراقبة حالة المصادقة بدلاً من الاعتماد فقط على localStorage
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        localStorage.setItem("currentUser", user.uid);
+        showLoggedInView(user);
+    } else {
+        localStorage.removeItem("currentUser");
     }
 });
 
 // عرض زر تسجيل خروج + الصفحة الرئيسية
-function showLoggedInView(){
+function showLoggedInView(user){
     authContainer.innerHTML = `
-        <h2>مرحبا بك!</h2>
+        <h2>مرحبا بك ${user.displayName || user.email}!</h2>
         <button id="logoutBtn">تسجيل خروج</button>
         <button onclick="location.href='index.html'">الصفحة الرئيسية</button>
     `;
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", async ()=>{
         try{
-            await auth.signOut();
-            localStorage.removeItem("currentUser");
+            await signOut(auth);
             window.location.reload();
         }catch(e){
             alert("حدث خطأ أثناء تسجيل الخروج");
@@ -81,17 +143,33 @@ function showLoggedInView(){
     });
 }
 
-// تسجيل الدخول
+// تسجيل الدخول بالبريد
 loginBtn.addEventListener("click", async ()=>{
     const email = loginEmail.value.trim();
     const pass = loginPass.value.trim();
     if(!email||!pass){ msg.textContent="ادخل البريد وكلمة المرور"; return; }
     try{
-        const userCred = await signInWithEmailAndPassword(auth,email,pass);
-        localStorage.setItem("currentUser", userCred.user.uid);
-        showLoggedInView();
+        await signInWithEmailAndPassword(auth,email,pass);
     }catch(e){
         msg.textContent = "خطأ في البريد أو كلمة المرور";
+    }
+});
+
+// تسجيل الدخول عبر جوجل
+googleLoginBtn.addEventListener("click", async () => {
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        // حفظ بيانات المستخدم في قاعدة البيانات إذا كان جديداً
+        await set(ref(db, `users/${user.uid}`), {
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            lastLogin: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error(error);
+        msg.textContent = "فشل تسجيل الدخول عبر جوجل: " + error.message;
     }
 });
 
@@ -102,10 +180,7 @@ regBtn.addEventListener("click", async ()=>{
     if(!email||!pass){ msg.textContent="ادخل البريد وكلمة المرور"; return; }
     try{
         const userCred = await createUserWithEmailAndPassword(auth,email,pass);
-        localStorage.setItem("currentUser", userCred.user.uid);
-        // أضف المستخدم للداتا بيس
         await set(ref(db, `users/${userCred.user.uid}`), { email });
-        showLoggedInView();
     }catch(e){
         msg.textContent = "حدث خطأ، حاول مرة أخرى";
     }
