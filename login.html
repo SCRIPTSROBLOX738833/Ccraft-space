@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="styles.css">
 <title>تسجيل الدخول أو إنشاء حساب</title>
 <style>
-    /* تحسين بسيط لشكل زر جوجل */
+    /* تحسين شكل زر جوجل */
     #googleLoginBtn {
         background-color: #fff;
         color: #757575;
@@ -21,9 +21,10 @@
         font-weight: bold;
         margin-top: 10px;
         width: 100%;
+        transition: background-color 0.3s;
     }
     #googleLoginBtn:hover {
-        background-color: #f1f1f1;
+        background-color: #f8f9fa;
     }
     .divider {
         margin: 20px 0;
@@ -37,16 +38,28 @@
         left: 0;
         right: 0;
         height: 1px;
-        background: #ddd;
+        background: #eee;
         z-index: 1;
     }
     .divider span {
         background: #fff;
-        padding: 0 10px;
+        padding: 0 15px;
         position: relative;
         z-index: 2;
-        color: #888;
+        color: #999;
         font-size: 14px;
+    }
+    #msg {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        display: none;
+    }
+    .error-msg {
+        background-color: #ffebee;
+        color: #c62828;
+        display: block !important;
     }
 </style>
 </head>
@@ -72,7 +85,7 @@
     <input type="password" id="regPass" placeholder="كلمة المرور">
     <button id="regBtn">إنشاء حساب</button>
 
-    <p id="msg" style="color:red;"></p>
+    <p id="msg"></p>
     <button id="privacy" class="nav-button" onclick="location.href='privacy.html'">سياسة الخصوصية</button>
     <button id="home" class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </div>
@@ -88,7 +101,7 @@ import {
     signOut,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, set, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -115,7 +128,13 @@ const regBtn = document.getElementById("regBtn");
 const msg = document.getElementById("msg");
 const authContainer = document.getElementById("authContainer");
 
-// مراقبة حالة المصادقة بدلاً من الاعتماد فقط على localStorage
+function showMessage(text, isError = true) {
+    msg.textContent = text;
+    msg.className = isError ? "error-msg" : "";
+    msg.style.display = "block";
+}
+
+// مراقبة حالة المصادقة
 onAuthStateChanged(auth, (user) => {
     if (user) {
         localStorage.setItem("currentUser", user.uid);
@@ -125,7 +144,6 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// عرض زر تسجيل خروج + الصفحة الرئيسية
 function showLoggedInView(user){
     authContainer.innerHTML = `
         <h2>مرحبا بك ${user.displayName || user.email}!</h2>
@@ -147,11 +165,11 @@ function showLoggedInView(user){
 loginBtn.addEventListener("click", async ()=>{
     const email = loginEmail.value.trim();
     const pass = loginPass.value.trim();
-    if(!email||!pass){ msg.textContent="ادخل البريد وكلمة المرور"; return; }
+    if(!email||!pass){ showMessage("ادخل البريد وكلمة المرور"); return; }
     try{
         await signInWithEmailAndPassword(auth,email,pass);
     }catch(e){
-        msg.textContent = "خطأ في البريد أو كلمة المرور";
+        showMessage("خطأ في البريد أو كلمة المرور");
     }
 });
 
@@ -160,16 +178,21 @@ googleLoginBtn.addEventListener("click", async () => {
     try {
         const result = await signInWithPopup(auth, googleProvider);
         const user = result.user;
-        // حفظ بيانات المستخدم في قاعدة البيانات إذا كان جديداً
-        await set(ref(db, `users/${user.uid}`), {
+        
+        // تحديث بيانات المستخدم في قاعدة البيانات
+        await update(ref(db, `users/${user.uid}`), {
             email: user.email,
             displayName: user.displayName,
             photoURL: user.photoURL,
             lastLogin: new Date().toISOString()
         });
     } catch (error) {
-        console.error(error);
-        msg.textContent = "فشل تسجيل الدخول عبر جوجل: " + error.message;
+        console.error("Google Login Error:", error);
+        if (error.code === 'auth/unauthorized-domain') {
+            showMessage("خطأ: النطاق الحالي غير مصرح به في Firebase. يرجى إضافة النطاق إلى قائمة Authorized Domains في لوحة تحكم Firebase.");
+        } else {
+            showMessage("فشل تسجيل الدخول عبر جوجل: " + error.message);
+        }
     }
 });
 
@@ -177,12 +200,12 @@ googleLoginBtn.addEventListener("click", async () => {
 regBtn.addEventListener("click", async ()=>{
     const email = regEmail.value.trim();
     const pass = regPass.value.trim();
-    if(!email||!pass){ msg.textContent="ادخل البريد وكلمة المرور"; return; }
+    if(!email||!pass){ showMessage("ادخل البريد وكلمة المرور"); return; }
     try{
         const userCred = await createUserWithEmailAndPassword(auth,email,pass);
         await set(ref(db, `users/${userCred.user.uid}`), { email });
     }catch(e){
-        msg.textContent = "حدث خطأ، حاول مرة أخرى";
+        showMessage("حدث خطأ، حاول مرة أخرى");
     }
 });
 </script>
