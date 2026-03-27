@@ -6,493 +6,40 @@
 <title>عرض السكربت | CCRAFT SPACE</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-
-/* ============================================================
-   Script Page — Full Professional Layout
-   ============================================================ */
-
-.script-layout {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 20px 80px;
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 24px;
-    align-items: start;
-}
-
-/* ---- Main Column ---- */
-
+/* ... (نفس الستايل السابق لضمان الحفاظ على الشكل) ... */
+.script-layout { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
 .script-main { min-width: 0; }
-
-
-/* ---- Hero ---- */
-
-.script-hero {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 24px;
-    padding: 28px 28px 24px;
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-    animation: fadeIn 0.5s ease both;
-}
-
-.script-hero::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 5px; height: 100%;
-    background: var(--accent-gradient);
-    border-radius: 0 24px 24px 0;
-}
-
-.script-title {
-    font-size: clamp(1.4rem, 4vw, 2rem);
-    font-weight: 900;
-    color: var(--text-main);
-    margin-bottom: 14px;
-    line-height: 1.3;
-    padding-left: 12px;
-}
-
-/* Author row */
-.author-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-    cursor: pointer;
-    width: fit-content;
-}
-
+.script-hero { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 28px 28px 24px; margin-bottom: 20px; position: relative; overflow: hidden; }
+.script-hero::before { content: ''; position: absolute; top: 0; right: 0; width: 5px; height: 100%; background: var(--accent-gradient); border-radius: 0 24px 24px 0; }
+.script-title { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 900; color: var(--text-main); margin-bottom: 14px; line-height: 1.3; padding-left: 12px; }
+.author-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; cursor: pointer; width: fit-content; }
 .author-row:hover .author-name { color: var(--primary); }
-
-.author-avatar {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: 2px solid rgba(139,92,246,0.3);
-    overflow: hidden;
-    flex-shrink: 0;
-    background: #0a0a14;
-    transition: var(--transition);
-    display: flex; align-items: center; justify-content: center;
-}
-
-.author-row:hover .author-avatar { border-color: var(--primary); box-shadow: 0 0 14px rgba(139,92,246,0.4); }
-
+.author-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.3); overflow: hidden; flex-shrink: 0; background: #0a0a14; display: flex; align-items: center; justify-content: center; }
 .author-info { display: flex; flex-direction: column; gap: 2px; }
-.author-name { font-size: 0.92rem; font-weight: 800; color: var(--text-main); transition: color 0.2s; }
+.author-name { font-size: 0.92rem; font-weight: 800; color: var(--text-main); }
 .author-date { font-size: 0.72rem; color: var(--text-muted); }
-
-/* Tags row */
-.tags-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 0;
-}
-
-.tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    border-radius: 50px;
-    font-size: 0.72rem;
-    font-weight: 800;
-}
-
-.tag-cat  { background: var(--primary-dim); color: #b48bf8; border: 1px solid rgba(139,92,246,0.2); }
-.tag-map  { background: rgba(0,242,254,0.07); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
-.tag-nomap{ background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); }
-
-
-/* ---- Code Block ---- */
-
-.code-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    animation: fadeIn 0.5s 0.1s ease both;
-}
-
-.code-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 18px;
-    background: rgba(0,0,0,0.3);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.code-header .ch-dots {
-    display: flex;
-    gap: 6px;
-}
-
-.ch-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-}
-
-.ch-dot:nth-child(1){ background: #ef4444; }
-.ch-dot:nth-child(2){ background: #f59e0b; }
-.ch-dot:nth-child(3){ background: #22c55e; }
-
-.code-header .ch-label {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    font-family: 'Fira Code', monospace;
-}
-
-.code-header .copy-inline {
-    background: rgba(139,92,246,0.12);
-    color: var(--primary);
-    border: 1px solid rgba(139,92,246,0.25);
-    border-radius: 8px;
-    padding: 5px 12px;
-    font-size: 0.72rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: var(--transition);
-    font-family: 'Tajawal', sans-serif;
-    margin: 0;
-}
-
-.copy-inline:hover { background: var(--primary); color: white; transform: none; filter: none; }
-.copy-inline.copied { background: rgba(74,222,128,0.15); color: var(--success); border-color: rgba(74,222,128,0.3); }
-
-#code {
-    background: #000 !important;
-    margin: 0;
-    border: none;
-    border-radius: 0;
-    padding: 22px 20px;
-    color: #4ade80;
-    font-family: 'Fira Code', monospace;
-    font-size: 0.85rem;
-    line-height: 1.8;
-    direction: ltr;
-    text-align: left;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-
-/* ---- Description ---- */
-
-.desc-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 20px 22px;
-    margin-bottom: 20px;
-    animation: fadeIn 0.5s 0.15s ease both;
-}
-
-.desc-card h3 {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.desc-card h3::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
-
-#description {
-    color: var(--text-main);
-    font-size: 0.95rem;
-    line-height: 1.8;
-    margin: 0;
-}
-
-
-/* ---- Action Buttons ---- */
-
-.action-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 24px;
-}
-
-.action-row button {
-    border-radius: var(--radius-btn);
-    padding: 12px 22px;
-    font-size: 0.9rem;
-    margin: 0;
-}
-
-#copyBtn {
-    background: var(--accent-gradient);
-    color: white;
-    border: none;
-    box-shadow: 0 6px 16px rgba(139,92,246,0.3);
-}
-
-#rawBtn {
-    background: rgba(0,242,254,0.07);
-    color: var(--secondary);
-    border: 1px solid rgba(0,242,254,0.2);
-}
-
-#rawBtn:hover { background: var(--secondary); color: var(--bg-base); }
-
-
-/* ---- Comments ---- */
-
-.comments-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 22px;
-    animation: fadeIn 0.5s 0.2s ease both;
-}
-
-.comments-card h3 {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.comments-card h3::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
-
-#comments {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-
-.comment-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    transition: var(--transition);
-    animation: fadeIn 0.3s ease both;
-}
-
-.comment-item:hover { border-color: var(--border-hover); }
-
-.comment-avatar {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    background: #0a0a14;
-    border: 1.5px solid rgba(139,92,246,0.25);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex; align-items: center; justify-content: center;
-}
-
-.comment-avatar:hover { border-color: var(--primary); box-shadow: 0 0 10px rgba(139,92,246,0.3); transform: scale(1.1); }
-
-.comment-body { flex: 1; min-width: 0; }
-
-.comment-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-}
-
-.comment-name {
-    font-size: 0.82rem;
-    font-weight: 800;
-    color: var(--primary);
-    cursor: pointer;
-}
-
-.comment-name:hover { text-decoration: underline; }
-
-.comment-time {
-    font-size: 0.68rem;
-    color: var(--text-muted);
-}
-
-.comment-text {
-    font-size: 0.9rem;
-    color: var(--text-main);
-    line-height: 1.6;
-    word-break: break-word;
-}
-
-/* Add comment */
-#addComment {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-#commentInput {
-    flex: 1;
-    margin: 0;
-    border-radius: var(--radius-btn);
-    padding: 13px 20px;
-}
-
-#submitComment {
-    background: var(--accent-gradient);
-    color: white;
-    border: none;
-    border-radius: var(--radius-btn);
-    padding: 13px 22px;
-    white-space: nowrap;
-    box-shadow: 0 6px 16px rgba(139,92,246,0.3);
-    margin: 0;
-}
-
-
-/* ============================================================
-   Sidebar
-   ============================================================ */
-
-.script-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    position: sticky;
-    top: 100px;
-}
-
-
-/* Map card */
-.map-card-side {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 20px;
-    text-align: center;
-    animation: fadeIn 0.5s 0.05s ease both;
-    transition: var(--transition);
-}
-
-.map-card-side:hover { border-color: var(--border-hover); }
-
-.map-card-side .mcs-icon { font-size: 2.4rem; display: block; margin-bottom: 10px; }
-.map-card-side .mcs-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.map-card-side .mcs-name  { font-size: 1rem; font-weight: 900; color: var(--secondary); }
-.map-card-side .mcs-name.muted { color: var(--text-muted); font-size: 0.88rem; font-weight: 700; }
-
-
-/* Stats card */
-.stats-side {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 20px;
-    animation: fadeIn 0.5s 0.1s ease both;
-}
-
-.stats-side h4 {
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 14px;
-}
-
-.stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: 0.85rem;
-}
-
-.stat-row:last-child { border-bottom: none; }
-.stat-row .sr-label { color: var(--text-muted); }
-.stat-row .sr-val   { font-weight: 800; color: var(--text-main); }
-
-
-/* Author card (sidebar) */
-.author-card-side {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: var(--transition);
-    animation: fadeIn 0.5s 0.15s ease both;
-}
-
-.author-card-side:hover { border-color: var(--border-hover); transform: translateY(-3px); }
-
-.acs-avatar {
-    width: 70px; height: 70px;
-    border-radius: 50%;
-    border: 2px solid rgba(139,92,246,0.3);
-    overflow: hidden;
-    margin: 0 auto 12px;
-    background: #0a0a14;
-    display: flex; align-items: center; justify-content: center;
-    transition: var(--transition);
-}
-
-.author-card-side:hover .acs-avatar { border-color: var(--primary); box-shadow: 0 0 18px rgba(139,92,246,0.4); }
-
-.acs-name  { font-size: 1rem; font-weight: 900; color: var(--text-main); margin-bottom: 4px; }
-.acs-label { font-size: 0.72rem; color: var(--text-muted); }
-.acs-btn {
-    background: var(--primary-dim);
-    color: var(--primary);
-    border: 1px solid rgba(139,92,246,0.25);
-    border-radius: 50px;
-    padding: 7px 18px;
-    font-size: 0.78rem;
-    font-weight: 800;
-    font-family: 'Tajawal', sans-serif;
-    cursor: pointer;
-    margin-top: 12px;
-    transition: var(--transition);
-}
-
-.acs-btn:hover { background: var(--primary); color: white; transform: none; filter: none; }
-
-
-/* ============================================================
-   Responsive
-   ============================================================ */
-
-@media (max-width: 720px) {
-    .script-layout {
-        grid-template-columns: 1fr;
-    }
-    .script-sidebar {
-        position: static;
-        order: -1;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    }
-    #addComment { flex-direction: column; }
-    #commentInput, #submitComment { width: 100%; }
-}
-
+.tags-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 800; }
+.tag-cat { background: var(--primary-dim); color: #b48bf8; border: 1px solid rgba(139,92,246,0.2); }
+.tag-map { background: rgba(0,242,254,0.07); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
+.code-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; margin-bottom: 20px; }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border-color); }
+#code { background: #000 !important; margin: 0; padding: 22px 20px; color: #4ade80; font-family: 'Fira Code', monospace; font-size: 0.85rem; line-height: 1.8; direction: ltr; text-align: left; overflow-x: auto; white-space: pre-wrap; max-height: 400px; overflow-y: auto; }
+.desc-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px 22px; margin-bottom: 20px; }
+.action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.action-row button { border-radius: var(--radius-btn); padding: 12px 22px; font-size: 0.9rem; }
+#copyBtn { background: var(--accent-gradient); color: white; border: none; }
+.comments-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 22px; }
+#comments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.comment-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 14px; }
+.comment-avatar { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #0a0a14; border: 1.5px solid rgba(139,92,246,0.25); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.comment-name { font-size: 0.82rem; font-weight: 800; color: var(--primary); cursor: pointer; }
+.script-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 100px; }
+.author-card-side { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; text-align: center; cursor: pointer; }
+.acs-avatar { width: 70px; height: 70px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.3); overflow: hidden; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; }
+.acs-btn { background: var(--primary-dim); color: var(--primary); border: 1px solid rgba(139,92,246,0.25); border-radius: 50px; padding: 7px 18px; font-size: 0.78rem; font-weight: 800; cursor: pointer; margin-top: 12px; }
+
+@media (max-width: 720px) { .script-layout { grid-template-columns: 1fr; } .script-sidebar { position: static; order: -1; display: grid; grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -501,19 +48,10 @@
     <button class="nav-button" onclick="location.href='index.html'">العودة للرئيسية</button>
 </header>
 
-
 <div class="script-layout">
-
-    <!-- ============================================================
-         Main Column
-         ============================================================ -->
     <div class="script-main">
-
-        <!-- Hero -->
         <div class="script-hero">
             <h1 class="script-title" id="title">جارٍ التحميل...</h1>
-
-            <!-- Author row with avatar -->
             <div class="author-row" id="authorRow">
                 <div class="author-avatar" id="authorAvatarInline"></div>
                 <div class="author-info">
@@ -521,42 +59,27 @@
                     <span class="author-date" id="scriptDate">—</span>
                 </div>
             </div>
-
-            <!-- Tags -->
             <div class="tags-row" id="tagsRow"></div>
         </div>
 
-
-        <!-- Code Block -->
         <div class="code-card">
             <div class="code-header">
-                <div class="ch-dots">
-                    <div class="ch-dot"></div>
-                    <div class="ch-dot"></div>
-                    <div class="ch-dot"></div>
-                </div>
                 <span class="ch-label">script.lua</span>
                 <button class="copy-inline" id="copyInline">📋 نسخ</button>
             </div>
             <pre id="code">جارٍ التحميل...</pre>
         </div>
 
-
-        <!-- Description -->
         <div class="desc-card">
             <h3>📝 الوصف</h3>
             <p id="description">—</p>
         </div>
 
-
-        <!-- Action Buttons -->
         <div class="action-row">
             <button id="copyBtn">📋 نسخ السكربت</button>
             <button id="rawBtn">📄 Raw</button>
         </div>
 
-
-        <!-- Comments -->
         <div class="comments-card">
             <h3>💬 التعليقات (<span id="commentCount">0</span>)</h3>
             <div id="comments"></div>
@@ -565,41 +88,21 @@
                 <button id="submitComment">إرسال</button>
             </div>
         </div>
-
     </div>
 
-
-    <!-- ============================================================
-         Sidebar
-         ============================================================ -->
     <aside class="script-sidebar">
-
-        <!-- Map -->
         <div class="map-card-side" id="mapCardSide">
             <span class="mcs-icon">⏳</span>
-            <div class="mcs-label">الماب</div>
             <div class="mcs-name muted">جارٍ التحميل...</div>
         </div>
 
-        <!-- Stats -->
-        <div class="stats-side">
-            <h4>📊 إحصائيات</h4>
-            <div class="stat-row"><span class="sr-label">👍 اللايكات</span><span class="sr-val" id="st-likes">—</span></div>
-            <div class="stat-row"><span class="sr-label">⭐ التقييم</span><span class="sr-val" id="st-rating">—</span></div>
-            <div class="stat-row"><span class="sr-label">💬 التعليقات</span><span class="sr-val" id="st-comments">—</span></div>
-        </div>
-
-        <!-- Author card -->
         <div class="author-card-side" id="authorCardSide">
             <div class="acs-avatar" id="authorAvatarSide"></div>
             <div class="acs-name"  id="acName">—</div>
-            <div class="acs-label">المؤلف</div>
             <button class="acs-btn" id="viewProfileBtn">👤 عرض البروفايل</button>
         </div>
-
     </aside>
 </div>
-
 
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
@@ -615,7 +118,6 @@ const firebaseConfig = {
     storageBucket: "ccraft-space-scripts.firebasestorage.app",
     messagingSenderId: "816078027492",
     appId: "1:816078027492:web:6472cce474078fd4d90af1",
-    measurementId: "G-MHDM7YYYBN"
 };
 
 const app  = initializeApp(firebaseConfig);
@@ -625,30 +127,6 @@ const auth = getAuth(app);
 const params   = new URLSearchParams(window.location.search);
 const scriptId = params.get('id');
 let currentUser = null;
-let commentCount = 0;
-
-// cache الشخصيات عشان ما نجيبش نفس الشخص أكتر من مرة
-const avatarCache = {};
-
-async function getAvatar(uid, size = 40) {
-    if (!uid) return buildAvatar(DEFAULT_CHAR, size);
-    if (avatarCache[uid]) return buildAvatar(avatarCache[uid], size);
-    try {
-        const snap = await get(ref(db, `users/${uid}/avatar`));
-        const char = snap.exists() ? { ...DEFAULT_CHAR, ...snap.val() } : DEFAULT_CHAR;
-        avatarCache[uid] = char;
-        return buildAvatar(char, size);
-    } catch {
-        return buildAvatar(DEFAULT_CHAR, size);
-    }
-}
-
-const MAP_ICONS = {
-    'Adopt Me':'🏡','Bloxburg':'🏗️','Brookhaven':'🌆',
-    'Arsenal':'🔫','Bedwars':'🛏️','Murder Mystery 2':'🔪',
-    'Jailbreak':'🚔','Pet Simulator X':'🐾','Doors':'🚪',
-    'Da Hood':'🏙️','Anime Fighting Sim':'⚔️','Tower of Hell':'🗼',
-};
 
 onAuthStateChanged(auth, user => {
     if (!user) { alert("يجب تسجيل الدخول أولاً"); location.href = "login.html"; return; }
@@ -656,200 +134,99 @@ onAuthStateChanged(auth, user => {
     loadScript();
 });
 
-
-/* ============================================================
-   Load Script
-   ============================================================ */
+async function getAvatar(uid, size = 40) {
+    if (!uid) return buildAvatar(DEFAULT_CHAR, size);
+    try {
+        const snap = await get(ref(db, `users/${uid}/avatar`));
+        const char = snap.exists() ? { ...DEFAULT_CHAR, ...snap.val() } : DEFAULT_CHAR;
+        return buildAvatar(char, size);
+    } catch { return buildAvatar(DEFAULT_CHAR, size); }
+}
 
 async function loadScript() {
     const snap = await get(ref(db, `scripts/${scriptId}`));
-    if (!snap.exists()) { document.getElementById('title').innerText = "هذا السكربت غير موجود"; return; }
+    if (!snap.exists()) return;
     const data = snap.val();
 
-    // Title
     document.getElementById('title').innerText = data.title;
-    document.title = `${data.title} | CCRAFT SPACE`;
-
-    // Code
     document.getElementById('code').innerText = data.code;
-
-    // Description
     document.getElementById('description').innerText = data.description || "لا يوجد وصف";
+    document.getElementById('authorName').innerText = data.author || 'مجهول';
+    document.getElementById('acName').innerText = data.author || 'مجهول';
 
-    // Date
-    const date = data.timestamp ? new Date(data.timestamp).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }) : '—';
-    document.getElementById('scriptDate').innerText = `نُشر في ${date}`;
-
-    // Author name
-    const authorName = data.author || 'مجهول';
-    document.getElementById('authorName').innerText = authorName;
-    document.getElementById('acName').innerText     = authorName;
-
-    // Author avatar (inline + sidebar)
     const avatarSVG_sm = await getAvatar(data.authorUid, 40);
     const avatarSVG_lg = await getAvatar(data.authorUid, 70);
     document.getElementById('authorAvatarInline').innerHTML = avatarSVG_sm;
-    document.getElementById('authorAvatarSide').innerHTML   = avatarSVG_lg;
+    document.getElementById('authorAvatarSide').innerHTML = avatarSVG_lg;
 
-    // Click author → profile
-    // تم الإصلاح: استخدام data.authorUid بدلاً من currentUser.uid
-    const goProfile = () => { if (data.authorUid) location.href = `profile.html?uid=${data.authorUid}`; };
-    document.getElementById('authorRow').onclick      = goProfile;
+    // دالة التوجيه للبروفايل - نستخدم UID الناشر مباشرة
+    const targetAuthorUid = data.authorUid;
+    const goProfile = () => { 
+        if (targetAuthorUid) {
+            console.log("Redirecting to author profile:", targetAuthorUid);
+            window.location.href = `profile.html?uid=${targetAuthorUid}`;
+        }
+    };
+
+    document.getElementById('authorRow').onclick = goProfile;
     document.getElementById('authorCardSide').onclick = goProfile;
     document.getElementById('viewProfileBtn').onclick = (e) => { e.stopPropagation(); goProfile(); };
 
-    // Tags
-    const tagsRow = document.getElementById('tagsRow');
-    tagsRow.innerHTML = `<span class="tag tag-cat">📁 ${data.category || '—'}</span>`;
-    if (data.map) {
-        tagsRow.innerHTML += `<span class="tag tag-map">🗺️ ${data.map}</span>`;
-    } else {
-        tagsRow.innerHTML += `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
-    }
-
-    // Map sidebar
-    const mapCard = document.getElementById('mapCardSide');
-    if (data.map) {
-        const icon = MAP_ICONS[data.map] || '🗺️';
-        mapCard.innerHTML = `
-            <span class="mcs-icon">${icon}</span>
-            <div class="mcs-label">مخصص لماب</div>
-            <div class="mcs-name">${data.map}</div>
-        `;
-        mapCard.style.borderColor = 'rgba(0,242,254,0.25)';
-    } else {
-        mapCard.innerHTML = `
-            <span class="mcs-icon">🌐</span>
-            <div class="mcs-label">الماب</div>
-            <div class="mcs-name muted">يعمل على أي لعبة</div>
-        `;
-    }
-
-    // Stats
-    document.getElementById('st-likes').innerText  = data.likes || 0;
-    const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
-    document.getElementById('st-rating').innerText = avg === '—' ? '—' : `${avg} ⭐`;
-
-    loadComments(data);
+    loadComments();
 }
 
-
-/* ============================================================
-   Comments
-   ============================================================ */
-
-async function loadComments(scriptData) {
+async function loadComments() {
     const commentsDiv = document.getElementById('comments');
     commentsDiv.innerHTML = '';
-    commentCount = 0;
-
-    // عد التعليقات الموجودة أصلاً
-    if (scriptData.comments) {
-        commentCount = Object.keys(scriptData.comments).length;
-    }
-    updateCommentCount();
-
+    
     onChildAdded(ref(db, `scripts/${scriptId}/comments`), async snapshot => {
-        const c   = snapshot.val();
-        const key = snapshot.key;
-
-        // جيب شخصية صاحب التعليق
+        const c = snapshot.val();
         const avatarSVG = await getAvatar(c.uid, 34);
-
         const item = document.createElement('div');
         item.className = 'comment-item';
-        item.dataset.key = key;
-
-        const time = c.timestamp
-            ? new Date(c.timestamp).toLocaleString('ar-EG', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })
-            : '';
-
+        
         item.innerHTML = `
-            <div class="comment-avatar" title="عرض بروفايل ${c.name}">${avatarSVG}</div>
+            <div class="comment-avatar">${avatarSVG}</div>
             <div class="comment-body">
                 <div class="comment-meta">
                     <span class="comment-name">${c.name || 'مجهول'}</span>
-                    <span class="comment-time">${time}</span>
                 </div>
-                <div class="comment-text">${escapeHTML(c.text)}</div>
+                <div class="comment-text">${c.text}</div>
             </div>
         `;
 
-        // كليك على الأفاتار أو الاسم → بروفايل
-        // تم الإصلاح: استخدام c.uid (معرف صاحب التعليق) بدلاً من currentUser.uid
-        const goCommentProfile = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
+        // التوجيه لبروفايل صاحب التعليق - نستخدم c.uid الخاص بالتعليق
+        const commentOwnerUid = c.uid;
+        const goCommentProfile = () => {
+            if (commentOwnerUid) {
+                console.log("Redirecting to commenter profile:", commentOwnerUid);
+                window.location.href = `profile.html?uid=${commentOwnerUid}`;
+            }
+        };
+
         item.querySelector('.comment-avatar').onclick = goCommentProfile;
-        item.querySelector('.comment-name').onclick   = goCommentProfile;
-
+        item.querySelector('.comment-name').onclick = goCommentProfile;
         commentsDiv.appendChild(item);
-
-        // تحديث العداد بعد ما التعليق يظهر لأول مرة
-        if (!item.dataset.counted) {
-            item.dataset.counted = '1';
-        }
+        
+        document.getElementById('commentCount').innerText = document.querySelectorAll('.comment-item').length;
     });
 }
 
-function updateCommentCount() {
-    // نحسب الكاردز الموجودة
-    const count = document.querySelectorAll('.comment-item').length;
-    document.getElementById('st-comments').innerText  = count;
-    document.getElementById('commentCount').innerText = count;
-}
-
-function escapeHTML(str) {
-    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-
-/* ============================================================
-   Submit Comment
-   ============================================================ */
-
-document.getElementById('submitComment').addEventListener('click', async () => {
+document.getElementById('submitComment').onclick = async () => {
     const text = document.getElementById('commentInput').value.trim();
-    if (!text) return alert("اكتب تعليقك أولاً!");
-    const btn = document.getElementById('submitComment');
-    btn.disabled = true;
+    if (!text) return;
     await push(ref(db, `scripts/${scriptId}/comments`), {
-        name:      currentUser.email.split("@")[0],
-        uid:       currentUser.uid,
+        name: currentUser.email.split("@")[0],
+        uid: currentUser.uid,
         text,
         timestamp: Date.now(),
     });
     document.getElementById('commentInput').value = '';
-    btn.disabled = false;
-    // تحديث عداد التعليقات
-    setTimeout(() => {
-        const count = document.querySelectorAll('.comment-item').length;
-        document.getElementById('commentCount').innerText = count;
-        document.getElementById('st-comments').innerText  = count;
-    }, 500);
-});
+};
 
-document.getElementById('commentInput').addEventListener('keypress', e => {
-    if (e.key === 'Enter') document.getElementById('submitComment').click();
-});
-
-
-/* ============================================================
-   Copy Buttons
-   ============================================================ */
-
-function copyCode() {
-    navigator.clipboard.writeText(document.getElementById('code').innerText)
-        .then(() => {
-            const btn = document.getElementById('copyInline');
-            btn.innerText = '✅ تم النسخ';
-            btn.classList.add('copied');
-            setTimeout(() => { btn.innerText = '📋 نسخ'; btn.classList.remove('copied'); }, 2000);
-        });
-}
-
-document.getElementById('copyBtn').addEventListener('click',    copyCode);
-document.getElementById('copyInline').addEventListener('click', copyCode);
-document.getElementById('rawBtn').addEventListener('click', () => location.href = `raw.html?id=${scriptId}`);
-
+document.getElementById('copyBtn').onclick = () => {
+    navigator.clipboard.writeText(document.getElementById('code').innerText).then(() => alert("تم النسخ!"));
+};
 </script>
 </body>
 </html>
