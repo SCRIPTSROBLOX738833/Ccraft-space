@@ -827,11 +827,12 @@
                 }
 
                 card.innerHTML = `
-                    <span class="badge-icon">${badge.icon}</span>
-                    <span class="badge-name">${badge.name}</span>
-                    <span class="badge-desc">${badge.desc}</span>
-                    ${isEarned ? `<span style="font-size:0.62rem;font-weight:900;color:${rs.color};margin-top:6px;display:block;text-transform:uppercase;letter-spacing:1px">${rs.label}</span>` : ''}
-                `;
+                    card.innerHTML = `
+    <span class="badge-icon">${badge.icon}</span>
+    <span class="badge-name">${badge.name}</span>
+    <span class="badge-desc">${badge.desc}</span>
+    ${isEarned ? `<span style="font-size:0.62rem;font-weight:900;color:${rs.color};margin-top:6px;display:block;text-transform:uppercase;letter-spacing:1px">${rs.label}</span>` : ''}
+`;
                     <span class="badge-desc">${badge.desc}</span>
                 `;
                 grid.appendChild(card);
