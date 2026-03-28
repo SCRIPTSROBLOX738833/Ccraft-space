@@ -596,16 +596,29 @@
         let   isOwnProfile = false; // هل أنا بشوف بروفايلي؟
 
         const ALL_BADGES = [
-            { id: 'first_script',  icon: '🚀', name: 'الانطلاقة',   desc: 'نشر أول سكربت',       check: s => s.scripts >= 1   },
-            { id: 'five_scripts',  icon: '📦', name: 'مجموعة',      desc: 'نشر 5 سكربتات',       check: s => s.scripts >= 5   },
-            { id: 'ten_scripts',   icon: '💎', name: 'محترف',        desc: 'نشر 10 سكربتات',      check: s => s.scripts >= 10  },
-            { id: 'first_like',    icon: '👍', name: 'محبوب',        desc: 'أول لايك',             check: s => s.totalLikes >= 1   },
-            { id: 'ten_likes',     icon: '🔥', name: 'مشهور',        desc: '10 لايكات',            check: s => s.totalLikes >= 10  },
-            { id: 'fifty_likes',   icon: '⭐', name: 'نجم',          desc: '50 لايك',              check: s => s.totalLikes >= 50  },
-            { id: 'hundred_likes', icon: '👑', name: 'أسطورة',       desc: '100 لايك',             check: s => s.totalLikes >= 100 },
-            { id: 'good_rating',   icon: '🏆', name: 'تقييم ممتاز',  desc: 'متوسط تقييم 4+',      check: s => s.avgRating >= 4    },
-            { id: 'all_categories',icon: '🌈', name: 'متنوع',        desc: '3 أقسام مختلفة',      check: s => s.categories >= 3   },
-            { id: 'veteran',       icon: '🎖️', name: 'مخضرم',       desc: 'عضو أكثر من 30 يوم',  check: s => s.daysOld >= 30     },
+            // ---- سكربتات ----
+            { id: 'first_script',   icon: '🚀', name: 'الانطلاقة',    desc: 'نشر أول سكربت',        check: s => s.scripts >= 1,   rarity: 'common'    },
+            { id: 'five_scripts',   icon: '📦', name: 'مجموعة',       desc: 'نشر 5 سكربتات',        check: s => s.scripts >= 5,   rarity: 'common'    },
+            { id: 'ten_scripts',    icon: '💎', name: 'محترف',         desc: 'نشر 10 سكربتات',       check: s => s.scripts >= 10,  rarity: 'rare'      },
+            // ---- لايكات ----
+            { id: 'first_like',     icon: '👍', name: 'محبوب',         desc: 'أول لايك',              check: s => s.totalLikes >= 1,   rarity: 'common' },
+            { id: 'ten_likes',      icon: '🔥', name: 'مشهور',         desc: '10 لايكات',             check: s => s.totalLikes >= 10,  rarity: 'common' },
+            { id: 'fifty_likes',    icon: '⭐', name: 'نجم',           desc: '50 لايك',               check: s => s.totalLikes >= 50,  rarity: 'rare'   },
+            { id: 'hundred_likes',  icon: '👑', name: 'أسطورة',        desc: '100 لايك',              check: s => s.totalLikes >= 100, rarity: 'epic'   },
+            // ---- تقييم وتنوع ----
+            { id: 'good_rating',    icon: '🏆', name: 'تقييم ممتاز',   desc: 'متوسط تقييم 4+',       check: s => s.avgRating >= 4,    rarity: 'rare'   },
+            { id: 'all_categories', icon: '🌈', name: 'متنوع',         desc: '3 أقسام مختلفة',       check: s => s.categories >= 3,   rarity: 'common' },
+            { id: 'veteran',        icon: '🎖️', name: 'مخضرم',        desc: 'عضو أكثر من 30 يوم',   check: s => s.daysOld >= 30,     rarity: 'rare'   },
+            // ---- نقاط الإحالة ----
+            { id: 'pts_first',      icon: '🌱', name: 'أول خطوة',      desc: 'اجمع 15 نقطة',          check: s => s.points >= 15,   rarity: 'common'    },
+            { id: 'pts_50',         icon: '💫', name: 'صاعد',          desc: 'اجمع 50 نقطة',          check: s => s.points >= 50,   rarity: 'common'    },
+            { id: 'pts_150',        icon: '🌟', name: 'مؤثر',          desc: 'اجمع 150 نقطة',         check: s => s.points >= 150,  rarity: 'rare'      },
+            { id: 'pts_500',        icon: '💥', name: 'قائد',          desc: 'اجمع 500 نقطة',         check: s => s.points >= 500,  rarity: 'epic'      },
+            { id: 'pts_1000',       icon: '🔮', name: 'أسطورة الإحالة', desc: 'اجمع 1000 نقطة',       check: s => s.points >= 1000, rarity: 'legendary' },
+            // ---- دعوات ----
+            { id: 'ref_1',          icon: '🤝', name: 'مُضيف',         desc: 'دعوة شخص واحد',         check: s => s.refs >= 1,      rarity: 'common'    },
+            { id: 'ref_5',          icon: '📣', name: 'داعية',         desc: 'دعوة 5 أشخاص',          check: s => s.refs >= 5,      rarity: 'rare'      },
+            { id: 'ref_20',         icon: '🌐', name: 'موسع المجتمع',  desc: 'دعوة 20 شخصاً',         check: s => s.refs >= 20,     rarity: 'legendary' },
         ];
 
 
@@ -756,11 +769,17 @@
                 ? (Date.now() - parseInt(createdAt)) / 86400000
                 : 0;
 
+            // جيب النقاط وعدد الدعوات للبادجات
+            const pointsSnap   = await get(ref(db, `users/${uid}/points`));
+            const visitorsSnap = await get(ref(db, `referrals/${uid}/visitors`));
+            const points = pointsSnap.exists()   ? pointsSnap.val()                             : 0;
+            const refs   = visitorsSnap.exists() ? Object.keys(visitorsSnap.val()).length        : 0;
+
             document.getElementById('totalScripts').innerText = mine.length;
             document.getElementById('totalLikes').innerText   = totalLikes;
             document.getElementById('avgRating').innerText    = totalVotes > 0 ? avgRating.toFixed(1) : '—';
 
-            const stats = { scripts: mine.length, totalLikes, avgRating, categories: cats.size, daysOld };
+            const stats = { scripts: mine.length, totalLikes, avgRating, categories: cats.size, daysOld, points, refs };
 
             await renderBadges(uid, stats, canDelete);
             renderScripts(uid, mine, canDelete);
@@ -770,6 +789,13 @@
         /* ============================================================
            Badges
            ============================================================ */
+
+        const RARITY_STYLES = {
+            common:    { border: 'rgba(139,92,246,0.3)',  glow: 'rgba(139,92,246,0.15)', label: 'عادي',     color: '#a78bfa' },
+            rare:      { border: 'rgba(59,130,246,0.4)',  glow: 'rgba(59,130,246,0.2)',  label: 'نادر',     color: '#60a5fa' },
+            epic:      { border: 'rgba(168,85,247,0.5)',  glow: 'rgba(168,85,247,0.25)', label: 'ملحمي',    color: '#c084fc' },
+            legendary: { border: 'rgba(251,191,36,0.5)',  glow: 'rgba(251,191,36,0.2)',  label: 'أسطوري',   color: '#fbbf24' },
+        };
 
         async function renderBadges(uid, stats, canAward) {
             const grid = document.getElementById('badgesGrid');
@@ -784,17 +810,28 @@
                 const isEarned  = badge.check(stats);
                 const wasStored = !!saved[badge.id];
                 const isNew     = isEarned && !wasStored && canAward;
+                const rs        = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
 
                 if (isEarned) earned++;
                 if (isNew && canAward) {
-                    await set(ref(db, `users/${uid}/badges/${badge.id}`), { earnedAt: Date.now() });
+                    await set(ref(db, `users/${uid}/badges/${badge.id}`), { earnedAt: Date.now(), rarity: badge.rarity });
                 }
 
                 const card = document.createElement('div');
                 card.className = `badge-card ${isEarned ? 'earned' : 'locked'} ${isNew ? 'new-badge' : ''}`;
+
+                // ألوان حسب الـ rarity
+                if (isEarned) {
+                    card.style.borderColor = rs.border;
+                    card.style.background  = `linear-gradient(145deg, ${rs.glow} 0%, rgba(0,0,0,0) 100%)`;
+                }
+
                 card.innerHTML = `
                     <span class="badge-icon">${badge.icon}</span>
                     <span class="badge-name">${badge.name}</span>
+                    <span class="badge-desc">${badge.desc}</span>
+                    ${isEarned ? `<span style="font-size:0.62rem;font-weight:900;color:${rs.color};margin-top:6px;display:block;text-transform:uppercase;letter-spacing:1px">${rs.label}</span>` : ''}
+                `;
                     <span class="badge-desc">${badge.desc}</span>
                 `;
                 grid.appendChild(card);
