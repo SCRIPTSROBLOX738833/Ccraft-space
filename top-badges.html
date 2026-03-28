@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCRAFT SPACE | أكثر المستخدمين بادجات</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+
+/* ============================================================
+   Top Badges Page
+   ============================================================ */
+
+.page-hero {
+    text-align: center;
+    padding: 40px 20px 24px;
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.page-hero h1 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+}
+
+.page-hero p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+
+/* ---- Rarity Filter ---- */
+
+.rarity-filter {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 20px auto 32px;
+    max-width: 860px;
+    padding: 0 20px;
+}
+
+.rf-btn {
+    padding: 8px 18px;
+    border-radius: 50px;
+    border: 1px solid var(--border-color);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    transition: var(--transition);
+    margin: 0;
+}
+
+.rf-btn:hover  { transform: translateY(-2px); filter: none; }
+.rf-btn.active { color: white; border-color: transparent; }
+
+.rf-btn[data-r="all"]       { }
+.rf-btn[data-r="all"].active       { background: var(--accent-gradient); }
+.rf-btn[data-r="common"].active    { background: #7c3aed; border-color: #7c3aed; }
+.rf-btn[data-r="rare"].active      { background: #2563eb; border-color: #2563eb; }
+.rf-btn[data-r="epic"].active      { background: #9333ea; border-color: #9333ea; }
+.rf-btn[data-r="legendary"].active { background: linear-gradient(135deg,#b45309,#fbbf24); border-color: #fbbf24; }
+
+
+/* ---- Main layout ---- */
+
+.tb-layout {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    align-items: start;
+}
+
+
+/* ---- Users list ---- */
+
+#usersList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.user-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    animation: fadeIn 0.4s ease both;
+    position: relative;
+    overflow: hidden;
+}
+
+.user-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+}
+
+.user-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 4px; height: 100%;
+    background: var(--accent-gradient);
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.user-card:hover::after { opacity: 1; }
+
+/* الترتيب */
+.uc-rank {
+    font-size: 1.4rem;
+    font-weight: 900;
+    min-width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+    color: var(--text-muted);
+}
+
+.uc-rank.gold   { color: #ffd700; text-shadow: 0 0 12px rgba(255,215,0,0.5); }
+.uc-rank.silver { color: #c0c0c0; }
+.uc-rank.bronze { color: #cd7f32; }
+
+/* أفاتار */
+.uc-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: 2px solid rgba(139,92,246,0.3);
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #0a0a14;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+}
+
+.user-card:hover .uc-avatar { border-color: var(--primary); box-shadow: 0 0 14px rgba(139,92,246,0.3); }
+
+/* معلومات */
+.uc-info { flex: 1; min-width: 0; }
+
+.uc-name {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--text-main);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* البادجات الصغيرة */
+.uc-badges {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.mini-badge {
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: transform 0.2s;
+}
+
+.mini-badge:hover { transform: scale(1.3); }
+
+/* عداد البادجات */
+.uc-count {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.uc-count .cnt-num {
+    font-size: 1.6rem;
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: block;
+    line-height: 1;
+}
+
+.uc-count .cnt-label {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+
+/* ---- Sidebar ---- */
+
+.tb-sidebar {
+    position: sticky;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+/* إحصائيات البادجات */
+.badge-stats-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 20px;
+    animation: fadeIn 0.5s ease both;
+}
+
+.badge-stats-card h4 {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+}
+
+.bs-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.82rem;
+}
+
+.bs-row:last-child { border-bottom: none; }
+.bs-row .bsr-label { color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+.bs-row .bsr-val   { font-weight: 800; color: var(--text-main); }
+
+
+/* أندر البادجات */
+.rarest-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 20px;
+    animation: fadeIn 0.5s 0.1s ease both;
+}
+
+.rarest-card h4 {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+}
+
+.rare-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.rare-item:last-child { border-bottom: none; }
+.rare-item .ri-icon { font-size: 1.3rem; flex-shrink: 0; }
+.rare-item .ri-info { flex: 1; }
+.rare-item .ri-name { font-size: 0.82rem; font-weight: 800; color: var(--text-main); }
+.rare-item .ri-count{ font-size: 0.7rem; color: var(--text-muted); }
+.rare-item .ri-pct  { font-size: 0.75rem; font-weight: 800; color: var(--primary); }
+
+
+/* loading */
+.tb-loading {
+    text-align: center;
+    padding: 60px;
+    color: var(--text-muted);
+    grid-column: 1 / -1;
+}
+
+.tb-loading span { display: inline-block; animation: pulse 1.2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+
+/* Responsive */
+@media (max-width: 700px) {
+    .tb-layout { grid-template-columns: 1fr; }
+    .tb-sidebar { position: static; }
+}
+
+</style>
+</head>
+<body>
+
+<header>
+    <button onclick="location.href='leaderboard.html'">🏆 ليدربورد</button>
+    <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
+</header>
+
+
+<div class="page-hero">
+    <h1>🏅 أكثر المستخدمين بادجات</h1>
+    <p>ترتيب اليوزرز حسب عدد البادجات المكتسبة</p>
+</div>
+
+
+<!-- فلتر الـ Rarity -->
+<div class="rarity-filter">
+    <button class="rf-btn active" data-r="all">🌟 الكل</button>
+    <button class="rf-btn" data-r="common">🔵 عادي</button>
+    <button class="rf-btn" data-r="rare">💙 نادر</button>
+    <button class="rf-btn" data-r="epic">💜 ملحمي</button>
+    <button class="rf-btn" data-r="legendary">✨ أسطوري</button>
+</div>
+
+
+<div class="tb-layout">
+
+    <!-- القائمة -->
+    <div id="usersList">
+        <div class="tb-loading"><span>⏳ جارٍ تحميل البيانات...</span></div>
+    </div>
+
+
+    <!-- Sidebar -->
+    <aside class="tb-sidebar">
+
+        <div class="badge-stats-card">
+            <h4>📊 إحصائيات البادجات</h4>
+            <div class="bs-row">
+                <span class="bsr-label">🏅 إجمالي البادجات</span>
+                <span class="bsr-val" id="st-total">—</span>
+            </div>
+            <div class="bs-row">
+                <span class="bsr-label">👥 المستخدمون</span>
+                <span class="bsr-val" id="st-users">—</span>
+            </div>
+            <div class="bs-row">
+                <span class="bsr-label">✨ بادجات أسطورية</span>
+                <span class="bsr-val" id="st-legendary">—</span>
+            </div>
+            <div class="bs-row">
+                <span class="bsr-label">💜 بادجات ملحمية</span>
+                <span class="bsr-val" id="st-epic">—</span>
+            </div>
+        </div>
+
+        <div class="rarest-card">
+            <h4>🔮 أندر البادجات</h4>
+            <div id="rarestList"></div>
+        </div>
+
+    </aside>
+</div>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain: "ccraft-space-scripts.firebaseapp.com",
+    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId: "ccraft-space-scripts",
+    storageBucket: "ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId: "816078027492",
+    appId: "1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId: "G-MHDM7YYYBN"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// نفس تعريف البادجات
+const ALL_BADGES = [
+    { id: 'first_script',   icon: '🚀', name: 'الانطلاقة',    rarity: 'common'    },
+    { id: 'five_scripts',   icon: '📦', name: 'مجموعة',       rarity: 'common'    },
+    { id: 'ten_scripts',    icon: '💎', name: 'محترف',         rarity: 'rare'      },
+    { id: 'first_like',     icon: '👍', name: 'محبوب',         rarity: 'common'    },
+    { id: 'ten_likes',      icon: '🔥', name: 'مشهور',         rarity: 'common'    },
+    { id: 'fifty_likes',    icon: '⭐', name: 'نجم',           rarity: 'rare'      },
+    { id: 'hundred_likes',  icon: '👑', name: 'أسطورة',        rarity: 'epic'      },
+    { id: 'good_rating',    icon: '🏆', name: 'تقييم ممتاز',   rarity: 'rare'      },
+    { id: 'all_categories', icon: '🌈', name: 'متنوع',         rarity: 'common'    },
+    { id: 'veteran',        icon: '🎖️', name: 'مخضرم',        rarity: 'rare'      },
+    { id: 'pts_first',      icon: '🌱', name: 'أول خطوة',      rarity: 'common'    },
+    { id: 'pts_50',         icon: '💫', name: 'صاعد',          rarity: 'common'    },
+    { id: 'pts_150',        icon: '🌟', name: 'مؤثر',          rarity: 'rare'      },
+    { id: 'pts_500',        icon: '💥', name: 'قائد',          rarity: 'epic'      },
+    { id: 'pts_1000',       icon: '🔮', name: 'أسطورة الإحالة', rarity: 'legendary' },
+    { id: 'ref_1',          icon: '🤝', name: 'مُضيف',         rarity: 'common'    },
+    { id: 'ref_5',          icon: '📣', name: 'داعية',         rarity: 'rare'      },
+    { id: 'ref_20',         icon: '🌐', name: 'موسع المجتمع',  rarity: 'legendary' },
+];
+
+const BADGE_MAP = Object.fromEntries(ALL_BADGES.map(b => [b.id, b]));
+
+const RARITY_ORDER = { legendary: 4, epic: 3, rare: 2, common: 1 };
+
+let allUsersData = [];
+let currentFilter = 'all';
+
+
+/* ============================================================
+   تحميل البيانات
+   ============================================================ */
+
+async function loadData() {
+    const [usersSnap, avatarsSnap] = await Promise.all([
+        get(ref(db, 'users')),
+        get(ref(db, 'users')),
+    ]);
+
+    if (!usersSnap.exists()) {
+        document.getElementById('usersList').innerHTML =
+            '<div class="tb-loading"><span>لا يوجد مستخدمون بعد</span></div>';
+        return;
+    }
+
+    const users = usersSnap.val();
+    allUsersData = [];
+
+    let totalBadges = 0, legendaryCount = 0, epicCount = 0;
+    const badgeOwnerCount = {}; // كم شخص عنده كل بادج
+
+    for (const [uid, uData] of Object.entries(users)) {
+        const badges   = uData.badges ? Object.keys(uData.badges) : [];
+        const email    = uData.email || '';
+        const name     = email.split('@')[0];
+        const charData = uData.avatar ? { ...DEFAULT_CHAR, ...uData.avatar } : DEFAULT_CHAR;
+
+        // احسب البادجات حسب rarity
+        const earnedByRarity = { common: [], rare: [], epic: [], legendary: [] };
+        badges.forEach(id => {
+            const b = BADGE_MAP[id];
+            if (b) {
+                earnedByRarity[b.rarity]?.push(b);
+                badgeOwnerCount[id] = (badgeOwnerCount[id] || 0) + 1;
+                totalBadges++;
+                if (b.rarity === 'legendary') legendaryCount++;
+                if (b.rarity === 'epic')      epicCount++;
+            }
+        });
+
+        allUsersData.push({ uid, name, email, charData, badges, earnedByRarity });
+    }
+
+    // إحصائيات الـ sidebar
+    document.getElementById('st-total').innerText     = totalBadges;
+    document.getElementById('st-users').innerText     = allUsersData.length;
+    document.getElementById('st-legendary').innerText = legendaryCount;
+    document.getElementById('st-epic').innerText      = epicCount;
+
+    // أندر البادجات
+    renderRarest(badgeOwnerCount, allUsersData.length);
+
+    // عرض القائمة
+    renderList();
+}
+
+
+/* ============================================================
+   عرض القائمة
+   ============================================================ */
+
+function renderList() {
+    const list = document.getElementById('usersList');
+    list.innerHTML = '';
+
+    let sorted = [...allUsersData];
+
+    if (currentFilter === 'all') {
+        sorted.sort((a, b) => b.badges.length - a.badges.length);
+    } else {
+        sorted.sort((a, b) =>
+            (b.earnedByRarity[currentFilter]?.length || 0) -
+            (a.earnedByRarity[currentFilter]?.length || 0)
+        );
+        sorted = sorted.filter(u => (u.earnedByRarity[currentFilter]?.length || 0) > 0);
+    }
+
+    if (!sorted.length) {
+        list.innerHTML = '<div class="tb-loading"><span>لا يوجد مستخدمون في هذه الفئة</span></div>';
+        return;
+    }
+
+    const rankEmoji = ['🥇','🥈','🥉'];
+    const rankClass = ['gold','silver','bronze'];
+
+    sorted.slice(0, 25).forEach((u, i) => {
+        const displayBadges = currentFilter === 'all'
+            ? u.badges.map(id => BADGE_MAP[id]).filter(Boolean)
+                  .sort((a,b) => RARITY_ORDER[b.rarity] - RARITY_ORDER[a.rarity])
+                  .slice(0, 8)
+            : u.earnedByRarity[currentFilter] || [];
+
+        const count = currentFilter === 'all'
+            ? u.badges.length
+            : (u.earnedByRarity[currentFilter]?.length || 0);
+
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        card.style.animationDelay = `${i * 0.05}s`;
+        card.onclick = () => location.href = `profile.html?uid=${u.uid}`;
+
+        card.innerHTML = `
+            <div class="uc-rank ${rankClass[i] || ''}">${rankEmoji[i] || i + 1}</div>
+            <div class="uc-avatar">${buildAvatar(u.charData, 52)}</div>
+            <div class="uc-info">
+                <div class="uc-name">${u.name}</div>
+                <div class="uc-badges">
+                    ${displayBadges.map(b => `<span class="mini-badge" title="${b.name}">${b.icon}</span>`).join('')}
+                    ${u.badges.length > 8 && currentFilter === 'all' ? `<span style="font-size:0.7rem;color:var(--text-muted);align-self:center">+${u.badges.length - 8}</span>` : ''}
+                </div>
+            </div>
+            <div class="uc-count">
+                <span class="cnt-num">${count}</span>
+                <span class="cnt-label">بادج</span>
+            </div>
+        `;
+
+        list.appendChild(card);
+    });
+}
+
+
+/* ============================================================
+   أندر البادجات
+   ============================================================ */
+
+function renderRarest(badgeOwnerCount, totalUsers) {
+    const sorted = Object.entries(badgeOwnerCount)
+        .sort((a, b) => a[1] - b[1])
+        .slice(0, 5);
+
+    const container = document.getElementById('rarestList');
+    container.innerHTML = '';
+
+    sorted.forEach(([id, count]) => {
+        const b   = BADGE_MAP[id];
+        if (!b) return;
+        const pct = totalUsers > 0 ? ((count / totalUsers) * 100).toFixed(1) : 0;
+        const item = document.createElement('div');
+        item.className = 'rare-item';
+        item.innerHTML = `
+            <span class="ri-icon">${b.icon}</span>
+            <div class="ri-info">
+                <div class="ri-name">${b.name}</div>
+                <div class="ri-count">${count} شخص حصل عليه</div>
+            </div>
+            <span class="ri-pct">${pct}%</span>
+        `;
+        container.appendChild(item);
+    });
+
+    if (!sorted.length) {
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:12px">لا بيانات</div>';
+    }
+}
+
+
+/* ============================================================
+   Rarity Filter
+   ============================================================ */
+
+document.querySelectorAll('.rf-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.rf-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.r;
+        renderList();
+    });
+});
+
+
+loadData();
+</script>
+
+</body>
+</html>
