@@ -7,15 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <style>
 
-        /* ============================================================
-           Profile Card
-           ============================================================ */
-
-        .profile-hero {
-            max-width: 820px;
-            margin: 32px auto 0;
-            padding: 0 20px;
-        }
+        .profile-hero { max-width: 820px; margin: 32px auto 0; padding: 0 20px; }
 
         .profile-card {
             background: var(--bg-card);
@@ -38,37 +30,6 @@
             background: var(--accent-gradient);
         }
 
-        /* أفاتار — يدعم SVG من avatar.js أو حرف fallback */
-        .avatar-wrap {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: 3px solid rgba(139,92,246,0.35);
-            overflow: hidden;
-            flex-shrink: 0;
-            background: #0a0a14;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 24px rgba(139,92,246,0.3);
-        }
-
-        /* fallback نصي لو مافيش avatar.js */
-        .avatar-fallback {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: var(--accent-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.4rem;
-            font-weight: 900;
-            color: white;
-            flex-shrink: 0;
-            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
-        }
-
         .profile-info { flex: 1; min-width: 0; }
 
         .profile-info h2 {
@@ -82,16 +43,9 @@
 
         .profile-email { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 6px; }
         .join-date     { color: var(--text-muted); font-size: 0.8rem; }
-
         .profile-actions { display: flex; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
 
-        /* شارة "بروفايل شخص تاني" */
-        .viewing-badge {
-            display: none;
-            max-width: 820px;
-            margin: 14px auto 0;
-            padding: 0 20px;
-        }
+        .viewing-badge { display: none; max-width: 820px; margin: 14px auto 0; padding: 0 20px; }
 
         .viewing-badge .vb-inner {
             display: flex;
@@ -106,11 +60,6 @@
         }
 
         .viewing-badge .vb-inner span { color: var(--secondary); font-weight: 800; }
-
-
-        /* ============================================================
-           Stats
-           ============================================================ */
 
         .stats-grid {
             max-width: 820px;
@@ -145,11 +94,6 @@
 
         .stat-label { color: var(--text-muted); font-size: 0.8rem; font-weight: 700; }
 
-
-        /* ============================================================
-           Section Title
-           ============================================================ */
-
         .section-title {
             max-width: 820px;
             margin: 36px auto 16px;
@@ -164,17 +108,7 @@
             gap: 10px;
         }
 
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-color);
-        }
-
-
-        /* ============================================================
-           Badges Grid
-           ============================================================ */
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
 
         #badgesGrid {
             max-width: 820px;
@@ -197,21 +131,8 @@
             overflow: hidden;
         }
 
-        .badge-card.earned {
-            border-color: rgba(139, 92, 246, 0.35);
-            background: linear-gradient(145deg, rgba(139,92,246,0.09) 0%, rgba(59,130,246,0.05) 100%);
-        }
-
-        .badge-card.earned:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 28px rgba(139, 92, 246, 0.2);
-        }
-
-        .badge-card.locked {
-            opacity: 0.32;
-            filter: grayscale(1);
-            cursor: default;
-        }
+        .badge-card.earned:hover { transform: translateY(-5px); box-shadow: 0 12px 28px rgba(139,92,246,0.2); }
+        .badge-card.locked { opacity: 0.32; filter: grayscale(1); cursor: default; }
 
         .badge-card.earned::before {
             content: '';
@@ -240,20 +161,8 @@
         .badge-name { font-size: 0.82rem; font-weight: 800; color: var(--text-main); margin-bottom: 5px; display: block; }
         .badge-desc { font-size: 0.7rem; color: var(--text-muted); line-height: 1.5; }
 
-        .badges-count {
-            max-width: 820px;
-            margin: 12px auto 0;
-            padding: 0 20px;
-            color: var(--text-muted);
-            font-size: 0.82rem;
-        }
-
+        .badges-count { max-width: 820px; margin: 12px auto 0; padding: 0 20px; color: var(--text-muted); font-size: 0.82rem; }
         .badges-count span { color: var(--primary); font-weight: 800; }
-
-
-        /* ============================================================
-           Scripts List
-           ============================================================ */
 
         #userScripts {
             max-width: 820px;
@@ -276,141 +185,71 @@
             animation: fadeIn 0.4s ease both;
         }
 
-        .mini-card:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 28px rgba(0,0,0,0.4);
-        }
-
+        .mini-card:hover { border-color: var(--border-hover); transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
         .mini-card-info { flex: 1; min-width: 0; cursor: pointer; }
 
         .mini-card-info h3 {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 1rem; font-weight: 800; color: var(--text-main);
+            margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
         .mini-card-meta { display: flex; gap: 12px; flex-wrap: wrap; }
         .mini-card-meta span { font-size: 0.78rem; color: var(--text-muted); }
 
-        .cat-badge {
-            background: var(--primary-dim);
-            color: #b48bf8;
-            padding: 2px 10px;
-            border-radius: 50px;
-            font-size: 0.72rem;
-            font-weight: 700;
-        }
+        .cat-badge { background: var(--primary-dim); color: #b48bf8; padding: 2px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: 700; }
 
         .delete-btn {
-            background: rgba(248,113,113,0.08);
-            color: var(--danger);
-            border: 1px solid rgba(248,113,113,0.2);
-            border-radius: 10px;
-            padding: 8px 14px;
-            font-size: 0.8rem;
-            margin: 0;
-            flex-shrink: 0;
+            background: rgba(248,113,113,0.08); color: var(--danger);
+            border: 1px solid rgba(248,113,113,0.2); border-radius: 10px;
+            padding: 8px 14px; font-size: 0.8rem; margin: 0; flex-shrink: 0;
         }
 
-        .delete-btn:hover {
-            background: var(--danger);
-            color: white;
-            box-shadow: 0 0 14px rgba(248,113,113,0.4);
-            filter: none;
-            transform: none;
-        }
+        .delete-btn:hover { background: var(--danger); color: white; box-shadow: 0 0 14px rgba(248,113,113,0.4); filter: none; transform: none; }
 
         .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); }
         .empty-state p { font-size: 1rem; margin-bottom: 20px; }
 
-
-        /* ============================================================
-           Points & Referral
-           ============================================================ */
-
+        /* Points */
         .points-referral {
-            max-width: 820px;
-            margin: 20px auto 0;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
+            max-width: 820px; margin: 20px auto 0; padding: 0 20px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
             animation: fadeIn 0.5s 0.12s ease both;
         }
 
         .points-card {
             background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.05));
-            border: 1px solid rgba(251,191,36,0.3);
-            border-radius: 18px;
-            padding: 22px 20px;
-            text-align: center;
-            transition: var(--transition);
+            border: 1px solid rgba(251,191,36,0.3); border-radius: 18px;
+            padding: 22px 20px; text-align: center; transition: var(--transition);
         }
 
         .points-card:hover { border-color: rgba(251,191,36,0.5); transform: translateY(-3px); }
-
         .points-card .pc-icon  { font-size: 2rem; display: block; margin-bottom: 8px; }
-        .points-card .pc-value {
-            font-size: 2.4rem; font-weight: 900; color: #fbbf24;
-            display: block; margin-bottom: 4px; line-height: 1;
-        }
+        .points-card .pc-value { font-size: 2.4rem; font-weight: 900; color: #fbbf24; display: block; margin-bottom: 4px; line-height: 1; }
         .points-card .pc-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 700; }
 
         .referral-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            transition: var(--transition);
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 18px; padding: 20px; display: flex; flex-direction: column;
+            gap: 12px; transition: var(--transition);
         }
 
         .referral-card:hover { border-color: var(--border-hover); }
-
-        .referral-card h4 {
-            font-size: 0.78rem; font-weight: 800; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-
+        .referral-card h4 { font-size: 0.78rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .ref-link-box { display: flex; gap: 8px; align-items: center; }
 
         .ref-link-input {
-            flex: 1;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 8px 12px;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-family: 'Fira Code', monospace;
-            outline: none;
-            direction: ltr;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 8px 12px; color: var(--text-muted);
+            font-size: 0.7rem; font-family: 'Fira Code', monospace; outline: none;
+            direction: ltr; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
 
         .copy-ref-btn {
-            background: var(--primary-dim);
-            color: var(--primary);
-            border: 1px solid rgba(139,92,246,0.25);
-            border-radius: 10px;
-            padding: 8px 14px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            cursor: pointer;
-            white-space: nowrap;
-            font-family: 'Tajawal', sans-serif;
-            margin: 0;
-            transition: var(--transition);
-            flex-shrink: 0;
+            background: var(--primary-dim); color: var(--primary);
+            border: 1px solid rgba(139,92,246,0.25); border-radius: 10px;
+            padding: 8px 14px; font-size: 0.75rem; font-weight: 800; cursor: pointer;
+            white-space: nowrap; font-family: 'Tajawal', sans-serif; margin: 0;
+            transition: var(--transition); flex-shrink: 0;
         }
 
         .copy-ref-btn:hover  { background: var(--primary); color: white; transform: none; filter: none; }
@@ -420,25 +259,12 @@
         .ref-stat  { color: var(--text-muted); }
         .ref-stat span { color: var(--text-main); font-weight: 800; }
 
-        /* سجل النقاط */
-        .points-log {
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+        .points-log { max-width: 820px; margin: 0 auto; padding: 0 20px; display: flex; flex-direction: column; gap: 8px; }
 
         .log-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-size: 0.82rem;
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.02); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 10px 14px; font-size: 0.82rem;
             animation: fadeIn 0.4s ease both;
         }
 
@@ -446,11 +272,6 @@
         .log-item .li-text { flex: 1; color: var(--text-muted); }
         .log-item .li-pts  { font-weight: 900; color: #fbbf24; white-space: nowrap; }
         .log-item .li-time { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; }
-
-
-        /* ============================================================
-           Responsive
-           ============================================================ */
 
         @media (max-width: 600px) {
             .profile-card { flex-direction: column; text-align: center; }
@@ -470,8 +291,6 @@
         <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
     </header>
 
-
-    <!-- شارة "بروفايل شخص تاني" -->
     <div class="viewing-badge" id="viewingBadge">
         <div class="vb-inner">
             👁️ أنت تشاهد بروفايل <span id="viewingName">—</span>
@@ -480,61 +299,36 @@
         </div>
     </div>
 
-
-    <!-- Profile Card -->
     <div class="profile-hero">
         <div class="profile-card">
             <div id="avatarWrap"></div>
             <div class="profile-info">
                 <h2 id="username">جارٍ التحميل...</h2>
                 <div class="profile-email" id="userEmail"></div>
-                <div class="join-date"     id="joinDate"></div>
+                <div class="join-date" id="joinDate"></div>
             </div>
-            <div class="profile-actions" id="profileActions">
-                <!-- يتحدد حسب المستخدم -->
-            </div>
+            <div class="profile-actions" id="profileActions"></div>
         </div>
     </div>
 
-
-    <!-- Stats -->
     <div class="stats-grid">
-        <div class="stat-card">
-            <span class="stat-num"   id="totalScripts">0</span>
-            <span class="stat-label">سكربت</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-num"   id="totalLikes">0</span>
-            <span class="stat-label">إجمالي اللايكات</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-num"   id="avgRating">—</span>
-            <span class="stat-label">متوسط التقييم</span>
-        </div>
+        <div class="stat-card"><span class="stat-num" id="totalScripts">0</span><span class="stat-label">سكربت</span></div>
+        <div class="stat-card"><span class="stat-num" id="totalLikes">0</span><span class="stat-label">إجمالي اللايكات</span></div>
+        <div class="stat-card"><span class="stat-num" id="avgRating">—</span><span class="stat-label">متوسط التقييم</span></div>
     </div>
 
-
-    <!-- Badges -->
     <div class="section-title">🏅 البادجات</div>
     <div class="badges-count">حصل على <span id="earnedCount">0</span> من <span id="totalCount">0</span> بادج</div>
     <div id="badgesGrid"></div>
 
-
-    <!-- Points & Referral (بروفايلي بس) -->
     <div id="pointsSection" style="display:none">
-
         <div class="section-title" style="margin-top:36px">⭐ النقاط والإحالة</div>
-
         <div class="points-referral">
-
-            <!-- النقاط -->
             <div class="points-card">
                 <span class="pc-icon">⭐</span>
                 <span class="pc-value" id="myPoints">0</span>
                 <span class="pc-label">نقطة مكتسبة</span>
             </div>
-
-            <!-- رابط الإحالة -->
             <div class="referral-card">
                 <h4>🔗 رابط الدعوة الخاص بك</h4>
                 <div class="ref-link-box">
@@ -543,30 +337,23 @@
                 </div>
                 <div class="ref-stats">
                     <div class="ref-stat">دعوات: <span id="refCount">0</span></div>
-                    <div class="ref-stat">مكتسب منها: <span id="refPoints">0</span> نقطة</div>
+                    <div class="ref-stat">مكتسب: <span id="refPoints">0</span> نقطة</div>
                 </div>
                 <div style="font-size:0.72rem;color:var(--text-muted);line-height:1.5">
-                    كل شخص يفتح رابطك يضيف <strong style="color:#fbbf24">15 نقطة</strong> لرصيدك
+                    كل شخص يفتح رابطك يضيف <strong style="color:#fbbf24">15 نقطة</strong>
                 </div>
             </div>
-
         </div>
-
-        <!-- سجل النقاط -->
         <div class="section-title" style="margin-top:28px">📋 سجل النقاط</div>
         <div class="points-log" id="pointsLog">
             <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:0.85rem">لا توجد نقاط بعد — شارك رابطك!</div>
         </div>
-
     </div>
 
-
-    <!-- Scripts -->
     <div class="section-title" style="margin-top:40px" id="scriptsTitle">📜 السكربتات</div>
     <div id="userScripts">
         <div class="empty-state"><p>جارٍ التحميل...</p></div>
     </div>
-
 
     <script type="module">
         import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
@@ -589,73 +376,57 @@
         const db   = getDatabase(app);
         const auth = getAuth(app);
 
-        // هل في ?uid= في الـ URL؟
-        const urlParams    = new URLSearchParams(window.location.search);
-        const targetUid    = urlParams.get('uid'); // uid الشخص اللي بنشوف بروفايله
-        let   currentUser  = null;
-        let   isOwnProfile = false; // هل أنا بشوف بروفايلي؟
+        const urlParams   = new URLSearchParams(window.location.search);
+        const targetUid   = urlParams.get('uid');
+        let   currentUser = null;
 
+        /* ---- تعريف البادجات ---- */
         const ALL_BADGES = [
-            // ---- سكربتات ----
-            { id: 'first_script',   icon: '🚀', name: 'الانطلاقة',    desc: 'نشر أول سكربت',        check: s => s.scripts >= 1,   rarity: 'common'    },
-            { id: 'five_scripts',   icon: '📦', name: 'مجموعة',       desc: 'نشر 5 سكربتات',        check: s => s.scripts >= 5,   rarity: 'common'    },
-            { id: 'ten_scripts',    icon: '💎', name: 'محترف',         desc: 'نشر 10 سكربتات',       check: s => s.scripts >= 10,  rarity: 'rare'      },
-            // ---- لايكات ----
-            { id: 'first_like',     icon: '👍', name: 'محبوب',         desc: 'أول لايك',              check: s => s.totalLikes >= 1,   rarity: 'common' },
-            { id: 'ten_likes',      icon: '🔥', name: 'مشهور',         desc: '10 لايكات',             check: s => s.totalLikes >= 10,  rarity: 'common' },
-            { id: 'fifty_likes',    icon: '⭐', name: 'نجم',           desc: '50 لايك',               check: s => s.totalLikes >= 50,  rarity: 'rare'   },
-            { id: 'hundred_likes',  icon: '👑', name: 'أسطورة',        desc: '100 لايك',              check: s => s.totalLikes >= 100, rarity: 'epic'   },
-            // ---- تقييم وتنوع ----
-            { id: 'good_rating',    icon: '🏆', name: 'تقييم ممتاز',   desc: 'متوسط تقييم 4+',       check: s => s.avgRating >= 4,    rarity: 'rare'   },
-            { id: 'all_categories', icon: '🌈', name: 'متنوع',         desc: '3 أقسام مختلفة',       check: s => s.categories >= 3,   rarity: 'common' },
-            { id: 'veteran',        icon: '🎖️', name: 'مخضرم',        desc: 'عضو أكثر من 30 يوم',   check: s => s.daysOld >= 30,     rarity: 'rare'   },
-            // ---- نقاط الإحالة ----
-            { id: 'pts_first',      icon: '🌱', name: 'أول خطوة',      desc: 'اجمع 15 نقطة',          check: s => s.points >= 15,   rarity: 'common'    },
-            { id: 'pts_50',         icon: '💫', name: 'صاعد',          desc: 'اجمع 50 نقطة',          check: s => s.points >= 50,   rarity: 'common'    },
-            { id: 'pts_150',        icon: '🌟', name: 'مؤثر',          desc: 'اجمع 150 نقطة',         check: s => s.points >= 150,  rarity: 'rare'      },
-            { id: 'pts_500',        icon: '💥', name: 'قائد',          desc: 'اجمع 500 نقطة',         check: s => s.points >= 500,  rarity: 'epic'      },
-            { id: 'pts_1000',       icon: '🔮', name: 'أسطورة الإحالة', desc: 'اجمع 1000 نقطة',       check: s => s.points >= 1000, rarity: 'legendary' },
-            // ---- دعوات ----
-            { id: 'ref_1',          icon: '🤝', name: 'مُضيف',         desc: 'دعوة شخص واحد',         check: s => s.refs >= 1,      rarity: 'common'    },
-            { id: 'ref_5',          icon: '📣', name: 'داعية',         desc: 'دعوة 5 أشخاص',          check: s => s.refs >= 5,      rarity: 'rare'      },
-            { id: 'ref_20',         icon: '🌐', name: 'موسع المجتمع',  desc: 'دعوة 20 شخصاً',         check: s => s.refs >= 20,     rarity: 'legendary' },
+            { id: 'first_script',   icon: '🚀', name: 'الانطلاقة',     desc: 'نشر أول سكربت',       check: s => s.scripts >= 1,    rarity: 'common'    },
+            { id: 'five_scripts',   icon: '📦', name: 'مجموعة',        desc: 'نشر 5 سكربتات',       check: s => s.scripts >= 5,    rarity: 'common'    },
+            { id: 'ten_scripts',    icon: '💎', name: 'محترف',          desc: 'نشر 10 سكربتات',      check: s => s.scripts >= 10,   rarity: 'rare'      },
+            { id: 'first_like',     icon: '👍', name: 'محبوب',          desc: 'أول لايك',             check: s => s.totalLikes >= 1,   rarity: 'common'  },
+            { id: 'ten_likes',      icon: '🔥', name: 'مشهور',          desc: '10 لايكات',            check: s => s.totalLikes >= 10,  rarity: 'common'  },
+            { id: 'fifty_likes',    icon: '⭐', name: 'نجم',            desc: '50 لايك',              check: s => s.totalLikes >= 50,  rarity: 'rare'    },
+            { id: 'hundred_likes',  icon: '👑', name: 'أسطورة',         desc: '100 لايك',             check: s => s.totalLikes >= 100, rarity: 'epic'    },
+            { id: 'good_rating',    icon: '🏆', name: 'تقييم ممتاز',    desc: 'متوسط تقييم 4+',      check: s => s.avgRating >= 4,    rarity: 'rare'    },
+            { id: 'all_categories', icon: '🌈', name: 'متنوع',          desc: '3 أقسام مختلفة',      check: s => s.categories >= 3,   rarity: 'common'  },
+            { id: 'veteran',        icon: '🎖️', name: 'مخضرم',         desc: 'عضو أكثر من 30 يوم',  check: s => s.daysOld >= 30,     rarity: 'rare'    },
+            { id: 'pts_first',      icon: '🌱', name: 'أول خطوة',       desc: 'اجمع 15 نقطة',         check: s => s.points >= 15,    rarity: 'common'    },
+            { id: 'pts_50',         icon: '💫', name: 'صاعد',           desc: 'اجمع 50 نقطة',         check: s => s.points >= 50,    rarity: 'common'    },
+            { id: 'pts_150',        icon: '🌟', name: 'مؤثر',           desc: 'اجمع 150 نقطة',        check: s => s.points >= 150,   rarity: 'rare'      },
+            { id: 'pts_500',        icon: '💥', name: 'قائد',           desc: 'اجمع 500 نقطة',        check: s => s.points >= 500,   rarity: 'epic'      },
+            { id: 'pts_1000',       icon: '🔮', name: 'أسطورة الإحالة', desc: 'اجمع 1000 نقطة',       check: s => s.points >= 1000,  rarity: 'legendary' },
+            { id: 'ref_1',          icon: '🤝', name: 'مُضيف',          desc: 'دعوة شخص واحد',        check: s => s.refs >= 1,       rarity: 'common'    },
+            { id: 'ref_5',          icon: '📣', name: 'داعية',          desc: 'دعوة 5 أشخاص',         check: s => s.refs >= 5,       rarity: 'rare'      },
+            { id: 'ref_20',         icon: '🌐', name: 'موسع المجتمع',   desc: 'دعوة 20 شخصاً',        check: s => s.refs >= 20,      rarity: 'legendary' },
         ];
 
+        const RARITY_STYLES = {
+            common:    { border: 'rgba(139,92,246,0.3)',  glow: 'rgba(139,92,246,0.15)', label: 'عادي',    color: '#a78bfa' },
+            rare:      { border: 'rgba(59,130,246,0.4)',  glow: 'rgba(59,130,246,0.2)',  label: 'نادر',    color: '#60a5fa' },
+            epic:      { border: 'rgba(168,85,247,0.5)',  glow: 'rgba(168,85,247,0.25)', label: 'ملحمي',   color: '#c084fc' },
+            legendary: { border: 'rgba(251,191,36,0.5)',  glow: 'rgba(251,191,36,0.2)',  label: 'أسطوري',  color: '#fbbf24' },
+        };
 
-        /* ============================================================
-           Auth
-           ============================================================ */
-
+        /* ---- Auth ---- */
         onAuthStateChanged(auth, async user => {
             currentUser = user;
-
-            if (targetUid && targetUid !== (user?.uid)) {
-                // ======= عرض بروفايل شخص تاني =======
-                isOwnProfile = false;
+            if (targetUid && targetUid !== user?.uid) {
                 await loadOtherProfile(targetUid);
             } else if (user) {
-                // ======= بروفايلي أنا =======
-                isOwnProfile = true;
                 await loadMyProfile(user);
             } else {
-                // مش مسجل دخول ومافيش uid في الـ URL
                 location.href = 'login.html';
             }
         });
 
-
-        /* ============================================================
-           عرض بروفايلي أنا
-           ============================================================ */
-
+        /* ---- بروفايلي أنا ---- */
         async function loadMyProfile(user) {
-            // avatar
             const avatarSnap = await get(ref(db, `users/${user.uid}/avatar`));
             const charData   = avatarSnap.exists() ? { ...DEFAULT_CHAR, ...avatarSnap.val() } : DEFAULT_CHAR;
             document.getElementById('avatarWrap').innerHTML =
-                `<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:#0a0a14;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3)">
-                    ${buildAvatar(charData, 90)}
-                </div>`;
+                `<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:#0a0a14;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3)">${buildAvatar(charData, 90)}</div>`;
 
             const name = user.email.split('@')[0];
             document.getElementById('username').innerText  = name;
@@ -664,16 +435,9 @@
             document.getElementById('joinDate').innerText  =
                 `انضم في: ${created.toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' })}`;
 
-            // أزرار بروفايلي
             document.getElementById('profileActions').innerHTML = `
-                <button id="editAvatarBtn"
-                    style="background:rgba(255,255,255,0.04);color:var(--text-muted);border:1px solid var(--border-color);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">
-                    🎭 تعديل الشخصية
-                </button>
-                <button id="logoutBtn"
-                    style="background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.2);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">
-                    🚪 خروج
-                </button>
+                <button id="editAvatarBtn" style="background:rgba(255,255,255,0.04);color:var(--text-muted);border:1px solid var(--border-color);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">🎭 تعديل الشخصية</button>
+                <button id="logoutBtn"     style="background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.2);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">🚪 خروج</button>
             `;
 
             document.getElementById('editAvatarBtn').onclick = () => location.href = 'avatar.html';
@@ -683,13 +447,9 @@
                 location.href = 'index.html';
             };
 
-            // عنوان السكربتات
             document.getElementById('scriptsTitle').innerText = '📜 سكربتاتي';
-
-            // إظهار قسم النقاط (بروفايلي أنا فقط)
             document.getElementById('pointsSection').style.display = 'block';
 
-            // لو في رابط إحالة معلق من قبل التسجيل
             const pendingRef = localStorage.getItem('pendingRef');
             if (pendingRef && pendingRef !== user.uid) {
                 localStorage.removeItem('pendingRef');
@@ -700,49 +460,32 @@
             await loadPoints(user.uid);
         }
 
-
-        /* ============================================================
-           عرض بروفايل شخص تاني
-           ============================================================ */
-
+        /* ---- بروفايل شخص تاني ---- */
         async function loadOtherProfile(uid) {
-            // إظهار شارة "تشاهد بروفايل شخص تاني"
             document.getElementById('viewingBadge').style.display = 'block';
 
-            // جيب بيانات اليوزر من Firebase
             const userSnap = await get(ref(db, `users/${uid}`));
             const userData = userSnap.exists() ? userSnap.val() : {};
-
-            const email = userData.email || 'غير معروف';
-            const name  = email.split('@')[0];
+            const email    = userData.email || 'غير معروف';
+            const name     = email.split('@')[0];
 
             document.getElementById('viewingName').innerText  = name;
             document.getElementById('username').innerText     = name;
             document.getElementById('userEmail').innerText    = email;
-            document.getElementById('joinDate').innerText     = ''; // ما عندناش تاريخ انضمام للشخص التاني
+            document.getElementById('joinDate').innerText     = '';
 
-            // avatar
             const avatarSnap = await get(ref(db, `users/${uid}/avatar`));
             const charData   = avatarSnap.exists() ? { ...DEFAULT_CHAR, ...avatarSnap.val() } : DEFAULT_CHAR;
             document.getElementById('avatarWrap').innerHTML =
-                `<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:#0a0a14;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3)">
-                    ${buildAvatar(charData, 90)}
-                </div>`;
+                `<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:#0a0a14;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3)">${buildAvatar(charData, 90)}</div>`;
 
-            // بدون أزرار إدارة
             document.getElementById('profileActions').innerHTML = '';
-
-            // عنوان السكربتات
             document.getElementById('scriptsTitle').innerText = `📜 سكربتات ${name}`;
 
             await loadData(uid, email, null, false);
         }
 
-
-        /* ============================================================
-           تحميل البيانات المشتركة (badges + scripts + stats)
-           ============================================================ */
-
+        /* ---- تحميل البيانات ---- */
         async function loadData(uid, email, createdAt, canDelete) {
             const username = email.split('@')[0];
             const snap = await get(ref(db, 'scripts'));
@@ -765,15 +508,12 @@
             });
 
             const avgRating = totalVotes > 0 ? totalRating / totalVotes : 0;
-            const daysOld   = createdAt
-                ? (Date.now() - parseInt(createdAt)) / 86400000
-                : 0;
+            const daysOld   = createdAt ? (Date.now() - parseInt(createdAt)) / 86400000 : 0;
 
-            // جيب النقاط وعدد الدعوات للبادجات
             const pointsSnap   = await get(ref(db, `users/${uid}/points`));
             const visitorsSnap = await get(ref(db, `referrals/${uid}/visitors`));
-            const points = pointsSnap.exists()   ? pointsSnap.val()                             : 0;
-            const refs   = visitorsSnap.exists() ? Object.keys(visitorsSnap.val()).length        : 0;
+            const points = pointsSnap.exists()   ? pointsSnap.val() : 0;
+            const refs   = visitorsSnap.exists() ? Object.keys(visitorsSnap.val()).length : 0;
 
             document.getElementById('totalScripts').innerText = mine.length;
             document.getElementById('totalLikes').innerText   = totalLikes;
@@ -785,18 +525,7 @@
             renderScripts(uid, mine, canDelete);
         }
 
-
-        /* ============================================================
-           Badges
-           ============================================================ */
-
-        const RARITY_STYLES = {
-            common:    { border: 'rgba(139,92,246,0.3)',  glow: 'rgba(139,92,246,0.15)', label: 'عادي',     color: '#a78bfa' },
-            rare:      { border: 'rgba(59,130,246,0.4)',  glow: 'rgba(59,130,246,0.2)',  label: 'نادر',     color: '#60a5fa' },
-            epic:      { border: 'rgba(168,85,247,0.5)',  glow: 'rgba(168,85,247,0.25)', label: 'ملحمي',    color: '#c084fc' },
-            legendary: { border: 'rgba(251,191,36,0.5)',  glow: 'rgba(251,191,36,0.2)',  label: 'أسطوري',   color: '#fbbf24' },
-        };
-
+        /* ---- Badges ---- */
         async function renderBadges(uid, stats, canAward) {
             const grid = document.getElementById('badgesGrid');
             grid.innerHTML = '';
@@ -813,6 +542,7 @@
                 const rs        = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
 
                 if (isEarned) earned++;
+
                 if (isNew && canAward) {
                     await set(ref(db, `users/${uid}/badges/${badge.id}`), { earnedAt: Date.now(), rarity: badge.rarity });
                 }
@@ -820,21 +550,18 @@
                 const card = document.createElement('div');
                 card.className = `badge-card ${isEarned ? 'earned' : 'locked'} ${isNew ? 'new-badge' : ''}`;
 
-                // ألوان حسب الـ rarity
                 if (isEarned) {
                     card.style.borderColor = rs.border;
                     card.style.background  = `linear-gradient(145deg, ${rs.glow} 0%, rgba(0,0,0,0) 100%)`;
                 }
 
                 card.innerHTML = `
-                    card.innerHTML = `
-    <span class="badge-icon">${badge.icon}</span>
-    <span class="badge-name">${badge.name}</span>
-    <span class="badge-desc">${badge.desc}</span>
-    ${isEarned ? `<span style="font-size:0.62rem;font-weight:900;color:${rs.color};margin-top:6px;display:block;text-transform:uppercase;letter-spacing:1px">${rs.label}</span>` : ''}
-`;
+                    <span class="badge-icon">${badge.icon}</span>
+                    <span class="badge-name">${badge.name}</span>
                     <span class="badge-desc">${badge.desc}</span>
+                    ${isEarned ? `<span style="font-size:0.62rem;font-weight:900;color:${rs.color};margin-top:6px;display:block;text-transform:uppercase;letter-spacing:1px">${rs.label}</span>` : ''}
                 `;
+
                 grid.appendChild(card);
             }
 
@@ -842,11 +569,7 @@
             document.getElementById('totalCount').innerText  = ALL_BADGES.length;
         }
 
-
-        /* ============================================================
-           Scripts
-           ============================================================ */
-
+        /* ---- Scripts ---- */
         function renderScripts(uid, mine, canDelete) {
             const container = document.getElementById('userScripts');
             container.innerHTML = '';
@@ -855,12 +578,7 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <p>${canDelete ? 'ما نشرتش أي سكربت لحد دلوقتي 😅' : 'المستخدم ده ما نشرش أي سكربت بعد.'}</p>
-                        ${canDelete ? `<button onclick="location.href='publish.html'"
-                            style="background:var(--accent-gradient);color:white;border:none;border-radius:50px;
-                                   padding:13px 30px;font-family:Tajawal,sans-serif;font-weight:800;cursor:pointer;
-                                   box-shadow:0 8px 20px rgba(139,92,246,0.3)">
-                            📤 انشر أول سكربت
-                        </button>` : ''}
+                        ${canDelete ? `<button onclick="location.href='publish.html'" style="background:var(--accent-gradient);color:white;border:none;border-radius:50px;padding:13px 30px;font-family:Tajawal,sans-serif;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(139,92,246,0.3)">📤 انشر أول سكربت</button>` : ''}
                     </div>`;
                 return;
             }
@@ -886,8 +604,7 @@
                     ${canDelete ? `<button class="delete-btn" data-id="${id}">🗑️ حذف</button>` : ''}
                 `;
 
-                card.querySelector('.mini-card-info').onclick = () =>
-                    location.href = `script.html?id=${id}`;
+                card.querySelector('.mini-card-info').onclick = () => location.href = `script.html?id=${id}`;
 
                 if (canDelete) {
                     card.querySelector('.delete-btn').addEventListener('click', async (e) => {
@@ -895,7 +612,7 @@
                         if (!confirm('هل تريد حذف هذا السكربت نهائياً؟')) return;
                         await remove(ref(db, `scripts/${id}`));
                         card.style.cssText += 'opacity:0;transform:scale(0.95);transition:0.3s';
-                        setTimeout(() => { card.remove(); }, 300);
+                        setTimeout(() => card.remove(), 300);
                     });
                 }
 
@@ -903,17 +620,11 @@
             });
         }
 
-
-        /* ============================================================
-           النقاط وسجلها
-           ============================================================ */
-
+        /* ---- النقاط ---- */
         async function loadPoints(uid) {
-            // رابط الإحالة
             const refLink = `${location.origin}/referral.html?ref=${uid}`;
             document.getElementById('refLinkInput').value = refLink;
 
-            // نسخ الرابط
             document.getElementById('copyRefBtn').onclick = () => {
                 navigator.clipboard.writeText(refLink).then(() => {
                     const btn = document.getElementById('copyRefBtn');
@@ -923,73 +634,51 @@
                 });
             };
 
-            // النقاط الحالية
-            const pointsSnap = await get(ref(db, `users/${uid}/points`));
-            const points = pointsSnap.exists() ? pointsSnap.val() : 0;
-            document.getElementById('myPoints').innerText = points;
-
-            // عدد الدعوات
+            const pointsSnap   = await get(ref(db, `users/${uid}/points`));
             const visitorsSnap = await get(ref(db, `referrals/${uid}/visitors`));
+            const points   = pointsSnap.exists()   ? pointsSnap.val() : 0;
             const refCount = visitorsSnap.exists() ? Object.keys(visitorsSnap.val()).length : 0;
+
+            document.getElementById('myPoints').innerText  = points;
             document.getElementById('refCount').innerText  = refCount;
             document.getElementById('refPoints').innerText = refCount * 15;
 
-            // سجل النقاط
             const logSnap = await get(ref(db, `users/${uid}/pointsLog`));
             const logDiv  = document.getElementById('pointsLog');
             logDiv.innerHTML = '';
 
             if (!logSnap.exists()) {
-                logDiv.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:0.85rem">
-                    لا توجد نقاط بعد — شارك رابطك!
-                </div>`;
+                logDiv.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:0.85rem">لا توجد نقاط بعد — شارك رابطك!</div>`;
                 return;
             }
 
-            const logs = Object.entries(logSnap.val())
-                .sort((a, b) => b[0] - a[0]) // الأحدث أولاً
-                .slice(0, 10);
-
-            logs.forEach(([ts, log]) => {
-                const item = document.createElement('div');
-                item.className = 'log-item';
-                const date = new Date(parseInt(ts)).toLocaleString('ar-EG', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
-                item.innerHTML = `
-                    <span class="li-icon">🎁</span>
-                    <span class="li-text">شخص فتح رابط الدعوة الخاص بك</span>
-                    <span class="li-pts">+${log.points} ⭐</span>
-                    <span class="li-time">${date}</span>
-                `;
-                logDiv.appendChild(item);
-            });
+            Object.entries(logSnap.val())
+                .sort((a, b) => b[0] - a[0])
+                .slice(0, 10)
+                .forEach(([ts, log]) => {
+                    const item = document.createElement('div');
+                    item.className = 'log-item';
+                    const date = new Date(parseInt(ts)).toLocaleString('ar-EG', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+                    item.innerHTML = `
+                        <span class="li-icon">🎁</span>
+                        <span class="li-text">شخص فتح رابط الدعوة الخاص بك</span>
+                        <span class="li-pts">+${log.points} ⭐</span>
+                        <span class="li-time">${date}</span>
+                    `;
+                    logDiv.appendChild(item);
+                });
         }
 
-
-        /* ============================================================
-           إضافة نقاط الإحالة (لو في pendingRef)
-           ============================================================ */
-
+        /* ---- إضافة نقاط الإحالة ---- */
         async function awardReferralPoints(refUid, visitorUid) {
             if (!refUid || !visitorUid || refUid === visitorUid) return;
             try {
-                // تحقق ما اتحسبوش قبل
                 const alreadySnap = await get(ref(db, `referrals/${refUid}/visitors/${visitorUid}`));
                 if (alreadySnap.exists()) return;
-
-                // سجّل الزيارة
-                await set(ref(db, `referrals/${refUid}/visitors/${visitorUid}`), {
-                    timestamp: Date.now(), points: 15
-                });
-
-                // اضف 15 نقطة
+                await set(ref(db, `referrals/${refUid}/visitors/${visitorUid}`), { timestamp: Date.now(), points: 15 });
                 const currentSnap = await get(ref(db, `users/${refUid}/points`));
-                const current = currentSnap.exists() ? currentSnap.val() : 0;
-                await set(ref(db, `users/${refUid}/points`), current + 15);
-
-                // سجل النقاط
-                await set(ref(db, `users/${refUid}/pointsLog/${Date.now()}`), {
-                    type: 'referral', points: 15, from: visitorUid, timestamp: Date.now()
-                });
+                await set(ref(db, `users/${refUid}/points`), (currentSnap.exists() ? currentSnap.val() : 0) + 15);
+                await set(ref(db, `users/${refUid}/pointsLog/${Date.now()}`), { type: 'referral', points: 15, from: visitorUid, timestamp: Date.now() });
             } catch (e) { console.error(e); }
         }
 
