@@ -4,50 +4,80 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- ============================================================
-       SEO — عشان جوجل يعرض "CCRAFT SPACE" مش الدومين
-       ============================================================ -->
   <title>CCRAFT SPACE | قائمة سكربتات Roblox</title>
-  <meta name="application-name" content="CCRAFT SPACE">
-  <meta name="description" content="CCRAFT SPACE — أفضل منصة عربية لسكربتات Roblox. ابحث وانشر سكربتات مرتبة حسب الماب والقسم.">
-  <meta name="keywords"    content="CCRAFT SPACE, سكربتات Roblox, Roblox scripts, روبلوكس">
-  <meta name="author"      content="CCRAFT SPACE">
-  <meta name="robots"      content="index, follow">
-  <link rel="canonical"    href="https://ccraftspace.ddnsking.com/scripts.html">
 
+  <!-- ============================================================
+       SEO & Site Name — الأهم لجوجل
+       ============================================================ -->
+  <meta name="application-name" content="CCRAFT SPACE">
+  <meta name="description"      content="CCRAFT SPACE — أفضل منصة عربية لسكربتات Roblox. ابحث وانشر سكربتات مرتبة حسب الماب والقسم.">
+  <meta name="keywords"         content="CCRAFT SPACE, سكربتات Roblox, Roblox scripts, روبلوكس, سكربتات عربية">
+  <meta name="author"           content="CCRAFT SPACE">
+  <meta name="robots"           content="index, follow">
+  <link rel="canonical"         href="https://ccraftspace.ddnsking.com/scripts.html">
+
+  <!-- ============================================================
+       Open Graph — الصورة لازم تكون URL كامل ومطلق بالـ https
+       ============================================================ -->
   <meta property="og:site_name"   content="CCRAFT SPACE">
   <meta property="og:title"       content="CCRAFT SPACE | قائمة سكربتات Roblox">
-  <meta property="og:description" content="أفضل منصة عربية لسكربتات Roblox">
-  <meta property="og:image"       content="https://ccraftspace.ddnsking.com/cCraft.jpg">
-  <meta property="og:url"         content="https://ccraftspace.ddnsking.com/scripts.html">
+  <meta property="og:description" content="أفضل منصة عربية لسكربتات Roblox — ابحث وانشر سكربتات مرتبة حسب الماب والقسم.">
   <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://ccraftspace.ddnsking.com/scripts.html">
+  <meta property="og:locale"      content="ar_AR">
 
+  <!-- ✅ الصورة — URL كامل بدون / في الأول -->
+  <meta property="og:image"              content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:secure_url"   content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:type"         content="image/jpeg">
+  <meta property="og:image:width"        content="512">
+  <meta property="og:image:height"       content="512">
+  <meta property="og:image:alt"          content="CCRAFT SPACE Logo">
+
+  <!-- Twitter Card -->
   <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:site"        content="CCRAFT SPACE">
   <meta name="twitter:title"       content="CCRAFT SPACE | سكربتات Roblox">
   <meta name="twitter:description" content="أفضل منصة عربية لسكربتات Roblox">
   <meta name="twitter:image"       content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta name="twitter:image:alt"   content="CCRAFT SPACE Logo">
 
+  <!-- ============================================================
+       Schema.org — ده اللي جوجل بيقرأه عشان يعرف اسم الموقع
+       ============================================================ -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "CCRAFT SPACE",
-    "alternateName": "CCRAFT SPACE Roblox Scripts",
+    "alternateName": ["CCRAFT SPACE Roblox Scripts", "سي كرافت سبيس"],
     "url": "https://ccraftspace.ddnsking.com/",
-    "description": "منصة عربية لسكربتات Roblox",
-    "image": "https://ccraftspace.ddnsking.com/cCraft.jpg",
+    "description": "أفضل منصة عربية لسكربتات Roblox",
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://ccraftspace.ddnsking.com/cCraft.jpg",
+      "width": 512,
+      "height": 512
+    },
     "inLanguage": "ar",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://ccraftspace.ddnsking.com/scripts.html?search={search_term_string}",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://ccraftspace.ddnsking.com/scripts.html?search={search_term_string}"
+      },
       "query-input": "required name=search_term_string"
     }
   }
   </script>
 
-  <link rel="icon"            type="image/jpeg" href="cCraft.jpg">
-  <link rel="shortcut icon"   type="image/jpeg" href="cCraft.jpg">
-  <link rel="apple-touch-icon"                  href="cCraft.jpg">
+  <!-- ============================================================
+       Favicon — كل الأحجام عشان كل المتصفحات
+       ============================================================ -->
+  <link rel="icon"              type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="shortcut icon"     type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="apple-touch-icon"                    href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+
   <link rel="stylesheet" href="styles.css">
 
   <style>
