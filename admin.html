@@ -340,6 +340,109 @@ body { overflow-x: hidden; }
     .stats-row { grid-template-columns:repeat(2,1fr); }
 }
 
+/* Reports */
+.report-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease both;
+}
+
+.report-item:hover { border-color: var(--border-hover); }
+
+.report-item.status-pending  { border-right: 4px solid var(--danger); }
+.report-item.status-reviewed { border-right: 4px solid #fbbf24; }
+.report-item.status-resolved { border-right: 4px solid var(--success); }
+
+.ri-header {
+    display: flex; align-items: flex-start; gap: 12px;
+    margin-bottom: 12px; flex-wrap: wrap;
+}
+
+.ri-reason {
+    background: rgba(248,113,113,0.1); color: #f87171;
+    border: 1px solid rgba(248,113,113,0.25);
+    border-radius: 50px; padding: 3px 12px;
+    font-size: 0.72rem; font-weight: 800; white-space: nowrap;
+}
+
+.ri-script { font-size: 0.9rem; font-weight: 800; color: var(--text-main); flex: 1; min-width: 0; }
+.ri-meta   { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px; }
+.ri-details {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 0.83rem; color: var(--text-muted); line-height: 1.6;
+    margin-bottom: 12px; display: none;
+}
+
+.ri-details.show { display: block; }
+
+.ri-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.68rem; font-weight: 800;
+}
+
+.ri-status.pending  { background: rgba(248,113,113,0.1); color: #f87171; }
+.ri-status.reviewed { background: rgba(251,191,36,0.1);  color: #fbbf24; }
+.ri-status.resolved { background: rgba(74,222,128,0.1);  color: #4ade80; }
+
+.ri-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* Reply box */
+.reply-box {
+    display: none; margin-top: 12px;
+    background: rgba(139,92,246,0.05);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 12px; padding: 14px;
+}
+
+.reply-box.show { display: block; }
+
+.reply-box textarea {
+    width: 100%; min-height: 80px;
+    background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);
+    border-radius: 10px; padding: 10px 14px;
+    color: var(--text-main); font-family: 'Tajawal', sans-serif;
+    font-size: 0.88rem; line-height: 1.6; resize: vertical;
+    outline: none; direction: rtl; box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.reply-box textarea:focus { border-color: var(--primary); }
+
+.ri-existing-reply {
+    background: rgba(74,222,128,0.07);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 0.83rem; color: var(--text-muted);
+    margin-top: 10px; line-height: 1.6;
+}
+
+.ri-existing-reply strong { color: var(--success); display: block; margin-bottom: 4px; }
+
+/* Reports filter tabs */
+.reports-filter {
+    display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;
+}
+
+.rf-tab {
+    padding: 7px 16px; border-radius: 50px;
+    border: 1px solid var(--border-color);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-muted); font-size: 0.78rem; font-weight: 800;
+    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
+    transition: var(--transition);
+}
+
+.rf-tab:hover  { transform: none; filter: none; border-color: var(--border-hover); }
+.rf-tab.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.35); }
+
 </style>
 </head>
 <body>
@@ -410,6 +513,10 @@ body { overflow-x: hidden; }
 
             <div class="sidebar-section-label">الإدارة</div>
 
+            <button class="nav-item" data-section="reports">
+                <span class="nav-icon">🚩</span> البلاغات
+                <span class="nav-badge red" id="reportsBadge" style="display:none">0</span>
+            </button>
             <button class="nav-item" data-section="announce">
                 <span class="nav-icon">📢</span> إعلانات
             </button>
@@ -796,6 +903,23 @@ body { overflow-x: hidden; }
         </div>
 
 
+        <!-- ======= Reports ======= -->
+        <div class="section" id="sec-reports">
+
+            <div class="reports-filter">
+                <button class="rf-tab active" data-status="all"     onclick="filterReports(this,'all')">🚩 الكل</button>
+                <button class="rf-tab"        data-status="pending"  onclick="filterReports(this,'pending')">🔴 جديد</button>
+                <button class="rf-tab"        data-status="reviewed" onclick="filterReports(this,'reviewed')">🟡 قيد المراجعة</button>
+                <button class="rf-tab"        data-status="resolved" onclick="filterReports(this,'resolved')">✅ محلول</button>
+            </div>
+
+            <div id="reportsContainer">
+                <div style="text-align:center;padding:40px;color:var(--text-muted)">⏳ جارٍ التحميل...</div>
+            </div>
+
+        </div>
+
+
         <!-- ======= Activity Log ======= -->
         <div class="section" id="sec-log">
             <div class="panel-card">
@@ -865,6 +989,7 @@ const titles = {
     chat:        '💬 الشات',
     announce:    '📢 الإعلانات',
     settings:    '⚙️ إعدادات الموقع',
+    reports:     '🚩 البلاغات',
     log:         '📋 سجل الأنشطة',
 };
 
@@ -924,6 +1049,7 @@ document.querySelectorAll('.nav-item').forEach(btn => {
         if (sec === 'points-ctrl') renderTopPoints();
         if (sec === 'badges-ctrl') renderTopBadges();
         if (sec === 'log') loadActivityLog();
+        if (sec === 'reports') loadReports();
     });
 });
 
@@ -1424,6 +1550,158 @@ async function loadActivityLog() {
             container.appendChild(div);
         });
 }
+
+/* ---- Reports ---- */
+
+let allReports     = {};
+let currentFilter  = 'all';
+
+async function loadReports() {
+    const snap = await get(ref(db,'reports'));
+    allReports = snap.exists() ? snap.val() : {};
+    renderReports();
+
+    // عدد البلاغات الجديدة في الـ badge
+    const pending = Object.values(allReports).filter(r=>r.status==='pending').length;
+    const badge   = document.getElementById('reportsBadge');
+    if (pending > 0) {
+        badge.innerText      = pending;
+        badge.style.display  = 'inline-block';
+    } else {
+        badge.style.display  = 'none';
+    }
+}
+
+function renderReports(filter = currentFilter) {
+    const container = document.getElementById('reportsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    let entries = Object.entries(allReports)
+        .sort((a,b) => (b[1].timestamp||0) - (a[1].timestamp||0));
+
+    if (filter !== 'all') {
+        entries = entries.filter(([,r]) => r.status === filter);
+    }
+
+    if (!entries.length) {
+        container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:0.9rem">
+            لا توجد بلاغات ${filter !== 'all' ? 'في هذه الفئة' : ''}
+        </div>`;
+        return;
+    }
+
+    entries.forEach(([id, r]) => {
+        const date   = new Date(r.timestamp||0).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+        const status = r.status || 'pending';
+        const statusLabel = { pending:'🔴 جديد', reviewed:'🟡 قيد المراجعة', resolved:'✅ محلول' }[status] || status;
+
+        const item = document.createElement('div');
+        item.className = `report-item status-${status}`;
+        item.dataset.id = id;
+
+        item.innerHTML = `
+            <div class="ri-header">
+                <span class="ri-reason">${r.reason || '—'}</span>
+                <span class="ri-status ${status}">${statusLabel}</span>
+            </div>
+            <div class="ri-script">📜 ${r.scriptTitle || r.scriptId || '—'}</div>
+            <div class="ri-meta">
+                👤 ${r.reporterEmail || 'مجهول'} &nbsp;·&nbsp; 🕐 ${date}
+            </div>
+            ${r.details ? `
+            <div class="ri-details" id="det-${id}">
+                <strong style="color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px">تفاصيل المُبلِّغ:</strong>
+                <p style="margin:4px 0 0">${r.details}</p>
+            </div>` : ''}
+            ${r.adminReply ? `
+            <div class="ri-existing-reply">
+                <strong>✅ رد الأدمن:</strong>
+                ${r.adminReply}
+            </div>` : ''}
+            <div class="ri-actions">
+                ${r.details ? `<button class="t-btn view" onclick="toggleDetails('${id}')">📋 التفاصيل</button>` : ''}
+                <button class="t-btn edit" onclick="openScriptLink('${r.scriptId}')">🔗 فتح السكربت</button>
+                <button class="t-btn view" onclick="toggleReply('${id}')">💬 رد</button>
+                ${status !== 'resolved' ? `<button class="t-btn edit" onclick="changeStatus('${id}','reviewed')">🟡 مراجعة</button>` : ''}
+                ${status !== 'resolved' ? `<button class="t-btn"     onclick="changeStatus('${id}','resolved')" style="background:rgba(74,222,128,0.1);color:var(--success);border:1px solid rgba(74,222,128,0.25)">✅ حل</button>` : ''}
+                <button class="t-btn del" onclick="deleteReport('${id}')">🗑️</button>
+            </div>
+            <div class="reply-box" id="reply-${id}">
+                <textarea placeholder="اكتب ردك على البلاغ هنا..." id="replyText-${id}"></textarea>
+                <div style="display:flex;gap:8px">
+                    <button class="t-btn edit" onclick="sendReply('${id}')">📨 إرسال الرد</button>
+                    <button class="t-btn del" onclick="toggleReply('${id}')">إلغاء</button>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(item);
+    });
+}
+
+function filterReports(btn, status) {
+    document.querySelectorAll('.rf-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = status;
+    renderReports(status);
+}
+
+function toggleDetails(id) {
+    document.getElementById(`det-${id}`)?.classList.toggle('show');
+}
+
+function toggleReply(id) {
+    document.getElementById(`reply-${id}`)?.classList.toggle('show');
+}
+
+function openScriptLink(scriptId) {
+    if (scriptId && scriptId !== 'unknown') {
+        window.open(`script.html?id=${scriptId}`, '_blank');
+    }
+}
+
+async function changeStatus(id, newStatus) {
+    await update(ref(db,`reports/${id}`), { status: newStatus });
+    allReports[id].status = newStatus;
+    logActivity('🚩', `تغيير حالة البلاغ إلى: ${newStatus}`);
+    renderReports();
+    loadReports(); // تحديث العداد
+}
+
+async function sendReply(id) {
+    const text = document.getElementById(`replyText-${id}`)?.value.trim();
+    if (!text) return alert('اكتب الرد أولاً');
+
+    await update(ref(db,`reports/${id}`), {
+        adminReply: text,
+        repliedAt:  Date.now(),
+        status:     'resolved',
+    });
+
+    allReports[id].adminReply = text;
+    allReports[id].status     = 'resolved';
+
+    logActivity('💬', `رد على بلاغ: ${allReports[id]?.scriptTitle || id}`);
+    renderReports();
+    loadReports();
+}
+
+async function deleteReport(id) {
+    if (!confirm('حذف هذا البلاغ نهائياً؟')) return;
+    await remove(ref(db,`reports/${id}`));
+    delete allReports[id];
+    renderReports();
+    loadReports();
+}
+
+window.filterReports   = filterReports;
+window.toggleDetails   = toggleDetails;
+window.toggleReply     = toggleReply;
+window.openScriptLink  = openScriptLink;
+window.changeStatus    = changeStatus;
+window.sendReply       = sendReply;
+window.deleteReport    = deleteReport;
 
 </script>
 </body>
