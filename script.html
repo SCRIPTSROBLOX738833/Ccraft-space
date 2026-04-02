@@ -552,7 +552,9 @@
 
         <!-- Action Buttons -->
         <div class="action-row">
-           <button id="reportBtn">🚩 إبلاغ</button>
+           <button onclick="location.href='report.html?id=SCRIPT_ID'">
+  🚩 إبلاغ
+           </button>
             <button id="copyBtn">📋 نسخ السكربت</button>
             <button id="rawBtn">📄 Raw</button>
         </div>
@@ -849,30 +851,6 @@ function copyCode() {
 document.getElementById('copyBtn').addEventListener('click',    copyCode);
 document.getElementById('copyInline').addEventListener('click', copyCode);
 document.getElementById('rawBtn').addEventListener('click', () => location.href = `raw.html?id=${scriptId}`);
-/* ============================================================
-   Action Buttons
-   ============================================================ */
-
-function copyCode() {
-    navigator.clipboard.writeText(document.getElementById('code').innerText)
-        .then(() => {
-            const btn = document.getElementById('copyInline');
-            btn.innerText = '✅ تم النسخ';
-            btn.classList.add('copied');
-            setTimeout(() => { btn.innerText = '📋 نسخ'; btn.classList.remove('copied'); }, 2000);
-        });
-}
-
-document.getElementById('copyBtn').addEventListener('click', copyCode);
-document.getElementById('copyInline').addEventListener('click', copyCode);
-document.getElementById('rawBtn').addEventListener('click', () => location.href = `raw.html?id=${scriptId}`);
-
-// كود زر الإبلاغ عشان يودي لصفحة الإبلاغ مع الأيدي الصحيح
-document.getElementById('reportBtn').addEventListener('click', () => {
-    location.href = `report.html?id=${scriptId}`;
-});
-
-
 
 </script>
 </body>
