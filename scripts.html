@@ -3,101 +3,391 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>CCRAFT SPACE | قائمة سكربتات Roblox</title>
-
-  <!-- ============================================================
-       SEO & Site Name — الأهم لجوجل
-       ============================================================ -->
   <meta name="application-name" content="CCRAFT SPACE">
-  <meta name="description"      content="CCRAFT SPACE — أفضل منصة عربية لسكربتات Roblox. ابحث وانشر سكربتات مرتبة حسب الماب والقسم.">
-  <meta name="keywords"         content="CCRAFT SPACE, سكربتات Roblox, Roblox scripts, روبلوكس, سكربتات عربية">
-  <meta name="author"           content="CCRAFT SPACE">
-  <meta name="robots"           content="index, follow">
-  <link rel="canonical"         href="https://ccraftspace.ddnsking.com/scripts.html">
-
-  <!-- ============================================================
-       Open Graph — الصورة لازم تكون URL كامل ومطلق بالـ https
-       ============================================================ -->
-  <meta property="og:site_name"   content="CCRAFT SPACE">
-  <meta property="og:title"       content="CCRAFT SPACE | قائمة سكربتات Roblox">
-  <meta property="og:description" content="أفضل منصة عربية لسكربتات Roblox — ابحث وانشر سكربتات مرتبة حسب الماب والقسم.">
-  <meta property="og:type"        content="website">
-  <meta property="og:url"         content="https://ccraftspace.ddnsking.com/scripts.html">
-  <meta property="og:locale"      content="ar_AR">
-
-  <!-- ✅ الصورة — URL كامل بدون / في الأول -->
-  <meta property="og:image"              content="https://ccraftspace.ddnsking.com/cCraft.jpg">
-  <meta property="og:image:secure_url"   content="https://ccraftspace.ddnsking.com/cCraft.jpg">
-  <meta property="og:image:type"         content="image/jpeg">
-  <meta property="og:image:width"        content="512">
-  <meta property="og:image:height"       content="512">
-  <meta property="og:image:alt"          content="CCRAFT SPACE Logo">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:site"        content="CCRAFT SPACE">
-  <meta name="twitter:title"       content="CCRAFT SPACE | سكربتات Roblox">
-  <meta name="twitter:description" content="أفضل منصة عربية لسكربتات Roblox">
-  <meta name="twitter:image"       content="https://ccraftspace.ddnsking.com/cCraft.jpg">
-  <meta name="twitter:image:alt"   content="CCRAFT SPACE Logo">
-
-  <!-- ============================================================
-       Schema.org — ده اللي جوجل بيقرأه عشان يعرف اسم الموقع
-       ============================================================ -->
+  <meta name="description" content="CCRAFT SPACE — أفضل منصة عربية لسكربتات Roblox.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://ccraftspace.ddnsking.com/scripts.html">
+  <meta property="og:site_name" content="CCRAFT SPACE">
+  <meta property="og:title"     content="CCRAFT SPACE | قائمة سكربتات Roblox">
+  <meta property="og:image"     content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:secure_url" content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:width"  content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:type"  content="website">
+  <meta property="og:url"   content="https://ccraftspace.ddnsking.com/scripts.html">
+  <link rel="icon"            type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="shortcut icon"   type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="apple-touch-icon"                  href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="stylesheet" href="styles.css">
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "CCRAFT SPACE",
-    "alternateName": ["CCRAFT SPACE Roblox Scripts", "سي كرافت سبيس"],
-    "url": "https://ccraftspace.ddnsking.com/",
-    "description": "أفضل منصة عربية لسكربتات Roblox",
-    "image": {
-      "@type": "ImageObject",
-      "url": "https://ccraftspace.ddnsking.com/cCraft.jpg",
-      "width": 512,
-      "height": 512
-    },
-    "inLanguage": "ar",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://ccraftspace.ddnsking.com/scripts.html?search={search_term_string}"
-      },
-      "query-input": "required name=search_term_string"
-    }
-  }
+  {"@context":"https://schema.org","@type":"WebSite","name":"CCRAFT SPACE",
+   "url":"https://ccraftspace.ddnsking.com/","image":"https://ccraftspace.ddnsking.com/cCraft.jpg"}
   </script>
 
-  <!-- ============================================================
-       Favicon — كل الأحجام عشان كل المتصفحات
-       ============================================================ -->
-  <link rel="icon"              type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
-  <link rel="shortcut icon"     type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
-  <link rel="apple-touch-icon"                    href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+<style>
 
-  <link rel="stylesheet" href="styles.css">
+/* ============================================================
+   Page Layout
+   ============================================================ */
 
-  <style>
-    .star { cursor:pointer; font-size:20px; color:#3a3a4a; margin-right:2px; transition: color 0.2s, transform 0.2s; }
-    .star:hover { transform: scale(1.2); color: gold; }
+body { min-height: 100svh; }
 
-    .map-badge {
-        display: inline-flex; align-items: center; gap: 5px;
-        background: rgba(0,242,254,0.08); border: 1px solid rgba(0,242,254,0.2);
-        color: var(--secondary); font-size: 0.72rem; font-weight: 800;
-        padding: 3px 10px; border-radius: 50px; margin-bottom: 10px;
-    }
+.scripts-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+}
 
-    .no-map-badge {
-        display: inline-flex; align-items: center; gap: 5px;
-        background: rgba(255,255,255,0.04); border: 1px solid var(--border-color);
-        color: var(--text-muted); font-size: 0.72rem; font-weight: 700;
-        padding: 3px 10px; border-radius: 50px; margin-bottom: 10px;
-    }
-  </style>
+/* ---- Page Hero ---- */
+.page-hero {
+    padding: 28px 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
+}
+
+.page-hero h1 {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.scripts-count-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 7px 16px;
+    font-size: 0.82rem; color: var(--text-muted); font-weight: 700;
+}
+
+.scripts-count-pill .scp-num {
+    font-weight: 900; color: var(--primary); font-size: 0.95rem;
+}
+
+
+/* ============================================================
+   Search & Filters
+   ============================================================ */
+
+.search-section { margin-bottom: 22px; }
+
+/* Search box */
+.search-wrap {
+    position: relative;
+    margin-bottom: 14px;
+}
+
+.search-wrap .search-icon {
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem; pointer-events: none;
+    color: var(--text-muted);
+}
+
+#searchScripts {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 14px 48px 14px 140px;
+    color: var(--text-main);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: var(--transition);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    direction: rtl;
+    box-sizing: border-box;
+}
+
+#searchScripts:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.15), 0 2px 10px rgba(0,0,0,0.2);
+}
+
+#searchScripts::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+/* AI Search Button */
+.ai-search-btn {
+    position: absolute; left: 8px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--accent-gradient);
+    color: white; border: none;
+    border-radius: 12px; padding: 8px 14px;
+    font-size: 0.75rem; font-weight: 800;
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    margin: 0; transition: var(--transition);
+    display: flex; align-items: center; gap: 5px;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(139,92,246,0.35);
+}
+
+.ai-search-btn:hover { transform: translateY(-50%) scale(1.04); filter: brightness(1.1); }
+.ai-search-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: translateY(-50%); }
+
+/* AI Result Banner */
+.ai-result-banner {
+    display: none;
+    background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.06));
+    border: 1px solid rgba(139,92,246,0.25);
+    border-radius: 14px; padding: 12px 18px;
+    margin-bottom: 14px;
+    font-size: 0.85rem; color: var(--text-main);
+    animation: fadeIn 0.4s ease both;
+    line-height: 1.6;
+}
+
+.ai-result-banner.show { display: flex; align-items: flex-start; gap: 10px; }
+.aib-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+.aib-text { flex: 1; }
+.aib-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; margin: 0; font-size: 1rem; flex-shrink: 0; }
+.aib-close:hover { color: var(--danger); transform: none; filter: none; }
+
+/* Filter row */
+.filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-label {
+    font-size: 0.72rem; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+}
+
+.filter-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 7px 16px;
+    font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    margin: 0; transition: var(--transition); white-space: nowrap;
+}
+
+.filter-btn:hover  { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
+.filter-btn.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.4); }
+
+/* Sort row */
+.sort-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; flex-wrap: wrap;
+}
+
+.sort-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+
+.sort-select {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 10px; padding: 7px 12px;
+    color: var(--text-main); font-family: 'Tajawal', sans-serif;
+    font-size: 0.8rem; outline: none; cursor: pointer;
+}
+
+.results-info {
+    font-size: 0.78rem; color: var(--text-muted);
+    margin-right: auto;
+}
+
+.results-info span { color: var(--primary); font-weight: 800; }
+
+
+/* ============================================================
+   Scripts Grid
+   ============================================================ */
+
+.scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+/* Script Card */
+.script-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 0;
+    overflow: hidden;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease both;
+    position: relative;
+    cursor: pointer;
+}
+
+.script-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+
+/* شريط اللون العلوي حسب القسم */
+.script-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.script-card:hover::before { opacity: 1; }
+.script-card[data-cat="game"]  .sc-top-bar,
+.script-card[data-cat="game"]::before  { background: linear-gradient(90deg, #4ade80, #22c55e); }
+.script-card[data-cat="admin"] .sc-top-bar,
+.script-card[data-cat="admin"]::before { background: linear-gradient(90deg, #f87171, #ef4444); }
+.script-card[data-cat="ai"]    .sc-top-bar,
+.script-card[data-cat="ai"]::before    { background: linear-gradient(90deg, #a78bfa, #8b5cf6); }
+.script-card::before                   { background: var(--accent-gradient); }
+
+/* Card Body */
+.sc-body { padding: 20px 20px 16px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+.sc-header { display: flex; align-items: flex-start; gap: 10px; }
+
+.sc-title {
+    font-size: 1rem; font-weight: 900; color: var(--text-main);
+    flex: 1; line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sc-new-badge {
+    background: var(--accent-gradient); color: white;
+    font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
+    border-radius: 50px; flex-shrink: 0; align-self: flex-start;
+    margin-top: 2px;
+}
+
+/* Badges row */
+.sc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.sc-cat {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--primary-dim); color: #b48bf8;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-map {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(0,242,254,0.08); border: 1px solid rgba(0,242,254,0.2);
+    color: var(--secondary);
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+/* Stats row */
+.sc-stats {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.78rem; color: var(--text-muted);
+}
+
+.sc-stat { display: flex; align-items: center; gap: 4px; }
+
+/* Stars */
+.sc-stars { display: flex; align-items: center; gap: 2px; }
+
+.sc-star {
+    cursor: pointer; font-size: 0.95rem; color: #3a3a4a;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.sc-star:hover { transform: scale(1.2); }
+.sc-star.filled { color: gold; }
+
+.sc-avg { font-size: 0.72rem; color: var(--text-muted); }
+
+/* Card Footer */
+.sc-footer {
+    display: flex; gap: 8px; padding: 12px 20px 16px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    flex-wrap: wrap;
+}
+
+.sc-btn {
+    flex: 1; min-width: 80px;
+    padding: 9px 12px; border-radius: 12px;
+    font-size: 0.78rem; font-weight: 800;
+    border: none; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; margin: 0;
+    transition: var(--transition); display: flex;
+    align-items: center; justify-content: center; gap: 5px;
+    white-space: nowrap;
+}
+
+.sc-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.sc-btn:active { transform: scale(0.96); }
+
+.sc-btn.view { background: var(--accent-gradient); color: white; box-shadow: 0 4px 12px rgba(139,92,246,0.3); }
+.sc-btn.copy { background: rgba(0,242,254,0.1); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
+.sc-btn.like { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); }
+.sc-btn.like.liked  { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.3); }
+.sc-btn.report { background: rgba(248,113,113,0.06); color: var(--text-muted); border: 1px solid var(--border-color); }
+.sc-btn.report:hover { color: #f87171; border-color: rgba(248,113,113,0.3); }
+
+/* Empty State */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center; padding: 60px 20px;
+    color: var(--text-muted);
+    animation: fadeIn 0.4s ease both;
+}
+
+.empty-state .es-icon { font-size: 3rem; display: block; margin-bottom: 14px; }
+.empty-state h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+.empty-state p  { font-size: 0.88rem; line-height: 1.7; }
+
+/* Loading */
+.loading-grid {
+    grid-column: 1 / -1;
+    display: flex; flex-direction: column; gap: 12px;
+}
+
+.skeleton {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 20px; padding: 20px; height: 180px;
+    animation: shimmer 1.5s ease infinite;
+}
+
+@keyframes shimmer {
+    0%,100% { opacity: 1; } 50% { opacity: 0.5; }
+}
+
+/* AI thinking */
+.ai-thinking {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 12px;
+    justify-content: center; padding: 40px;
+    color: var(--text-muted); font-size: 0.9rem;
+    font-weight: 700; animation: fadeIn 0.3s ease both;
+}
+
+.ai-dots { display: flex; gap: 5px; }
+.ai-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); animation: adb 1.2s ease infinite; }
+.ai-dots span:nth-child(2){animation-delay:.2s} .ai-dots span:nth-child(3){animation-delay:.4s}
+@keyframes adb { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-7px);opacity:1} }
+
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 640px) {
+    .scripts-grid { grid-template-columns: 1fr; }
+    #searchScripts { padding-left: 110px; }
+    .ai-search-btn span { display: none; }
+    .ai-search-btn { padding: 8px 10px; }
+    .page-hero { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+</style>
 </head>
 <body>
 
@@ -106,174 +396,423 @@
   <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
-<main>
-    <p>عدد السكربتات في الموقع: <span id="scriptCount">جارٍ التحميل...</span></p>
-    <h1>قائمة السكربتات</h1>
+<div class="scripts-page">
 
-    <input type="text" id="searchScripts" placeholder="🔍 ابحث عن سكربت أو قسم أو ماب...">
-    <button id="searchButton">بحث</button>
+    <!-- Page Hero -->
+    <div class="page-hero">
+        <h1>📜 قائمة السكربتات</h1>
+        <div class="scripts-count-pill">
+            إجمالي السكربتات: <span class="scp-num" id="scriptCount">—</span>
+        </div>
+    </div>
 
-    <div id="scriptsList"></div>
-</main>
+    <!-- Search & Filters -->
+    <div class="search-section">
+
+        <!-- Search Box -->
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchScripts" placeholder="ابحث عن اسم سكربت، قسم، أو ماب...">
+            <button class="ai-search-btn" id="aiSearchBtn" title="بحث ذكي بالذكاء الاصطناعي">
+                🤖 <span>بحث ذكي</span>
+            </button>
+        </div>
+
+        <!-- AI Banner -->
+        <div class="ai-result-banner" id="aiBanner">
+            <span class="aib-icon">🤖</span>
+            <div class="aib-text" id="aiBannerText">—</div>
+            <button class="aib-close" onclick="closeAiBanner()">✕</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-row">
+            <span class="filter-label">القسم:</span>
+            <button class="filter-btn active" data-cat="all">🌟 الكل</button>
+            <button class="filter-btn" data-cat="game">🎮 Game</button>
+            <button class="filter-btn" data-cat="admin">🛡️ Admin</button>
+            <button class="filter-btn" data-cat="ai">🤖 AI & NPCs</button>
+            <button class="filter-btn" data-cat="سكربت من الادارة">👑 من الإدارة</button>
+        </div>
+
+        <!-- Sort & Count -->
+        <div class="sort-row">
+            <span class="sort-label">ترتيب:</span>
+            <select class="sort-select" id="sortSelect">
+                <option value="newest">🕐 الأحدث أولاً</option>
+                <option value="oldest">🕑 الأقدم أولاً</option>
+                <option value="likes">👍 الأكثر لايكات</option>
+                <option value="rating">⭐ الأعلى تقييماً</option>
+            </select>
+            <span class="results-info">عرض <span id="resultsCount">—</span> سكربت</span>
+        </div>
+
+    </div>
+
+    <!-- Scripts Grid -->
+    <div class="scripts-grid" id="scriptsList">
+        <div class="loading-grid">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+        </div>
+    </div>
+
+</div>
+
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-  authDomain: "ccraft-space-scripts.firebaseapp.com",
-  databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-  projectId: "ccraft-space-scripts",
-  storageBucket: "ccraft-space-scripts.firebasestorage.app",
-  messagingSenderId: "816078027492",
-  appId: "1:816078027492:web:6472cce474078fd4d90af1",
-  measurementId: "G-MHDM7YYYBN"
+  apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+  authDomain:"ccraft-space-scripts.firebaseapp.com",
+  databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+  projectId:"ccraft-space-scripts",
+  storageBucket:"ccraft-space-scripts.firebasestorage.app",
+  messagingSenderId:"816078027492",
+  appId:"1:816078027492:web:6472cce474078fd4d90af1",
+  measurementId:"G-MHDM7YYYBN"
 };
 
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
-window.copyScript = (id) => {
-  const codeEl = document.getElementById(`code-${id}`);
-  if (!codeEl) return alert("خطأ في السكربت");
-  navigator.clipboard.writeText(codeEl.innerText)
-    .then(() => alert("تم نسخ السكربت!"))
-    .catch(() => alert("حدث خطأ أثناء النسخ"));
-};
+let allScripts   = [];
+let filteredIds  = null;   // null = بدون فلتر AI
+let activeFilter = 'all';
+let activeSort   = 'newest';
 
-function updateURLQuery(query) {
-  const url = new URL(window.location);
-  if (query) url.searchParams.set('search', query);
-  else url.searchParams.delete('search');
-  window.history.replaceState(null, '', url);
-}
-
-function getSearchQuery() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('search') ? params.get('search').toLowerCase().trim() : '';
-}
-
-function mapBadgeHTML(map) {
-  if (!map) return `<span class="no-map-badge">🌐 ليس لماب محدد</span>`;
-  return `<span class="map-badge">🗺️ ${map}</span>`;
-}
+/* ============================================================
+   تحميل السكربتات
+   ============================================================ */
 
 async function loadScripts() {
-  const list = document.getElementById('scriptsList');
-  list.innerHTML = '';
-  const snapshot = await get(ref(db, 'scripts'));
-  const scriptsData = snapshot.exists() ? snapshot.val() : {};
+    const snap = await get(ref(db,'scripts'));
+    const data = snap.exists() ? snap.val() : {};
 
-  document.getElementById('scriptCount').innerText = Object.keys(scriptsData).length;
+    allScripts = Object.entries(data).map(([id,s]) => ({id,...s}));
+    document.getElementById('scriptCount').innerText = allScripts.length;
 
-  const query = getSearchQuery();
-  let anyMatch = false;
+    const q = getQuery();
+    renderScripts(q);
+}
 
-  const scriptsArray = Object.entries(scriptsData)
-      .map(([id, s]) => ({ id, ...s }))
-      .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+function getQuery() {
+    return new URLSearchParams(location.search).get('search')?.toLowerCase().trim() || '';
+}
 
-  for (const s of scriptsArray) {
-    const id       = s.id;
-    const title    = (s.title    || '').toLowerCase();
-    const category = (s.category || '').toLowerCase();
-    const map      = (s.map      || '').toLowerCase();
-
-    const match = !query ||
-        title.includes(query) ||
-        category.includes(query) ||
-        map.includes(query);
-
-    const div = document.createElement('div');
-    div.className = 'script-card';
-    div.dataset.id = id;
-    div.innerHTML = `
-      <h3>${s.title}</h3>
-      ${mapBadgeHTML(s.map)}
-      <p>📁 ${s.category}</p>
-      <pre id="code-${id}">${s.code}</pre>
-      <button onclick="copyScript('${id}')">نسخ السكربت</button>
-      <button onclick="location.href='script.html?id=${id}'">عرض السكربت</button>
-      <button class="like-btn" data-id="${id}">👍 Like (<span class="like-count">${s.likes || 0}</span>)</button>
-      <div class="rating" data-id="${id}">
-        ${[1,2,3,4,5].map(n => `<span class="star" data-value="${n}">&#9733;</span>`).join('')}
-        <span class="avg-rating">(${s.votes ? (s.rating / s.votes).toFixed(1) : 0})</span>
-      </div>
-    `;
-    div.style.display = match ? "block" : "none";
-    if (match) anyMatch = true;
-    list.appendChild(div);
-  }
-
-  if (!anyMatch) {
-    const p = document.createElement('p');
-    p.id = 'noMatchMsg';
-    p.innerText = 'لا توجد سكربتات مطابقة.';
-    p.style.color = 'var(--danger)';
-    list.appendChild(p);
-  }
-
-  document.querySelectorAll('.like-btn').forEach(btn => {
-    const scriptId = btn.dataset.id;
-    if (localStorage.getItem(`liked_${scriptId}`)) { btn.disabled = true; btn.style.opacity = 0.6; }
-    btn.addEventListener('click', async () => {
-      if (localStorage.getItem(`liked_${scriptId}`)) return;
-      const likeRef = ref(db, `scripts/${scriptId}/likes`);
-      const snap = await get(likeRef);
-      let likes = snap.exists() ? snap.val() : 0;
-      likes++;
-      await set(likeRef, likes);
-      btn.querySelector('.like-count').innerText = likes;
-      localStorage.setItem(`liked_${scriptId}`, 'true');
-      btn.disabled = true; btn.style.opacity = 0.6;
+function sortScripts(arr) {
+    const s = [...arr];
+    if (activeSort === 'newest')  return s.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    if (activeSort === 'oldest')  return s.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+    if (activeSort === 'likes')   return s.sort((a,b)=>(b.likes||0)-(a.likes||0));
+    if (activeSort === 'rating')  return s.sort((a,b)=>{
+        const ra = a.votes ? a.rating/a.votes : 0;
+        const rb = b.votes ? b.rating/b.votes : 0;
+        return rb - ra;
     });
-  });
+    return s;
+}
 
-  document.querySelectorAll('.rating').forEach(async div => {
-    const scriptId = div.dataset.id;
-    const stars = div.querySelectorAll('.star');
-    const avgEl = div.querySelector('.avg-rating');
-    const snap = await get(ref(db, `scripts/${scriptId}`));
-    if (snap.exists()) {
-      const data = snap.val();
-      const avg  = data.votes ? data.rating / data.votes : 0;
-      stars.forEach((star, idx) => { star.style.color = (idx+1) <= avg ? 'gold' : '#3a3a4a'; });
-      avgEl.innerText = `(${avg.toFixed(1)})`;
+function renderScripts(query = '') {
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = '';
+
+    let results = allScripts;
+
+    // فلتر الـ AI IDs
+    if (filteredIds) {
+        results = results.filter(s => filteredIds.includes(s.id));
     }
-    stars.forEach(star => {
-      star.addEventListener('click', async () => {
-        if (localStorage.getItem(`rated_${scriptId}`)) return;
-        const value = Number(star.dataset.value);
-        const ratingRef = ref(db, `scripts/${scriptId}`);
-        const snap  = await get(ratingRef);
-        let rating  = snap.exists() ? snap.val().rating || 0 : 0;
-        let votes   = snap.exists() ? snap.val().votes  || 0 : 0;
-        rating += value; votes++;
-        await set(ratingRef, { ...snap.val(), rating, votes });
-        localStorage.setItem(`rated_${scriptId}`, 'true');
-        const avg = rating / votes;
-        stars.forEach((s, idx) => { s.style.color = (idx+1) <= avg ? 'gold' : '#3a3a4a'; });
-        avgEl.innerText = `(${avg.toFixed(1)})`;
-      });
+    // فلتر القسم
+    if (activeFilter !== 'all') {
+        results = results.filter(s => (s.category||'') === activeFilter);
+    }
+    // فلتر النص
+    if (query) {
+        results = results.filter(s =>
+            (s.title||'').toLowerCase().includes(query) ||
+            (s.category||'').toLowerCase().includes(query) ||
+            (s.map||'').toLowerCase().includes(query) ||
+            (s.description||'').toLowerCase().includes(query) ||
+            (s.author||'').toLowerCase().includes(query)
+        );
+    }
+
+    results = sortScripts(results);
+    document.getElementById('resultsCount').innerText = results.length;
+
+    if (!results.length) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <span class="es-icon">🔍</span>
+                <h3>لا توجد نتائج</h3>
+                <p>جرّب كلمات مختلفة أو استخدم البحث الذكي 🤖</p>
+            </div>`;
+        return;
+    }
+
+    const now = Date.now();
+    results.forEach((s, i) => {
+        const isNew  = (now - (s.timestamp||0)) < 3 * 24 * 3600 * 1000;
+        const avg    = s.votes ? (s.rating / s.votes) : 0;
+        const liked  = !!localStorage.getItem(`liked_${s.id}`);
+        const rated  = !!localStorage.getItem(`rated_${s.id}`);
+
+        const card = document.createElement('div');
+        card.className = 'script-card';
+        card.dataset.cat = s.category || 'other';
+        card.style.animationDelay = `${Math.min(i * 0.04, 0.4)}s`;
+
+        card.innerHTML = `
+            <div class="sc-body">
+                <div class="sc-header">
+                    <div class="sc-title">${escHTML(s.title || 'بدون عنوان')}</div>
+                    ${isNew ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
+                </div>
+                <div class="sc-badges">
+                    <span class="sc-cat">📁 ${escHTML(s.category || '—')}</span>
+                    ${s.map ? `<span class="sc-map">🗺️ ${escHTML(s.map)}</span>` : ''}
+                </div>
+                <div class="sc-stats">
+                    <span class="sc-stat">👍 <strong>${s.likes||0}</strong></span>
+                    <span class="sc-stat">👤 ${escHTML(s.author||'مجهول')}</span>
+                    <span style="margin-right:auto"></span>
+                    <div class="sc-stars" data-id="${s.id}" data-rated="${rated}">
+                        ${[1,2,3,4,5].map(n=>`<span class="sc-star${n<=Math.round(avg)?' filled':''}" data-v="${n}">★</span>`).join('')}
+                        <span class="sc-avg">${s.votes ? avg.toFixed(1) : '—'}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="sc-footer">
+                <button class="sc-btn view" data-id="${s.id}">👁️ عرض</button>
+                <button class="sc-btn copy" data-code="${escAttr(s.code||'')}">📋 نسخ</button>
+                <button class="sc-btn like${liked?' liked':''}" data-id="${s.id}" ${liked?'disabled':''}>
+                    ${liked?'❤️':'🤍'} <span class="lc">${s.likes||0}</span>
+                </button>
+                <button class="sc-btn report" data-id="${s.id}" title="إبلاغ">🚩</button>
+            </div>
+        `;
+
+        // عرض السكربت
+        card.querySelector('.sc-btn.view').onclick = e => {
+            e.stopPropagation();
+            location.href = `script.html?id=${s.id}`;
+        };
+
+        // نسخ الكود
+        card.querySelector('.sc-btn.copy').onclick = async e => {
+            e.stopPropagation();
+            const code = e.currentTarget.dataset.code;
+            try {
+                await navigator.clipboard.writeText(code);
+                e.currentTarget.innerText = '✅ تم';
+                setTimeout(()=>{ e.currentTarget.innerText = '📋 نسخ'; }, 2000);
+            } catch { alert('حدث خطأ في النسخ'); }
+        };
+
+        // لايك
+        const likeBtn = card.querySelector('.sc-btn.like');
+        likeBtn.onclick = async e => {
+            e.stopPropagation();
+            if (liked || likeBtn.disabled) return;
+            const likeRef = ref(db, `scripts/${s.id}/likes`);
+            const snap = await get(likeRef);
+            const newLikes = (snap.exists() ? snap.val() : 0) + 1;
+            await set(likeRef, newLikes);
+            likeBtn.querySelector('.lc').innerText = newLikes;
+            likeBtn.classList.add('liked');
+            likeBtn.innerHTML = `❤️ <span class="lc">${newLikes}</span>`;
+            likeBtn.disabled = true;
+            localStorage.setItem(`liked_${s.id}`, 'true');
+        };
+
+        // إبلاغ
+        card.querySelector('.sc-btn.report').onclick = e => {
+            e.stopPropagation();
+            location.href = `report.html?id=${s.id}`;
+        };
+
+        // نجوم التقييم
+        const starsEl = card.querySelector('.sc-stars');
+        starsEl.querySelectorAll('.sc-star').forEach(star => {
+            star.addEventListener('click', async e => {
+                e.stopPropagation();
+                if (starsEl.dataset.rated === 'true') return;
+                const val = parseInt(star.dataset.v);
+                const rRef = ref(db, `scripts/${s.id}`);
+                const snap = await get(rRef);
+                let { rating: r=0, votes: v=0, ...rest } = snap.exists() ? snap.val() : {};
+                r += val; v++;
+                await set(rRef, { ...rest, rating: r, votes: v });
+                localStorage.setItem(`rated_${s.id}`, 'true');
+                starsEl.dataset.rated = 'true';
+                const newAvg = r/v;
+                starsEl.querySelectorAll('.sc-star').forEach((st,idx) => {
+                    st.classList.toggle('filled', idx+1 <= Math.round(newAvg));
+                });
+                starsEl.querySelector('.sc-avg').innerText = newAvg.toFixed(1);
+            });
+        });
+
+        // كليك على الكارد → عرض
+        card.addEventListener('click', () => location.href = `script.html?id=${s.id}`);
+
+        list.appendChild(card);
     });
-  });
 }
 
-function handleSearch() {
-  updateURLQuery(document.getElementById('searchScripts').value.toLowerCase().trim());
-  loadScripts();
+function escHTML(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('searchScripts');
-  const searchBtn   = document.getElementById('searchButton');
-  if (searchInput) searchInput.value = getSearchQuery();
-  if (searchInput) searchInput.addEventListener('input', handleSearch);
-  if (searchBtn)   searchBtn.addEventListener('click', handleSearch);
-  loadScripts();
+function escAttr(s) {
+    return (s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+
+/* ============================================================
+   AI Search
+   ============================================================ */
+
+async function aiSearch() {
+    const query = document.getElementById('searchScripts').value.trim();
+    if (!query) return;
+
+    const btn = document.getElementById('aiSearchBtn');
+    btn.disabled = true;
+
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = `<div class="ai-thinking">
+        <div class="ai-dots"><span></span><span></span><span></span></div>
+        Nova يفكر في بحثك...
+    </div>`;
+
+    try {
+        const scriptsContext = allScripts.map(s =>
+            `ID:${s.id} | العنوان:${s.title} | القسم:${s.category||'—'} | الماب:${s.map||'—'} | الوصف:${(s.description||'').slice(0,80)}`
+        ).join('\n');
+
+        const prompt = `أنت مساعد بحث ذكي لمنصة سكربتات Roblox.
+المستخدم يبحث عن: "${query}"
+
+قائمة السكربتات المتاحة:
+${scriptsContext}
+
+مهمتك:
+1. ابحث عن أفضل السكربتات المطابقة للبحث (بالعنوان، القسم، الماب، الوصف، أو المعنى العام)
+2. ارجع IDs السكربتات الأنسب مفصولة بفاصلة
+3. اشرح سبب اختيارك في جملة واحدة بالعربي
+
+الصيغة المطلوبة فقط (لا تضف أي نص آخر):
+IDS: id1,id2,id3
+REASON: سبب الاختيار`;
+
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-20250514',
+                max_tokens: 300,
+                messages: [{ role: 'user', content: prompt }]
+            })
+        });
+
+        const data = await res.json();
+        const text = data.content?.[0]?.text || '';
+
+        const idsMatch    = text.match(/IDS:\s*([^\n]+)/);
+        const reasonMatch = text.match(/REASON:\s*([^\n]+)/);
+
+        if (idsMatch) {
+            const ids = idsMatch[1].split(',').map(id => id.trim()).filter(Boolean);
+            filteredIds = ids;
+
+            const reason = reasonMatch ? reasonMatch[1].trim() : '';
+            showAiBanner(`🤖 Nova وجد <strong>${ids.length} سكربت</strong> — ${escHTML(reason)}`);
+        } else {
+            filteredIds = null;
+            showAiBanner('🤖 Nova لم يجد نتائج محددة — جرّب كلمات مختلفة.');
+        }
+
+        renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+
+    } catch (e) {
+        filteredIds = null;
+        showAiBanner('⚠️ خطأ في البحث الذكي — تحقق من الاتصال.');
+        renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+    }
+
+    btn.disabled = false;
+}
+
+function showAiBanner(html) {
+    const banner = document.getElementById('aiBanner');
+    document.getElementById('aiBannerText').innerHTML = html;
+    banner.classList.add('show');
+}
+
+window.closeAiBanner = function() {
+    document.getElementById('aiBanner').classList.remove('show');
+    filteredIds = null;
+    renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+};
+
+
+/* ============================================================
+   Events
+   ============================================================ */
+
+// بحث نصي عادي
+document.getElementById('searchScripts').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    updateURL(q);
+    if (!q) { filteredIds = null; closeAiBanner(); }
+    renderScripts(q);
 });
-</script>
 
+// Enter → AI search
+document.getElementById('searchScripts').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        aiSearch();
+    }
+});
+
+// زر البحث الذكي
+document.getElementById('aiSearchBtn').addEventListener('click', aiSearch);
+
+// فلتر القسم
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.cat;
+        renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+    });
+});
+
+// ترتيب
+document.getElementById('sortSelect').addEventListener('change', e => {
+    activeSort = e.target.value;
+    renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+});
+
+function updateURL(q) {
+    const url = new URL(location.href);
+    q ? url.searchParams.set('search',q) : url.searchParams.delete('search');
+    history.replaceState(null,'',url);
+}
+
+// تحميل أولي
+window.addEventListener('DOMContentLoaded', () => {
+    const q = new URLSearchParams(location.search).get('search') || '';
+    if (q) document.getElementById('searchScripts').value = q;
+    loadScripts();
+});
+
+</script>
 </body>
 </html>
