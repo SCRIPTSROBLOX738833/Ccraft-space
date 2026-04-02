@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "developer": "Ccraft-Ω",
+  "scripts": [
+    {
+      "name": "Admin Script",
+      "url": "https://ccraft-space.github.io/script1.lua"
+    },
+    {
+      "name": "Auto Farm",
+      "url": "https://ccraft-space.github.io/script2.lua"
+    }
+  ]
+}
