@@ -480,9 +480,12 @@ const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
 let allScripts   = [];
-let filteredIds  = null;   // null = بدون فلتر AI
+let filteredIds  = null;
 let activeFilter = 'all';
 let activeSort   = 'newest';
+
+// ✅ الإصلاح: نخزن الكود هنا بدل data-attribute
+const codeStore = new Map();
 
 /* ============================================================
    تحميل السكربتات
@@ -587,8 +590,8 @@ function renderScripts(query = '') {
                 </div>
             </div>
             <div class="sc-footer">
-                <button class="sc-btn view" data-id="${s.id}">👁️ عرض</button>
-                <button class="sc-btn copy" data-code="${escAttr(s.code||'')}">📋 نسخ</button>
+                <button class="sc-btn view"   data-id="${s.id}">👁️ عرض</button>
+                <button class="sc-btn copy"   data-id="${s.id}">📋 نسخ</button>
                 <button class="sc-btn like${liked?' liked':''}" data-id="${s.id}" ${liked?'disabled':''}>
                     ${liked?'❤️':'🤍'} <span class="lc">${s.likes||0}</span>
                 </button>
@@ -596,21 +599,44 @@ function renderScripts(query = '') {
             </div>
         `;
 
+        // ✅ احفظ الكود في الـ Map بدل الـ attribute
+        codeStore.set(s.id, s.code || '');
+
         // عرض السكربت
         card.querySelector('.sc-btn.view').onclick = e => {
             e.stopPropagation();
             location.href = `script.html?id=${s.id}`;
         };
 
-        // نسخ الكود
+        // نسخ الكود — يقرأ من الـ Map مش من الـ attribute
         card.querySelector('.sc-btn.copy').onclick = async e => {
             e.stopPropagation();
-            const code = e.currentTarget.dataset.code;
+            const id   = e.currentTarget.dataset.id;
+            const code = codeStore.get(id) || '';
+            if (!code) { alert('لا يوجد كود لهذا السكربت'); return; }
             try {
                 await navigator.clipboard.writeText(code);
+                const btn = e.currentTarget;
+                btn.innerText = '✅ تم النسخ';
+                btn.style.background = 'rgba(74,222,128,0.15)';
+                btn.style.color = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = '📋 نسخ';
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 2200);
+            } catch {
+                // fallback للموبايل
+                const ta = document.createElement('textarea');
+                ta.value = code;
+                ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
                 e.currentTarget.innerText = '✅ تم';
-                setTimeout(()=>{ e.currentTarget.innerText = '📋 نسخ'; }, 2000);
-            } catch { alert('حدث خطأ في النسخ'); }
+                setTimeout(() => { e.currentTarget.innerText = '📋 نسخ'; }, 2000);
+            }
         };
 
         // لايك
@@ -666,10 +692,6 @@ function renderScripts(query = '') {
 
 function escHTML(s) {
     return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function escAttr(s) {
-    return (s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 
