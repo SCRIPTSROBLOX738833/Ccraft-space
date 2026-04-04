@@ -134,20 +134,20 @@ body { min-height: 100svh; }
 /* AI Result Banner */
 .ai-result-banner {
     display: none;
-    background: rgba(139,92,246,0.07);
-    border: 1px solid rgba(139,92,246,0.2);
-    border-radius: 10px; padding: 7px 14px;
-    margin-bottom: 12px;
-    font-size: 0.76rem; color: var(--text-muted);
-    animation: fadeIn 0.3s ease both;
-    line-height: 1.5;
+    background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.06));
+    border: 1px solid rgba(139,92,246,0.25);
+    border-radius: 14px; padding: 12px 18px;
+    margin-bottom: 14px;
+    font-size: 0.85rem; color: var(--text-main);
+    animation: fadeIn 0.4s ease both;
+    line-height: 1.6;
 }
 
-.ai-result-banner.show { display: flex; align-items: center; gap: 8px; }
-.aib-icon { font-size: 0.9rem; flex-shrink: 0; }
+.ai-result-banner.show { display: flex; align-items: flex-start; gap: 10px; }
+.aib-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
 .aib-text { flex: 1; }
-.aib-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; margin: 0; font-size: 0.85rem; flex-shrink: 0; opacity: 0.6; }
-.aib-close:hover { color: var(--danger); opacity: 1; transform: none; filter: none; }
+.aib-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; margin: 0; font-size: 1rem; flex-shrink: 0; }
+.aib-close:hover { color: var(--danger); transform: none; filter: none; }
 
 /* Filter row */
 .filter-row {
@@ -260,14 +260,6 @@ body { min-height: 100svh; }
 
 .sc-new-badge {
     background: var(--accent-gradient); color: white;
-    font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
-    border-radius: 50px; flex-shrink: 0; align-self: flex-start;
-    margin-top: 2px;
-}
-
-.sc-ai-badge {
-    background: linear-gradient(135deg,rgba(139,92,246,0.2),rgba(0,242,254,0.12));
-    border: 1px solid rgba(139,92,246,0.35); color: #a78bfa;
     font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
     border-radius: 50px; flex-shrink: 0; align-self: flex-start;
     margin-top: 2px;
@@ -566,11 +558,8 @@ function renderScripts(query = '') {
     }
 
     const now = Date.now();
-    const isAiSearch = !!filteredIds;
-
     results.forEach((s, i) => {
-        const isNew      = (now - (s.timestamp||0)) < 3 * 24 * 3600 * 1000;
-        const isAiMatch  = isAiSearch; // كل الكاردز المعروضة في AI search هي نتائج AI
+        const isNew  = (now - (s.timestamp||0)) < 3 * 24 * 3600 * 1000;
         const avg    = s.votes ? (s.rating / s.votes) : 0;
         const liked  = !!localStorage.getItem(`liked_${s.id}`);
         const rated  = !!localStorage.getItem(`rated_${s.id}`);
@@ -584,9 +573,7 @@ function renderScripts(query = '') {
             <div class="sc-body">
                 <div class="sc-header">
                     <div class="sc-title">${escHTML(s.title || 'بدون عنوان')}</div>
-                    ${isAiMatch ? '<span class="sc-ai-badge">🤖 AI</span>' : ''}
-                    ${isNew && !isAiMatch ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
-                    ${isNew && isAiMatch  ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
+                    ${isNew ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
                 </div>
                 <div class="sc-badges">
                     <span class="sc-cat">📁 ${escHTML(s.category || '—')}</span>
@@ -763,10 +750,10 @@ REASON: سكربتات تخص السرعة في Jailbreak`;
         if (idsMatch) {
             const ids = idsMatch[1].split(',').map(id => id.trim()).filter(Boolean);
             filteredIds = ids;
-            const reason = reasonMatch ? reasonMatch[1].trim() : '';
-            // بانر صغير فقط مع سبب
-            showAiBanner(reason ? `🤖 ${escHTML(reason)}` : `🤖 نتائج البحث الذكي`);
+            const reason = reasonMatch ? reasonMatch[1].trim() : 'نتائج مطابقة للبحث';
+            showAiBanner(`🤖 Nova وجد <strong>${ids.length} سكربت</strong> — ${escHTML(reason)}`);
         } else {
+            // لو Nova ما رجعش IDs، نبحث بالنص العادي
             filteredIds = null;
             const q = query.toLowerCase();
             const matched = allScripts.filter(s =>
@@ -776,9 +763,9 @@ REASON: سكربتات تخص السرعة في Jailbreak`;
             );
             if (matched.length) {
                 filteredIds = matched.map(s => s.id);
-                showAiBanner(`🔍 بحث محلي عن "${escHTML(query)}"`);
+                showAiBanner(`🔍 وجدت <strong>${matched.length} سكربت</strong> مطابق`);
             } else {
-                showAiBanner('لا توجد نتائج — جرّب كلمات مختلفة.');
+                showAiBanner('🤖 Nova لم يجد نتائج — جرّب كلمات مختلفة.');
             }
         }
 
