@@ -95,6 +95,18 @@
         color: #c084fc;
         box-shadow: 0 0 18px rgba(139,92,246,0.25);
     }
+    /* بادج خاص — أول المستخدمين */
+    .admin-badge-pill.rarity-og {
+        background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(249,115,22,0.12));
+        border: 1px solid rgba(251,191,36,0.6);
+        color: #fbbf24;
+        box-shadow: 0 0 24px rgba(251,191,36,0.3), 0 0 8px rgba(249,115,22,0.2);
+        animation: og-pulse 3s ease infinite;
+    }
+    @keyframes og-pulse {
+        0%,100% { box-shadow: 0 0 24px rgba(251,191,36,0.3); }
+        50%      { box-shadow: 0 0 36px rgba(251,191,36,0.55); }
+    }
 
     .abp-icon  { font-size: 1.2rem; line-height: 1; }
     .abp-label { font-weight: 900; }
@@ -509,19 +521,24 @@ async function renderAdminBadges(uid) {
     adminBadges.forEach(([id, data]) => {
         // ترتيب بيانات البادج
         const SPECIAL_BADGES = {
-            admin_choice: { icon:'👑', name:'اختيار الأدمن' },
-            verified:     { icon:'✅', name:'موثّق'          },
-            partner:      { icon:'🤝', name:'شريك'           },
-            og:           { icon:'🏆', name:'OG — عضو أصلي'  },
-            legend:       { icon:'🌟', name:'أسطورة'          },
-            creator:      { icon:'🎨', name:'منشئ محتوى'     },
-            moderator:    { icon:'🛡️', name:'مراقب'          },
-            vip:          { icon:'💎', name:'VIP'             },
+            admin_choice: { icon:'👑', name:'اختيار الأدمن'      },
+            verified:     { icon:'✅', name:'موثّق'               },
+            partner:      { icon:'🤝', name:'شريك'                },
+            og:           { icon:'🏆', name:'OG — عضو أصلي'       },
+            og_member:    { icon:'🌟', name:'أول المستخدمين'      },
+            legend:       { icon:'🌟', name:'أسطورة'               },
+            creator:      { icon:'🎨', name:'منشئ محتوى'          },
+            moderator:    { icon:'🛡️', name:'مراقب'               },
+            vip:          { icon:'💎', name:'VIP'                  },
+            founder:      { icon:'🔱', name:'مؤسس'                },
+            pioneer:      { icon:'🚀', name:'رائد — أول 10 مستخدمين' },
         };
 
-        const info = SPECIAL_BADGES[id] || { icon:'🎖️', name: id };
-        const rarity = data.rarity || 'admin';
-        const rs = RARITY_STYLES[rarity] || RARITY_STYLES.admin;
+        const info   = SPECIAL_BADGES[id] || { icon:'🎖️', name: id };
+        // og_member و pioneer و founder يأخذون rarity خاص
+        let rarity = data.rarity || 'admin';
+        if (['og_member','og','pioneer','founder'].includes(id)) rarity = 'og';
+        const rs     = RARITY_STYLES[rarity] || RARITY_STYLES.admin;
 
         const date = data.earnedAt
             ? new Date(data.earnedAt).toLocaleDateString('ar-EG',{year:'numeric',month:'short'})
