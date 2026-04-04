@@ -183,36 +183,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
-import { onDisconnect, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-// وظيفة تسجيل وجود المستخدم
-function setPresence() {
-    // سنستخدم معرف عشوائي لكل زائر (أو UID إذا كان مسجلاً)
-    const userId = localStorage.getItem('guest_id') || 'guest_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('guest_id', userId);
-
-    const myPresenceRef = ref(db, `presence/${userId}`);
-
-    // عندما يقطع المستخدم الاتصال (يغلق الصفحة)
-    onDisconnect(myPresenceRef).remove();
-
-    // تعيين الحالة كأونلاين مع وقت السيرفر الحالي
-    set(myPresenceRef, {
-        online: true,
-        ts: Date.now() // أو استخدم serverTimestamp()
-    });
-}
-
-// استدعاء الوظيفة عند تحميل الصفحة
-setPresence();
-
-// تحديث الوقت كل 30 ثانية لضمان بقائه في الفلتر
-setInterval(() => {
-    setPresence();
-}, 30000);
-
-
-    
 const firebaseConfig = {
     apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",
     databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",
