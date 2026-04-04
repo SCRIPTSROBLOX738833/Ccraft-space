@@ -20,11 +20,144 @@
     .profile-card::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background:var(--accent-gradient); }
 
     .profile-info { flex: 1; min-width: 0; }
-    .profile-info h2 { font-size: 1.5rem; font-weight: 900; color: var(--text-main); margin-bottom: 4px; }
+
+    .username-row {
+        display: flex; align-items: center; gap: 8px;
+        margin-bottom: 4px; flex-wrap: wrap;
+    }
+
+    .profile-info h2 {
+        font-size: 1.5rem; font-weight: 900; color: var(--text-main); margin: 0;
+    }
+
+    .edit-name-btn {
+        background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25);
+        border-radius: 8px; padding: 4px 10px;
+        font-size: 0.72rem; font-weight: 800; color: var(--primary);
+        cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
+        transition: var(--transition); flex-shrink: 0;
+    }
+    .edit-name-btn:hover { background: var(--primary-dim); transform: none; filter: none; }
+
     .profile-email { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 4px; }
     .join-date     { color: var(--text-muted); font-size: 0.78rem; }
     .profile-actions { display: flex; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
 
+    /* ---- Username Modal ---- */
+    .modal-overlay {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(8px);
+        z-index: 500;
+        align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 32px 28px;
+        width: 100%; max-width: 420px;
+        margin: 20px;
+        animation: fadeIn 0.3s ease both;
+        position: relative;
+    }
+
+    .modal-box::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 3px; background: var(--accent-gradient);
+        border-radius: 24px 24px 0 0;
+    }
+
+    .modal-title {
+        font-size: 1.1rem; font-weight: 900; color: var(--text-main);
+        margin-bottom: 6px;
+    }
+    .modal-sub {
+        font-size: 0.8rem; color: var(--text-muted);
+        margin-bottom: 22px; line-height: 1.6;
+    }
+
+    .username-input-wrap { position: relative; margin-bottom: 10px; }
+
+    .username-input-wrap input {
+        width: 100%;
+        background: var(--bg-surface);
+        border: 2px solid var(--border-color);
+        border-radius: 14px;
+        padding: 13px 16px 13px 44px;
+        color: var(--text-main);
+        font-family: 'Tajawal', sans-serif;
+        font-size: 1rem; font-weight: 700;
+        outline: none; transition: border-color 0.2s;
+        direction: ltr; text-align: left;
+        box-sizing: border-box;
+    }
+
+    .username-input-wrap input:focus { border-color: var(--primary); }
+    .username-input-wrap input.valid  { border-color: var(--success); }
+    .username-input-wrap input.taken  { border-color: var(--danger); }
+
+    .username-prefix {
+        position: absolute; right: 14px; top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.9rem; color: var(--text-muted); font-weight: 800;
+        pointer-events: none;
+    }
+
+    .status-indicator {
+        position: absolute; left: 14px; top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+
+    .username-rules {
+        font-size: 0.74rem; color: var(--text-muted);
+        line-height: 1.7; margin-bottom: 18px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 12px; padding: 10px 14px;
+    }
+
+    .username-rules li { list-style: none; }
+    .username-rules li::before { content: '· '; color: var(--primary); }
+
+    .check-msg {
+        font-size: 0.8rem; font-weight: 700; margin-bottom: 14px;
+        min-height: 20px; transition: all 0.2s;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .check-msg.ok   { color: var(--success); }
+    .check-msg.err  { color: var(--danger); }
+    .check-msg.info { color: var(--text-muted); }
+
+    .modal-actions { display: flex; gap: 10px; }
+
+    .btn-save {
+        flex: 1; background: var(--accent-gradient); color: white;
+        border: none; border-radius: 14px; padding: 13px;
+        font-size: 0.9rem; font-weight: 800;
+        cursor: pointer; font-family: 'Tajawal', sans-serif;
+        transition: var(--transition);
+        box-shadow: 0 6px 16px rgba(139,92,246,0.3);
+    }
+    .btn-save:hover { transform: translateY(-2px); filter: brightness(1.08); }
+    .btn-save:disabled { opacity: 0.4; cursor: not-allowed; transform: none; filter: none; }
+
+    .btn-cancel {
+        background: rgba(255,255,255,0.04); color: var(--text-muted);
+        border: 1px solid var(--border-color); border-radius: 14px; padding: 13px 20px;
+        font-size: 0.9rem; font-weight: 800;
+        cursor: pointer; font-family: 'Tajawal', sans-serif;
+        transition: var(--transition); margin: 0;
+    }
+    .btn-cancel:hover { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
+
+    /* ---- Viewing badge ---- */
     .viewing-badge { display:none; max-width:820px; margin:14px auto 0; padding:0 20px; }
     .viewing-badge .vb-inner {
         display:flex; align-items:center; gap:10px;
@@ -55,7 +188,6 @@
     }
     .section-title::after { content:''; flex:1; height:1px; background:var(--border-color); }
 
-    /* ---- Admin Badges ---- */
     #adminBadgesSection { display:none; }
 
     .admin-badges-grid {
@@ -64,55 +196,30 @@
     }
 
     .admin-badge-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 18px;
-        border-radius: 50px;
-        font-size: 0.85rem;
-        font-weight: 800;
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 18px; border-radius: 50px;
+        font-size: 0.85rem; font-weight: 800;
         animation: fadeIn 0.4s ease both;
-        position: relative;
-        overflow: hidden;
-        cursor: default;
-    }
-
-    .admin-badge-pill::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        opacity: 0.12;
+        position: relative; overflow: hidden; cursor: default;
     }
 
     .admin-badge-pill.rarity-common    { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.4); color: #a78bfa; }
     .admin-badge-pill.rarity-rare      { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: #60a5fa; }
     .admin-badge-pill.rarity-epic      { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.5); color: #c084fc; }
-    .admin-badge-pill.rarity-legendary { background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.5); color: #fbbf24;
-        box-shadow: 0 0 16px rgba(251,191,36,0.2); }
-    .admin-badge-pill.rarity-admin     {
-        background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(59,130,246,0.15));
-        border: 1px solid rgba(139,92,246,0.5);
-        color: #c084fc;
-        box-shadow: 0 0 18px rgba(139,92,246,0.25);
-    }
-    /* بادج خاص — أول المستخدمين */
+    .admin-badge-pill.rarity-legendary { background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.5); color: #fbbf24; box-shadow: 0 0 16px rgba(251,191,36,0.2); }
+    .admin-badge-pill.rarity-admin     { background: linear-gradient(135deg,rgba(139,92,246,0.2),rgba(59,130,246,0.15)); border: 1px solid rgba(139,92,246,0.5); color: #c084fc; box-shadow: 0 0 18px rgba(139,92,246,0.25); }
     .admin-badge-pill.rarity-og {
-        background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(249,115,22,0.12));
-        border: 1px solid rgba(251,191,36,0.6);
-        color: #fbbf24;
-        box-shadow: 0 0 24px rgba(251,191,36,0.3), 0 0 8px rgba(249,115,22,0.2);
+        background: linear-gradient(135deg,rgba(251,191,36,0.15),rgba(249,115,22,0.12));
+        border: 1px solid rgba(251,191,36,0.6); color: #fbbf24;
+        box-shadow: 0 0 24px rgba(251,191,36,0.3);
         animation: og-pulse 3s ease infinite;
     }
-    @keyframes og-pulse {
-        0%,100% { box-shadow: 0 0 24px rgba(251,191,36,0.3); }
-        50%      { box-shadow: 0 0 36px rgba(251,191,36,0.55); }
-    }
+    @keyframes og-pulse { 0%,100%{box-shadow:0 0 24px rgba(251,191,36,0.3)} 50%{box-shadow:0 0 36px rgba(251,191,36,0.55)} }
 
     .abp-icon  { font-size: 1.2rem; line-height: 1; }
     .abp-label { font-weight: 900; }
     .abp-from  { font-size: 0.65rem; opacity: 0.7; }
 
-    /* ---- Normal Badges ---- */
     #badgesGrid {
         max-width:820px; margin:0 auto; padding:0 20px;
         display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:14px;
@@ -124,24 +231,10 @@
         border-radius:16px; padding:20px 14px; text-align:center;
         transition:var(--transition); position:relative; overflow:hidden;
     }
-
     .badge-card.earned:hover { transform:translateY(-5px); box-shadow:0 12px 28px rgba(139,92,246,0.2); }
     .badge-card.locked { opacity:0.3; filter:grayscale(1); cursor:default; }
-
-    .badge-card.earned::before {
-        content:''; position:absolute; top:-20px; left:50%; transform:translateX(-50%);
-        width:80px; height:80px;
-        background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);
-        pointer-events:none;
-    }
-
-    .badge-card.new-badge::after {
-        content:'✨ جديد'; position:absolute; top:8px; left:8px;
-        background:var(--accent-gradient); color:white;
-        font-size:0.55rem; font-weight:900; padding:3px 8px; border-radius:50px;
-        font-family:'Tajawal',sans-serif;
-    }
-
+    .badge-card.earned::before { content:''; position:absolute; top:-20px; left:50%; transform:translateX(-50%); width:80px; height:80px; background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%); pointer-events:none; }
+    .badge-card.new-badge::after { content:'✨ جديد'; position:absolute; top:8px; left:8px; background:var(--accent-gradient); color:white; font-size:0.55rem; font-weight:900; padding:3px 8px; border-radius:50px; font-family:'Tajawal',sans-serif; }
     .badge-icon { font-size:2.4rem; display:block; margin-bottom:10px; line-height:1; }
     .badge-name { font-size:0.82rem; font-weight:800; color:var(--text-main); margin-bottom:5px; display:block; }
     .badge-desc { font-size:0.7rem; color:var(--text-muted); line-height:1.5; }
@@ -149,7 +242,6 @@
     .badges-count { max-width:820px; margin:12px auto 0; padding:0 20px; color:var(--text-muted); font-size:0.82rem; }
     .badges-count span { color:var(--primary); font-weight:800; }
 
-    /* ---- Points ---- */
     .points-referral {
         max-width:820px; margin:20px auto 0; padding:0 20px;
         display:grid; grid-template-columns:1fr 1fr; gap:14px;
@@ -174,73 +266,38 @@
     .referral-card:hover { border-color:var(--border-hover); }
     .referral-card h4 { font-size:0.78rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; }
     .ref-link-box { display:flex; gap:8px; align-items:center; }
-
-    .ref-link-input {
-        flex:1; background:rgba(0,0,0,0.3); border:1px solid var(--border-color);
-        border-radius:10px; padding:8px 12px; color:var(--text-muted);
-        font-size:0.7rem; font-family:'Fira Code',monospace; outline:none;
-        direction:ltr; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    }
-
-    .copy-ref-btn {
-        background:var(--primary-dim); color:var(--primary);
-        border:1px solid rgba(139,92,246,0.25); border-radius:10px;
-        padding:8px 14px; font-size:0.75rem; font-weight:800; cursor:pointer;
-        white-space:nowrap; font-family:'Tajawal',sans-serif; margin:0;
-        transition:var(--transition); flex-shrink:0;
-    }
+    .ref-link-input { flex:1; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); border-radius:10px; padding:8px 12px; color:var(--text-muted); font-size:0.7rem; font-family:'Fira Code',monospace; outline:none; direction:ltr; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .copy-ref-btn { background:var(--primary-dim); color:var(--primary); border:1px solid rgba(139,92,246,0.25); border-radius:10px; padding:8px 14px; font-size:0.75rem; font-weight:800; cursor:pointer; white-space:nowrap; font-family:'Tajawal',sans-serif; margin:0; transition:var(--transition); flex-shrink:0; }
     .copy-ref-btn:hover  { background:var(--primary); color:white; transform:none; filter:none; }
     .copy-ref-btn.copied { background:rgba(74,222,128,0.12); color:var(--success); border-color:rgba(74,222,128,0.3); }
-
     .ref-stats { display:flex; gap:14px; font-size:0.78rem; flex-wrap:wrap; }
     .ref-stat  { color:var(--text-muted); }
     .ref-stat span { color:var(--text-main); font-weight:800; }
 
     .points-log { max-width:820px; margin:0 auto; padding:0 20px; display:flex; flex-direction:column; gap:8px; }
-
-    .log-item {
-        display:flex; align-items:center; gap:12px;
-        background:rgba(255,255,255,0.02); border:1px solid var(--border-color);
-        border-radius:12px; padding:10px 14px; font-size:0.82rem;
-        animation:fadeIn 0.4s ease both;
-    }
+    .log-item { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:12px; padding:10px 14px; font-size:0.82rem; animation:fadeIn 0.4s ease both; }
     .log-item .li-icon { font-size:1.1rem; flex-shrink:0; }
     .log-item .li-text { flex:1; color:var(--text-muted); }
     .log-item .li-pts  { font-weight:900; color:#fbbf24; white-space:nowrap; }
     .log-item .li-time { font-size:0.68rem; color:var(--text-muted); white-space:nowrap; }
 
-    /* Scripts */
-    #userScripts {
-        max-width:820px; margin:0 auto; padding:0 20px 80px;
-        display:flex; flex-direction:column; gap:14px;
-    }
-
-    .mini-card {
-        background:var(--bg-card); border:1px solid var(--border-color);
-        border-radius:16px; padding:18px 22px;
-        display:flex; align-items:center; gap:16px;
-        transition:var(--transition); animation:fadeIn 0.4s ease both;
-    }
+    #userScripts { max-width:820px; margin:0 auto; padding:0 20px 80px; display:flex; flex-direction:column; gap:14px; }
+    .mini-card { background:var(--bg-card); border:1px solid var(--border-color); border-radius:16px; padding:18px 22px; display:flex; align-items:center; gap:16px; transition:var(--transition); animation:fadeIn 0.4s ease both; }
     .mini-card:hover { border-color:var(--border-hover); transform:translateY(-3px); box-shadow:0 10px 28px rgba(0,0,0,0.4); }
     .mini-card-info { flex:1; min-width:0; cursor:pointer; }
     .mini-card-info h3 { font-size:1rem; font-weight:800; color:var(--text-main); margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .mini-card-meta { display:flex; gap:12px; flex-wrap:wrap; }
     .mini-card-meta span { font-size:0.78rem; color:var(--text-muted); }
     .cat-badge { background:var(--primary-dim); color:#b48bf8; padding:2px 10px; border-radius:50px; font-size:0.72rem; font-weight:700; }
-
-    .delete-btn {
-        background:rgba(248,113,113,0.08); color:var(--danger);
-        border:1px solid rgba(248,113,113,0.2); border-radius:10px;
-        padding:8px 14px; font-size:0.8rem; margin:0; flex-shrink:0;
-    }
+    .delete-btn { background:rgba(248,113,113,0.08); color:var(--danger); border:1px solid rgba(248,113,113,0.2); border-radius:10px; padding:8px 14px; font-size:0.8rem; margin:0; flex-shrink:0; }
     .delete-btn:hover { background:var(--danger); color:white; filter:none; transform:none; }
-
     .empty-state { text-align:center; padding:48px 20px; color:var(--text-muted); }
     .empty-state p { font-size:1rem; margin-bottom:20px; }
 
     @media (max-width:600px) {
         .profile-card { flex-direction:column; text-align:center; }
         .profile-actions { justify-content:center; }
+        .username-row { justify-content:center; }
         .stat-num { font-size:1.5rem; }
         #badgesGrid { grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); }
         .mini-card { flex-wrap:wrap; }
@@ -250,6 +307,34 @@
     </style>
 </head>
 <body>
+
+<!-- Username Modal -->
+<div class="modal-overlay" id="usernameModal">
+    <div class="modal-box">
+        <div class="modal-title">✏️ تغيير اسم المستخدم</div>
+        <div class="modal-sub">الاسم يظهر في البروفايل والسكربتات والشات. يمكن تغييره مرة كل 30 يوم.</div>
+
+        <div class="username-input-wrap">
+            <span class="username-prefix">@</span>
+            <input type="text" id="usernameInput" placeholder="اسمك_هنا" maxlength="20" autocomplete="off" spellcheck="false">
+            <span class="status-indicator" id="statusIcon">⌛</span>
+        </div>
+
+        <ul class="username-rules">
+            <li>3–20 حرف فقط</li>
+            <li>حروف إنجليزية، أرقام، وشرطة سفلية _</li>
+            <li>بدون مسافات أو رموز خاصة</li>
+            <li>لا يمكن تغييره لمدة 30 يوم بعد الحفظ</li>
+        </ul>
+
+        <div class="check-msg info" id="checkMsg">اكتب الاسم المطلوب</div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
+            <button class="btn-save" id="saveNameBtn" disabled onclick="saveUsername()">💾 حفظ</button>
+        </div>
+    </div>
+</div>
 
 <header>
     <button onclick="location.href='scripts.html'">📜 السكربتات</button>
@@ -268,9 +353,13 @@
     <div class="profile-card">
         <div id="avatarWrap"></div>
         <div class="profile-info">
-            <h2 id="username">جارٍ التحميل...</h2>
+            <div class="username-row">
+                <h2 id="username">جارٍ التحميل...</h2>
+                <button class="edit-name-btn" id="editNameBtn" style="display:none" onclick="openModal()">✏️ تغيير</button>
+            </div>
             <div class="profile-email" id="userEmail"></div>
             <div class="join-date" id="joinDate"></div>
+            <div class="join-date" id="lastNameChange" style="margin-top:2px;color:rgba(139,92,246,0.7)"></div>
         </div>
         <div class="profile-actions" id="profileActions"></div>
     </div>
@@ -282,18 +371,15 @@
     <div class="stat-card"><span class="stat-num" id="avgRating">—</span><span class="stat-label">متوسط التقييم</span></div>
 </div>
 
-<!-- بادجات الأدمن الخاصة -->
 <div id="adminBadgesSection">
     <div class="section-title">👑 بادجات خاصة من الأدمن</div>
     <div class="admin-badges-grid" id="adminBadgesGrid"></div>
 </div>
 
-<!-- البادجات العادية -->
 <div class="section-title">🏅 البادجات</div>
 <div class="badges-count">حصل على <span id="earnedCount">0</span> من <span id="totalCount">0</span> بادج</div>
 <div id="badgesGrid"></div>
 
-<!-- النقاط (بروفايلي بس) -->
 <div id="pointsSection" style="display:none">
     <div class="section-title" style="margin-top:36px">⭐ النقاط والإحالة</div>
     <div class="points-referral">
@@ -329,30 +415,208 @@
 
 <script type="module">
 import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, set, remove, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-    authDomain: "ccraft-space-scripts.firebaseapp.com",
-    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-    projectId: "ccraft-space-scripts",
-    storageBucket: "ccraft-space-scripts.firebasestorage.app",
-    messagingSenderId: "816078027492",
-    appId: "1:816078027492:web:6472cce474078fd4d90af1",
-    measurementId: "G-MHDM7YYYBN"
+    apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain:"ccraft-space-scripts.firebaseapp.com",
+    databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId:"ccraft-space-scripts",
+    storageBucket:"ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId:"816078027492",
+    appId:"1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId:"G-MHDM7YYYBN"
 };
 
 const app  = initializeApp(firebaseConfig);
 const db   = getDatabase(app);
 const auth = getAuth(app);
 
-const urlParams   = new URLSearchParams(window.location.search);
-const targetUid   = urlParams.get('uid');
-let   currentUser = null;
+const urlParams = new URLSearchParams(window.location.search);
+const targetUid = urlParams.get('uid');
+let currentUser = null;
 
-/* ---- كل البادجات ---- */
+// ============================================================
+// نظام اسم المستخدم
+// ============================================================
+
+const COOLDOWN_DAYS  = 30;
+const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/;
+
+let checkTimeout = null;
+let nameIsValid  = false;
+
+window.openModal = function() {
+    const modal = document.getElementById('usernameModal');
+    modal.classList.add('open');
+    document.getElementById('usernameInput').focus();
+};
+
+window.closeModal = function() {
+    document.getElementById('usernameModal').classList.remove('open');
+    document.getElementById('usernameInput').value = '';
+    document.getElementById('checkMsg').className = 'check-msg info';
+    document.getElementById('checkMsg').textContent = 'اكتب الاسم المطلوب';
+    document.getElementById('statusIcon').textContent = '⌛';
+    document.getElementById('usernameInput').className = '';
+    document.getElementById('saveNameBtn').disabled = true;
+    nameIsValid = false;
+};
+
+// غلق الـ modal بالضغط خارجه
+document.getElementById('usernameModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+});
+
+// فحص الاسم أثناء الكتابة
+document.getElementById('usernameInput').addEventListener('input', e => {
+    clearTimeout(checkTimeout);
+    const val = e.target.value.trim();
+    nameIsValid = false;
+    document.getElementById('saveNameBtn').disabled = true;
+
+    if (!val) {
+        setCheckState('info','اكتب الاسم المطلوب','⌛','');
+        return;
+    }
+
+    if (!USERNAME_REGEX.test(val)) {
+        setCheckState('err','❌ حروف إنجليزية وأرقام وشرطة سفلية فقط (3-20 حرف)','❌','taken');
+        return;
+    }
+
+    setCheckState('info','🔍 جارٍ التحقق من التوفر...','⏳','');
+
+    checkTimeout = setTimeout(() => checkUsernameAvailable(val), 600);
+});
+
+function setCheckState(type, msg, icon, inputClass) {
+    const msgEl   = document.getElementById('checkMsg');
+    const iconEl  = document.getElementById('statusIcon');
+    const inputEl = document.getElementById('usernameInput');
+    msgEl.className   = `check-msg ${type}`;
+    msgEl.textContent = msg;
+    iconEl.textContent = icon;
+    inputEl.className  = inputClass;
+}
+
+async function checkUsernameAvailable(name) {
+    if (!name || !USERNAME_REGEX.test(name)) return;
+
+    try {
+        // تحقق من الـ usernames index
+        const snap = await get(ref(db, `usernames/${name.toLowerCase()}`));
+
+        if (snap.exists() && snap.val() !== currentUser?.uid) {
+            // مأخوذ من شخص تاني
+            setCheckState('err','❌ هذا الاسم مأخوذ — جرّب اسماً آخر','❌','taken');
+            nameIsValid = false;
+            document.getElementById('saveNameBtn').disabled = true;
+        } else {
+            // متاح
+            setCheckState('ok','✅ هذا الاسم متاح!','✅','valid');
+            nameIsValid = true;
+            document.getElementById('saveNameBtn').disabled = false;
+        }
+    } catch {
+        setCheckState('info','⚠️ تعذّر التحقق — جرّب لاحقاً','⚠️','');
+    }
+}
+
+window.saveUsername = async function() {
+    if (!nameIsValid || !currentUser) return;
+
+    const newName = document.getElementById('usernameInput').value.trim();
+    if (!newName || !USERNAME_REGEX.test(newName)) return;
+
+    // تحقق من cooldown
+    const userSnap = await get(ref(db, `users/${currentUser.uid}/usernameChangedAt`));
+    if (userSnap.exists()) {
+        const lastChange = userSnap.val();
+        const daysSince  = (Date.now() - lastChange) / (1000 * 60 * 60 * 24);
+        if (daysSince < COOLDOWN_DAYS) {
+            const daysLeft = Math.ceil(COOLDOWN_DAYS - daysSince);
+            alert(`⏳ لا يمكن تغيير الاسم الآن.\nانتظر ${daysLeft} يوم.`);
+            return;
+        }
+    }
+
+    const btn = document.getElementById('saveNameBtn');
+    btn.disabled = true;
+    btn.innerText = '⏳ جارٍ الحفظ...';
+
+    try {
+        const oldNameSnap = await get(ref(db, `users/${currentUser.uid}/username`));
+        const oldName = oldNameSnap.exists() ? oldNameSnap.val() : null;
+
+        // احذف الاسم القديم من الـ index
+        if (oldName) {
+            await remove(ref(db, `usernames/${oldName.toLowerCase()}`));
+        }
+
+        // احجز الاسم الجديد في الـ index
+        await set(ref(db, `usernames/${newName.toLowerCase()}`), currentUser.uid);
+
+        // احفظ في بروفايل المستخدم
+        await set(ref(db, `users/${currentUser.uid}/username`), newName);
+        await set(ref(db, `users/${currentUser.uid}/usernameChangedAt`), Date.now());
+
+        // حدّث الـ UI
+        document.getElementById('username').innerText = newName;
+        updateLastChangeLabel(Date.now());
+        closeModal();
+        showToast('✅ تم تغيير اسم المستخدم!');
+
+    } catch (e) {
+        alert('❌ حدث خطأ: ' + e.message);
+        btn.disabled = false;
+        btn.innerText = '💾 حفظ';
+    }
+};
+
+function updateLastChangeLabel(ts) {
+    if (!ts) return;
+    const daysSince  = (Date.now() - ts) / (1000 * 60 * 60 * 24);
+    const daysLeft   = Math.max(0, Math.ceil(COOLDOWN_DAYS - daysSince));
+    const label      = document.getElementById('lastNameChange');
+    if (daysLeft > 0) {
+        label.innerText = `🔒 يمكن تغيير الاسم بعد ${daysLeft} يوم`;
+        document.getElementById('editNameBtn').style.opacity = '0.4';
+        document.getElementById('editNameBtn').style.cursor  = 'not-allowed';
+        document.getElementById('editNameBtn').onclick = () =>
+            alert(`⏳ انتظر ${daysLeft} يوم قبل التغيير`);
+    } else {
+        label.innerText = '';
+        document.getElementById('editNameBtn').style.opacity = '1';
+        document.getElementById('editNameBtn').style.cursor  = 'pointer';
+        document.getElementById('editNameBtn').onclick = openModal;
+    }
+}
+
+// Toast
+function showToast(msg) {
+    let t = document.getElementById('profileToast');
+    if (!t) {
+        t = document.createElement('div');
+        t.id = 'profileToast';
+        t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+            background:var(--bg-card);border:1px solid var(--primary);border-radius:50px;
+            padding:10px 24px;font-size:0.85rem;font-weight:800;color:var(--text-main);
+            z-index:600;transition:transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+            box-shadow:0 8px 24px rgba(0,0,0,0.4);pointer-events:none;white-space:nowrap;`;
+        document.body.appendChild(t);
+    }
+    t.innerText = msg;
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(60px)'; }, 2800);
+}
+
+// ============================================================
+// Badges
+// ============================================================
+
 const ALL_BADGES = [
     { id:'first_script',   icon:'🚀', name:'الانطلاقة',     desc:'نشر أول سكربت',       check:s=>s.scripts>=1,    rarity:'common'    },
     { id:'five_scripts',   icon:'📦', name:'مجموعة',        desc:'نشر 5 سكربتات',       check:s=>s.scripts>=5,    rarity:'common'    },
@@ -364,18 +628,17 @@ const ALL_BADGES = [
     { id:'good_rating',    icon:'🏆', name:'تقييم ممتاز',    desc:'متوسط تقييم 4+',      check:s=>s.avgRating>=4,    rarity:'rare'    },
     { id:'all_categories', icon:'🌈', name:'متنوع',          desc:'3 أقسام مختلفة',      check:s=>s.categories>=3,   rarity:'common'  },
     { id:'veteran',        icon:'🎖️', name:'مخضرم',         desc:'عضو أكثر من 30 يوم',  check:s=>s.daysOld>=30,     rarity:'rare'    },
-    { id:'pts_first',      icon:'🌱', name:'أول خطوة',       desc:'اجمع 15 نقطة',         check:s=>s.points>=15,    rarity:'common'    },
-    { id:'pts_50',         icon:'💫', name:'صاعد',           desc:'اجمع 50 نقطة',         check:s=>s.points>=50,    rarity:'common'    },
-    { id:'pts_150',        icon:'🌟', name:'مؤثر',           desc:'اجمع 150 نقطة',        check:s=>s.points>=150,   rarity:'rare'      },
-    { id:'pts_500',        icon:'💥', name:'قائد',           desc:'اجمع 500 نقطة',        check:s=>s.points>=500,   rarity:'epic'      },
-    { id:'pts_1000',       icon:'🔮', name:'أسطورة الإحالة', desc:'اجمع 1000 نقطة',       check:s=>s.points>=1000,  rarity:'legendary' },
-    { id:'ref_1',          icon:'🤝', name:'مُضيف',          desc:'دعوة شخص واحد',        check:s=>s.refs>=1,       rarity:'common'    },
-    { id:'ref_5',          icon:'📣', name:'داعية',          desc:'دعوة 5 أشخاص',         check:s=>s.refs>=5,       rarity:'rare'      },
-    { id:'ref_20',         icon:'🌐', name:'موسع المجتمع',   desc:'دعوة 20 شخصاً',        check:s=>s.refs>=20,      rarity:'legendary' },
+    { id:'pts_first',      icon:'🌱', name:'أول خطوة',       desc:'اجمع 15 نقطة',        check:s=>s.points>=15,    rarity:'common'    },
+    { id:'pts_50',         icon:'💫', name:'صاعد',           desc:'اجمع 50 نقطة',        check:s=>s.points>=50,    rarity:'common'    },
+    { id:'pts_150',        icon:'🌟', name:'مؤثر',           desc:'اجمع 150 نقطة',       check:s=>s.points>=150,   rarity:'rare'      },
+    { id:'pts_500',        icon:'💥', name:'قائد',           desc:'اجمع 500 نقطة',       check:s=>s.points>=500,   rarity:'epic'      },
+    { id:'pts_1000',       icon:'🔮', name:'أسطورة الإحالة', desc:'اجمع 1000 نقطة',      check:s=>s.points>=1000,  rarity:'legendary' },
+    { id:'ref_1',          icon:'🤝', name:'مُضيف',          desc:'دعوة شخص واحد',       check:s=>s.refs>=1,       rarity:'common'    },
+    { id:'ref_5',          icon:'📣', name:'داعية',          desc:'دعوة 5 أشخاص',        check:s=>s.refs>=5,       rarity:'rare'      },
+    { id:'ref_20',         icon:'🌐', name:'موسع المجتمع',   desc:'دعوة 20 شخصاً',       check:s=>s.refs>=20,      rarity:'legendary' },
 ];
 
 const BADGE_MAP = Object.fromEntries(ALL_BADGES.map(b=>[b.id,b]));
-
 const RARITY_STYLES = {
     common:    { border:'rgba(139,92,246,0.3)',  glow:'rgba(139,92,246,0.15)', label:'عادي',    color:'#a78bfa' },
     rare:      { border:'rgba(59,130,246,0.4)',  glow:'rgba(59,130,246,0.2)',  label:'نادر',    color:'#60a5fa' },
@@ -384,7 +647,10 @@ const RARITY_STYLES = {
     admin:     { border:'rgba(139,92,246,0.5)',  glow:'rgba(139,92,246,0.2)',  label:'أدمن',    color:'#c084fc' },
 };
 
-/* ---- Auth ---- */
+// ============================================================
+// Auth
+// ============================================================
+
 onAuthStateChanged(auth, async user => {
     currentUser = user;
     if (targetUid && targetUid !== user?.uid) {
@@ -396,28 +662,45 @@ onAuthStateChanged(auth, async user => {
     }
 });
 
-/* ---- بروفايلي ---- */
+// ============================================================
+// بروفايلي
+// ============================================================
+
 async function loadMyProfile(user) {
-    const avatarSnap = await get(ref(db, `users/${user.uid}/avatar`));
-    const charData   = avatarSnap.exists() ? { ...DEFAULT_CHAR, ...avatarSnap.val() } : DEFAULT_CHAR;
+    const [avatarSnap, userDataSnap] = await Promise.all([
+        get(ref(db, `users/${user.uid}/avatar`)),
+        get(ref(db, `users/${user.uid}`)),
+    ]);
+
+    const charData = avatarSnap.exists() ? { ...DEFAULT_CHAR, ...avatarSnap.val() } : DEFAULT_CHAR;
     document.getElementById('avatarWrap').innerHTML =
         `<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:#0a0a14;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3)">${buildAvatar(charData, 90)}</div>`;
 
-    const name = user.email.split('@')[0];
-    document.getElementById('username').innerText  = name;
+    // اسم المستخدم: نحاول نجيب الاسم المحفوظ أولاً، وإلا نستخدم الـ email
+    const userData       = userDataSnap.exists() ? userDataSnap.val() : {};
+    const savedUsername  = userData.username || user.email.split('@')[0];
+    const lastChangeTs   = userData.usernameChangedAt || null;
+
+    document.getElementById('username').innerText  = savedUsername;
     document.getElementById('userEmail').innerText = user.email;
+    document.getElementById('editNameBtn').style.display = 'inline-flex';
+
     const created = new Date(parseInt(user.metadata.createdAt));
-    document.getElementById('joinDate').innerText  =
+    document.getElementById('joinDate').innerText =
         `انضم في: ${created.toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})}`;
+
+    updateLastChangeLabel(lastChangeTs);
 
     document.getElementById('profileActions').innerHTML = `
         <button id="editAvatarBtn" style="background:rgba(255,255,255,0.04);color:var(--text-muted);border:1px solid var(--border-color);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">🎭 تعديل الشخصية</button>
-        <button id="logoutBtn"     style="background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.2);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">🚪 خروج</button>
+        <button id="logoutBtn" style="background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.2);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">🚪 خروج</button>
     `;
 
     document.getElementById('editAvatarBtn').onclick = () => location.href = 'avatar.html';
     document.getElementById('logoutBtn').onclick = async () => {
-        await signOut(auth); localStorage.removeItem('currentUser'); location.href = 'index.html';
+        await signOut(auth);
+        localStorage.removeItem('currentUser');
+        location.href = 'index.html';
     };
 
     document.getElementById('scriptsTitle').innerText = '📜 سكربتاتي';
@@ -429,62 +712,71 @@ async function loadMyProfile(user) {
         await awardReferralPoints(pendingRef, user.uid);
     }
 
-    await loadData(user.uid, user.email, user.metadata.createdAt, true);
+    await loadData(user.uid, user.email, user.metadata.createdAt, true, savedUsername);
     await loadPoints(user.uid);
 }
 
-/* ---- بروفايل شخص تاني ---- */
+// ============================================================
+// بروفايل شخص تاني
+// ============================================================
+
 async function loadOtherProfile(uid) {
     document.getElementById('viewingBadge').style.display = 'block';
 
-    const userSnap = await get(ref(db, `users/${uid}`));
+    const [userSnap, avatarSnap] = await Promise.all([
+        get(ref(db, `users/${uid}`)),
+        get(ref(db, `users/${uid}/avatar`)),
+    ]);
+
     const userData = userSnap.exists() ? userSnap.val() : {};
     const email    = userData.email || 'غير معروف';
-    const name     = email.split('@')[0];
+    const name     = userData.username || email.split('@')[0];
 
-    document.getElementById('viewingName').innerText  = name;
-    document.getElementById('username').innerText     = name;
-    document.getElementById('userEmail').innerText    = email;
-    document.getElementById('joinDate').innerText     = '';
+    document.getElementById('viewingName').innerText = name;
+    document.getElementById('username').innerText    = name;
+    document.getElementById('userEmail').innerText   = email;
 
-    const avatarSnap = await get(ref(db, `users/${uid}/avatar`));
-    const charData   = avatarSnap.exists() ? { ...DEFAULT_CHAR, ...avatarSnap.val() } : DEFAULT_CHAR;
+    const charData = avatarSnap.exists() ? { ...DEFAULT_CHAR, ...avatarSnap.val() } : DEFAULT_CHAR;
     document.getElementById('avatarWrap').innerHTML =
         `<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:#0a0a14;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3)">${buildAvatar(charData,90)}</div>`;
 
     document.getElementById('profileActions').innerHTML = '';
     document.getElementById('scriptsTitle').innerText  = `📜 سكربتات ${name}`;
 
-    await loadData(uid, email, null, false);
+    await loadData(uid, email, null, false, name);
 }
 
-/* ---- تحميل البيانات ---- */
-async function loadData(uid, email, createdAt, canDelete) {
-    const username = email.split('@')[0];
-    const snap = await get(ref(db,'scripts'));
+// ============================================================
+// تحميل البيانات
+// ============================================================
 
+async function loadData(uid, email, createdAt, canDelete, username) {
+    const snap = await get(ref(db,'scripts'));
     let mine = [];
+
     if (snap.exists()) {
-        mine = Object.entries(snap.val()).filter(([,s])=>
-            s.author===username || s.authorEmail===email || s.authorUid===uid
+        mine = Object.entries(snap.val()).filter(([,s]) =>
+            s.author === username ||
+            s.authorEmail === email ||
+            s.authorUid === uid
         );
     }
 
     let totalLikes=0, totalRating=0, totalVotes=0;
     const cats = new Set();
-    mine.forEach(([,s])=>{
+    mine.forEach(([,s]) => {
         totalLikes  += s.likes  || 0;
         totalRating += s.rating || 0;
         totalVotes  += s.votes  || 0;
-        if(s.category) cats.add(s.category);
+        if (s.category) cats.add(s.category);
     });
 
     const avgRating = totalVotes > 0 ? totalRating/totalVotes : 0;
     const daysOld   = createdAt ? (Date.now()-parseInt(createdAt))/86400000 : 0;
 
     const [pointsSnap, visitorsSnap] = await Promise.all([
-        get(ref(db,`users/${uid}/points`)),
-        get(ref(db,`referrals/${uid}/visitors`)),
+        get(ref(db, `users/${uid}/points`)),
+        get(ref(db, `referrals/${uid}/visitors`)),
     ]);
     const points = pointsSnap.exists()   ? pointsSnap.val() : 0;
     const refs   = visitorsSnap.exists() ? Object.keys(visitorsSnap.val()).length : 0;
@@ -500,45 +792,42 @@ async function loadData(uid, email, createdAt, canDelete) {
     renderScripts(uid, mine, canDelete);
 }
 
-/* ---- بادجات الأدمن ---- */
+// ============================================================
+// Admin Badges
+// ============================================================
+
 async function renderAdminBadges(uid) {
-    const savedSnap = await get(ref(db,`users/${uid}/badges`));
+    const savedSnap = await get(ref(db, `users/${uid}/badges`));
     if (!savedSnap.exists()) return;
     const saved = savedSnap.val();
 
-    // البادجات اللي مش موجودة في ALL_BADGES أو مصدرها admin
-    const adminBadges = Object.entries(saved).filter(([id, data]) => {
-        return !BADGE_MAP[id] || data.grantedByAdmin === true;
-    });
-
+    const adminBadges = Object.entries(saved).filter(([id, data]) =>
+        !BADGE_MAP[id] || data.grantedByAdmin === true
+    );
     if (!adminBadges.length) return;
 
-    const section = document.getElementById('adminBadgesSection');
-    const grid    = document.getElementById('adminBadgesGrid');
-    section.style.display = 'block';
+    const SPECIAL_BADGES = {
+        admin_choice: { icon:'👑', name:'اختيار الأدمن' },
+        verified:     { icon:'✅', name:'موثّق' },
+        partner:      { icon:'🤝', name:'شريك' },
+        og:           { icon:'🏆', name:'OG — عضو أصلي' },
+        og_member:    { icon:'🌟', name:'أول المستخدمين' },
+        legend:       { icon:'🌟', name:'أسطورة' },
+        creator:      { icon:'🎨', name:'منشئ محتوى' },
+        moderator:    { icon:'🛡️', name:'مراقب' },
+        vip:          { icon:'💎', name:'VIP' },
+        founder:      { icon:'🔱', name:'مؤسس' },
+        pioneer:      { icon:'🚀', name:'رائد — أول 10 مستخدمين' },
+    };
+
+    document.getElementById('adminBadgesSection').style.display = 'block';
+    const grid = document.getElementById('adminBadgesGrid');
     grid.innerHTML = '';
 
     adminBadges.forEach(([id, data]) => {
-        // ترتيب بيانات البادج
-        const SPECIAL_BADGES = {
-            admin_choice: { icon:'👑', name:'اختيار الأدمن'      },
-            verified:     { icon:'✅', name:'موثّق'               },
-            partner:      { icon:'🤝', name:'شريك'                },
-            og:           { icon:'🏆', name:'OG — عضو أصلي'       },
-            og_member:    { icon:'🌟', name:'أول المستخدمين'      },
-            legend:       { icon:'🌟', name:'أسطورة'               },
-            creator:      { icon:'🎨', name:'منشئ محتوى'          },
-            moderator:    { icon:'🛡️', name:'مراقب'               },
-            vip:          { icon:'💎', name:'VIP'                  },
-            founder:      { icon:'🔱', name:'مؤسس'                },
-            pioneer:      { icon:'🚀', name:'رائد — أول 10 مستخدمين' },
-        };
-
         const info   = SPECIAL_BADGES[id] || { icon:'🎖️', name: id };
-        // og_member و pioneer و founder يأخذون rarity خاص
-        let rarity = data.rarity || 'admin';
+        let rarity   = data.rarity || 'admin';
         if (['og_member','og','pioneer','founder'].includes(id)) rarity = 'og';
-        const rs     = RARITY_STYLES[rarity] || RARITY_STYLES.admin;
 
         const date = data.earnedAt
             ? new Date(data.earnedAt).toLocaleDateString('ar-EG',{year:'numeric',month:'short'})
@@ -546,7 +835,7 @@ async function renderAdminBadges(uid) {
 
         const pill = document.createElement('div');
         pill.className = `admin-badge-pill rarity-${rarity}`;
-        pill.title = `مُهدى من الأدمن${date ? ' — ' + date : ''}`;
+        pill.title     = `مُهدى من الأدمن${date ? ' — ' + date : ''}`;
         pill.innerHTML = `
             <span class="abp-icon">${info.icon}</span>
             <div>
@@ -558,14 +847,16 @@ async function renderAdminBadges(uid) {
     });
 }
 
-/* ---- البادجات العادية ---- */
+// ============================================================
+// Normal Badges
+// ============================================================
+
 async function renderBadges(uid, stats, canAward) {
     const grid = document.getElementById('badgesGrid');
     grid.innerHTML = '';
 
-    const savedSnap = await get(ref(db,`users/${uid}/badges`));
-    const saved = savedSnap.exists() ? savedSnap.val() : {};
-
+    const savedSnap = await get(ref(db, `users/${uid}/badges`));
+    const saved     = savedSnap.exists() ? savedSnap.val() : {};
     let earned = 0;
 
     for (const badge of ALL_BADGES) {
@@ -576,26 +867,20 @@ async function renderBadges(uid, stats, canAward) {
         const rs        = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
 
         if (isEarned) earned++;
-
-        if (isNew) {
-            await set(ref(db,`users/${uid}/badges/${badge.id}`), { earnedAt:Date.now(), rarity:badge.rarity });
-        }
+        if (isNew) await set(ref(db, `users/${uid}/badges/${badge.id}`), { earnedAt:Date.now(), rarity:badge.rarity });
 
         const card = document.createElement('div');
         card.className = `badge-card ${isEarned?'earned':'locked'} ${isNew?'new-badge':''}`;
-
         if (isEarned) {
             card.style.borderColor = rs.border;
             card.style.background  = `linear-gradient(145deg,${rs.glow} 0%,rgba(0,0,0,0) 100%)`;
         }
-
         card.innerHTML = `
             <span class="badge-icon">${badge.icon}</span>
             <span class="badge-name">${badge.name}</span>
             <span class="badge-desc">${badge.desc}</span>
             ${isEarned ? `<span style="font-size:0.6rem;font-weight:900;color:${rs.color};margin-top:6px;display:block;letter-spacing:1px">${rs.label}</span>` : ''}
         `;
-
         grid.appendChild(card);
     }
 
@@ -603,7 +888,10 @@ async function renderBadges(uid, stats, canAward) {
     document.getElementById('totalCount').innerText  = ALL_BADGES.length;
 }
 
-/* ---- السكربتات ---- */
+// ============================================================
+// Scripts
+// ============================================================
+
 function renderScripts(uid, mine, canDelete) {
     const container = document.getElementById('userScripts');
     container.innerHTML = '';
@@ -616,9 +904,9 @@ function renderScripts(uid, mine, canDelete) {
         return;
     }
 
-    mine.sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0));
+    mine.sort((a,b) => (b[1].timestamp||0) - (a[1].timestamp||0));
 
-    mine.forEach(([id,s],i)=>{
+    mine.forEach(([id,s],i) => {
         const avg  = s.votes ? (s.rating/s.votes).toFixed(1) : '—';
         const card = document.createElement('div');
         card.className = 'mini-card';
@@ -635,36 +923,39 @@ function renderScripts(uid, mine, canDelete) {
             </div>
             ${canDelete?`<button class="delete-btn" data-id="${id}">🗑️ حذف</button>`:''}
         `;
-        card.querySelector('.mini-card-info').onclick = ()=>location.href=`script.html?id=${id}`;
+        card.querySelector('.mini-card-info').onclick = () => location.href = `script.html?id=${id}`;
         if (canDelete) {
-            card.querySelector('.delete-btn').addEventListener('click', async (e)=>{
+            card.querySelector('.delete-btn').addEventListener('click', async e => {
                 e.stopPropagation();
                 if (!confirm('حذف هذا السكربت نهائياً؟')) return;
-                await remove(ref(db,`scripts/${id}`));
+                await remove(ref(db, `scripts/${id}`));
                 card.style.cssText += 'opacity:0;transform:scale(0.95);transition:0.3s';
-                setTimeout(()=>card.remove(), 300);
+                setTimeout(() => card.remove(), 300);
             });
         }
         container.appendChild(card);
     });
 }
 
-/* ---- النقاط ---- */
+// ============================================================
+// Points
+// ============================================================
+
 async function loadPoints(uid) {
     const refLink = `${location.origin}/referral.html?ref=${uid}`;
     document.getElementById('refLinkInput').value = refLink;
-    document.getElementById('copyRefBtn').onclick = ()=>{
-        navigator.clipboard.writeText(refLink).then(()=>{
+    document.getElementById('copyRefBtn').onclick = () => {
+        navigator.clipboard.writeText(refLink).then(() => {
             const btn = document.getElementById('copyRefBtn');
-            btn.innerText='✅ تم'; btn.classList.add('copied');
-            setTimeout(()=>{btn.innerText='📋 نسخ';btn.classList.remove('copied');},2000);
+            btn.innerText = '✅ تم'; btn.classList.add('copied');
+            setTimeout(() => { btn.innerText = '📋 نسخ'; btn.classList.remove('copied'); }, 2000);
         });
     };
 
     const [pointsSnap, visitorsSnap, logSnap] = await Promise.all([
-        get(ref(db,`users/${uid}/points`)),
-        get(ref(db,`referrals/${uid}/visitors`)),
-        get(ref(db,`users/${uid}/pointsLog`)),
+        get(ref(db, `users/${uid}/points`)),
+        get(ref(db, `referrals/${uid}/visitors`)),
+        get(ref(db, `users/${uid}/pointsLog`)),
     ]);
 
     const points   = pointsSnap.exists()   ? pointsSnap.val() : 0;
@@ -683,8 +974,8 @@ async function loadPoints(uid) {
     }
 
     Object.entries(logSnap.val())
-        .sort((a,b)=>b[0]-a[0]).slice(0,10)
-        .forEach(([ts,log])=>{
+        .sort((a,b) => b[0]-a[0]).slice(0,10)
+        .forEach(([ts,log]) => {
             const item = document.createElement('div');
             item.className = 'log-item';
             const date = new Date(parseInt(ts)).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
@@ -698,17 +989,20 @@ async function loadPoints(uid) {
         });
 }
 
-/* ---- إضافة نقاط الإحالة ---- */
+// ============================================================
+// Referral Points
+// ============================================================
+
 async function awardReferralPoints(refUid, visitorUid) {
-    if (!refUid||!visitorUid||refUid===visitorUid) return;
+    if (!refUid || !visitorUid || refUid === visitorUid) return;
     try {
-        const already = await get(ref(db,`referrals/${refUid}/visitors/${visitorUid}`));
+        const already = await get(ref(db, `referrals/${refUid}/visitors/${visitorUid}`));
         if (already.exists()) return;
-        await set(ref(db,`referrals/${refUid}/visitors/${visitorUid}`),{timestamp:Date.now(),points:15});
-        const cur = await get(ref(db,`users/${refUid}/points`));
-        await set(ref(db,`users/${refUid}/points`),(cur.exists()?cur.val():0)+15);
-        await set(ref(db,`users/${refUid}/pointsLog/${Date.now()}`),{type:'referral',points:15,from:visitorUid,timestamp:Date.now()});
-    } catch(e){console.error(e);}
+        await set(ref(db, `referrals/${refUid}/visitors/${visitorUid}`), {timestamp:Date.now(),points:15});
+        const cur = await get(ref(db, `users/${refUid}/points`));
+        await set(ref(db, `users/${refUid}/points`), (cur.exists()?cur.val():0)+15);
+        await set(ref(db, `users/${refUid}/pointsLog/${Date.now()}`), {type:'referral',points:15,from:visitorUid,timestamp:Date.now()});
+    } catch(e) { console.error(e); }
 }
 
 </script>
