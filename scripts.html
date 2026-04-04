@@ -696,8 +696,10 @@ function escHTML(s) {
 
 
 /* ============================================================
-   AI Search
+   AI Search — عبر Nova Server (بدل Anthropic مباشرة)
    ============================================================ */
+
+const NOVA_URL = "https://anas9qos9.pythonanywhere.com";
 
 async function aiSearch() {
     const query = document.getElementById('searchScripts').value.trim();
@@ -713,60 +715,79 @@ async function aiSearch() {
     </div>`;
 
     try {
-        const scriptsContext = allScripts.map(s =>
-            `ID:${s.id} | العنوان:${s.title} | القسم:${s.category||'—'} | الماب:${s.map||'—'} | الوصف:${(s.description||'').slice(0,80)}`
+        // جهّز ملخص السكربتات (أقصر عشان ما نتجاوزش حد الرسالة)
+        const scriptsContext = allScripts.slice(0, 60).map(s =>
+            `ID:${s.id}|${s.title}|${s.category||''}|${s.map||''}`
         ).join('\n');
 
-        const prompt = `أنت مساعد بحث ذكي لمنصة سكربتات Roblox.
-المستخدم يبحث عن: "${query}"
+        const prompt = `أنت نظام بحث ذكي. المستخدم يبحث عن: "${query}"
 
-قائمة السكربتات المتاحة:
+السكربتات المتاحة:
 ${scriptsContext}
 
-مهمتك:
-1. ابحث عن أفضل السكربتات المطابقة للبحث (بالعنوان، القسم، الماب، الوصف، أو المعنى العام)
-2. ارجع IDs السكربتات الأنسب مفصولة بفاصلة
-3. اشرح سبب اختيارك في جملة واحدة بالعربي
+أعطني فقط IDs السكربتات الأنسب مفصولة بفاصلة، ثم سطر جديد، ثم سبب قصير.
+مثال:
+IDS: -abc123,-def456
+REASON: سكربتات تخص السرعة في Jailbreak`;
 
-الصيغة المطلوبة فقط (لا تضف أي نص آخر):
-IDS: id1,id2,id3
-REASON: سبب الاختيار`;
-
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
+        const res = await fetch(`${NOVA_URL}/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
-                max_tokens: 300,
-                messages: [{ role: 'user', content: prompt }]
+                message: prompt,
+                user_id: 'ai_search'
             })
         });
 
-        const data = await res.json();
-        const text = data.content?.[0]?.text || '';
+        if (!res.ok) throw new Error(`Nova error: ${res.status}`);
 
-        const idsMatch    = text.match(/IDS:\s*([^\n]+)/);
-        const reasonMatch = text.match(/REASON:\s*([^\n]+)/);
+        const data = await res.json();
+        const text = (data.reply || '').trim();
+
+        const idsMatch    = text.match(/IDS:\s*([^\n]+)/i);
+        const reasonMatch = text.match(/REASON:\s*([^\n]+)/i);
 
         if (idsMatch) {
             const ids = idsMatch[1].split(',').map(id => id.trim()).filter(Boolean);
             filteredIds = ids;
-
-            const reason = reasonMatch ? reasonMatch[1].trim() : '';
+            const reason = reasonMatch ? reasonMatch[1].trim() : 'نتائج مطابقة للبحث';
             showAiBanner(`🤖 Nova وجد <strong>${ids.length} سكربت</strong> — ${escHTML(reason)}`);
         } else {
+            // لو Nova ما رجعش IDs، نبحث بالنص العادي
             filteredIds = null;
-            showAiBanner('🤖 Nova لم يجد نتائج محددة — جرّب كلمات مختلفة.');
+            const q = query.toLowerCase();
+            const matched = allScripts.filter(s =>
+                (s.title||'').toLowerCase().includes(q) ||
+                (s.category||'').toLowerCase().includes(q) ||
+                (s.map||'').toLowerCase().includes(q)
+            );
+            if (matched.length) {
+                filteredIds = matched.map(s => s.id);
+                showAiBanner(`🔍 وجدت <strong>${matched.length} سكربت</strong> مطابق`);
+            } else {
+                showAiBanner('🤖 Nova لم يجد نتائج — جرّب كلمات مختلفة.');
+            }
         }
 
-        renderScripts(document.getElementById('searchScripts').value.toLowerCase());
-
     } catch (e) {
+        // Fallback: بحث نصي عادي إذا فشل Nova
         filteredIds = null;
-        showAiBanner('⚠️ خطأ في البحث الذكي — تحقق من الاتصال.');
-        renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+        const q = query.toLowerCase();
+        const matched = allScripts.filter(s =>
+            (s.title||'').toLowerCase().includes(q) ||
+            (s.category||'').toLowerCase().includes(q) ||
+            (s.map||'').toLowerCase().includes(q) ||
+            (s.description||'').toLowerCase().includes(q)
+        );
+        if (matched.length) {
+            filteredIds = matched.map(s => s.id);
+            showAiBanner(`🔍 بحث محلي: <strong>${matched.length} نتيجة</strong> — (Nova غير متاح)`);
+        } else {
+            showAiBanner('⚠️ لا توجد نتائج — جرّب كلمات مختلفة.');
+        }
     }
 
+    renderScripts(document.getElementById('searchScripts').value.toLowerCase());
     btn.disabled = false;
 }
 
