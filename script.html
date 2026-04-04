@@ -7,10 +7,6 @@
 <link rel="stylesheet" href="styles.css">
 <style>
 
-/* ============================================================
-   Script Page — Full Professional Layout
-   ============================================================ */
-
 .script-layout {
     max-width: 900px;
     margin: 0 auto;
@@ -21,62 +17,113 @@
     align-items: start;
 }
 
-/* ---- Main Column ---- */
-
 .script-main { min-width: 0; }
 
+/* ---- Script Image ---- */
+.script-image-wrap {
+    display: none;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    position: relative;
+    animation: fadeIn 0.5s ease both;
+    max-height: 340px;
+}
+
+.script-image-wrap.show { display: block; }
+
+.script-image-wrap img {
+    width: 100%;
+    max-height: 340px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.script-image-wrap:hover img { transform: scale(1.02); }
+
+.script-image-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(transparent, rgba(10,12,20,0.6));
+    pointer-events: none;
+}
+
+/* Image expand button */
+.img-expand-btn {
+    position: absolute; bottom: 10px; left: 14px;
+    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px; padding: 5px 12px;
+    font-size: 0.72rem; font-weight: 800; color: white;
+    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
+    transition: var(--transition); z-index: 2;
+    backdrop-filter: blur(6px);
+}
+.img-expand-btn:hover { background: rgba(139,92,246,0.6); transform: none; filter: none; }
+
+/* ---- Image Lightbox ---- */
+.lightbox {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 900;
+    align-items: center; justify-content: center;
+    padding: 20px;
+}
+
+.lightbox.open { display: flex; }
+
+.lightbox img {
+    max-width: 100%; max-height: 90vh;
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.8);
+    animation: fadeIn 0.3s ease both;
+}
+
+.lightbox-close {
+    position: absolute; top: 16px; right: 16px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px; width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 1rem; cursor: pointer; margin: 0;
+    transition: var(--transition);
+}
+.lightbox-close:hover { background: rgba(248,113,113,0.3); transform: none; filter: none; }
 
 /* ---- Hero ---- */
-
 .script-hero {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 24px;
-    padding: 28px 28px 24px;
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 24px; padding: 28px 28px 24px;
+    margin-bottom: 20px; position: relative; overflow: hidden;
     animation: fadeIn 0.5s ease both;
 }
 
 .script-hero::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 5px; height: 100%;
-    background: var(--accent-gradient);
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 5px; height: 100%; background: var(--accent-gradient);
     border-radius: 0 24px 24px 0;
 }
 
 .script-title {
-    font-size: clamp(1.4rem, 4vw, 2rem);
-    font-weight: 900;
-    color: var(--text-main);
-    margin-bottom: 14px;
-    line-height: 1.3;
-    padding-left: 12px;
+    font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 900;
+    color: var(--text-main); margin-bottom: 14px; line-height: 1.3; padding-left: 12px;
 }
 
-/* Author row */
 .author-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-    cursor: pointer;
-    width: fit-content;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px; cursor: pointer; width: fit-content;
 }
 
 .author-row:hover .author-name { color: var(--primary); }
 
 .author-avatar {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: 2px solid rgba(139,92,246,0.3);
-    overflow: hidden;
-    flex-shrink: 0;
-    background: #0a0a14;
-    transition: var(--transition);
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 2px solid rgba(139,92,246,0.3); overflow: hidden;
+    flex-shrink: 0; background: #0a0a14; transition: var(--transition);
     display: flex; align-items: center; justify-content: center;
 }
 
@@ -86,409 +133,151 @@
 .author-name { font-size: 0.92rem; font-weight: 800; color: var(--text-main); transition: color 0.2s; }
 .author-date { font-size: 0.72rem; color: var(--text-muted); }
 
-/* Tags row */
-.tags-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 0;
-}
+.tags-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
-.tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    border-radius: 50px;
-    font-size: 0.72rem;
-    font-weight: 800;
-}
+.tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 800; }
+.tag-cat   { background: var(--primary-dim); color: #b48bf8; border: 1px solid rgba(139,92,246,0.2); }
+.tag-map   { background: rgba(0,242,254,0.07); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
+.tag-nomap { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); }
 
-.tag-cat  { background: var(--primary-dim); color: #b48bf8; border: 1px solid rgba(139,92,246,0.2); }
-.tag-map  { background: rgba(0,242,254,0.07); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
-.tag-nomap{ background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); }
-
-
-/* ---- Code Block ---- */
-
+/* ---- Code ---- */
 .code-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    overflow: hidden;
-    margin-bottom: 20px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 20px; overflow: hidden; margin-bottom: 20px;
     animation: fadeIn 0.5s 0.1s ease both;
 }
 
 .code-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 18px;
-    background: rgba(0,0,0,0.3);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px; background: rgba(0,0,0,0.3);
     border-bottom: 1px solid var(--border-color);
 }
 
-.code-header .ch-dots {
-    display: flex;
-    gap: 6px;
-}
-
-.ch-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-}
-
+.ch-dots { display: flex; gap: 6px; }
+.ch-dot  { width: 10px; height: 10px; border-radius: 50%; }
 .ch-dot:nth-child(1){ background: #ef4444; }
 .ch-dot:nth-child(2){ background: #f59e0b; }
 .ch-dot:nth-child(3){ background: #22c55e; }
+.ch-label { font-size: 0.72rem; color: var(--text-muted); font-family: 'Fira Code', monospace; }
 
-.code-header .ch-label {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    font-family: 'Fira Code', monospace;
+.copy-inline {
+    background: rgba(139,92,246,0.12); color: var(--primary);
+    border: 1px solid rgba(139,92,246,0.25); border-radius: 8px;
+    padding: 5px 12px; font-size: 0.72rem; font-weight: 800;
+    cursor: pointer; transition: var(--transition);
+    font-family: 'Tajawal', sans-serif; margin: 0;
 }
-
-.code-header .copy-inline {
-    background: rgba(139,92,246,0.12);
-    color: var(--primary);
-    border: 1px solid rgba(139,92,246,0.25);
-    border-radius: 8px;
-    padding: 5px 12px;
-    font-size: 0.72rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: var(--transition);
-    font-family: 'Tajawal', sans-serif;
-    margin: 0;
-}
-
-.copy-inline:hover { background: var(--primary); color: white; transform: none; filter: none; }
+.copy-inline:hover  { background: var(--primary); color: white; transform: none; filter: none; }
 .copy-inline.copied { background: rgba(74,222,128,0.15); color: var(--success); border-color: rgba(74,222,128,0.3); }
 
 #code {
-    background: #000 !important;
-    margin: 0;
-    border: none;
-    border-radius: 0;
-    padding: 22px 20px;
-    color: #4ade80;
-    font-family: 'Fira Code', monospace;
-    font-size: 0.85rem;
-    line-height: 1.8;
-    direction: ltr;
-    text-align: left;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    max-height: 400px;
-    overflow-y: auto;
+    background: #000 !important; margin: 0; border: none; border-radius: 0;
+    padding: 22px 20px; color: #4ade80; font-family: 'Fira Code', monospace;
+    font-size: 0.85rem; line-height: 1.8; direction: ltr; text-align: left;
+    overflow-x: auto; white-space: pre-wrap; max-height: 400px; overflow-y: auto;
 }
 
-
 /* ---- Description ---- */
-
 .desc-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 20px 22px;
-    margin-bottom: 20px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 18px; padding: 20px 22px; margin-bottom: 20px;
     animation: fadeIn 0.5s 0.15s ease both;
 }
 
-.desc-card h3 {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.desc-card h3, .comments-card h3 {
+    font-size: 0.78rem; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
 }
 
-.desc-card h3::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+.desc-card h3::after, .comments-card h3::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
 
-#description {
-    color: var(--text-main);
-    font-size: 0.95rem;
-    line-height: 1.8;
-    margin: 0;
-}
-
+#description { color: var(--text-main); font-size: 0.95rem; line-height: 1.8; margin: 0; }
 
 /* ---- Action Buttons ---- */
+.action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.action-row button { border-radius: var(--radius-btn); padding: 12px 22px; font-size: 0.9rem; margin: 0; }
 
-.action-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 24px;
-}
-
-.action-row button {
-    border-radius: var(--radius-btn);
-    padding: 12px 22px;
-    font-size: 0.9rem;
-    margin: 0;
-}
-
-#copyBtn {
-    background: var(--accent-gradient);
-    color: white;
-    border: none;
-    box-shadow: 0 6px 16px rgba(139,92,246,0.3);
-}
-
-#rawBtn {
-    background: rgba(0,242,254,0.07);
-    color: var(--secondary);
-    border: 1px solid rgba(0,242,254,0.2);
-}
-
+#copyBtn { background: var(--accent-gradient); color: white; border: none; box-shadow: 0 6px 16px rgba(139,92,246,0.3); }
+#rawBtn  { background: rgba(0,242,254,0.07); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
 #rawBtn:hover { background: var(--secondary); color: var(--bg-base); }
 
-
 /* ---- Comments ---- */
+.comments-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 22px; animation: fadeIn 0.5s 0.2s ease both; }
 
-.comments-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 22px;
-    animation: fadeIn 0.5s 0.2s ease both;
-}
-
-.comments-card h3 {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.comments-card h3::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
-
-#comments {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 16px;
-}
+#comments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 
 .comment-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    transition: var(--transition);
-    animation: fadeIn 0.3s ease both;
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px; background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-color); border-radius: 14px;
+    transition: var(--transition); animation: fadeIn 0.3s ease both;
 }
 
 .comment-item:hover { border-color: var(--border-hover); }
 
 .comment-avatar {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    background: #0a0a14;
-    border: 1.5px solid rgba(139,92,246,0.25);
-    cursor: pointer;
-    transition: var(--transition);
+    width: 34px; height: 34px; border-radius: 50%; overflow: hidden;
+    flex-shrink: 0; background: #0a0a14; border: 1.5px solid rgba(139,92,246,0.25);
+    cursor: pointer; transition: var(--transition);
     display: flex; align-items: center; justify-content: center;
 }
 
 .comment-avatar:hover { border-color: var(--primary); box-shadow: 0 0 10px rgba(139,92,246,0.3); transform: scale(1.1); }
 
 .comment-body { flex: 1; min-width: 0; }
-
-.comment-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-}
-
-.comment-name {
-    font-size: 0.82rem;
-    font-weight: 800;
-    color: var(--primary);
-    cursor: pointer;
-}
-
+.comment-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.comment-name { font-size: 0.82rem; font-weight: 800; color: var(--primary); cursor: pointer; }
 .comment-name:hover { text-decoration: underline; }
+.comment-time { font-size: 0.68rem; color: var(--text-muted); }
+.comment-text { font-size: 0.9rem; color: var(--text-main); line-height: 1.6; word-break: break-word; }
 
-.comment-time {
-    font-size: 0.68rem;
-    color: var(--text-muted);
-}
+#addComment { display: flex; gap: 10px; align-items: center; }
+#commentInput { flex: 1; margin: 0; border-radius: var(--radius-btn); padding: 13px 20px; }
+#submitComment { background: var(--accent-gradient); color: white; border: none; border-radius: var(--radius-btn); padding: 13px 22px; white-space: nowrap; box-shadow: 0 6px 16px rgba(139,92,246,0.3); margin: 0; }
 
-.comment-text {
-    font-size: 0.9rem;
-    color: var(--text-main);
-    line-height: 1.6;
-    word-break: break-word;
-}
+/* ---- Sidebar ---- */
+.script-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 100px; }
 
-/* Add comment */
-#addComment {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-#commentInput {
-    flex: 1;
-    margin: 0;
-    border-radius: var(--radius-btn);
-    padding: 13px 20px;
-}
-
-#submitComment {
-    background: var(--accent-gradient);
-    color: white;
-    border: none;
-    border-radius: var(--radius-btn);
-    padding: 13px 22px;
-    white-space: nowrap;
-    box-shadow: 0 6px 16px rgba(139,92,246,0.3);
-    margin: 0;
-}
-
-
-/* ============================================================
-   Sidebar
-   ============================================================ */
-
-.script-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    position: sticky;
-    top: 100px;
-}
-
-
-/* Map card */
-.map-card-side {
-    background: var(--bg-card);
+/* Thumbnail in sidebar */
+.sidebar-thumb {
+    display: none;
+    border-radius: 16px; overflow: hidden;
     border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 20px;
-    text-align: center;
-    animation: fadeIn 0.5s 0.05s ease both;
-    transition: var(--transition);
+    cursor: pointer; transition: var(--transition);
+    animation: fadeIn 0.5s ease both;
 }
+.sidebar-thumb.show { display: block; }
+.sidebar-thumb img { width: 100%; display: block; max-height: 160px; object-fit: cover; transition: transform 0.3s; }
+.sidebar-thumb:hover { border-color: var(--border-hover); }
+.sidebar-thumb:hover img { transform: scale(1.04); }
 
+.map-card-side { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; text-align: center; animation: fadeIn 0.5s 0.05s ease both; transition: var(--transition); }
 .map-card-side:hover { border-color: var(--border-hover); }
-
 .map-card-side .mcs-icon { font-size: 2.4rem; display: block; margin-bottom: 10px; }
 .map-card-side .mcs-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 .map-card-side .mcs-name  { font-size: 1rem; font-weight: 900; color: var(--secondary); }
 .map-card-side .mcs-name.muted { color: var(--text-muted); font-size: 0.88rem; font-weight: 700; }
 
-
-/* Stats card */
-.stats-side {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 20px;
-    animation: fadeIn 0.5s 0.1s ease both;
-}
-
-.stats-side h4 {
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 14px;
-}
-
-.stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: 0.85rem;
-}
-
+.stats-side { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; animation: fadeIn 0.5s 0.1s ease both; }
+.stats-side h4 { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem; }
 .stat-row:last-child { border-bottom: none; }
 .stat-row .sr-label { color: var(--text-muted); }
 .stat-row .sr-val   { font-weight: 800; color: var(--text-main); }
 
-
-/* Author card (sidebar) */
-.author-card-side {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: var(--transition);
-    animation: fadeIn 0.5s 0.15s ease both;
-}
-
+.author-card-side { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; text-align: center; cursor: pointer; transition: var(--transition); animation: fadeIn 0.5s 0.15s ease both; }
 .author-card-side:hover { border-color: var(--border-hover); transform: translateY(-3px); }
-
-.acs-avatar {
-    width: 70px; height: 70px;
-    border-radius: 50%;
-    border: 2px solid rgba(139,92,246,0.3);
-    overflow: hidden;
-    margin: 0 auto 12px;
-    background: #0a0a14;
-    display: flex; align-items: center; justify-content: center;
-    transition: var(--transition);
-}
-
+.acs-avatar { width: 70px; height: 70px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.3); overflow: hidden; margin: 0 auto 12px; background: #0a0a14; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
 .author-card-side:hover .acs-avatar { border-color: var(--primary); box-shadow: 0 0 18px rgba(139,92,246,0.4); }
-
 .acs-name  { font-size: 1rem; font-weight: 900; color: var(--text-main); margin-bottom: 4px; }
 .acs-label { font-size: 0.72rem; color: var(--text-muted); }
-.acs-btn {
-    background: var(--primary-dim);
-    color: var(--primary);
-    border: 1px solid rgba(139,92,246,0.25);
-    border-radius: 50px;
-    padding: 7px 18px;
-    font-size: 0.78rem;
-    font-weight: 800;
-    font-family: 'Tajawal', sans-serif;
-    cursor: pointer;
-    margin-top: 12px;
-    transition: var(--transition);
-}
-
+.acs-btn { background: var(--primary-dim); color: var(--primary); border: 1px solid rgba(139,92,246,0.25); border-radius: 50px; padding: 7px 18px; font-size: 0.78rem; font-weight: 800; font-family: 'Tajawal', sans-serif; cursor: pointer; margin-top: 12px; transition: var(--transition); }
 .acs-btn:hover { background: var(--primary); color: white; transform: none; filter: none; }
 
-
-/* ============================================================
-   Responsive
-   ============================================================ */
-
 @media (max-width: 720px) {
-    .script-layout {
-        grid-template-columns: 1fr;
-    }
-    .script-sidebar {
-        position: static;
-        order: -1;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    }
+    .script-layout { grid-template-columns: 1fr; }
+    .script-sidebar { position: static; order: -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
     #addComment { flex-direction: column; }
     #commentInput, #submitComment { width: 100%; }
 }
@@ -497,24 +286,32 @@
 </head>
 <body>
 
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightboxImg" src="" alt="صورة السكربت">
+</div>
+
 <header>
     <button onclick="location.href='scripts.html'">📜 قائمة السكربتات</button>
     <button class="nav-button" onclick="location.href='index.html'">العودة للرئيسية</button>
 </header>
 
-
 <div class="script-layout">
 
-    <!-- ============================================================
-         Main Column
-         ============================================================ -->
+    <!-- Main Column -->
     <div class="script-main">
+
+        <!-- Script Image (يظهر لو في صورة) -->
+        <div class="script-image-wrap" id="scriptImageWrap">
+            <img id="scriptImage" src="" alt="صورة السكربت">
+            <button class="img-expand-btn" onclick="openLightbox()">🔍 تكبير</button>
+        </div>
 
         <!-- Hero -->
         <div class="script-hero">
             <h1 class="script-title" id="title">جارٍ التحميل...</h1>
 
-            <!-- Author row with avatar -->
             <div class="author-row" id="authorRow">
                 <div class="author-avatar" id="authorAvatarInline"></div>
                 <div class="author-info">
@@ -523,18 +320,14 @@
                 </div>
             </div>
 
-            <!-- Tags -->
             <div class="tags-row" id="tagsRow"></div>
         </div>
 
-
-        <!-- Code Block -->
+        <!-- Code -->
         <div class="code-card">
             <div class="code-header">
                 <div class="ch-dots">
-                    <div class="ch-dot"></div>
-                    <div class="ch-dot"></div>
-                    <div class="ch-dot"></div>
+                    <div class="ch-dot"></div><div class="ch-dot"></div><div class="ch-dot"></div>
                 </div>
                 <span class="ch-label">script.lua</span>
                 <button class="copy-inline" id="copyInline">📋 نسخ</button>
@@ -542,21 +335,18 @@
             <pre id="code">جارٍ التحميل...</pre>
         </div>
 
-
         <!-- Description -->
         <div class="desc-card">
             <h3>📝 الوصف</h3>
             <p id="description">—</p>
         </div>
 
-
-        <!-- Action Buttons -->
+        <!-- Actions -->
         <div class="action-row">
-           <button id="reportBtn">🚩 إبلاغ</button>
+            <button id="reportBtn">🚩 إبلاغ</button>
             <button id="copyBtn">📋 نسخ السكربت</button>
             <button id="rawBtn">📄 Raw</button>
         </div>
-
 
         <!-- Comments -->
         <div class="comments-card">
@@ -570,11 +360,13 @@
 
     </div>
 
-
-    <!-- ============================================================
-         Sidebar
-         ============================================================ -->
+    <!-- Sidebar -->
     <aside class="script-sidebar">
+
+        <!-- Thumbnail in sidebar (موبايل) -->
+        <div class="sidebar-thumb" id="sidebarThumb">
+            <img id="sideThumbImg" src="" alt="صورة السكربت">
+        </div>
 
         <!-- Map -->
         <div class="map-card-side" id="mapCardSide">
@@ -591,7 +383,7 @@
             <div class="stat-row"><span class="sr-label">💬 التعليقات</span><span class="sr-val" id="st-comments">—</span></div>
         </div>
 
-        <!-- Author card -->
+        <!-- Author -->
         <div class="author-card-side" id="authorCardSide">
             <div class="acs-avatar" id="authorAvatarSide"></div>
             <div class="acs-name"  id="acName">—</div>
@@ -610,14 +402,14 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-    authDomain: "ccraft-space-scripts.firebaseapp.com",
-    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-    projectId: "ccraft-space-scripts",
-    storageBucket: "ccraft-space-scripts.firebasestorage.app",
-    messagingSenderId: "816078027492",
-    appId: "1:816078027492:web:6472cce474078fd4d90af1",
-    measurementId: "G-MHDM7YYYBN"
+    apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain:"ccraft-space-scripts.firebaseapp.com",
+    databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId:"ccraft-space-scripts",
+    storageBucket:"ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId:"816078027492",
+    appId:"1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId:"G-MHDM7YYYBN"
 };
 
 const app  = initializeApp(firebaseConfig);
@@ -627,10 +419,20 @@ const auth = getAuth(app);
 const params   = new URLSearchParams(window.location.search);
 const scriptId = params.get('id');
 let currentUser = null;
-let commentCount = 0;
-
-// cache الشخصيات عشان ما نجيبش نفس الشخص أكتر من مرة
 const avatarCache = {};
+
+/* ---- Lightbox ---- */
+window.openLightbox = function() {
+    const src = document.getElementById('scriptImage').src;
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('open');
+};
+
+window.closeLightbox = function() {
+    document.getElementById('lightbox').classList.remove('open');
+};
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
 async function getAvatar(uid, size = 40) {
     if (!uid) return buildAvatar(DEFAULT_CHAR, size);
@@ -640,9 +442,7 @@ async function getAvatar(uid, size = 40) {
         const char = snap.exists() ? { ...DEFAULT_CHAR, ...snap.val() } : DEFAULT_CHAR;
         avatarCache[uid] = char;
         return buildAvatar(char, size);
-    } catch {
-        return buildAvatar(DEFAULT_CHAR, size);
-    }
+    } catch { return buildAvatar(DEFAULT_CHAR, size); }
 }
 
 const MAP_ICONS = {
@@ -653,158 +453,112 @@ const MAP_ICONS = {
 };
 
 onAuthStateChanged(auth, user => {
-    if (!user) { alert("يجب تسجيل الدخول أولاً"); location.href = "login.html"; return; }
+    if (!user) { alert("يجب تسجيل الدخول أولاً"); location.href="login.html"; return; }
     currentUser = user;
     loadScript();
 });
-
-
-/* ============================================================
-   Load Script
-   ============================================================ */
 
 async function loadScript() {
     const snap = await get(ref(db, `scripts/${scriptId}`));
     if (!snap.exists()) { document.getElementById('title').innerText = "هذا السكربت غير موجود"; return; }
     const data = snap.val();
 
-    // Title
-    document.getElementById('title').innerText = data.title;
+    document.getElementById('title').innerText  = data.title;
     document.title = `${data.title} | CCRAFT SPACE`;
-
-    // Code
-    document.getElementById('code').innerText = data.code;
-
-    // Description
+    document.getElementById('code').innerText        = data.code;
     document.getElementById('description').innerText = data.description || "لا يوجد وصف";
 
-    // Date
-    const date = data.timestamp ? new Date(data.timestamp).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }) : '—';
+    // ---- الصورة ----
+    if (data.image) {
+        // Main image
+        document.getElementById('scriptImage').src = data.image;
+        document.getElementById('scriptImageWrap').classList.add('show');
+
+        // Sidebar thumbnail
+        document.getElementById('sideThumbImg').src = data.image;
+        document.getElementById('sidebarThumb').classList.add('show');
+        document.getElementById('sidebarThumb').onclick = openLightbox;
+    }
+
+    const date = data.timestamp
+        ? new Date(data.timestamp).toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})
+        : '—';
     document.getElementById('scriptDate').innerText = `نُشر في ${date}`;
 
-    // Author name
     const authorName = data.author || 'مجهول';
     document.getElementById('authorName').innerText = authorName;
     document.getElementById('acName').innerText     = authorName;
 
-    // Author avatar (inline + sidebar)
-    const avatarSVG_sm = await getAvatar(data.authorUid, 40);
-    const avatarSVG_lg = await getAvatar(data.authorUid, 70);
-    document.getElementById('authorAvatarInline').innerHTML = avatarSVG_sm;
-    document.getElementById('authorAvatarSide').innerHTML   = avatarSVG_lg;
+    const avatarSm = await getAvatar(data.authorUid, 40);
+    const avatarLg = await getAvatar(data.authorUid, 70);
+    document.getElementById('authorAvatarInline').innerHTML = avatarSm;
+    document.getElementById('authorAvatarSide').innerHTML   = avatarLg;
 
-    // Click author → profile
     const goProfile = () => { if (data.authorUid) location.href = `profile.html?uid=${data.authorUid}`; };
     document.getElementById('authorRow').onclick      = goProfile;
     document.getElementById('authorCardSide').onclick = goProfile;
-    document.getElementById('viewProfileBtn').onclick = (e) => { e.stopPropagation(); goProfile(); };
+    document.getElementById('viewProfileBtn').onclick = e => { e.stopPropagation(); goProfile(); };
 
-    // Tags
     const tagsRow = document.getElementById('tagsRow');
-    tagsRow.innerHTML = `<span class="tag tag-cat">📁 ${data.category || '—'}</span>`;
-    if (data.map) {
-        tagsRow.innerHTML += `<span class="tag tag-map">🗺️ ${data.map}</span>`;
-    } else {
-        tagsRow.innerHTML += `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
-    }
+    tagsRow.innerHTML = `<span class="tag tag-cat">📁 ${data.category||'—'}</span>`;
+    tagsRow.innerHTML += data.map
+        ? `<span class="tag tag-map">🗺️ ${data.map}</span>`
+        : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
 
-    // Map sidebar
     const mapCard = document.getElementById('mapCardSide');
     if (data.map) {
         const icon = MAP_ICONS[data.map] || '🗺️';
-        mapCard.innerHTML = `
-            <span class="mcs-icon">${icon}</span>
-            <div class="mcs-label">مخصص لماب</div>
-            <div class="mcs-name">${data.map}</div>
-        `;
+        mapCard.innerHTML = `<span class="mcs-icon">${icon}</span><div class="mcs-label">مخصص لماب</div><div class="mcs-name">${data.map}</div>`;
         mapCard.style.borderColor = 'rgba(0,242,254,0.25)';
     } else {
-        mapCard.innerHTML = `
-            <span class="mcs-icon">🌐</span>
-            <div class="mcs-label">الماب</div>
-            <div class="mcs-name muted">يعمل على أي لعبة</div>
-        `;
+        mapCard.innerHTML = `<span class="mcs-icon">🌐</span><div class="mcs-label">الماب</div><div class="mcs-name muted">يعمل على أي لعبة</div>`;
     }
 
-    // Stats
     document.getElementById('st-likes').innerText  = data.likes || 0;
-    const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
+    const avg = data.votes ? (data.rating/data.votes).toFixed(1) : '—';
     document.getElementById('st-rating').innerText = avg === '—' ? '—' : `${avg} ⭐`;
 
-    loadComments(data);
+    loadComments();
 }
 
-
-/* ============================================================
-   Comments
-   ============================================================ */
-
-async function loadComments(scriptData) {
+async function loadComments() {
     const commentsDiv = document.getElementById('comments');
     commentsDiv.innerHTML = '';
-    commentCount = 0;
-
-    // عد التعليقات الموجودة أصلاً
-    if (scriptData.comments) {
-        commentCount = Object.keys(scriptData.comments).length;
-    }
-    updateCommentCount();
 
     onChildAdded(ref(db, `scripts/${scriptId}/comments`), async snapshot => {
         const c   = snapshot.val();
-        const key = snapshot.key;
-
-        // جيب شخصية صاحب التعليق
         const avatarSVG = await getAvatar(c.uid, 34);
 
         const item = document.createElement('div');
         item.className = 'comment-item';
-        item.dataset.key = key;
 
         const time = c.timestamp
-            ? new Date(c.timestamp).toLocaleString('ar-EG', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })
+            ? new Date(c.timestamp).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
             : '';
 
         item.innerHTML = `
             <div class="comment-avatar" title="عرض بروفايل ${c.name}">${avatarSVG}</div>
             <div class="comment-body">
                 <div class="comment-meta">
-                    <span class="comment-name">${c.name || 'مجهول'}</span>
+                    <span class="comment-name">${c.name||'مجهول'}</span>
                     <span class="comment-time">${time}</span>
                 </div>
-                <div class="comment-text">${escapeHTML(c.text)}</div>
+                <div class="comment-text">${escHTML(c.text)}</div>
             </div>
         `;
 
-        // كليك على الأفاتار أو الاسم → بروفايل
-        const goCommentProfile = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
-        item.querySelector('.comment-avatar').onclick = goCommentProfile;
-        item.querySelector('.comment-name').onclick   = goCommentProfile;
-
+        const goP = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
+        item.querySelector('.comment-avatar').onclick = goP;
+        item.querySelector('.comment-name').onclick   = goP;
         commentsDiv.appendChild(item);
 
-        // تحديث العداد بعد ما التعليق يظهر لأول مرة
-        if (!item.dataset.counted) {
-            item.dataset.counted = '1';
-        }
+        const count = document.querySelectorAll('.comment-item').length;
+        document.getElementById('commentCount').innerText = count;
+        document.getElementById('st-comments').innerText  = count;
     });
 }
 
-function updateCommentCount() {
-    // نحسب الكاردز الموجودة
-    const count = document.querySelectorAll('.comment-item').length;
-    document.getElementById('st-comments').innerText  = count;
-    document.getElementById('commentCount').innerText = count;
-}
-
-function escapeHTML(str) {
-    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-
-/* ============================================================
-   Submit Comment
-   ============================================================ */
+function escHTML(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 document.getElementById('submitComment').addEventListener('click', async () => {
     const text = document.getElementById('commentInput').value.trim();
@@ -812,48 +566,32 @@ document.getElementById('submitComment').addEventListener('click', async () => {
     const btn = document.getElementById('submitComment');
     btn.disabled = true;
     await push(ref(db, `scripts/${scriptId}/comments`), {
-        name:      currentUser.email.split("@")[0],
-        uid:       currentUser.uid,
-        text,
-        timestamp: Date.now(),
+        name: currentUser.email.split('@')[0], uid: currentUser.uid,
+        text, timestamp: Date.now(),
     });
     document.getElementById('commentInput').value = '';
     btn.disabled = false;
-    // تحديث عداد التعليقات
-    setTimeout(() => {
-        const count = document.querySelectorAll('.comment-item').length;
-        document.getElementById('commentCount').innerText = count;
-        document.getElementById('st-comments').innerText  = count;
-    }, 500);
 });
 
 document.getElementById('commentInput').addEventListener('keypress', e => {
     if (e.key === 'Enter') document.getElementById('submitComment').click();
 });
 
-
-/* ============================================================
-   Copy Buttons
-   ============================================================ */
-
 function copyCode() {
-    navigator.clipboard.writeText(document.getElementById('code').innerText)
-        .then(() => {
-            const btn = document.getElementById('copyInline');
-            btn.innerText = '✅ تم النسخ';
-            btn.classList.add('copied');
-            setTimeout(() => { btn.innerText = '📋 نسخ'; btn.classList.remove('copied'); }, 2000);
-        });
+    navigator.clipboard.writeText(document.getElementById('code').innerText).then(() => {
+        const btn = document.getElementById('copyInline');
+        btn.innerText = '✅ تم النسخ'; btn.classList.add('copied');
+        setTimeout(() => { btn.innerText = '📋 نسخ'; btn.classList.remove('copied'); }, 2000);
+        const btn2 = document.getElementById('copyBtn');
+        btn2.innerText = '✅ تم النسخ';
+        setTimeout(() => { btn2.innerText = '📋 نسخ السكربت'; }, 2000);
+    });
 }
 
-document.getElementById('copyBtn').addEventListener('click',    copyCode);
+document.getElementById('copyBtn').addEventListener('click', copyCode);
 document.getElementById('copyInline').addEventListener('click', copyCode);
-document.getElementById('rawBtn').addEventListener('click', () => location.href = `raw.html?id=${scriptId}`);
-document.getElementById('reportBtn').addEventListener('click', () => {
-   location.href = `report.html?id=${scriptId}`;
-});
-
-
+document.getElementById('rawBtn').addEventListener('click',  () => location.href = `raw.html?id=${scriptId}`);
+document.getElementById('reportBtn').addEventListener('click',() => location.href = `report.html?id=${scriptId}`);
 </script>
 </body>
-    </html>
+</html>
