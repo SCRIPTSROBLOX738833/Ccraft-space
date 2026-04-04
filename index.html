@@ -237,63 +237,273 @@ async function loadStats(){
 
 function animCount(id,target){
     const el=document.getElementById(id); if(!el) return;
-    let cur=0; const step=Math.max(1,Math.ceil(target/30));
-    const t=setInterval(()=>{ cur=Math.min(cur+step,target); el.innerText=cur.toLocaleString('ar-EG'); if(cur>=target)clearInterval(t); },40);
-}
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, get, onValue, onDisconnect, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
 
-onValue(ref(db,'presence'),snap=>{
-    if(!snap.exists()){document.getElementById('ls-online').innerText='0';return;}
-    const n=Object.values(snap.val()).filter(p=>p.online&&Date.now()-p.ts<60000).length;
-    document.getElementById('ls-online').innerText=n;
-});
+const firebaseConfig = {
+    apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+    authDomain:"ccraft-space-scripts.firebaseapp.com",
+    databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+    projectId:"ccraft-space-scripts",
+    storageBucket:"ccraft-space-scripts.firebasestorage.app",
+    messagingSenderId:"816078027492",
+    appId:"1:816078027492:web:6472cce474078fd4d90af1",
+    measurementId:"G-MHDM7YYYBN"
+};
 
-function loadFeaturedScripts(scripts){
-    const c=document.getElementById('featScripts'); c.innerHTML='';
-    const latest=Object.entries(scripts).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0)).slice(0,6);
-    if(!latest.length){c.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:28px;font-size:0.85rem">لا توجد سكربتات بعد</div>';return;}
-    latest.forEach(([id,s])=>{
-        const card=document.createElement('div'); card.className='feat-card';
-        card.onclick=()=>location.href=`script.html?id=${id}`;
-        card.innerHTML=`<div class="fc-title">${s.title||'بدون عنوان'}</div><div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>${s.map?`<span class="fc-map">🗺️ ${s.map}</span>`:''}<span class="fc-stat">👍 ${s.likes||0}</span><span class="fc-stat">⭐ ${s.votes?(s.rating/s.votes).toFixed(1):'—'}</span></div>`;
-        c.appendChild(card);
-    });
-}
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-async function loadTopUsers(users,scripts){
-    const c=document.getElementById('topUsers'); c.innerHTML='';
-    const us={};
-    Object.entries(scripts).forEach(([,s])=>{
-        const uid=s.authorUid||s.authorEmail||s.author; if(!uid)return;
-        if(!us[uid])us[uid]={likes:0,scripts:0,uid:s.authorUid,email:s.authorEmail,name:s.author};
-        us[uid].likes+=s.likes||0; us[uid].scripts+=1;
-    });
-    const sorted=Object.values(us).sort((a,b)=>b.likes-a.likes).slice(0,4);
-    if(!sorted.length){c.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:28px;font-size:0.85rem;grid-column:1/-1">لا بيانات بعد</div>';return;}
-    const rc=['gold','silver','bronze',''], re=['🥇','🥈','🥉','4'];
-    for(let i=0;i<sorted.length;i++){
-        const u=sorted[i], uid=u.uid||'';
-        let av=`<div style="width:38px;height:38px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:900">${(u.name||'?').charAt(0).toUpperCase()}</div>`;
-        if(uid){try{const sn=await get(ref(db,`users/${uid}/avatar`));const ch=sn.exists()?{...DEFAULT_CHAR,...sn.val()}:DEFAULT_CHAR;av=buildAvatar(ch,38);}catch{}}
-        const card=document.createElement('div'); card.className='user-mini';
-        card.onclick=()=>{if(uid)location.href=`profile.html?uid=${uid}`;};
-        card.innerHTML=`<div class="um-rank ${rc[i]}">${re[i]}</div><div class="um-avatar">${av}</div><div class="um-info"><div class="um-name">${u.name||'مجهول'}</div><div class="um-stat">👍 ${u.likes} • 📜 ${u.scripts}</div></div>`;
-        c.appendChild(card);
+console.log("Firebase initialized successfully");
+
+// ============ Particles ============
+function initParticles() {
+    const c = document.getElementById('particles');
+    if (!c) return;
+    for(let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `left:${Math.random()*100}%;--dur:${6+Math.random()*8}s;--delay:${Math.random()*8}s;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px;`;
+        c.appendChild(p);
     }
 }
 
-async function loadAnnouncement(){
-    const snap=await get(ref(db,'announcements')); if(!snap.exists())return;
-    const entries=Object.entries(snap.val()).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0));
-    if(!entries.length)return;
-    const latest=entries[0][1];
-    if(Date.now()-(latest.timestamp||0)<7*24*3600*1000){
-        document.getElementById('annText').innerText=latest.text;
-        document.getElementById('annBanner').style.display='flex';
+// ============ Presence System ============
+function setPresence() {
+    try {
+        const userId = localStorage.getItem('guest_id') || 'guest_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('guest_id', userId);
+        const myPresenceRef = ref(db, `presence/${userId}`);
+        onDisconnect(myPresenceRef).remove();
+        set(myPresenceRef, { online: true, ts: Date.now() });
+    } catch (e) {
+        console.error('❌ Presence Error:', e);
     }
 }
 
-loadStats();
-loadAnnouncement();
+// ============ Animation Counter ============
+function animCount(id, target) {
+    const el = document.getElementById(id);
+    if (!el) {
+        console.warn(`⚠️ Element not found: ${id}`);
+        return;
+    }
+    let cur = 0;
+    const step = Math.max(1, Math.ceil(target / 30));
+    const timer = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        el.innerText = cur.toLocaleString('ar-EG');
+        if (cur >= target) clearInterval(timer);
+    }, 40);
+}
+
+// ============ Featured Scripts ============
+function loadFeaturedScripts(scripts) {
+    const container = document.getElementById('featScripts');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    const latest = Object.entries(scripts)
+        .sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0))
+        .slice(0, 6);
+    
+    if (!latest.length) {
+        container.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:28px;font-size:0.85rem">لا توجد سكربتات بعد</div>';
+        return;
+    }
+    
+    latest.forEach(([id, s]) => {
+        const card = document.createElement('div');
+        card.className = 'feat-card';
+        card.onclick = () => location.href = `script.html?id=${id}`;
+        card.innerHTML = `
+            <div class="fc-title">${s.title || 'بدون عنوان'}</div>
+            <div class="fc-meta">
+                <span class="fc-cat">${s.category || '—'}</span>
+                ${s.map ? `<span class="fc-map">🗺️ ${s.map}</span>` : ''}
+            </div>
+        `;
+        container.appendChild(card);
+    });
+    console.log('✅ Featured scripts loaded:', latest.length);
+}
+
+// ============ Top Users ============
+async function loadTopUsers(users, scripts) {
+    const container = document.getElementById('topUsers');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    const usersMap = {};
+    Object.entries(scripts).forEach(([_, s]) => {
+        const uid = s.authorUid || s.authorEmail || s.author;
+        if (!uid) return;
+        
+        if (!usersMap[uid]) {
+            usersMap[uid] = { 
+                likes: 0, 
+                scripts: 0, 
+                uid: s.authorUid, 
+                email: s.authorEmail, 
+                name: s.author 
+            };
+        }
+        usersMap[uid].likes += s.likes || 0;
+        usersMap[uid].scripts += 1;
+    });
+    
+    const sorted = Object.values(usersMap)
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, 4);
+    
+    if (!sorted.length) {
+        container.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:28px;font-size:0.85rem;grid-column:1/-1">لا بيانات بعد</div>';
+        return;
+    }
+    
+    const ranks = ['gold', 'silver', 'bronze', ''];
+    const emojis = ['🥇', '🥈', '🥉', '4️⃣'];
+    
+    for (let i = 0; i < sorted.length; i++) {
+        const user = sorted[i];
+        const userId = user.uid || '';
+        
+        let avatar = `<div style="width:38px;height:38px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:900">${(user.name || '?').charAt(0)}</div>`;
+        
+        if (userId) {
+            try {
+                const snapshot = await get(ref(db, `users/${userId}/avatar`));
+                const charData = snapshot.exists() ? { ...DEFAULT_CHAR, ...snapshot.val() } : DEFAULT_CHAR;
+                avatar = buildAvatar(charData, 38);
+            } catch (err) {
+                console.warn(`⚠️ Could not load avatar for ${userId}:`, err);
+            }
+        }
+        
+        const card = document.createElement('div');
+        card.className = 'user-mini';
+        card.onclick = () => { if (userId) location.href = `profile.html?uid=${userId}`; };
+        card.innerHTML = `
+            <div class="um-rank ${ranks[i]}">${emojis[i]}</div>
+            <div class="um-avatar">${avatar}</div>
+            <div class="um-info">
+                <div class="um-name">${user.name || 'مجهول'}</div>
+                <div class="um-stat">👍 ${user.likes}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    }
+    console.log('✅ Top users loaded:', sorted.length);
+}
+
+// ============ Online Status Monitor ============
+function setupOnlineStatus() {
+    try {
+        onValue(ref(db, 'presence'), (snapshot) => {
+            if (!snapshot.exists()) {
+                const el = document.getElementById('ls-online');
+                if (el) el.innerText = '0';
+                return;
+            }
+            
+            const onlineUsers = Object.values(snapshot.val())
+                .filter(p => p.online && Date.now() - p.ts < 60000)
+                .length;
+            
+            const el = document.getElementById('ls-online');
+            if (el) el.innerText = onlineUsers;
+        });
+        console.log('✅ Online status monitoring active');
+    } catch (e) {
+        console.error('❌ Online status error:', e);
+    }
+}
+
+// ============ Main Stats Loader ============
+async function loadStats() {
+    try {
+        console.log('📊 Loading stats...');
+        
+        const [scriptsSnap, usersSnap] = await Promise.all([
+            get(ref(db, 'scripts')),
+            get(ref(db, 'users'))
+        ]);
+        
+        const scripts = scriptsSnap.exists() ? scriptsSnap.val() : {};
+        const users = usersSnap.exists() ? usersSnap.val() : {};
+        
+        let totalLikes = 0;
+        Object.values(scripts).forEach(s => totalLikes += s.likes || 0);
+        
+        animCount('ls-scripts', Object.keys(scripts).length);
+        animCount('ls-users', Object.keys(users).length);
+        animCount('ls-likes', totalLikes);
+        
+        loadFeaturedScripts(scripts);
+        loadTopUsers(users, scripts);
+        
+        console.log('✅ Stats loaded successfully');
+    } catch (error) {
+        console.error('❌ Error loading stats:', error);
+        console.error('Details:', error.message);
+    }
+}
+
+// ============ Announcements ============
+async function loadAnnouncement() {
+    try {
+        const snapshot = await get(ref(db, 'announcements'));
+        if (!snapshot.exists()) {
+            console.log('ℹ️ No announcements found');
+            return;
+        }
+        
+        const entries = Object.entries(snapshot.val())
+            .sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+        
+        if (!entries.length) return;
+        
+        const latest = entries[0][1];
+        const isRecent = Date.now() - (latest.timestamp || 0) < 7 * 24 * 3600 * 1000;
+        
+        if (isRecent) {
+            const textEl = document.getElementById('annText');
+            const bannerEl = document.getElementById('annBanner');
+            if (textEl) textEl.innerText = latest.text;
+            if (bannerEl) bannerEl.style.display = 'flex';
+            console.log('✅ Announcement displayed');
+        }
+    } catch (e) {
+        console.error('❌ Announcement error:', e);
+    }
+}
+
+// ============ INITIALIZATION ============
+console.log('🚀 Starting initialization...');
+
+initParticles();
+setPresence();
+setupOnlineStatus();
+
+// Set presence every 30 seconds
+setInterval(setPresence, 30000);
+
+// Wait for DOM and Firebase to be ready
+setTimeout(async () => {
+    console.log('⏳ Loading data after delay...');
+    await loadStats();
+    await loadAnnouncement();
+    console.log('✅ All data loaded!');
+}, 1000);
+
+// Also load immediately for faster feedback
+setTimeout(() => {
+    loadStats();
+    loadAnnouncement();
+}, 100);
 </script>
 </body>
 </html>
