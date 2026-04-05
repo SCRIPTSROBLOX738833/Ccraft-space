@@ -4,282 +4,758 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>عرض السكربت | CCRAFT SPACE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <style>
 
+/* ============================================================
+   CSS Variables — توسيع متغيرات الصفحة
+   ============================================================ */
+:root {
+    --glow-purple: rgba(139, 92, 246, 0.35);
+    --glow-cyan:   rgba(0, 242, 254, 0.25);
+    --code-bg:     #050810;
+    --card-depth:  rgba(6, 8, 20, 0.6);
+    --shimmer:     linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+}
+
+/* ============================================================
+   Page Background — طبقات متعددة
+   ============================================================ */
+body {
+    background:
+        radial-gradient(ellipse 80% 50% at 10% 10%, rgba(139,92,246,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 80%, rgba(0,242,254,0.04) 0%, transparent 60%),
+        var(--bg-base, #09090f);
+    min-height: 100svh;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
 .script-layout {
-    max-width: 900px;
+    max-width: 940px;
     margin: 0 auto;
     padding: 0 20px 80px;
     display: grid;
     grid-template-columns: 1fr 300px;
-    gap: 24px;
+    gap: 22px;
     align-items: start;
 }
 
 .script-main { min-width: 0; }
 
-/* ---- Script Image ---- */
+/* ============================================================
+   Script Hero Image — صورة واسعة مع overlay جميل
+   ============================================================ */
 .script-image-wrap {
     display: none;
-    margin-bottom: 20px;
-    border-radius: 20px;
+    margin-bottom: 22px;
+    border-radius: 22px;
     overflow: hidden;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(139,92,246,0.2);
     position: relative;
-    animation: fadeIn 0.5s ease both;
-    max-height: 340px;
+    animation: slideDown 0.6s cubic-bezier(0.22,1,0.36,1) both;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,92,246,0.1);
+}
+
+@keyframes slideDown {
+    from { opacity:0; transform:translateY(-16px); }
+    to   { opacity:1; transform:translateY(0); }
 }
 
 .script-image-wrap.show { display: block; }
 
 .script-image-wrap img {
-    width: 100%;
-    max-height: 340px;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.4s ease;
+    width: 100%; max-height: 320px;
+    object-fit: cover; display: block;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
 }
 
-.script-image-wrap:hover img { transform: scale(1.02); }
+.script-image-wrap:hover img { transform: scale(1.03); }
 
+/* تدرج سفلي جميل */
 .script-image-wrap::after {
     content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 60px;
-    background: linear-gradient(transparent, rgba(10,12,20,0.6));
+    position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+    background: linear-gradient(to top, rgba(9,9,15,0.85) 0%, transparent 100%);
     pointer-events: none;
 }
 
-/* Image expand button */
+/* زر التكبير */
 .img-expand-btn {
-    position: absolute; bottom: 10px; left: 14px;
-    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px; padding: 5px 12px;
-    font-size: 0.72rem; font-weight: 800; color: white;
-    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
-    transition: var(--transition); z-index: 2;
-    backdrop-filter: blur(6px);
+    position: absolute; bottom: 12px; left: 16px; z-index: 2;
+    background: rgba(9,9,15,0.7); color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; padding: 5px 13px;
+    font-size: 0.7rem; font-weight: 800;
+    font-family: 'Tajawal', sans-serif; margin: 0;
+    cursor: pointer; backdrop-filter: blur(10px);
+    transition: all 0.2s ease; letter-spacing: 0.3px;
 }
-.img-expand-btn:hover { background: rgba(139,92,246,0.6); transform: none; filter: none; }
 
-/* ---- Image Lightbox ---- */
+.img-expand-btn:hover {
+    background: rgba(139,92,246,0.7);
+    border-color: rgba(139,92,246,0.5);
+    color: white; transform: none; filter: none;
+}
+
+/* ============================================================
+   Lightbox
+   ============================================================ */
 .lightbox {
     display: none;
     position: fixed; inset: 0;
-    background: rgba(0,0,0,0.92);
-    backdrop-filter: blur(12px);
+    background: rgba(0,0,0,0.94);
+    backdrop-filter: blur(20px);
     z-index: 900;
     align-items: center; justify-content: center;
-    padding: 20px;
+    padding: 24px;
+    animation: fadeIn 0.25s ease;
 }
 
 .lightbox.open { display: flex; }
 
 .lightbox img {
-    max-width: 100%; max-height: 90vh;
-    border-radius: 14px;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.8);
-    animation: fadeIn 0.3s ease both;
+    max-width: min(100%, 900px); max-height: 88vh;
+    border-radius: 16px;
+    box-shadow: 0 0 0 1px rgba(139,92,246,0.3), 0 40px 80px rgba(0,0,0,0.9);
+    animation: scaleIn 0.3s cubic-bezier(0.22,1,0.36,1);
 }
+
+@keyframes scaleIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
 
 .lightbox-close {
-    position: absolute; top: 16px; right: 16px;
-    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 10px; width: 36px; height: 36px;
+    position: absolute; top: 18px; right: 18px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50%; width: 38px; height: 38px;
     display: flex; align-items: center; justify-content: center;
     color: white; font-size: 1rem; cursor: pointer; margin: 0;
-    transition: var(--transition);
+    transition: all 0.2s;
 }
-.lightbox-close:hover { background: rgba(248,113,113,0.3); transform: none; filter: none; }
 
-/* ---- Hero ---- */
+.lightbox-close:hover { background: rgba(248,113,113,0.25); border-color: rgba(248,113,113,0.4); transform: none; filter: none; }
+
+/* ============================================================
+   Script Hero — بطاقة العنوان والمعلومات
+   ============================================================ */
 .script-hero {
-    background: var(--bg-card); border: 1px solid var(--border-color);
-    border-radius: 24px; padding: 28px 28px 24px;
-    margin-bottom: 20px; position: relative; overflow: hidden;
-    animation: fadeIn 0.5s ease both;
+    background: linear-gradient(145deg, rgba(16,18,32,0.95) 0%, rgba(12,12,24,0.9) 100%);
+    border: 1px solid rgba(139,92,246,0.18);
+    border-radius: 22px;
+    padding: 28px 26px 22px;
+    margin-bottom: 18px;
+    position: relative; overflow: hidden;
+    animation: riseUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
+@keyframes riseUp {
+    from { opacity:0; transform:translateY(12px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+
+/* شريط جانبي متوهج */
 .script-hero::before {
-    content: ''; position: absolute; top: 0; right: 0;
-    width: 5px; height: 100%; background: var(--accent-gradient);
-    border-radius: 0 24px 24px 0;
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(to bottom, #8b5cf6, #00f2fe);
+    border-radius: 0 22px 22px 0;
+    box-shadow: 0 0 20px rgba(139,92,246,0.5);
+}
+
+/* نجوم خلفية ديكورية */
+.script-hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.06) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.04) 0%, transparent 100%),
+        radial-gradient(1px 1px at 50% 70%, rgba(139,92,246,0.08) 0%, transparent 100%);
+    pointer-events: none;
 }
 
 .script-title {
-    font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 900;
-    color: var(--text-main); margin-bottom: 14px; line-height: 1.3; padding-left: 12px;
+    font-size: clamp(1.35rem, 3.5vw, 1.95rem);
+    font-weight: 900;
+    color: #f0f0ff;
+    margin-bottom: 18px;
+    line-height: 1.28;
+    padding-left: 14px;
+    letter-spacing: -0.02em;
+    position: relative; z-index: 1;
 }
 
+/* صف المؤلف */
 .author-row {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 16px; cursor: pointer; width: fit-content;
+    display: flex; align-items: center; gap: 11px;
+    margin-bottom: 18px;
+    cursor: pointer; width: fit-content;
+    position: relative; z-index: 1;
+    padding: 6px 12px 6px 6px;
+    border-radius: 50px;
+    transition: background 0.2s;
 }
 
-.author-row:hover .author-name { color: var(--primary); }
+.author-row:hover { background: rgba(139,92,246,0.08); }
+.author-row:hover .author-name { color: #a78bfa; }
 
 .author-avatar {
-    width: 40px; height: 40px; border-radius: 50%;
-    border: 2px solid rgba(139,92,246,0.3); overflow: hidden;
-    flex-shrink: 0; background: #0a0a14; transition: var(--transition);
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 2px solid rgba(139,92,246,0.3);
+    overflow: hidden; flex-shrink: 0; background: #0a0a14;
     display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s;
 }
 
-.author-row:hover .author-avatar { border-color: var(--primary); box-shadow: 0 0 14px rgba(139,92,246,0.4); }
+.author-row:hover .author-avatar {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 16px rgba(139,92,246,0.4);
+}
 
-.author-info { display: flex; flex-direction: column; gap: 2px; }
-.author-name { font-size: 0.92rem; font-weight: 800; color: var(--text-main); transition: color 0.2s; }
-.author-date { font-size: 0.72rem; color: var(--text-muted); }
+.author-name { font-size: 0.9rem; font-weight: 800; color: #d4d4f0; transition: color 0.2s; }
+.author-date { font-size: 0.7rem; color: #5a5a78; margin-top: 1px; }
 
-.tags-row { display: flex; gap: 8px; flex-wrap: wrap; }
+/* التاجات */
+.tags-row {
+    display: flex; gap: 7px; flex-wrap: wrap;
+    position: relative; z-index: 1;
+}
 
-.tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 800; }
-.tag-cat   { background: var(--primary-dim); color: #b48bf8; border: 1px solid rgba(139,92,246,0.2); }
-.tag-map   { background: rgba(0,242,254,0.07); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
-.tag-nomap { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); }
+.tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 13px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+    letter-spacing: 0.2px;
+    transition: all 0.2s;
+}
 
-/* ---- Code ---- */
+.tag-cat {
+    background: rgba(139,92,246,0.12);
+    color: #a78bfa;
+    border: 1px solid rgba(139,92,246,0.25);
+}
+
+.tag-cat:hover { background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.45); }
+
+.tag-map {
+    background: rgba(0,242,254,0.07);
+    color: #00d9e8;
+    border: 1px solid rgba(0,242,254,0.2);
+}
+
+.tag-map:hover { background: rgba(0,242,254,0.14); }
+
+.tag-nomap {
+    background: rgba(255,255,255,0.04);
+    color: #55556a;
+    border: 1px solid rgba(255,255,255,0.07);
+}
+
+/* ============================================================
+   Code Block — محرر الكود
+   ============================================================ */
 .code-card {
-    background: var(--bg-card); border: 1px solid var(--border-color);
-    border-radius: 20px; overflow: hidden; margin-bottom: 20px;
-    animation: fadeIn 0.5s 0.1s ease both;
+    background: var(--code-bg);
+    border: 1px solid rgba(139,92,246,0.15);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 18px;
+    animation: riseUp 0.5s 0.08s cubic-bezier(0.22,1,0.36,1) both;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.06);
+    position: relative;
 }
 
+/* تأثير Glow علوي */
+.code-card::before {
+    content: '';
+    position: absolute; top: 0; left: 20%; right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(139,92,246,0.5), transparent);
+}
+
+/* شريط الكود العلوي */
 .code-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 18px; background: rgba(0,0,0,0.3);
-    border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 18px;
+    background: rgba(0,0,0,0.4);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    backdrop-filter: blur(4px);
 }
 
-.ch-dots { display: flex; gap: 6px; }
-.ch-dot  { width: 10px; height: 10px; border-radius: 50%; }
-.ch-dot:nth-child(1){ background: #ef4444; }
-.ch-dot:nth-child(2){ background: #f59e0b; }
-.ch-dot:nth-child(3){ background: #22c55e; }
-.ch-label { font-size: 0.72rem; color: var(--text-muted); font-family: 'Fira Code', monospace; }
+.ch-dots { display: flex; gap: 7px; align-items: center; }
+.ch-dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    transition: transform 0.2s;
+}
+.ch-dot:hover { transform: scale(1.2); }
+.ch-dot:nth-child(1) { background: #ff5f57; box-shadow: 0 0 6px rgba(255,95,87,0.4); }
+.ch-dot:nth-child(2) { background: #febc2e; box-shadow: 0 0 6px rgba(254,188,46,0.4); }
+.ch-dot:nth-child(3) { background: #28c840; box-shadow: 0 0 6px rgba(40,200,64,0.4); }
+
+.ch-label {
+    font-size: 0.72rem; color: #3a3a55;
+    font-family: 'Fira Code', monospace;
+    letter-spacing: 0.3px;
+    margin: 0 auto;
+}
 
 .copy-inline {
-    background: rgba(139,92,246,0.12); color: var(--primary);
-    border: 1px solid rgba(139,92,246,0.25); border-radius: 8px;
-    padding: 5px 12px; font-size: 0.72rem; font-weight: 800;
-    cursor: pointer; transition: var(--transition);
-    font-family: 'Tajawal', sans-serif; margin: 0;
+    background: rgba(139,92,246,0.1);
+    color: #7c6fff;
+    border: 1px solid rgba(139,92,246,0.22);
+    border-radius: 7px;
+    padding: 4px 12px;
+    font-size: 0.7rem; font-weight: 800;
+    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
+    transition: all 0.2s; letter-spacing: 0.2px;
 }
-.copy-inline:hover  { background: var(--primary); color: white; transform: none; filter: none; }
-.copy-inline.copied { background: rgba(74,222,128,0.15); color: var(--success); border-color: rgba(74,222,128,0.3); }
 
+.copy-inline:hover { background: rgba(139,92,246,0.25); color: #a78bfa; transform: none; filter: none; }
+.copy-inline.copied { background: rgba(34,197,94,0.12); color: #4ade80; border-color: rgba(34,197,94,0.3); }
+
+/* منطقة الكود */
 #code {
-    background: #000 !important; margin: 0; border: none; border-radius: 0;
-    padding: 22px 20px; color: #4ade80; font-family: 'Fira Code', monospace;
-    font-size: 0.85rem; line-height: 1.8; direction: ltr; text-align: left;
-    overflow-x: auto; white-space: pre-wrap; max-height: 400px; overflow-y: auto;
+    background: transparent !important;
+    margin: 0; border: none; border-radius: 0;
+    padding: 20px 22px;
+    color: #8be9fd;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.83rem; line-height: 1.85;
+    direction: ltr; text-align: left;
+    overflow-x: auto; white-space: pre-wrap;
+    max-height: 420px; overflow-y: auto;
+    tab-size: 4;
 }
 
-/* ---- Description ---- */
+/* شريط التمرير جميل */
+#code::-webkit-scrollbar { width: 5px; height: 5px; }
+#code::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+#code::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+#code::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.5); }
+
+/* ============================================================
+   Description Card
+   ============================================================ */
 .desc-card {
-    background: var(--bg-card); border: 1px solid var(--border-color);
-    border-radius: 18px; padding: 20px 22px; margin-bottom: 20px;
-    animation: fadeIn 0.5s 0.15s ease both;
+    background: linear-gradient(145deg, rgba(14,16,30,0.9), rgba(10,12,22,0.8));
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 18px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    animation: riseUp 0.5s 0.14s cubic-bezier(0.22,1,0.36,1) both;
 }
 
-.desc-card h3, .comments-card h3 {
-    font-size: 0.78rem; font-weight: 800; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+.section-label {
+    font-size: 0.68rem; font-weight: 800; color: #3d3d56;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 12px;
     display: flex; align-items: center; gap: 8px;
 }
 
-.desc-card h3::after, .comments-card h3::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+.section-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.05); }
 
-#description { color: var(--text-main); font-size: 0.95rem; line-height: 1.8; margin: 0; }
+#description {
+    color: #b0b0cc;
+    font-size: 0.92rem;
+    line-height: 1.85;
+    margin: 0;
+}
 
-/* ---- Action Buttons ---- */
-.action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
-.action-row button { border-radius: var(--radius-btn); padding: 12px 22px; font-size: 0.9rem; margin: 0; }
+/* ============================================================
+   Action Buttons — أزرار الإجراءات
+   ============================================================ */
+.action-row {
+    display: flex; gap: 9px; flex-wrap: wrap;
+    margin-bottom: 22px;
+    animation: riseUp 0.5s 0.18s cubic-bezier(0.22,1,0.36,1) both;
+}
 
-#copyBtn { background: var(--accent-gradient); color: white; border: none; box-shadow: 0 6px 16px rgba(139,92,246,0.3); }
-#rawBtn  { background: rgba(0,242,254,0.07); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
-#rawBtn:hover { background: var(--secondary); color: var(--bg-base); }
+.action-row button {
+    border-radius: 13px;
+    padding: 11px 20px;
+    font-size: 0.85rem; font-weight: 800;
+    margin: 0; cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    transition: all 0.22s cubic-bezier(0.22,1,0.36,1);
+    letter-spacing: 0.2px;
+}
 
-/* ---- Comments ---- */
-.comments-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 22px; animation: fadeIn 0.5s 0.2s ease both; }
+#copyBtn {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    color: white; border: none;
+    box-shadow: 0 4px 18px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+}
 
-#comments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+#copyBtn:hover {
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    box-shadow: 0 6px 24px rgba(124,58,237,0.5);
+    transform: translateY(-2px);
+}
 
+#copyBtn:active { transform: scale(0.97); }
+
+#rawBtn {
+    background: rgba(0,242,254,0.06);
+    color: #00d9e8;
+    border: 1px solid rgba(0,242,254,0.18);
+}
+
+#rawBtn:hover {
+    background: rgba(0,242,254,0.12);
+    border-color: rgba(0,242,254,0.35);
+    transform: translateY(-2px);
+    filter: none;
+}
+
+#reportBtn {
+    background: rgba(248,113,113,0.06);
+    color: #f87171;
+    border: 1px solid rgba(248,113,113,0.15);
+}
+
+#reportBtn:hover {
+    background: rgba(248,113,113,0.14);
+    border-color: rgba(248,113,113,0.35);
+    transform: translateY(-2px);
+    filter: none;
+}
+
+/* ============================================================
+   Comments — قسم التعليقات المطوّر
+   ============================================================ */
+.comments-card {
+    background: linear-gradient(160deg, rgba(14,16,30,0.95) 0%, rgba(10,12,24,0.9) 100%);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 22px;
+    padding: 22px;
+    animation: riseUp 0.5s 0.22s cubic-bezier(0.22,1,0.36,1) both;
+    position: relative; overflow: hidden;
+}
+
+/* خط ديكوري علوي */
+.comments-card::before {
+    content: '';
+    position: absolute; top: 0; left: 40px; right: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+}
+
+#comments {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 18px;
+    min-height: 0;
+}
+
+/* تعليق واحد */
 .comment-item {
     display: flex; align-items: flex-start; gap: 10px;
-    padding: 12px 14px; background: rgba(255,255,255,0.02);
-    border: 1px solid var(--border-color); border-radius: 14px;
-    transition: var(--transition); animation: fadeIn 0.3s ease both;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px;
+    transition: all 0.2s;
+    animation: commentSlide 0.35s cubic-bezier(0.22,1,0.36,1) both;
+    position: relative; overflow: hidden;
 }
 
-.comment-item:hover { border-color: var(--border-hover); }
+@keyframes commentSlide {
+    from { opacity:0; transform:translateX(10px); }
+    to   { opacity:1; transform:translateX(0); }
+}
 
+.comment-item:hover {
+    border-color: rgba(139,92,246,0.2);
+    background: rgba(139,92,246,0.04);
+}
+
+/* خط يسار التعليق */
+.comment-item::before {
+    content: '';
+    position: absolute; right: 0; top: 25%; bottom: 25%;
+    width: 2px;
+    background: rgba(139,92,246,0.15);
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.comment-item:hover::before { opacity: 1; }
+
+/* أفاتار التعليق */
 .comment-avatar {
-    width: 34px; height: 34px; border-radius: 50%; overflow: hidden;
-    flex-shrink: 0; background: #0a0a14; border: 1.5px solid rgba(139,92,246,0.25);
-    cursor: pointer; transition: var(--transition);
+    width: 34px; height: 34px; border-radius: 50%;
+    overflow: hidden; flex-shrink: 0;
+    background: #0a0a14;
+    border: 1.5px solid rgba(139,92,246,0.2);
+    cursor: pointer;
     display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
 }
 
-.comment-avatar:hover { border-color: var(--primary); box-shadow: 0 0 10px rgba(139,92,246,0.3); transform: scale(1.1); }
+.comment-avatar:hover {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 12px rgba(139,92,246,0.35);
+    transform: scale(1.08);
+}
 
 .comment-body { flex: 1; min-width: 0; }
-.comment-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-.comment-name { font-size: 0.82rem; font-weight: 800; color: var(--primary); cursor: pointer; }
-.comment-name:hover { text-decoration: underline; }
-.comment-time { font-size: 0.68rem; color: var(--text-muted); }
-.comment-text { font-size: 0.9rem; color: var(--text-main); line-height: 1.6; word-break: break-word; }
 
-#addComment { display: flex; gap: 10px; align-items: center; }
-#commentInput { flex: 1; margin: 0; border-radius: var(--radius-btn); padding: 13px 20px; }
-#submitComment { background: var(--accent-gradient); color: white; border: none; border-radius: var(--radius-btn); padding: 13px 22px; white-space: nowrap; box-shadow: 0 6px 16px rgba(139,92,246,0.3); margin: 0; }
+.comment-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 5px;
+}
 
-/* ---- Sidebar ---- */
-.script-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 100px; }
+.comment-name {
+    font-size: 0.8rem; font-weight: 800;
+    color: #9f87ff;
+    cursor: pointer;
+    transition: color 0.2s;
+}
 
-/* Thumbnail in sidebar */
+.comment-name:hover { color: #c4b5fd; text-decoration: none; }
+
+.comment-time {
+    font-size: 0.65rem; color: #38384a;
+    font-family: 'Fira Code', monospace;
+}
+
+.comment-text {
+    font-size: 0.88rem; color: #aaaacc;
+    line-height: 1.65; word-break: break-word;
+}
+
+/* رسالة "لا توجد تعليقات" */
+.no-comments {
+    text-align: center; padding: 28px 20px;
+    color: #383854; font-size: 0.85rem;
+}
+
+.no-comments .nc-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+/* حقل التعليق الجديد */
+.comment-input-wrap {
+    display: flex; gap: 8px; align-items: center;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 6px 6px 6px 14px;
+    transition: border-color 0.2s;
+}
+
+.comment-input-wrap:focus-within {
+    border-color: rgba(139,92,246,0.35);
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.08);
+}
+
+#commentInput {
+    flex: 1; background: transparent; border: none;
+    padding: 9px 0; outline: none;
+    color: #d0d0ee; font-family: 'Tajawal', sans-serif;
+    font-size: 0.9rem; margin: 0; direction: rtl;
+}
+
+#commentInput::placeholder { color: #38384a; }
+
+#submitComment {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    color: white; border: none;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-size: 0.82rem; font-weight: 800;
+    font-family: 'Tajawal', sans-serif;
+    cursor: pointer; margin: 0;
+    white-space: nowrap;
+    transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(124,58,237,0.3);
+}
+
+#submitComment:hover {
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    box-shadow: 0 4px 16px rgba(124,58,237,0.45);
+    transform: none; filter: none;
+}
+
+#submitComment:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* عداد التعليقات */
+.comment-count-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(139,92,246,0.1);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 50px; padding: 2px 10px;
+    font-size: 0.68rem; font-weight: 800; color: #7c6fff;
+}
+
+/* ============================================================
+   Sidebar — الشريط الجانبي
+   ============================================================ */
+.script-sidebar {
+    display: flex; flex-direction: column; gap: 14px;
+    position: sticky; top: 90px;
+}
+
+/* Thumbnail */
 .sidebar-thumb {
     display: none;
     border-radius: 16px; overflow: hidden;
-    border: 1px solid var(--border-color);
-    cursor: pointer; transition: var(--transition);
-    animation: fadeIn 0.5s ease both;
+    border: 1px solid rgba(139,92,246,0.18);
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+    transition: all 0.25s;
 }
-.sidebar-thumb.show { display: block; }
-.sidebar-thumb img { width: 100%; display: block; max-height: 160px; object-fit: cover; transition: transform 0.3s; }
-.sidebar-thumb:hover { border-color: var(--border-hover); }
-.sidebar-thumb:hover img { transform: scale(1.04); }
 
-.map-card-side { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; text-align: center; animation: fadeIn 0.5s 0.05s ease both; transition: var(--transition); }
-.map-card-side:hover { border-color: var(--border-hover); }
-.map-card-side .mcs-icon { font-size: 2.4rem; display: block; margin-bottom: 10px; }
-.map-card-side .mcs-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.map-card-side .mcs-name  { font-size: 1rem; font-weight: 900; color: var(--secondary); }
-.map-card-side .mcs-name.muted { color: var(--text-muted); font-size: 0.88rem; font-weight: 700; }
+.sidebar-thumb.show { display: block; animation: riseUp 0.5s ease both; }
+.sidebar-thumb img { width: 100%; display: block; max-height: 150px; object-fit: cover; transition: transform 0.3s; }
+.sidebar-thumb:hover { border-color: rgba(139,92,246,0.4); box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(139,92,246,0.1); }
+.sidebar-thumb:hover img { transform: scale(1.06); }
 
-.stats-side { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; animation: fadeIn 0.5s 0.1s ease both; }
-.stats-side h4 { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
-.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem; }
+/* بطاقات الـ Sidebar المشتركة */
+.side-card {
+    background: linear-gradient(145deg, rgba(14,16,30,0.95), rgba(10,12,24,0.9));
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 18px;
+    padding: 18px;
+    transition: border-color 0.2s, transform 0.2s;
+    animation: riseUp 0.5s ease both;
+}
+
+.side-card:hover { border-color: rgba(139,92,246,0.18); }
+
+/* Map Card */
+.map-card-side {
+    text-align: center;
+    cursor: default;
+}
+
+.mcs-icon  { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+.mcs-label { font-size: 0.62rem; font-weight: 800; color: #35355a; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px; }
+.mcs-name  { font-size: 0.98rem; font-weight: 900; color: #00d9e8; }
+.mcs-name.muted { color: #3d3d5a; font-size: 0.85rem; font-weight: 700; }
+
+/* Stats Card */
+.stats-side-label {
+    font-size: 0.62rem; font-weight: 800; color: #35355a;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
+}
+
+.stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.83rem;
+}
+
 .stat-row:last-child { border-bottom: none; }
-.stat-row .sr-label { color: var(--text-muted); }
-.stat-row .sr-val   { font-weight: 800; color: var(--text-main); }
+.sr-label { color: #44445a; }
 
-.author-card-side { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; text-align: center; cursor: pointer; transition: var(--transition); animation: fadeIn 0.5s 0.15s ease both; }
-.author-card-side:hover { border-color: var(--border-hover); transform: translateY(-3px); }
-.acs-avatar { width: 70px; height: 70px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.3); overflow: hidden; margin: 0 auto 12px; background: #0a0a14; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
-.author-card-side:hover .acs-avatar { border-color: var(--primary); box-shadow: 0 0 18px rgba(139,92,246,0.4); }
-.acs-name  { font-size: 1rem; font-weight: 900; color: var(--text-main); margin-bottom: 4px; }
-.acs-label { font-size: 0.72rem; color: var(--text-muted); }
-.acs-btn { background: var(--primary-dim); color: var(--primary); border: 1px solid rgba(139,92,246,0.25); border-radius: 50px; padding: 7px 18px; font-size: 0.78rem; font-weight: 800; font-family: 'Tajawal', sans-serif; cursor: pointer; margin-top: 12px; transition: var(--transition); }
-.acs-btn:hover { background: var(--primary); color: white; transform: none; filter: none; }
+.sr-val {
+    font-weight: 800; color: #d0d0ee;
+    font-variant-numeric: tabular-nums;
+}
 
-@media (max-width: 720px) {
-    .script-layout { grid-template-columns: 1fr; }
-    .script-sidebar { position: static; order: -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-    #addComment { flex-direction: column; }
-    #commentInput, #submitComment { width: 100%; }
+/* Like button in stats */
+.like-btn-inline {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(248,113,113,0.07);
+    border: 1px solid rgba(248,113,113,0.15);
+    border-radius: 8px; padding: 5px 12px;
+    color: #f87171; font-size: 0.78rem; font-weight: 800;
+    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
+    width: 100%; justify-content: center;
+    margin-top: 10px; transition: all 0.2s;
+}
+
+.like-btn-inline:hover { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.3); transform: none; filter: none; }
+.like-btn-inline.liked { background: rgba(248,113,113,0.2); color: #fca5a5; cursor: default; }
+
+/* Author Card */
+.author-card-side {
+    text-align: center; cursor: pointer;
+}
+
+.author-card-side:hover { border-color: rgba(139,92,246,0.3); transform: translateY(-2px); }
+
+.acs-avatar {
+    width: 66px; height: 66px; border-radius: 50%;
+    border: 2px solid rgba(139,92,246,0.25);
+    overflow: hidden; margin: 0 auto 10px;
+    background: #0a0a14;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s;
+    box-shadow: 0 0 0 4px rgba(139,92,246,0.05);
+}
+
+.author-card-side:hover .acs-avatar {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 24px rgba(139,92,246,0.3), 0 0 0 4px rgba(139,92,246,0.1);
+}
+
+.acs-name  { font-size: 0.95rem; font-weight: 900; color: #d0d0ee; margin-bottom: 3px; }
+.acs-label { font-size: 0.68rem; color: #35355a; text-transform: uppercase; letter-spacing: 1px; }
+
+.acs-btn {
+    background: rgba(139,92,246,0.1);
+    color: #8b7fff;
+    border: 1px solid rgba(139,92,246,0.22);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 0.75rem; font-weight: 800;
+    font-family: 'Tajawal', sans-serif;
+    cursor: pointer; margin-top: 10px;
+    transition: all 0.2s; display: inline-block;
+}
+
+.acs-btn:hover { background: rgba(139,92,246,0.22); color: #c4b5fd; transform: none; filter: none; }
+
+/* ============================================================
+   Section Headers
+   ============================================================ */
+.comments-card h3, .desc-card h3 {
+    font-size: 0.68rem; font-weight: 800; color: #35355a;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+}
+
+.comments-card h3::after, .desc-card h3::after {
+    content: ''; flex: 1; height: 1px;
+    background: rgba(255,255,255,0.04);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 740px) {
+    .script-layout {
+        grid-template-columns: 1fr;
+        padding: 0 14px 60px;
+    }
+
+    .script-sidebar {
+        position: static;
+        order: -1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .sidebar-thumb { grid-column: 1 / -1; }
+    .author-card-side { grid-column: 1 / -1; }
+
+    .comment-input-wrap { flex-direction: column; padding: 10px; }
+    #commentInput { width: 100%; }
+    #submitComment { width: 100%; padding: 10px; }
+
+    .action-row { gap: 7px; }
+    .action-row button { flex: 1; padding: 10px 14px; font-size: 0.8rem; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 </style>
@@ -288,8 +764,8 @@
 
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-    <img id="lightboxImg" src="" alt="صورة السكربت">
+    <button class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">✕</button>
+    <img id="lightboxImg" src="" alt="صورة السكربت" onclick="event.stopPropagation()">
 </div>
 
 <header>
@@ -299,92 +775,112 @@
 
 <div class="script-layout">
 
-    <!-- Main Column -->
+    <!-- ==================== Main Column ==================== -->
     <div class="script-main">
 
-        <!-- Script Image (يظهر لو في صورة) -->
+        <!-- صورة السكربت -->
         <div class="script-image-wrap" id="scriptImageWrap">
             <img id="scriptImage" src="" alt="صورة السكربت">
             <button class="img-expand-btn" onclick="openLightbox()">🔍 تكبير</button>
         </div>
 
-        <!-- Hero -->
+        <!-- Hero المعلومات الرئيسية -->
         <div class="script-hero">
-            <h1 class="script-title" id="title">جارٍ التحميل...</h1>
-
+            <h1 class="script-title" id="title">⏳ جارٍ التحميل...</h1>
             <div class="author-row" id="authorRow">
                 <div class="author-avatar" id="authorAvatarInline"></div>
-                <div class="author-info">
-                    <span class="author-name" id="authorName">—</span>
-                    <span class="author-date" id="scriptDate">—</span>
+                <div>
+                    <div class="author-name" id="authorName">—</div>
+                    <div class="author-date" id="scriptDate">—</div>
                 </div>
             </div>
-
             <div class="tags-row" id="tagsRow"></div>
         </div>
 
-        <!-- Code -->
+        <!-- الكود -->
         <div class="code-card">
             <div class="code-header">
                 <div class="ch-dots">
-                    <div class="ch-dot"></div><div class="ch-dot"></div><div class="ch-dot"></div>
+                    <div class="ch-dot"></div>
+                    <div class="ch-dot"></div>
+                    <div class="ch-dot"></div>
                 </div>
                 <span class="ch-label">script.lua</span>
                 <button class="copy-inline" id="copyInline">📋 نسخ</button>
             </div>
-            <pre id="code">جارٍ التحميل...</pre>
+            <pre id="code">-- جارٍ التحميل...</pre>
         </div>
 
-        <!-- Description -->
+        <!-- الوصف -->
         <div class="desc-card">
             <h3>📝 الوصف</h3>
-            <p id="description">—</p>
+            <p id="description" style="color:#6a6a88;font-style:italic">جارٍ التحميل...</p>
         </div>
 
-        <!-- Actions -->
+        <!-- أزرار الإجراءات -->
         <div class="action-row">
             <button id="reportBtn">🚩 إبلاغ</button>
             <button id="copyBtn">📋 نسخ السكربت</button>
             <button id="rawBtn">📄 Raw</button>
         </div>
 
-        <!-- Comments -->
+        <!-- التعليقات -->
         <div class="comments-card">
-            <h3>💬 التعليقات (<span id="commentCount">0</span>)</h3>
-            <div id="comments"></div>
-            <div id="addComment">
-                <input type="text" id="commentInput" placeholder="اكتب تعليقك...">
-                <button id="submitComment">إرسال</button>
+            <h3>
+                💬 التعليقات
+                <span class="comment-count-badge" id="commentBadge">0</span>
+            </h3>
+
+            <div id="comments">
+                <div class="no-comments" id="noComments">
+                    <span class="nc-icon">💬</span>
+                    كن أول من يعلّق على هذا السكربت!
+                </div>
+            </div>
+
+            <div class="comment-input-wrap">
+                <input type="text" id="commentInput" placeholder="شاركنا رأيك في هذا السكربت...">
+                <button id="submitComment">إرسال ↵</button>
             </div>
         </div>
 
     </div>
 
-    <!-- Sidebar -->
+    <!-- ==================== Sidebar ==================== -->
     <aside class="script-sidebar">
 
-        <!-- Thumbnail in sidebar (موبايل) -->
+        <!-- Thumbnail -->
         <div class="sidebar-thumb" id="sidebarThumb">
             <img id="sideThumbImg" src="" alt="صورة السكربت">
         </div>
 
-        <!-- Map -->
-        <div class="map-card-side" id="mapCardSide">
+        <!-- الماب -->
+        <div class="side-card map-card-side" id="mapCardSide">
             <span class="mcs-icon">⏳</span>
             <div class="mcs-label">الماب</div>
             <div class="mcs-name muted">جارٍ التحميل...</div>
         </div>
 
-        <!-- Stats -->
-        <div class="stats-side">
-            <h4>📊 إحصائيات</h4>
-            <div class="stat-row"><span class="sr-label">👍 اللايكات</span><span class="sr-val" id="st-likes">—</span></div>
-            <div class="stat-row"><span class="sr-label">⭐ التقييم</span><span class="sr-val" id="st-rating">—</span></div>
-            <div class="stat-row"><span class="sr-label">💬 التعليقات</span><span class="sr-val" id="st-comments">—</span></div>
+        <!-- الإحصائيات + لايك -->
+        <div class="side-card stats-side">
+            <div class="stats-side-label">📊 إحصائيات</div>
+            <div class="stat-row">
+                <span class="sr-label">👍 اللايكات</span>
+                <span class="sr-val" id="st-likes">—</span>
+            </div>
+            <div class="stat-row">
+                <span class="sr-label">⭐ التقييم</span>
+                <span class="sr-val" id="st-rating">—</span>
+            </div>
+            <div class="stat-row">
+                <span class="sr-label">💬 التعليقات</span>
+                <span class="sr-val" id="st-comments">0</span>
+            </div>
+            <button class="like-btn-inline" id="likeBtn">❤️ إضافة لايك</button>
         </div>
 
-        <!-- Author -->
-        <div class="author-card-side" id="authorCardSide">
+        <!-- المؤلف -->
+        <div class="side-card author-card-side" id="authorCardSide">
             <div class="acs-avatar" id="authorAvatarSide"></div>
             <div class="acs-name"  id="acName">—</div>
             <div class="acs-label">المؤلف</div>
@@ -397,7 +893,7 @@
 
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, set, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
 
@@ -416,25 +912,31 @@ const app  = initializeApp(firebaseConfig);
 const db   = getDatabase(app);
 const auth = getAuth(app);
 
-const params   = new URLSearchParams(window.location.search);
-const scriptId = params.get('id');
+const params    = new URLSearchParams(window.location.search);
+const scriptId  = params.get('id');
 let currentUser = null;
 const avatarCache = {};
 
-/* ---- Lightbox ---- */
+/* ============================================================
+   Lightbox
+   ============================================================ */
 window.openLightbox = function() {
-    const src = document.getElementById('scriptImage').src;
-    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightboxImg').src = document.getElementById('scriptImage').src;
     document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
 };
 
 window.closeLightbox = function() {
     document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
 };
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-async function getAvatar(uid, size = 40) {
+/* ============================================================
+   Helpers
+   ============================================================ */
+async function getAvatar(uid, size) {
     if (!uid) return buildAvatar(DEFAULT_CHAR, size);
     if (avatarCache[uid]) return buildAvatar(avatarCache[uid], size);
     try {
@@ -445,43 +947,57 @@ async function getAvatar(uid, size = 40) {
     } catch { return buildAvatar(DEFAULT_CHAR, size); }
 }
 
+function escHTML(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 const MAP_ICONS = {
-    'Adopt Me':'🏡','Bloxburg':'🏗️','Brookhaven':'🌆',
-    'Arsenal':'🔫','Bedwars':'🛏️','Murder Mystery 2':'🔪',
-    'Jailbreak':'🚔','Pet Simulator X':'🐾','Doors':'🚪',
-    'Da Hood':'🏙️','Anime Fighting Sim':'⚔️','Tower of Hell':'🗼',
+    'Adopt Me':'🏡','Bloxburg':'🏗️','Brookhaven':'🌆','Arsenal':'🔫',
+    'Bedwars':'🛏️','Murder Mystery 2':'🔪','Jailbreak':'🚔',
+    'Pet Simulator X':'🐾','Doors':'🚪','Da Hood':'🏙️',
+    'Anime Fighting Sim':'⚔️','Tower of Hell':'🗼',
 };
 
+/* ============================================================
+   Auth
+   ============================================================ */
 onAuthStateChanged(auth, user => {
     if (!user) { alert("يجب تسجيل الدخول أولاً"); location.href="login.html"; return; }
     currentUser = user;
     loadScript();
 });
 
+/* ============================================================
+   تحميل السكربت
+   ============================================================ */
 async function loadScript() {
     const snap = await get(ref(db, `scripts/${scriptId}`));
-    if (!snap.exists()) { document.getElementById('title').innerText = "هذا السكربت غير موجود"; return; }
+    if (!snap.exists()) {
+        document.getElementById('title').innerText = "❌ هذا السكربت غير موجود";
+        return;
+    }
     const data = snap.val();
 
-    document.getElementById('title').innerText  = data.title;
+    // --- العنوان والمحتوى ---
+    document.getElementById('title').innerText       = data.title;
     document.title = `${data.title} | CCRAFT SPACE`;
     document.getElementById('code').innerText        = data.code;
     document.getElementById('description').innerText = data.description || "لا يوجد وصف";
+    document.getElementById('description').style.color = data.description ? '#b0b0cc' : '#44445a';
+    document.getElementById('description').style.fontStyle = data.description ? 'normal' : 'italic';
 
-    // ---- الصورة ----
+    // --- الصورة ---
     if (data.image) {
-        // Main image
-        document.getElementById('scriptImage').src = data.image;
+        document.getElementById('scriptImage').src     = data.image;
         document.getElementById('scriptImageWrap').classList.add('show');
-
-        // Sidebar thumbnail
-        document.getElementById('sideThumbImg').src = data.image;
+        document.getElementById('sideThumbImg').src    = data.image;
         document.getElementById('sidebarThumb').classList.add('show');
         document.getElementById('sidebarThumb').onclick = openLightbox;
     }
 
+    // --- التاريخ والمؤلف ---
     const date = data.timestamp
-        ? new Date(data.timestamp).toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})
+        ? new Date(data.timestamp).toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'})
         : '—';
     document.getElementById('scriptDate').innerText = `نُشر في ${date}`;
 
@@ -489,58 +1005,108 @@ async function loadScript() {
     document.getElementById('authorName').innerText = authorName;
     document.getElementById('acName').innerText     = authorName;
 
-    const avatarSm = await getAvatar(data.authorUid, 40);
-    const avatarLg = await getAvatar(data.authorUid, 70);
+    // --- الأفاتار ---
+    const [avatarSm, avatarLg] = await Promise.all([
+        getAvatar(data.authorUid, 38),
+        getAvatar(data.authorUid, 66),
+    ]);
     document.getElementById('authorAvatarInline').innerHTML = avatarSm;
     document.getElementById('authorAvatarSide').innerHTML   = avatarLg;
 
+    // --- روابط البروفايل ---
     const goProfile = () => { if (data.authorUid) location.href = `profile.html?uid=${data.authorUid}`; };
     document.getElementById('authorRow').onclick      = goProfile;
     document.getElementById('authorCardSide').onclick = goProfile;
     document.getElementById('viewProfileBtn').onclick = e => { e.stopPropagation(); goProfile(); };
 
+    // --- التاجات ---
     const tagsRow = document.getElementById('tagsRow');
-    tagsRow.innerHTML = `<span class="tag tag-cat">📁 ${data.category||'—'}</span>`;
+    tagsRow.innerHTML = `<span class="tag tag-cat">📁 ${escHTML(data.category||'—')}</span>`;
     tagsRow.innerHTML += data.map
-        ? `<span class="tag tag-map">🗺️ ${data.map}</span>`
+        ? `<span class="tag tag-map">🗺️ ${escHTML(data.map)}</span>`
         : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
 
+    // --- بطاقة الماب ---
     const mapCard = document.getElementById('mapCardSide');
     if (data.map) {
         const icon = MAP_ICONS[data.map] || '🗺️';
-        mapCard.innerHTML = `<span class="mcs-icon">${icon}</span><div class="mcs-label">مخصص لماب</div><div class="mcs-name">${data.map}</div>`;
-        mapCard.style.borderColor = 'rgba(0,242,254,0.25)';
+        mapCard.innerHTML = `
+            <span class="mcs-icon">${icon}</span>
+            <div class="mcs-label">مخصص لماب</div>
+            <div class="mcs-name">${escHTML(data.map)}</div>
+        `;
+        mapCard.style.borderColor = 'rgba(0,242,254,0.18)';
+        mapCard.style.boxShadow   = '0 0 20px rgba(0,242,254,0.05)';
     } else {
-        mapCard.innerHTML = `<span class="mcs-icon">🌐</span><div class="mcs-label">الماب</div><div class="mcs-name muted">يعمل على أي لعبة</div>`;
+        mapCard.innerHTML = `
+            <span class="mcs-icon">🌐</span>
+            <div class="mcs-label">الماب</div>
+            <div class="mcs-name muted">يعمل على أي لعبة</div>
+        `;
     }
 
-    document.getElementById('st-likes').innerText  = data.likes || 0;
-    const avg = data.votes ? (data.rating/data.votes).toFixed(1) : '—';
+    // --- الإحصائيات ---
+    document.getElementById('st-likes').innerText = data.likes || 0;
+    const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
     document.getElementById('st-rating').innerText = avg === '—' ? '—' : `${avg} ⭐`;
 
+    // --- زر اللايك ---
+    const liked = !!localStorage.getItem(`liked_${scriptId}`);
+    const likeBtn = document.getElementById('likeBtn');
+
+    if (liked) {
+        likeBtn.classList.add('liked');
+        likeBtn.innerText = '❤️ أعجبك';
+        likeBtn.disabled = true;
+    }
+
+    likeBtn.addEventListener('click', async () => {
+        if (liked || likeBtn.disabled) return;
+        const likeRef = ref(db, `scripts/${scriptId}/likes`);
+        const s = await get(likeRef);
+        const newVal = (s.exists() ? s.val() : 0) + 1;
+        await set(likeRef, newVal);
+        localStorage.setItem(`liked_${scriptId}`, 'true');
+        likeBtn.classList.add('liked');
+        likeBtn.innerText = '❤️ أعجبك';
+        likeBtn.disabled = true;
+        document.getElementById('st-likes').innerText = newVal;
+    });
+
+    // --- تحميل التعليقات ---
     loadComments();
 }
 
+/* ============================================================
+   التعليقات
+   ============================================================ */
 async function loadComments() {
     const commentsDiv = document.getElementById('comments');
-    commentsDiv.innerHTML = '';
+    let firstLoad = true;
 
     onChildAdded(ref(db, `scripts/${scriptId}/comments`), async snapshot => {
-        const c   = snapshot.val();
+        // أخفي رسالة "لا توجد تعليقات"
+        document.getElementById('noComments')?.remove();
+
+        const c = snapshot.val();
         const avatarSVG = await getAvatar(c.uid, 34);
 
         const item = document.createElement('div');
         item.className = 'comment-item';
+        if (!firstLoad) item.style.animationDelay = '0s';
 
         const time = c.timestamp
-            ? new Date(c.timestamp).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
+            ? new Date(c.timestamp).toLocaleString('ar-EG', {
+                month:'short', day:'numeric',
+                hour:'2-digit', minute:'2-digit'
+              })
             : '';
 
         item.innerHTML = `
-            <div class="comment-avatar" title="عرض بروفايل ${c.name}">${avatarSVG}</div>
+            <div class="comment-avatar">${avatarSVG}</div>
             <div class="comment-body">
                 <div class="comment-meta">
-                    <span class="comment-name">${c.name||'مجهول'}</span>
+                    <span class="comment-name">${escHTML(c.name || 'مجهول')}</span>
                     <span class="comment-time">${time}</span>
                 </div>
                 <div class="comment-text">${escHTML(c.text)}</div>
@@ -552,46 +1118,66 @@ async function loadComments() {
         item.querySelector('.comment-name').onclick   = goP;
         commentsDiv.appendChild(item);
 
+        // تحديث عداد التعليقات
         const count = document.querySelectorAll('.comment-item').length;
-        document.getElementById('commentCount').innerText = count;
+        document.getElementById('commentBadge').innerText = count;
         document.getElementById('st-comments').innerText  = count;
+
+        firstLoad = false;
     });
 }
 
-function escHTML(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
+/* ============================================================
+   إرسال تعليق جديد
+   ============================================================ */
 document.getElementById('submitComment').addEventListener('click', async () => {
-    const text = document.getElementById('commentInput').value.trim();
-    if (!text) return alert("اكتب تعليقك أولاً!");
+    const inp  = document.getElementById('commentInput');
+    const text = inp.value.trim();
+    if (!text) return;
+
     const btn = document.getElementById('submitComment');
     btn.disabled = true;
+    btn.innerText = '⏳';
+
     await push(ref(db, `scripts/${scriptId}/comments`), {
-        name: currentUser.email.split('@')[0], uid: currentUser.uid,
-        text, timestamp: Date.now(),
+        name:      currentUser.email.split('@')[0],
+        uid:       currentUser.uid,
+        text,
+        timestamp: Date.now(),
     });
-    document.getElementById('commentInput').value = '';
+
+    inp.value    = '';
     btn.disabled = false;
+    btn.innerText = 'إرسال ↵';
 });
 
 document.getElementById('commentInput').addEventListener('keypress', e => {
     if (e.key === 'Enter') document.getElementById('submitComment').click();
 });
 
+/* ============================================================
+   نسخ الكود
+   ============================================================ */
 function copyCode() {
-    navigator.clipboard.writeText(document.getElementById('code').innerText).then(() => {
-        const btn = document.getElementById('copyInline');
-        btn.innerText = '✅ تم النسخ'; btn.classList.add('copied');
-        setTimeout(() => { btn.innerText = '📋 نسخ'; btn.classList.remove('copied'); }, 2000);
-        const btn2 = document.getElementById('copyBtn');
-        btn2.innerText = '✅ تم النسخ';
-        setTimeout(() => { btn2.innerText = '📋 نسخ السكربت'; }, 2000);
+    const code = document.getElementById('code').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        ['copyInline','copyBtn'].forEach(id => {
+            const btn = document.getElementById(id);
+            const orig = btn.innerText;
+            btn.innerText = '✅ تم';
+            if (id === 'copyInline') btn.classList.add('copied');
+            setTimeout(() => {
+                btn.innerText = orig;
+                btn.classList.remove('copied');
+            }, 2000);
+        });
     });
 }
 
-document.getElementById('copyBtn').addEventListener('click', copyCode);
+document.getElementById('copyBtn').addEventListener('click',    copyCode);
 document.getElementById('copyInline').addEventListener('click', copyCode);
-document.getElementById('rawBtn').addEventListener('click',  () => location.href = `raw.html?id=${scriptId}`);
-document.getElementById('reportBtn').addEventListener('click',() => location.href = `report.html?id=${scriptId}`);
+document.getElementById('rawBtn').addEventListener('click',     () => location.href = `raw.html?id=${scriptId}`);
+document.getElementById('reportBtn').addEventListener('click',  () => location.href = `report.html?id=${scriptId}`);
 </script>
 </body>
 </html>
