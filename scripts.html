@@ -217,6 +217,9 @@ body { min-height: 100svh; }
 }
 
 .script-card:hover .sc-thumb { transform: scale(1.04); }
+
+/* Script Card */
+.script-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 20px;
@@ -524,6 +527,9 @@ function getQuery() {
 
 function sortScripts(arr) {
     const s = [...arr];
+    if (activeSort === '__ai__' && window.__aiScoreMap) {
+        return s.sort((a,b)=>(window.__aiScoreMap[b.id]||0)-(window.__aiScoreMap[a.id]||0));
+    }
     if (activeSort === 'newest')  return s.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     if (activeSort === 'oldest')  return s.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
     if (activeSort === 'likes')   return s.sort((a,b)=>(b.likes||0)-(a.likes||0));
@@ -718,10 +724,122 @@ function escHTML(s) {
 
 
 /* ============================================================
-   AI Search — عبر Nova Server (بدل Anthropic مباشرة)
+   🤖 محرك البحث الذكي — خوارزمية محلية متطورة
+   بيعمل offline كامل، بدون اعتماد على Nova
    ============================================================ */
 
-const NOVA_URL = "https://anas9qos9.pythonanywhere.com";
+// ---- خوارزمية Fuzzy Matching ----
+function fuzzyScore(text, query) {
+    if (!text || !query) return 0;
+    text  = text.toLowerCase().trim();
+    query = query.toLowerCase().trim();
+
+    // تطابق كامل = أعلى نقطة
+    if (text === query)            return 100;
+    if (text.startsWith(query))    return 90;
+    if (text.includes(query))      return 80;
+
+    // تطابق جزئي بالكلمات
+    const tWords = text.split(/\s+/);
+    const qWords = query.split(/\s+/);
+    let wordScore = 0;
+    for (const qw of qWords) {
+        if (tWords.some(tw => tw === qw))          wordScore += 20;
+        else if (tWords.some(tw => tw.includes(qw))) wordScore += 12;
+        else if (tWords.some(tw => qw.includes(tw) && tw.length > 2)) wordScore += 6;
+    }
+    if (wordScore > 0) return Math.min(70, wordScore);
+
+    // تطابق أحرف متتالية (Fuzzy)
+    let qi = 0;
+    for (let ti = 0; ti < text.length && qi < query.length; ti++) {
+        if (text[ti] === query[qi]) qi++;
+    }
+    if (qi === query.length) return Math.max(5, Math.round(40 * qi / text.length));
+
+    return 0;
+}
+
+// ---- توحيد النص العربي ----
+function normalizeAr(t) {
+    return (t||'')
+        .replace(/[أإآ]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .toLowerCase()
+        .trim();
+}
+
+// ---- تحليل النية من البحث ----
+function parseIntent(query) {
+    const q = query.toLowerCase();
+    const intent = { category: null, map: null, feature: null };
+
+    // كشف القسم
+    if (/game|جيم|لعب|سبيد|speed/.test(q))            intent.category = 'game';
+    if (/admin|ادمن|أدمن/.test(q))                      intent.category = 'admin';
+    if (/ai|ذكاء|npc/.test(q))                          intent.category = 'ai';
+
+    // كشف الماب
+    const maps = ['jailbreak','adopt me','bloxburg','arsenal','bedwars','doors',
+                  'da hood','brookhaven','pet sim','murder mystery'];
+    for (const m of maps) {
+        if (q.includes(m)) { intent.map = m; break; }
+    }
+
+    return intent;
+}
+
+// ---- دالة البحث الذكي الرئيسية ----
+function smartSearch(query) {
+    if (!query || !allScripts.length) return [];
+
+    const qNorm   = normalizeAr(query);
+    const intent  = parseIntent(query);
+    const results = [];
+
+    for (const s of allScripts) {
+        let score = 0;
+        const title    = normalizeAr(s.title);
+        const category = normalizeAr(s.category);
+        const map      = normalizeAr(s.map);
+        const desc     = normalizeAr(s.description);
+        const author   = normalizeAr(s.author);
+
+        // نقاط التطابق مع حقول مختلفة
+        score += fuzzyScore(title,    qNorm) * 3.0;  // العنوان الأهم
+        score += fuzzyScore(category, qNorm) * 1.5;
+        score += fuzzyScore(map,      qNorm) * 2.0;
+        score += fuzzyScore(desc,     qNorm) * 1.0;
+        score += fuzzyScore(author,   qNorm) * 0.5;
+
+        // مكافأة النية المحددة
+        if (intent.category && (s.category||'').toLowerCase() === intent.category) score += 30;
+        if (intent.map      && map.includes(intent.map))  score += 25;
+
+        // مكافأة الشعبية
+        const likes  = s.likes  || 0;
+        const rating = s.votes  ? s.rating / s.votes : 0;
+        score += Math.min(15, likes  * 0.3);
+        score += Math.min(10, rating * 2);
+
+        // مكافأة الحداثة (آخر 7 أيام)
+        if ((Date.now() - (s.timestamp||0)) < 7 * 86400000) score += 5;
+
+        if (score > 8) results.push({ ...s, _score: score });
+    }
+
+    // ترتيب بالنقاط
+    return results.sort((a, b) => b._score - a._score);
+}
+
+// ---- البحث الذكي مع إضاءة الكلمات ----
+function highlightMatch(text, query) {
+    if (!query || !text) return escHTML(text);
+    const safe = escHTML(text);
+    const re   = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    return safe.replace(re, '<mark style="background:rgba(139,92,246,0.25);color:#c084fc;border-radius:3px;padding:0 2px">$1</mark>');
+}
 
 async function aiSearch() {
     const query = document.getElementById('searchScripts').value.trim();
@@ -729,88 +847,50 @@ async function aiSearch() {
 
     const btn = document.getElementById('aiSearchBtn');
     btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span>';
 
+    // إظهار تأثير "تفكير" سريع
     const list = document.getElementById('scriptsList');
     list.innerHTML = `<div class="ai-thinking">
         <div class="ai-dots"><span></span><span></span><span></span></div>
-        Nova يفكر في بحثك...
+        <span>يحلل البحث...</span>
     </div>`;
 
-    try {
-        // جهّز ملخص السكربتات (أقصر عشان ما نتجاوزش حد الرسالة)
-        const scriptsContext = allScripts.slice(0, 60).map(s =>
-            `ID:${s.id}|${s.title}|${s.category||''}|${s.map||''}`
-        ).join('\n');
+    // تأخير بسيط للـ UX
+    await new Promise(r => setTimeout(r, 350));
 
-        const prompt = `أنت نظام بحث ذكي. المستخدم يبحث عن: "${query}"
+    const results = smartSearch(query);
 
-السكربتات المتاحة:
-${scriptsContext}
+    if (results.length > 0) {
+        filteredIds = results.map(s => s.id);
+        // حفظ الـ scores للترتيب
+        const scoreMap = Object.fromEntries(results.map(s => [s.id, s._score]));
 
-أعطني فقط IDs السكربتات الأنسب مفصولة بفاصلة، ثم سطر جديد، ثم سبب قصير.
-مثال:
-IDS: -abc123,-def456
-REASON: سكربتات تخص السرعة في Jailbreak`;
+        // ترتيب خاص حسب score الـ AI
+        const savedSort = activeSort;
+        activeSort = '__ai__';
+        window.__aiScoreMap = scoreMap;
 
-        const res = await fetch(`${NOVA_URL}/chat`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: prompt,
-                user_id: 'ai_search'
-            })
-        });
+        const intent = parseIntent(query);
+        let bannerMsg = `🤖 ${results.length} نتيجة`;
+        if (intent.map)      bannerMsg += ` · ماب: ${intent.map}`;
+        if (intent.category) bannerMsg += ` · قسم: ${intent.category}`;
 
-        if (!res.ok) throw new Error(`Nova error: ${res.status}`);
+        showAiBanner(bannerMsg);
+        renderScripts(query);
 
-        const data = await res.json();
-        const text = (data.reply || '').trim();
+        activeSort = savedSort;
+        delete window.__aiScoreMap;
 
-        const idsMatch    = text.match(/IDS:\s*([^\n]+)/i);
-        const reasonMatch = text.match(/REASON:\s*([^\n]+)/i);
-
-        if (idsMatch) {
-            const ids = idsMatch[1].split(',').map(id => id.trim()).filter(Boolean);
-            filteredIds = ids;
-            const reason = reasonMatch ? reasonMatch[1].trim() : '';
-            // بانر صغير فقط مع سبب
-            showAiBanner(reason ? `🤖 ${escHTML(reason)}` : `🤖 نتائج البحث الذكي`);
-        } else {
-            filteredIds = null;
-            const q = query.toLowerCase();
-            const matched = allScripts.filter(s =>
-                (s.title||'').toLowerCase().includes(q) ||
-                (s.category||'').toLowerCase().includes(q) ||
-                (s.map||'').toLowerCase().includes(q)
-            );
-            if (matched.length) {
-                filteredIds = matched.map(s => s.id);
-                showAiBanner(`🔍 بحث محلي عن "${escHTML(query)}"`);
-            } else {
-                showAiBanner('لا توجد نتائج — جرّب كلمات مختلفة.');
-            }
-        }
-
-    } catch (e) {
-        // Fallback: بحث نصي عادي إذا فشل Nova
+    } else {
+        // لا نتائج — اعرض كل السكربتات مع رسالة
         filteredIds = null;
-        const q = query.toLowerCase();
-        const matched = allScripts.filter(s =>
-            (s.title||'').toLowerCase().includes(q) ||
-            (s.category||'').toLowerCase().includes(q) ||
-            (s.map||'').toLowerCase().includes(q) ||
-            (s.description||'').toLowerCase().includes(q)
-        );
-        if (matched.length) {
-            filteredIds = matched.map(s => s.id);
-            showAiBanner(`🔍 بحث محلي: <strong>${matched.length} نتيجة</strong> — (Nova غير متاح)`);
-        } else {
-            showAiBanner('⚠️ لا توجد نتائج — جرّب كلمات مختلفة.');
-        }
+        showAiBanner(`⚠️ لا نتائج دقيقة لـ "${escHTML(query)}" — عارض الكل`);
+        renderScripts('');
     }
 
-    renderScripts(document.getElementById('searchScripts').value.toLowerCase());
     btn.disabled = false;
+    btn.innerHTML = '🤖 <span>بحث ذكي</span>';
 }
 
 function showAiBanner(html) {
