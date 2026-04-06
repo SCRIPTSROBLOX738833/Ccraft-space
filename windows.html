@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Windows 12 — Nova Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; user-select:none; }
+
+  :root {
+    --glass: rgba(255,255,255,0.08);
+    --glass-border: rgba(255,255,255,0.15);
+    --glass-hover: rgba(255,255,255,0.14);
+    --accent: #0078d4;
+    --accent2: #60cdff;
+    --text: #ffffff;
+    --text-dim: rgba(255,255,255,0.6);
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    --radius: 12px;
+    --taskbar-h: 48px;
+  }
+
+  html, body {
+    width:100%; height:100%; overflow:hidden;
+    font-family: 'Cairo', sans-serif;
+    background: #000;
+  }
+
+  /* ===== WALLPAPER ===== */
+  #desktop {
+    width:100%; height:100%;
+    position:relative;
+    background: linear-gradient(135deg,
+      #0a0a1a 0%,
+      #0d1b3e 20%,
+      #0a2155 40%,
+      #061640 60%,
+      #0d0d2b 80%,
+      #050510 100%
+    );
+    overflow:hidden;
+  }
+
+  /* Animated aurora */
+  .aurora {
+    position:absolute; inset:0; pointer-events:none;
+    overflow:hidden;
+  }
+  .aurora-blob {
+    position:absolute;
+    border-radius:50%;
+    filter:blur(80px);
+    animation: auroraFloat 12s ease-in-out infinite;
+    opacity:0.35;
+  }
+  .aurora-blob:nth-child(1) { width:600px;height:400px; background:radial-gradient(ellipse,#0060c0,transparent); top:-100px;left:10%; animation-delay:0s; }
+  .aurora-blob:nth-child(2) { width:500px;height:350px; background:radial-gradient(ellipse,#004a9f,transparent); top:20%;right:5%; animation-delay:-4s; }
+  .aurora-blob:nth-child(3) { width:700px;height:300px; background:radial-gradient(ellipse,#002d80,transparent); bottom:10%;left:20%; animation-delay:-8s; }
+  .aurora-blob:nth-child(4) { width:400px;height:400px; background:radial-gradient(ellipse,#60cdff33,transparent); top:30%;left:40%; animation-delay:-2s; }
+
+  @keyframes auroraFloat {
+    0%,100% { transform:translate(0,0) scale(1); }
+    33% { transform:translate(40px,-30px) scale(1.1); }
+    66% { transform:translate(-20px,20px) scale(0.95); }
+  }
+
+  /* Stars */
+  .stars { position:absolute; inset:0; pointer-events:none; }
+  .star {
+    position:absolute; width:2px; height:2px;
+    background:white; border-radius:50%;
+    animation:twinkle var(--d,3s) ease-in-out infinite;
+    animation-delay:var(--delay,0s);
+  }
+  @keyframes twinkle { 0%,100%{opacity:0.2} 50%{opacity:1} }
+
+  /* ===== DESKTOP ICONS ===== */
+  .desktop-icons {
+    position:absolute; top:20px; left:20px;
+    display:flex; flex-direction:column; gap:8px;
+    z-index:10;
+  }
+  .desk-icon {
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:8px; border-radius:8px; cursor:pointer;
+    transition:background 0.2s;
+    width:72px;
+  }
+  .desk-icon:hover { background:rgba(255,255,255,0.1); }
+  .desk-icon .di-img { font-size:2rem; line-height:1; }
+  .desk-icon .di-label { font-size:0.62rem; color:white; text-align:center; text-shadow:0 1px 4px rgba(0,0,0,0.8); font-weight:600; line-height:1.2; }
+
+  /* ===== WINDOWS ===== */
+  .win {
+    position:absolute;
+    border-radius:var(--radius);
+    border:1px solid var(--glass-border);
+    background:rgba(20,20,35,0.85);
+    backdrop-filter:blur(40px) saturate(1.5);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+    display:flex; flex-direction:column;
+    overflow:hidden; z-index:100;
+    animation:winOpen 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+    transition: box-shadow 0.2s;
+    min-width:300px; min-height:200px;
+  }
+  .win.hidden { display:none; }
+  .win.focused { z-index:200; box-shadow:0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(96,205,255,0.2); }
+
+  @keyframes winOpen {
+    from { opacity:0; transform:scale(0.92) translateY(10px); }
+    to   { opacity:1; transform:scale(1)    translateY(0); }
+  }
+
+  .win-titlebar {
+    height:36px; display:flex; align-items:center;
+    padding:0 12px; gap:8px;
+    background:rgba(255,255,255,0.04);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    cursor:move; flex-shrink:0;
+  }
+  .win-icon { font-size:1rem; }
+  .win-title { flex:1; font-size:0.78rem; font-weight:600; color:var(--text); }
+  .win-btns { display:flex; gap:6px; }
+  .win-btn {
+    width:12px; height:12px; border-radius:50%; border:none; cursor:pointer;
+    transition:filter 0.15s;
+  }
+  .win-btn:hover { filter:brightness(1.3); }
+  .win-btn.close  { background:#ff5f57; }
+  .win-btn.min    { background:#febc2e; }
+  .win-btn.max    { background:#28c840; }
+
+  .win-body { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+
+  /* ===== RESIZE HANDLE ===== */
+  .resize-handle {
+    position:absolute; bottom:0; right:0;
+    width:16px; height:16px; cursor:se-resize;
+  }
+  .resize-handle::after {
+    content:''; position:absolute; bottom:4px; right:4px;
+    width:8px; height:8px;
+    border-right:2px solid rgba(255,255,255,0.3);
+    border-bottom:2px solid rgba(255,255,255,0.3);
+  }
+
+  /* ===== NOVA AI WINDOW ===== */
+  #novaWin { width:420px; height:580px; top:60px; right:80px; }
+
+  .nova-header {
+    padding:16px 20px 12px;
+    display:flex; align-items:center; gap:12px;
+    background:linear-gradient(180deg,rgba(0,120,212,0.15),transparent);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    flex-shrink:0;
+  }
+  .nova-avatar {
+    width:38px; height:38px; border-radius:50%;
+    background:linear-gradient(135deg,#0078d4,#60cdff);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.2rem;
+    box-shadow:0 0 20px rgba(96,205,255,0.4);
+    animation:novaPulse 3s ease-in-out infinite;
+    flex-shrink:0;
+  }
+  @keyframes novaPulse {
+    0%,100%{box-shadow:0 0 20px rgba(96,205,255,0.4)}
+    50%{box-shadow:0 0 35px rgba(96,205,255,0.7)}
+  }
+  .nova-info h3 { font-size:0.9rem; font-weight:700; color:white; }
+  .nova-info p  { font-size:0.65rem; color:#60cdff; }
+  .nova-status { margin-right:auto; display:flex; align-items:center; gap:5px; font-size:0.65rem; color:#60cdff; }
+  .nova-dot { width:6px;height:6px;border-radius:50%;background:#60cdff; animation:blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .nova-msgs {
+    flex:1; overflow-y:auto; padding:16px;
+    display:flex; flex-direction:column; gap:10px;
+    scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent;
+  }
+  .nova-msgs::-webkit-scrollbar { width:4px; }
+  .nova-msgs::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:2px; }
+
+  .msg {
+    display:flex; gap:8px; align-items:flex-end;
+    animation:msgIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes msgIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  .msg.user { flex-direction:row-reverse; }
+
+  .msg-bubble {
+    max-width:75%; padding:9px 13px;
+    border-radius:16px; font-size:0.78rem; line-height:1.5;
+    color:white;
+  }
+  .msg.nova .msg-bubble {
+    background:rgba(0,120,212,0.2);
+    border:1px solid rgba(0,120,212,0.3);
+    border-bottom-right-radius:4px;
+  }
+  .msg.user .msg-bubble {
+    background:rgba(0,120,212,0.5);
+    border:1px solid rgba(96,205,255,0.3);
+    border-bottom-left-radius:4px;
+  }
+  .msg-av {
+    width:24px;height:24px;border-radius:50%;
+    background:linear-gradient(135deg,#0078d4,#60cdff);
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.7rem; flex-shrink:0;
+  }
+
+  .nova-typing {
+    display:none; align-items:center; gap:8px;
+    padding:0 16px 8px; font-size:0.72rem; color:var(--text-dim);
+  }
+  .nova-typing.show { display:flex; }
+  .typing-dots { display:flex; gap:3px; }
+  .typing-dots span {
+    width:5px;height:5px;border-radius:50%;background:#60cdff;
+    animation:typingBounce 1.2s ease-in-out infinite;
+  }
+  .typing-dots span:nth-child(2){animation-delay:.2s}
+  .typing-dots span:nth-child(3){animation-delay:.4s}
+  @keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+
+  .nova-input-area {
+    padding:12px 16px;
+    border-top:1px solid rgba(255,255,255,0.07);
+    display:flex; gap:8px; align-items:center; flex-shrink:0;
+    background:rgba(0,0,0,0.2);
+  }
+  .nova-input {
+    flex:1; background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:20px; padding:8px 14px;
+    color:white; font-family:'Cairo',sans-serif;
+    font-size:0.78rem; outline:none;
+    transition:border-color 0.2s;
+    direction:rtl;
+  }
+  .nova-input:focus { border-color:rgba(96,205,255,0.5); }
+  .nova-input::placeholder { color:rgba(255,255,255,0.35); }
+  .nova-send {
+    width:34px;height:34px;border-radius:50%;
+    background:linear-gradient(135deg,#0078d4,#60cdff);
+    border:none; cursor:pointer; display:flex;
+    align-items:center;justify-content:center;
+    font-size:0.9rem; flex-shrink:0;
+    transition:transform 0.15s, filter 0.15s;
+  }
+  .nova-send:hover { transform:scale(1.1); filter:brightness(1.2); }
+
+  /* Quick suggestions */
+  .nova-suggestions {
+    display:flex; gap:6px; flex-wrap:wrap;
+    padding:8px 16px 0; flex-shrink:0;
+  }
+  .nova-sug {
+    background:rgba(0,120,212,0.15);
+    border:1px solid rgba(0,120,212,0.3);
+    border-radius:12px; padding:4px 10px;
+    font-size:0.65rem; color:#60cdff;
+    cursor:pointer; transition:background 0.2s;
+    font-family:'Cairo',sans-serif;
+  }
+  .nova-sug:hover { background:rgba(0,120,212,0.3); }
+
+  /* ===== FILE EXPLORER ===== */
+  #explorerWin { width:680px; height:450px; top:80px; left:220px; }
+
+  .explorer-sidebar {
+    width:160px; flex-shrink:0;
+    border-left:1px solid rgba(255,255,255,0.07);
+    padding:10px 0;
+    display:flex; flex-direction:column; gap:2px;
+  }
+  .explorer-sidebar-item {
+    display:flex;align-items:center;gap:8px;
+    padding:7px 14px; font-size:0.75rem; color:var(--text-dim);
+    cursor:pointer; transition:background 0.15s; border-radius:6px; margin:0 4px;
+  }
+  .explorer-sidebar-item:hover,.explorer-sidebar-item.active { background:rgba(255,255,255,0.08); color:white; }
+  .explorer-sidebar-item .si-icon { font-size:1rem; }
+
+  .explorer-main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+
+  .explorer-toolbar {
+    height:40px; display:flex; align-items:center; gap:6px;
+    padding:0 12px; border-bottom:1px solid rgba(255,255,255,0.07);
+    flex-shrink:0;
+  }
+  .exp-btn {
+    padding:4px 10px; border-radius:6px; background:transparent;
+    border:none; color:var(--text-dim); font-size:0.75rem;
+    cursor:pointer; transition:background 0.15s; font-family:'Cairo',sans-serif;
+  }
+  .exp-btn:hover { background:rgba(255,255,255,0.08); color:white; }
+  .exp-path {
+    flex:1; background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.1); border-radius:6px;
+    padding:4px 10px; font-size:0.72rem; color:var(--text-dim);
+    direction:ltr;
+  }
+
+  .explorer-files {
+    flex:1; overflow-y:auto; padding:12px;
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+    gap:6px; align-content:start;
+    scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent;
+  }
+  .file-item {
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:8px; border-radius:8px; cursor:pointer;
+    transition:background 0.15s;
+  }
+  .file-item:hover { background:rgba(255,255,255,0.09); }
+  .file-item.selected { background:rgba(0,120,212,0.25); border:1px solid rgba(0,120,212,0.4); }
+  .file-item .fi-icon { font-size:1.8rem; line-height:1; }
+  .file-item .fi-name { font-size:0.62rem; color:var(--text); text-align:center; line-height:1.3; }
+
+  .exp-status {
+    height:24px; display:flex; align-items:center; padding:0 12px;
+    font-size:0.65rem; color:var(--text-dim);
+    border-top:1px solid rgba(255,255,255,0.07); flex-shrink:0;
+  }
+
+  /* ===== SETTINGS WINDOW ===== */
+  #settingsWin { width:700px; height:500px; top:100px; left:260px; }
+
+  .settings-sidebar {
+    width:200px; flex-shrink:0;
+    border-left:1px solid rgba(255,255,255,0.07);
+    padding:10px 0;
+    display:flex;flex-direction:column;gap:2px;
+    overflow-y:auto;
+  }
+  .settings-item {
+    display:flex;align-items:center;gap:10px;
+    padding:9px 16px; font-size:0.78rem; color:var(--text-dim);
+    cursor:pointer; transition:background 0.15s; border-radius:8px; margin:0 6px;
+  }
+  .settings-item:hover,.settings-item.active { background:rgba(0,120,212,0.2); color:white; }
+  .settings-item .si-icon { font-size:1.1rem; }
+
+  .settings-content { flex:1; padding:24px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent; }
+  .settings-content h2 { font-size:1.1rem; font-weight:700; color:white; margin-bottom:20px; }
+
+  .settings-group { margin-bottom:20px; }
+  .settings-group-title { font-size:0.7rem; font-weight:700; color:#60cdff; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+
+  .settings-row {
+    display:flex;align-items:center;gap:12px;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
+    border-radius:10px; padding:12px 16px; margin-bottom:8px;
+  }
+  .settings-row .sr-icon { font-size:1.2rem; }
+  .settings-row .sr-info { flex:1; }
+  .settings-row .sr-title { font-size:0.8rem; color:white; font-weight:600; }
+  .settings-row .sr-desc  { font-size:0.67rem; color:var(--text-dim); margin-top:1px; }
+
+  /* Toggle switch */
+  .toggle {
+    width:44px;height:24px;border-radius:12px;
+    background:rgba(255,255,255,0.15); cursor:pointer;
+    position:relative; transition:background 0.3s; flex-shrink:0;
+  }
+  .toggle.on { background:#0078d4; }
+  .toggle::after {
+    content:''; position:absolute; width:20px;height:20px;
+    border-radius:50%; background:white; top:2px; left:2px;
+    transition:transform 0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  }
+  .toggle.on::after { transform:translateX(20px); }
+
+  /* Slider */
+  .settings-slider { width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:2px; background:rgba(255,255,255,0.2); outline:none; cursor:pointer; }
+  .settings-slider::-webkit-slider-thumb { -webkit-appearance:none; width:16px;height:16px;border-radius:50%;background:#0078d4;cursor:pointer; }
+
+  /* Wallpaper picker */
+  .wallpaper-picker { display:flex;gap:8px;flex-wrap:wrap; }
+  .wp-option {
+    width:64px;height:40px;border-radius:8px;cursor:pointer;
+    border:2px solid transparent; transition:border-color 0.2s;
+    overflow:hidden; flex-shrink:0;
+  }
+  .wp-option.selected { border-color:#60cdff; }
+  .wp-option div { width:100%;height:100%; }
+
+  /* Color accent picker */
+  .color-picker { display:flex;gap:8px; }
+  .color-opt {
+    width:28px;height:28px;border-radius:50%;cursor:pointer;
+    border:2px solid transparent; transition:border-color 0.2s, transform 0.15s;
+  }
+  .color-opt:hover { transform:scale(1.15); }
+  .color-opt.selected { border-color:white; }
+
+  /* ===== BROWSER WINDOW ===== */
+  #browserWin { width:720px; height:480px; top:90px; left:240px; }
+
+  .browser-bar {
+    display:flex;align-items:center;gap:8px;
+    padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.07);
+    flex-shrink:0;
+  }
+  .browser-nav-btn {
+    width:28px;height:28px;border-radius:6px;background:transparent;
+    border:none;color:var(--text-dim);cursor:pointer;font-size:0.85rem;
+    display:flex;align-items:center;justify-content:center;
+    transition:background 0.15s;
+  }
+  .browser-nav-btn:hover{background:rgba(255,255,255,0.08);color:white;}
+  .browser-url {
+    flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
+    border-radius:20px;padding:5px 14px;font-size:0.75rem;color:var(--text-dim);
+    direction:ltr;outline:none;font-family:monospace;
+  }
+  .browser-url:focus{border-color:rgba(96,205,255,0.5);color:white;}
+
+  .browser-body {
+    flex:1;overflow:hidden;
+    background: linear-gradient(135deg, #0a0a1a, #0d1b3e);
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:16px;
+  }
+  .browser-placeholder { text-align:center; color:var(--text-dim); }
+  .browser-placeholder .bp-logo { font-size:3rem;margin-bottom:12px; }
+  .browser-placeholder h3 { font-size:1rem;color:white;margin-bottom:8px; }
+  .browser-placeholder p { font-size:0.78rem;line-height:1.6; }
+
+  /* ===== TASKBAR ===== */
+  #taskbar {
+    position:absolute;bottom:0;left:0;right:0;
+    height:var(--taskbar-h);
+    background:rgba(10,10,25,0.8);
+    backdrop-filter:blur(40px) saturate(1.8);
+    border-top:1px solid rgba(255,255,255,0.08);
+    display:flex;align-items:center;justify-content:center;
+    gap:4px; z-index:9999;
+    box-shadow:0 -4px 30px rgba(0,0,0,0.5);
+  }
+
+  .tb-spacer { flex:1; }
+
+  .tb-item {
+    width:40px;height:40px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.25rem;cursor:pointer;
+    transition:background 0.15s,transform 0.15s;
+    position:relative;
+  }
+  .tb-item:hover { background:rgba(255,255,255,0.1); transform:scale(1.1); }
+  .tb-item:active { transform:scale(0.95); }
+  .tb-item .tb-dot {
+    position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
+    width:4px;height:4px;border-radius:50%;background:#60cdff;
+    display:none;
+  }
+  .tb-item.open .tb-dot { display:block; }
+
+  /* Start button */
+  .tb-start {
+    width:40px;height:40px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer; transition:background 0.15s,transform 0.15s;
+    font-size:1.2rem;
+  }
+  .tb-start:hover { background:rgba(255,255,255,0.1); transform:scale(1.05); }
+
+  /* Taskbar right */
+  .tb-right {
+    display:flex;align-items:center;gap:8px;
+    padding:0 12px; font-size:0.72rem; color:white;
+  }
+  .tb-clock { text-align:center;line-height:1.3; }
+  .tb-clock .tc-time { font-weight:700;font-size:0.8rem; }
+  .tb-clock .tc-date { font-size:0.6rem;color:var(--text-dim); }
+  .tb-sys-icons { display:flex;gap:4px;align-items:center; }
+  .tb-sys-icon { font-size:0.9rem;cursor:pointer;padding:2px;border-radius:4px;transition:background 0.15s; }
+  .tb-sys-icon:hover { background:rgba(255,255,255,0.1); }
+
+  /* ===== START MENU ===== */
+  #startMenu {
+    position:absolute;bottom:calc(var(--taskbar-h) + 8px);left:50%;
+    transform:translateX(-50%);
+    width:640px; max-height:520px;
+    background:rgba(12,12,28,0.9);
+    backdrop-filter:blur(60px) saturate(2);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.7);
+    z-index:9998;
+    display:none; flex-direction:column;
+    overflow:hidden;
+    animation:startOpen 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  #startMenu.show { display:flex; }
+  @keyframes startOpen {
+    from{opacity:0;transform:translateX(-50%) scale(0.95) translateY(10px)}
+    to{opacity:1;transform:translateX(-50%) scale(1) translateY(0)}
+  }
+
+  .start-search-row {
+    padding:16px 20px 12px;
+    border-bottom:1px solid rgba(255,255,255,0.07);
+  }
+  .start-search {
+    width:100%;background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.12);border-radius:24px;
+    padding:8px 16px;color:white;font-family:'Cairo',sans-serif;
+    font-size:0.85rem;outline:none;direction:rtl;
+    transition:border-color 0.2s;
+  }
+  .start-search:focus{border-color:rgba(96,205,255,0.5);}
+  .start-search::placeholder{color:rgba(255,255,255,0.35);}
+
+  .start-section-label { font-size:0.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:12px 20px 8px; }
+
+  .start-pinned {
+    padding:0 20px 12px;
+    display:grid;grid-template-columns:repeat(6,1fr);gap:4px;
+  }
+  .start-app {
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:10px 6px;border-radius:10px;cursor:pointer;
+    transition:background 0.15s;
+  }
+  .start-app:hover{background:rgba(255,255,255,0.08);}
+  .start-app .sa-icon{font-size:1.8rem;}
+  .start-app .sa-name{font-size:0.62rem;color:var(--text-dim);text-align:center;}
+
+  .start-recommended {
+    border-top:1px solid rgba(255,255,255,0.07);
+    padding:12px 20px; display:grid;grid-template-columns:1fr 1fr;gap:6px;
+  }
+  .rec-item {
+    display:flex;align-items:center;gap:10px;
+    padding:8px;border-radius:8px;cursor:pointer;transition:background 0.15s;
+  }
+  .rec-item:hover{background:rgba(255,255,255,0.08);}
+  .rec-item .ri-icon{font-size:1.4rem;}
+  .rec-item .ri-info .ri-name{font-size:0.75rem;color:white;font-weight:600;}
+  .rec-item .ri-info .ri-time{font-size:0.62rem;color:var(--text-dim);}
+
+  .start-footer {
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 20px; border-top:1px solid rgba(255,255,255,0.07);
+    background:rgba(0,0,0,0.2);
+  }
+  .start-user { display:flex;align-items:center;gap:10px; }
+  .start-user-av { width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0078d4,#60cdff);display:flex;align-items:center;justify-content:center;font-size:1rem; }
+  .start-user-name { font-size:0.8rem;color:white;font-weight:600; }
+  .start-power-btns { display:flex;gap:4px; }
+  .start-power-btn {
+    width:32px;height:32px;border-radius:8px;background:transparent;
+    border:none;color:var(--text-dim);cursor:pointer;font-size:0.9rem;
+    display:flex;align-items:center;justify-content:center;
+    transition:background 0.15s;
+  }
+  .start-power-btn:hover{background:rgba(255,255,255,0.1);color:white;}
+
+  /* ===== NOTIFICATION CENTER ===== */
+  #notifCenter {
+    position:absolute;bottom:calc(var(--taskbar-h)+8px);right:10px;
+    width:380px;
+    background:rgba(12,12,28,0.92);
+    backdrop-filter:blur(60px) saturate(2);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.7);
+    z-index:9998; padding:16px;
+    display:none;
+    animation:startOpen 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  #notifCenter.show{display:block;}
+
+  .nc-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:14px; }
+  .nc-header h3{font-size:0.85rem;color:white;font-weight:700;}
+  .nc-clear{font-size:0.7rem;color:#60cdff;cursor:pointer;background:none;border:none;font-family:'Cairo',sans-serif;}
+
+  .nc-quick { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px; }
+  .nc-toggle {
+    background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px;padding:10px 6px;text-align:center;
+    cursor:pointer;transition:background 0.2s;
+  }
+  .nc-toggle.on{background:rgba(0,120,212,0.3);border-color:rgba(0,120,212,0.5);}
+  .nc-toggle:hover{background:rgba(255,255,255,0.12);}
+  .nc-toggle .nt-icon{font-size:1.2rem;display:block;margin-bottom:4px;}
+  .nc-toggle .nt-label{font-size:0.6rem;color:var(--text-dim);}
+
+  .nc-brightness { margin-bottom:16px; }
+  .nc-brightness label{font-size:0.7rem;color:var(--text-dim);display:block;margin-bottom:6px;}
+
+  .nc-notifs { display:flex;flex-direction:column;gap:8px; }
+  .nc-notif {
+    display:flex;gap:10px;background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);border-radius:10px;
+    padding:10px;
+  }
+  .nc-notif .nn-icon{font-size:1.4rem;flex-shrink:0;}
+  .nc-notif .nn-content .nn-title{font-size:0.75rem;color:white;font-weight:600;}
+  .nc-notif .nn-content .nn-msg{font-size:0.67rem;color:var(--text-dim);margin-top:2px;line-height:1.4;}
+  .nc-notif .nn-content .nn-time{font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:3px;}
+
+  /* ===== CONTEXT MENU ===== */
+  #ctxMenu {
+    position:absolute;
+    background:rgba(20,20,40,0.95);
+    backdrop-filter:blur(30px);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:10px;padding:6px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.6);
+    z-index:99999;display:none;min-width:180px;
+    animation:ctxIn 0.15s ease both;
+  }
+  #ctxMenu.show{display:block;}
+  @keyframes ctxIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+  .ctx-item {
+    display:flex;align-items:center;gap:10px;
+    padding:7px 12px;border-radius:6px;cursor:pointer;
+    font-size:0.78rem;color:var(--text-dim);transition:background 0.1s;
+    font-family:'Cairo',sans-serif;
+  }
+  .ctx-item:hover{background:rgba(0,120,212,0.2);color:white;}
+  .ctx-item.danger:hover{background:rgba(220,50,50,0.2);color:#ff7070;}
+  .ctx-sep{height:1px;background:rgba(255,255,255,0.08);margin:4px 0;}
+
+  /* Loading screen */
+  #loadScreen {
+    position:fixed;inset:0;z-index:999999;
+    background:linear-gradient(135deg,#050510,#0a1530);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+    animation:fadeOut 0.5s 2.5s ease both;
+  }
+  @keyframes fadeOut{to{opacity:0;pointer-events:none;visibility:hidden}}
+  .load-logo{font-size:3rem;animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .load-bar{width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;}
+  .load-fill{height:100%;background:linear-gradient(90deg,#0078d4,#60cdff);border-radius:2px;animation:fill 2s ease both;}
+  @keyframes fill{from{width:0}to{width:100%}}
+  .load-text{font-size:0.78rem;color:var(--text-dim);}
+
+  /* ===== UTIL ===== */
+  .flex-row{display:flex;}
+  .win-body.flex-row{flex-direction:row;}
+
+  /* ===== MOBILE ===== */
+  /* أيقونات سطح المكتب — موبايل: لمسة واحدة */
+  @media (pointer:coarse) {
+    .desk-icon { width:80px; padding:10px 6px; }
+    .desk-icon .di-img { font-size:2.4rem; }
+    .desk-icon .di-label { font-size:0.7rem; }
+
+    /* نوافذ موبايل — تملأ الشاشة تقريباً */
+    .win {
+      min-width:unset !important;
+      min-height:unset !important;
+    }
+
+    /* win buttons bigger touch targets */
+    .win-btn { width:18px; height:18px; }
+    .win-titlebar { height:44px; padding:0 14px; }
+
+    /* Taskbar bigger */
+    :root { --taskbar-h: 58px; }
+    .tb-item { width:48px; height:48px; font-size:1.4rem; }
+    .tb-start { width:48px; height:48px; font-size:1.4rem; }
+
+    /* Start menu full width on mobile */
+    #startMenu { width:calc(100vw - 20px); left:10px; transform:none; bottom:calc(var(--taskbar-h)+8px); }
+    #startMenu.show { display:flex; }
+    .start-pinned { grid-template-columns:repeat(4,1fr); }
+
+    /* Notif center full width */
+    #notifCenter { width:calc(100vw - 20px); right:10px; left:10px; }
+
+    /* Explorer sidebar hidden on mobile — show as bottom sheet */
+    .explorer-sidebar { display:none; }
+
+    /* Settings sidebar hidden on mobile */
+    .settings-sidebar { display:none; }
+    .settings-content { padding:16px; }
+
+    /* Nova input bigger */
+    .nova-input { font-size:1rem; padding:10px 16px; }
+    .nova-send { width:42px; height:42px; font-size:1.1rem; }
+
+    /* Mobile window drag handle indicator */
+    .win-titlebar::after {
+      content:''; display:block; width:40px; height:4px;
+      background:rgba(255,255,255,0.2); border-radius:2px;
+      position:absolute; top:6px; left:50%; transform:translateX(-50%);
+    }
+    .win-titlebar { position:relative; }
+
+    /* Context menu bigger items */
+    .ctx-item { padding:12px 16px; font-size:0.88rem; }
+
+    /* Mobile: bigger toggle */
+    .toggle { width:52px; height:28px; }
+    .toggle::after { width:24px; height:24px; }
+    .toggle.on::after { transform:translateX(24px); }
+  }
+
+  /* Mobile win fullscreen helper */
+  .win.mobile-fs {
+    top:0 !important; left:0 !important;
+    width:100% !important; height:calc(100% - var(--taskbar-h)) !important;
+    border-radius:0 !important;
+  }
+
+  /* Mobile bottom sheet for sidebar */
+  .mobile-sheet {
+    position:absolute; bottom:calc(var(--taskbar-h)); left:0; right:0;
+    background:rgba(12,12,28,0.97);
+    backdrop-filter:blur(40px);
+    border-top:1px solid rgba(255,255,255,0.12);
+    border-radius:20px 20px 0 0;
+    padding:12px 0 20px;
+    z-index:5000;
+    transform:translateY(100%);
+    transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
+    max-height:60vh; overflow-y:auto;
+  }
+  .mobile-sheet.show { transform:translateY(0); }
+  .mobile-sheet-handle {
+    width:40px; height:4px; background:rgba(255,255,255,0.2);
+    border-radius:2px; margin:0 auto 16px;
+  }
+  .mobile-sheet-item {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 20px; font-size:0.85rem; color:var(--text-dim);
+    cursor:pointer; transition:background 0.15s;
+  }
+  .mobile-sheet-item:hover,.mobile-sheet-item.active { background:rgba(0,120,212,0.2); color:white; }
+  .mobile-sheet-item .msi-icon { font-size:1.2rem; }
+
+  /* Mobile sidebar toggle button inside window */
+  .mob-sidebar-btn {
+    display:none;
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:8px; padding:6px 10px;
+    color:var(--text-dim); font-size:0.8rem;
+    cursor:pointer; font-family:'Cairo',sans-serif;
+    margin-left:4px;
+  }
+  @media (pointer:coarse) { .mob-sidebar-btn { display:inline-flex; align-items:center; gap:5px; } }
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loadScreen">
+  <div class="load-logo">⊞</div>
+  <div style="font-size:1.1rem;color:white;font-weight:600;">Windows 12</div>
+  <div class="load-bar"><div class="load-fill"></div></div>
+  <div class="load-text">جارٍ التشغيل...</div>
+</div>
+
+<!-- Desktop -->
+<div id="desktop">
+
+  <!-- Aurora / Wallpaper FX -->
+  <div class="aurora">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+  </div>
+  <div class="stars" id="starsLayer"></div>
+
+  <!-- Desktop Icons -->
+  <div class="desktop-icons" id="desktopIcons">
+    <div class="desk-icon" id="deskExplorer"><div class="di-img">📁</div><div class="di-label">مستكشف الملفات</div></div>
+    <div class="desk-icon" id="deskBrowser"><div class="di-img">🌐</div><div class="di-label">متصفح الويب</div></div>
+    <div class="desk-icon" id="deskNova"><div class="di-img">🤖</div><div class="di-label">Nova AI</div></div>
+    <div class="desk-icon" id="deskSettings"><div class="di-img">⚙️</div><div class="di-label">الإعدادات</div></div>
+  </div>
+
+  <!-- ==================== NOVA AI WINDOW ==================== -->
+  <div class="win focused" id="novaWin">
+    <div class="win-titlebar" onmousedown="startDrag(event,'novaWin')" ontouchstart="startDragTouch(event,'novaWin')">
+      <span class="win-icon">🤖</span>
+      <span class="win-title">Nova AI</span>
+      <div class="win-btns">
+        <div class="win-btn min" onclick="minWin('novaWin')"></div>
+        <div class="win-btn close" onclick="closeWin('novaWin')"></div>
+      </div>
+    </div>
+    <div class="win-body" style="flex-direction:column;overflow:hidden;">
+      <div class="nova-header">
+        <div class="nova-avatar">🤖</div>
+        <div class="nova-info">
+          <h3>Nova AI</h3>
+          <p>مساعدك الذكي في Windows 12</p>
+        </div>
+        <div class="nova-status">
+          <div class="nova-dot"></div>
+          متصل
+        </div>
+      </div>
+      <div class="nova-msgs" id="novaMsgs">
+        <div class="msg nova">
+          <div class="msg-av">🤖</div>
+          <div class="msg-bubble">أهلاً! أنا Nova، مساعدك الذكي في Windows 12. كيف يمكنني مساعدتك اليوم؟ 👋</div>
+        </div>
+      </div>
+      <div class="nova-typing" id="novaTyping">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+        Nova يكتب...
+      </div>
+      <div class="nova-suggestions" id="novaSugs">
+        <div class="nova-sug" onclick="useSug(this)">📁 افتح مستكشف الملفات</div>
+        <div class="nova-sug" onclick="useSug(this)">⚙️ اعدادات النظام</div>
+        <div class="nova-sug" onclick="useSug(this)">🌤️ الطقس اليوم</div>
+        <div class="nova-sug" onclick="useSug(this)">🎵 شغل موسيقى</div>
+      </div>
+      <div class="nova-input-area">
+        <input class="nova-input" id="novaInput" placeholder="اكتب رسالتك..." onkeydown="if(event.key==='Enter')sendNova()">
+        <button class="nova-send" onclick="sendNova()">➤</button>
+      </div>
+    </div>
+    <div class="resize-handle" onmousedown="startResize(event,'novaWin')"></div>
+  </div>
+
+  <!-- ==================== FILE EXPLORER ==================== -->
+  <div class="win hidden" id="explorerWin">
+    <div class="win-titlebar" onmousedown="startDrag(event,'explorerWin')" ontouchstart="startDragTouch(event,'explorerWin')">
+      <span class="win-icon">📁</span>
+      <span class="win-title">مستكشف الملفات</span>
+      <div class="win-btns">
+        <div class="win-btn min" onclick="minWin('explorerWin')"></div>
+        <div class="win-btn max" onclick="maxWin('explorerWin')"></div>
+        <div class="win-btn close" onclick="closeWin('explorerWin')"></div>
+      </div>
+    </div>
+    <div class="win-body flex-row">
+      <div class="explorer-sidebar">
+        <div class="explorer-sidebar-item active"><span class="si-icon">🏠</span> الرئيسية</div>
+        <div class="explorer-sidebar-item"><span class="si-icon">⭐</span> المفضلة</div>
+        <div class="explorer-sidebar-item"><span class="si-icon">🖥️</span> هذا الجهاز</div>
+        <div class="explorer-sidebar-item"><span class="si-icon">🖼️</span> الصور</div>
+        <div class="explorer-sidebar-item"><span class="si-icon">📄</span> المستندات</div>
+        <div class="explorer-sidebar-item"><span class="si-icon">🎵</span> الموسيقى</div>
+        <div class="explorer-sidebar-item"><span class="si-icon">🎬</span> الفيديو</div>
+        <div class="explorer-sidebar-item"><span class="si-icon">⬇️</span> التنزيلات</div>
+        <div class="explorer-sidebar-item"><span class="si-icon">🗑️</span> سلة المحذوفات</div>
+      </div>
+      <div class="explorer-main">
+        <div class="explorer-toolbar">
+          <button class="mob-sidebar-btn" onclick="toggleMobileSheet('explorerSheet')">☰ القائمة</button>
+          <button class="exp-btn">◀</button>
+          <button class="exp-btn">▶</button>
+          <input class="exp-path" value="C:\Users\Anas\Documents" readonly>
+          <button class="exp-btn">🔍</button>
+        </div>
+        <div class="explorer-files">
+          <div class="file-item"><div class="fi-icon">📁</div><div class="fi-name">المشاريع</div></div>
+          <div class="file-item"><div class="fi-icon">📁</div><div class="fi-name">CCRAFT SPACE</div></div>
+          <div class="file-item"><div class="fi-icon">📁</div><div class="fi-name">Roblox Scripts</div></div>
+          <div class="file-item"><div class="fi-icon">📄</div><div class="fi-name">notes.txt</div></div>
+          <div class="file-item"><div class="fi-icon">🐍</div><div class="fi-name">bot.py</div></div>
+          <div class="file-item"><div class="fi-icon">🌐</div><div class="fi-name">index.html</div></div>
+          <div class="file-item"><div class="fi-icon">📁</div><div class="fi-name">Godot Projects</div></div>
+          <div class="file-item"><div class="fi-icon">🎮</div><div class="fi-name">game.gd</div></div>
+          <div class="file-item"><div class="fi-icon">📁</div><div class="fi-name">Security Tools</div></div>
+          <div class="file-item"><div class="fi-icon">📸</div><div class="fi-name">screenshot.png</div></div>
+          <div class="file-item"><div class="fi-icon">📦</div><div class="fi-name">archive.zip</div></div>
+          <div class="file-item"><div class="fi-icon">📝</div><div class="fi-name">README.md</div></div>
+        </div>
+        <div class="exp-status">12 عنصر — مساحة حرة: 234 GB</div>
+      </div>
+    </div>
+    <div class="resize-handle" onmousedown="startResize(event,'explorerWin')"></div>
+  </div>
+
+  <!-- ==================== SETTINGS ==================== -->
+  <div class="win hidden" id="settingsWin">
+    <div class="win-titlebar" onmousedown="startDrag(event,'settingsWin')" ontouchstart="startDragTouch(event,'settingsWin')">
+      <span class="win-icon">⚙️</span>
+      <span class="win-title">الإعدادات</span>
+      <button class="mob-sidebar-btn" onclick="toggleMobileSheet('settingsSheet')">☰</button>
+      <div class="win-btns">
+        <div class="win-btn min" onclick="minWin('settingsWin')"></div>
+        <div class="win-btn max" onclick="maxWin('settingsWin')"></div>
+        <div class="win-btn close" onclick="closeWin('settingsWin')"></div>
+      </div>
+    </div>
+    <div class="win-body flex-row">
+      <div class="settings-sidebar">
+        <div class="settings-item active" onclick="showSettingsPage('personalization',this)"><span class="si-icon">🎨</span> التخصيص</div>
+        <div class="settings-item" onclick="showSettingsPage('system',this)"><span class="si-icon">🖥️</span> النظام</div>
+        <div class="settings-item" onclick="showSettingsPage('wifi',this)"><span class="si-icon">📶</span> الشبكة والإنترنت</div>
+        <div class="settings-item" onclick="showSettingsPage('privacy',this)"><span class="si-icon">🔒</span> الخصوصية</div>
+        <div class="settings-item" onclick="showSettingsPage('nova',this)"><span class="si-icon">🤖</span> Nova AI</div>
+        <div class="settings-item" onclick="showSettingsPage('update',this)"><span class="si-icon">🔄</span> Windows Update</div>
+        <div class="settings-item" onclick="showSettingsPage('accounts',this)"><span class="si-icon">👤</span> الحسابات</div>
+      </div>
+      <div class="settings-content" id="settingsContent">
+        <!-- Personalization default -->
+        <h2>🎨 التخصيص</h2>
+        <div class="settings-group">
+          <div class="settings-group-title">الخلفية</div>
+          <div class="settings-row">
+            <span class="sr-icon">🖼️</span>
+            <div class="sr-info"><div class="sr-title">خلفية سطح المكتب</div><div class="sr-desc">اختر خلفية مخصصة</div></div>
+            <div class="wallpaper-picker">
+              <div class="wp-option selected" onclick="setWallpaper(this,1)"><div style="background:linear-gradient(135deg,#0a0a1a,#0d1b3e,#0a2155)"></div></div>
+              <div class="wp-option" onclick="setWallpaper(this,2)"><div style="background:linear-gradient(135deg,#1a0a2e,#2d1b69,#6b21a8)"></div></div>
+              <div class="wp-option" onclick="setWallpaper(this,3)"><div style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364)"></div></div>
+              <div class="wp-option" onclick="setWallpaper(this,4)"><div style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-title">لون التمييز</div>
+          <div class="settings-row">
+            <span class="sr-icon">🎨</span>
+            <div class="sr-info"><div class="sr-title">لون Windows</div><div class="sr-desc">يُطبق على النوافذ والأزرار</div></div>
+            <div class="color-picker">
+              <div class="color-opt selected" style="background:#0078d4" onclick="setAccent('#0078d4',this)"></div>
+              <div class="color-opt" style="background:#7c3aed" onclick="setAccent('#7c3aed',this)"></div>
+              <div class="color-opt" style="background:#dc2626" onclick="setAccent('#dc2626',this)"></div>
+              <div class="color-opt" style="background:#059669" onclick="setAccent('#059669',this)"></div>
+              <div class="color-opt" style="background:#d97706" onclick="setAccent('#d97706',this)"></div>
+            </div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-title">الشفافية</div>
+          <div class="settings-row">
+            <span class="sr-icon">💎</span>
+            <div class="sr-info"><div class="sr-title">تأثيرات الشفافية</div><div class="sr-desc">Mica و Acrylic effects</div></div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="resize-handle" onmousedown="startResize(event,'settingsWin')"></div>
+  </div>
+
+  <!-- ==================== BROWSER ==================== -->
+  <div class="win hidden" id="browserWin">
+    <div class="win-titlebar" onmousedown="startDrag(event,'browserWin')" ontouchstart="startDragTouch(event,'browserWin')">
+      <span class="win-icon">🌐</span>
+      <span class="win-title">Edge — المتصفح</span>
+      <div class="win-btns">
+        <div class="win-btn min" onclick="minWin('browserWin')"></div>
+        <div class="win-btn max" onclick="maxWin('browserWin')"></div>
+        <div class="win-btn close" onclick="closeWin('browserWin')"></div>
+      </div>
+    </div>
+    <div class="win-body" style="flex-direction:column;">
+      <div class="browser-bar">
+        <button class="browser-nav-btn">◀</button>
+        <button class="browser-nav-btn">▶</button>
+        <button class="browser-nav-btn">🔄</button>
+        <input class="browser-url" value="https://ccraftspace.ddnsking.com" readonly>
+        <button class="browser-nav-btn">⭐</button>
+      </div>
+      <div class="browser-body">
+        <div class="browser-placeholder">
+          <div class="bp-logo">🌐</div>
+          <h3>ccraftspace.ddnsking.com</h3>
+          <p>منصة CCRAFT SPACE لسكربتات Roblox<br><span style="color:#60cdff;font-size:0.85rem">اضغط مرتين على أيقونة المتصفح لفتحه</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="resize-handle" onmousedown="startResize(event,'browserWin')"></div>
+  </div>
+
+  <!-- ==================== START MENU ==================== -->
+  <div id="startMenu">
+    <div class="start-search-row">
+      <input class="start-search" placeholder="🔍  ابحث في التطبيقات والملفات...">
+    </div>
+    <div class="start-section-label">التطبيقات المثبتة</div>
+    <div class="start-pinned">
+      <div class="start-app" ondblclick="openWin('explorerWin');toggleStart()"><div class="sa-icon">📁</div><div class="sa-name">ملفات</div></div>
+      <div class="start-app" ondblclick="openWin('browserWin');toggleStart()"><div class="sa-icon">🌐</div><div class="sa-name">Edge</div></div>
+      <div class="start-app" ondblclick="openWin('novaWin');toggleStart()"><div class="sa-icon">🤖</div><div class="sa-name">Nova AI</div></div>
+      <div class="start-app" ondblclick="openWin('settingsWin');toggleStart()"><div class="sa-icon">⚙️</div><div class="sa-name">إعدادات</div></div>
+      <div class="start-app"><div class="sa-icon">🎮</div><div class="sa-name">Xbox</div></div>
+      <div class="start-app"><div class="sa-icon">📧</div><div class="sa-name">Mail</div></div>
+      <div class="start-app"><div class="sa-icon">🗒️</div><div class="sa-name">Notepad</div></div>
+      <div class="start-app"><div class="sa-icon">📊</div><div class="sa-name">Excel</div></div>
+      <div class="start-app"><div class="sa-icon">📝</div><div class="sa-name">Word</div></div>
+      <div class="start-app"><div class="sa-icon">🎵</div><div class="sa-name">Music</div></div>
+      <div class="start-app"><div class="sa-icon">📷</div><div class="sa-name">Camera</div></div>
+      <div class="start-app"><div class="sa-icon">🗓️</div><div class="sa-name">Calendar</div></div>
+    </div>
+    <div class="start-section-label">موصى به</div>
+    <div class="start-recommended">
+      <div class="rec-item"><div class="ri-icon">🐍</div><div class="ri-info"><div class="ri-name">bot.py</div><div class="ri-time">قبل ساعة</div></div></div>
+      <div class="rec-item"><div class="ri-icon">🌐</div><div class="ri-info"><div class="ri-name">scripts.html</div><div class="ri-time">اليوم</div></div></div>
+      <div class="rec-item"><div class="ri-icon">📄</div><div class="ri-info"><div class="ri-name">README.md</div><div class="ri-time">أمس</div></div></div>
+      <div class="rec-item"><div class="ri-icon">🎮</div><div class="ri-info"><div class="ri-name">game.gd</div><div class="ri-time">أمس</div></div></div>
+    </div>
+    <div class="start-footer">
+      <div class="start-user">
+        <div class="start-user-av">👤</div>
+        <div class="start-user-name">Anas</div>
+      </div>
+      <div class="start-power-btns">
+        <button class="start-power-btn" title="إعادة التشغيل">🔄</button>
+        <button class="start-power-btn" title="إيقاف التشغيل">⏻</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== NOTIFICATION CENTER ==================== -->
+  <div id="notifCenter">
+    <div class="nc-header">
+      <h3>🔔 الإشعارات</h3>
+      <button class="nc-clear">مسح الكل</button>
+    </div>
+    <div class="nc-quick">
+      <div class="nc-toggle on"><span class="nt-icon">📶</span><div class="nt-label">Wi-Fi</div></div>
+      <div class="nc-toggle on"><span class="nt-icon">🔵</span><div class="nt-label">Bluetooth</div></div>
+      <div class="nc-toggle" onclick="this.classList.toggle('on')"><span class="nt-icon">✈️</span><div class="nt-label">طيران</div></div>
+      <div class="nc-toggle on"><span class="nt-icon">🌙</span><div class="nt-label">لا إزعاج</div></div>
+    </div>
+    <div class="nc-brightness">
+      <label>☀️ السطوع</label>
+      <input type="range" class="settings-slider" min="0" max="100" value="80">
+    </div>
+    <div class="nc-notifs">
+      <div class="nc-notif">
+        <div class="nn-icon">🤖</div>
+        <div class="nn-content">
+          <div class="nn-title">Nova AI</div>
+          <div class="nn-msg">مرحباً! أنا هنا لمساعدتك في أي وقت.</div>
+          <div class="nn-time">الآن</div>
+        </div>
+      </div>
+      <div class="nc-notif">
+        <div class="nn-icon">🔄</div>
+        <div class="nn-content">
+          <div class="nn-title">Windows Update</div>
+          <div class="nn-msg">تحديثات جديدة متاحة للتثبيت.</div>
+          <div class="nn-time">منذ 10 دقائق</div>
+        </div>
+      </div>
+      <div class="nc-notif">
+        <div class="nn-icon">📧</div>
+        <div class="nn-content">
+          <div class="nn-title">Mail</div>
+          <div class="nn-msg">لديك 3 رسائل جديدة غير مقروءة.</div>
+          <div class="nn-time">منذ ساعة</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile sheet: Explorer sidebar -->
+  <div class="mobile-sheet" id="explorerSheet">
+    <div class="mobile-sheet-handle"></div>
+    <div class="mobile-sheet-item active"><span class="msi-icon">🏠</span> الرئيسية</div>
+    <div class="mobile-sheet-item"><span class="msi-icon">⭐</span> المفضلة</div>
+    <div class="mobile-sheet-item"><span class="msi-icon">🖥️</span> هذا الجهاز</div>
+    <div class="mobile-sheet-item"><span class="msi-icon">🖼️</span> الصور</div>
+    <div class="mobile-sheet-item"><span class="msi-icon">📄</span> المستندات</div>
+    <div class="mobile-sheet-item"><span class="msi-icon">🎵</span> الموسيقى</div>
+    <div class="mobile-sheet-item"><span class="msi-icon">🎬</span> الفيديو</div>
+    <div class="mobile-sheet-item"><span class="msi-icon">⬇️</span> التنزيلات</div>
+    <div class="mobile-sheet-item"><span class="msi-icon">🗑️</span> سلة المحذوفات</div>
+  </div>
+
+  <!-- Mobile sheet: Settings sidebar -->
+  <div class="mobile-sheet" id="settingsSheet">
+    <div class="mobile-sheet-handle"></div>
+    <div class="mobile-sheet-item active" onclick="showSettingsPage('personalization',this);toggleMobileSheet('settingsSheet')"><span class="msi-icon">🎨</span> التخصيص</div>
+    <div class="mobile-sheet-item" onclick="showSettingsPage('system',this);toggleMobileSheet('settingsSheet')"><span class="msi-icon">🖥️</span> النظام</div>
+    <div class="mobile-sheet-item" onclick="showSettingsPage('wifi',this);toggleMobileSheet('settingsSheet')"><span class="msi-icon">📶</span> الشبكة</div>
+    <div class="mobile-sheet-item" onclick="showSettingsPage('privacy',this);toggleMobileSheet('settingsSheet')"><span class="msi-icon">🔒</span> الخصوصية</div>
+    <div class="mobile-sheet-item" onclick="showSettingsPage('nova',this);toggleMobileSheet('settingsSheet')"><span class="msi-icon">🤖</span> Nova AI</div>
+    <div class="mobile-sheet-item" onclick="showSettingsPage('update',this);toggleMobileSheet('settingsSheet')"><span class="msi-icon">🔄</span> Windows Update</div>
+    <div class="mobile-sheet-item" onclick="showSettingsPage('accounts',this);toggleMobileSheet('settingsSheet')"><span class="msi-icon">👤</span> الحسابات</div>
+  </div>
+
+  <!-- Context Menu -->
+  <div id="ctxMenu">
+    <div class="ctx-item" onclick="hideCtx()">🖼️ تغيير خلفية سطح المكتب</div>
+    <div class="ctx-item" onclick="openWin('settingsWin');hideCtx()">⚙️ الإعدادات</div>
+    <div class="ctx-item" onclick="openWin('novaWin');hideCtx()">🤖 فتح Nova AI</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="hideCtx()">📌 أيقونات سطح المكتب</div>
+    <div class="ctx-item" onclick="hideCtx()">🔄 تحديث</div>
+  </div>
+
+  <!-- ==================== TASKBAR ==================== -->
+  <div id="taskbar">
+    <div class="tb-spacer"></div>
+
+    <!-- Centered icons -->
+    <div class="tb-item tb-start" onclick="toggleStart()" title="قائمة ابدأ">⊞</div>
+    <div class="tb-item" onclick="openWin('explorerWin')" id="tb-explorer" title="مستكشف الملفات">📁<div class="tb-dot"></div></div>
+    <div class="tb-item" onclick="openWin('browserWin')" id="tb-browser" title="المتصفح">🌐<div class="tb-dot"></div></div>
+    <div class="tb-item" onclick="openWin('novaWin')" id="tb-nova" title="Nova AI" style="position:relative">🤖
+      <div class="tb-dot" style="display:block;background:#60cdff;"></div>
+    </div>
+    <div class="tb-item" onclick="openWin('settingsWin')" id="tb-settings" title="الإعدادات">⚙️<div class="tb-dot"></div></div>
+    <div class="tb-item" title="المتجر">🛒<div class="tb-dot"></div></div>
+
+    <div class="tb-spacer"></div>
+
+    <!-- Right side -->
+    <div class="tb-right">
+      <div class="tb-sys-icons">
+        <span class="tb-sys-icon" title="الشبكة">📶</span>
+        <span class="tb-sys-icon" title="الصوت">🔊</span>
+        <span class="tb-sys-icon" title="البطارية">🔋</span>
+      </div>
+      <div class="tb-clock" onclick="toggleNotif()">
+        <div class="tc-time" id="tbTime">--:--</div>
+        <div class="tc-date" id="tbDate">--/--/----</div>
+      </div>
+      <span class="tb-sys-icon" onclick="toggleNotif()" title="الإشعارات">🔔</span>
+    </div>
+  </div>
+
+</div><!-- /desktop -->
+
+<script>
+/* ========== STARS ========== */
+const starsLayer = document.getElementById('starsLayer');
+for (let i = 0; i < 120; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*80}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;width:${Math.random()<0.2?3:2}px;height:${Math.random()<0.2?3:2}px;`;
+  starsLayer.appendChild(s);
+}
+
+/* ========== CLOCK ========== */
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('tbTime').textContent = `${h}:${m}`;
+  document.getElementById('tbDate').textContent = now.toLocaleDateString('ar-EG',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+updateClock(); setInterval(updateClock, 10000);
+
+/* ========== WINDOW MANAGEMENT ========== */
+let zTop = 200;
+
+function focusWin(id) {
+  document.querySelectorAll('.win').forEach(w => w.classList.remove('focused'));
+  const w = document.getElementById(id);
+  w.style.zIndex = ++zTop;
+  w.classList.add('focused');
+}
+
+function openWin(id) {
+  const w = document.getElementById(id);
+  w.classList.remove('hidden');
+  focusWin(id);
+  // Mark taskbar
+  const map = {novaWin:'tb-nova',explorerWin:'tb-explorer',settingsWin:'tb-settings',browserWin:'tb-browser'};
+  if (map[id]) document.getElementById(map[id]).classList.add('open');
+}
+
+function closeWin(id) {
+  document.getElementById(id).classList.add('hidden');
+  const map = {novaWin:'tb-nova',explorerWin:'tb-explorer',settingsWin:'tb-settings',browserWin:'tb-browser'};
+  if (map[id]) document.getElementById(map[id]).classList.remove('open');
+}
+
+function minWin(id) { closeWin(id); }
+
+function maxWin(id) {
+  const w = document.getElementById(id);
+  if (w.dataset.maximized === '1') {
+    w.style.top = w.dataset.ot; w.style.left = w.dataset.ol;
+    w.style.width = w.dataset.ow; w.style.height = w.dataset.oh;
+    w.dataset.maximized = '0';
+  } else {
+    w.dataset.ot = w.style.top; w.dataset.ol = w.style.left;
+    w.dataset.ow = w.style.width; w.dataset.oh = w.style.height;
+    w.style.top='0'; w.style.left='0';
+    w.style.width='100%'; w.style.height=`calc(100% - 48px)`;
+    w.dataset.maximized = '1';
+  }
+  focusWin(id);
+}
+
+/* Drag */
+let dragWin=null, dragOX=0, dragOY=0;
+function startDrag(e, id) {
+  if (e.target.classList.contains('win-btn')) return;
+  dragWin = id;
+  const r = document.getElementById(id).getBoundingClientRect();
+  dragOX = e.clientX - r.left;
+  dragOY = e.clientY - r.top;
+  focusWin(id);
+  document.getElementById(id).dataset.maximized='0';
+}
+document.addEventListener('mousemove', e => {
+  if (!dragWin) return;
+  const w = document.getElementById(dragWin);
+  w.style.left = (e.clientX - dragOX) + 'px';
+  w.style.top  = Math.max(0, e.clientY - dragOY) + 'px';
+});
+document.addEventListener('mouseup', () => { dragWin = null; });
+
+/* Resize */
+let resizeWin=null, resOX=0, resOY=0, resOW=0, resOH=0;
+function startResize(e, id) {
+  e.stopPropagation();
+  resizeWin = id;
+  const w = document.getElementById(id);
+  const r = w.getBoundingClientRect();
+  resOX = e.clientX; resOY = e.clientY;
+  resOW = r.width;   resOH = r.height;
+}
+document.addEventListener('mousemove', e => {
+  if (!resizeWin) return;
+  const w = document.getElementById(resizeWin);
+  w.style.width  = Math.max(300, resOW + e.clientX - resOX) + 'px';
+  w.style.height = Math.max(200, resOH + e.clientY - resOY) + 'px';
+});
+document.addEventListener('mouseup', () => { resizeWin = null; });
+
+/* Click on window to focus */
+document.querySelectorAll('.win').forEach(w => {
+  w.addEventListener('mousedown', () => focusWin(w.id));
+});
+
+/* ========== START MENU ========== */
+function toggleStart() {
+  const sm = document.getElementById('startMenu');
+  sm.classList.toggle('show');
+  document.getElementById('notifCenter').classList.remove('show');
+}
+
+/* ========== NOTIFICATION CENTER ========== */
+function toggleNotif() {
+  const nc = document.getElementById('notifCenter');
+  nc.classList.toggle('show');
+  document.getElementById('startMenu').classList.remove('show');
+}
+
+/* ========== CONTEXT MENU ========== */
+document.getElementById('desktop').addEventListener('contextmenu', e => {
+  if (e.target.closest('.win') || e.target.closest('#taskbar')) return;
+  e.preventDefault();
+  const m = document.getElementById('ctxMenu');
+  m.style.left = e.clientX + 'px';
+  m.style.top  = e.clientY + 'px';
+  m.classList.add('show');
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('#ctxMenu')) hideCtx();
+  if (!e.target.closest('#startMenu') && !e.target.closest('.tb-start')) document.getElementById('startMenu').classList.remove('show');
+  if (!e.target.closest('#notifCenter') && !e.target.closest('.tb-clock') && !e.target.closest('[title="الإشعارات"]')) document.getElementById('notifCenter').classList.remove('show');
+});
+function hideCtx() { document.getElementById('ctxMenu').classList.remove('show'); }
+
+/* ========== NOVA AI ========== */
+const novaReplies = {
+  'افتح': (m) => {
+    if (m.includes('ملفات') || m.includes('explorer')) { openWin('explorerWin'); return 'تم فتح مستكشف الملفات! 📁'; }
+    if (m.includes('متصفح') || m.includes('edge'))     { openWin('browserWin'); return 'تم فتح المتصفح! 🌐'; }
+    if (m.includes('إعداد') || m.includes('settings')) { openWin('settingsWin'); return 'تم فتح الإعدادات! ⚙️'; }
+    return 'ما التطبيق الذي تريد فتحه؟ 🤔';
+  },
+};
+
+const smartReplies = [
+  ['ملفات|explorer|مستكشف',    () => { openWin('explorerWin'); return 'فتحت مستكشف الملفات لك! 📁 يمكنك الآن تصفح ملفاتك.'; }],
+  ['متصفح|edge|انترنت',        () => { openWin('browserWin'); return 'تم فتح المتصفح! 🌐 تصفح ccraftspace الآن.'; }],
+  ['إعداد|settings',            () => { openWin('settingsWin'); return 'فتحت الإعدادات! ⚙️ غيّر الخلفية أو ألوان النظام.'; }],
+  ['وقت|ساعة|تاريخ',           () => { const n=new Date(); return `الوقت الآن: ${n.toLocaleTimeString('ar-EG')} 🕐\nالتاريخ: ${n.toLocaleDateString('ar-EG')} 📅`; }],
+  ['اسمك|مين انت|من انت',       () => 'أنا Nova 🤖، مساعد Windows 12 الذكي! تم دمجي مباشرة في النظام لمساعدتك في كل شيء.'],
+  ['مرحبا|اهلا|هاي|سلام',      () => 'أهلاً وسهلاً! 👋 كيف يمكنني مساعدتك اليوم؟'],
+  ['ccraft|كرافت',              () => 'CCRAFT SPACE 🚀 — منصة رائعة لسكربتات Roblox! افتح المتصفح لزيارتها.'],
+  ['roblox|روبلوكس',            () => 'Roblox 🎮 منصة ألعاب ممتازة! تحتاج مساعدة في سكربت معين؟'],
+  ['شكر|شكرا|تسلم',             () => 'العفو! 😊 أنا دائماً هنا لمساعدتك.'],
+  ['باي|وداعا|سلام',            () => 'مع السلامة! 👋 أراك قريباً.'],
+];
+
+function getNovaReply(msg) {
+  const m = msg.toLowerCase();
+  for (const [pattern, fn] of smartReplies) {
+    if (new RegExp(pattern, 'i').test(m)) return typeof fn === 'function' ? fn() : fn;
+  }
+  // Default
+  const defaults = [
+    `فهمت قصدك! هل تريد مني مساعدتك في شيء محدد؟ 🤔`,
+    `سؤال رائع! دعني أفكر... 🧠 يمكنك سؤالي عن فتح التطبيقات أو الوقت أو معلومات النظام.`,
+    `أنا Nova، مساعدك الذكي! 🤖 قل لي ما تحتاجه وسأحاول مساعدتك.`,
+    `مثير للاهتمام! هل تحتاج مساعدة في التنقل في Windows 12؟ ⊞`,
+  ];
+  return defaults[Math.floor(Math.random() * defaults.length)];
+}
+
+async function sendNova() {
+  const input = document.getElementById('novaInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  const msgs = document.getElementById('novaMsgs');
+  const sugs = document.getElementById('novaSugs');
+  sugs.style.display = 'none';
+
+  // User bubble
+  const uDiv = document.createElement('div');
+  uDiv.className = 'msg user';
+  uDiv.innerHTML = `<div class="msg-bubble">${escapeHTML(msg)}</div><div class="msg-av">👤</div>`;
+  msgs.appendChild(uDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Typing
+  const typing = document.getElementById('novaTyping');
+  typing.classList.add('show');
+
+  await new Promise(r => setTimeout(r, 800 + Math.random() * 600));
+  typing.classList.remove('show');
+
+  const reply = getNovaReply(msg);
+
+  const nDiv = document.createElement('div');
+  nDiv.className = 'msg nova';
+  nDiv.innerHTML = `<div class="msg-av">🤖</div><div class="msg-bubble">${reply.replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(nDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function useSug(el) {
+  document.getElementById('novaInput').value = el.textContent.replace(/^[^\s]+ /,'');
+  sendNova();
+}
+
+function escapeHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ========== SETTINGS PAGES ========== */
+const settingsPages = {
+  personalization: `
+    <h2>🎨 التخصيص</h2>
+    <div class="settings-group">
+      <div class="settings-group-title">الخلفية</div>
+      <div class="settings-row"><span class="sr-icon">🖼️</span><div class="sr-info"><div class="sr-title">خلفية سطح المكتب</div><div class="sr-desc">اختر خلفية مخصصة</div></div>
+      <div class="wallpaper-picker">
+        <div class="wp-option selected" onclick="setWallpaper(this,1)"><div style="background:linear-gradient(135deg,#0a0a1a,#0d1b3e,#0a2155)"></div></div>
+        <div class="wp-option" onclick="setWallpaper(this,2)"><div style="background:linear-gradient(135deg,#1a0a2e,#2d1b69,#6b21a8)"></div></div>
+        <div class="wp-option" onclick="setWallpaper(this,3)"><div style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364)"></div></div>
+        <div class="wp-option" onclick="setWallpaper(this,4)"><div style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)"></div></div>
+      </div></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">لون التمييز</div>
+      <div class="settings-row"><span class="sr-icon">🎨</span><div class="sr-info"><div class="sr-title">لون Windows</div><div class="sr-desc">يُطبق على النوافذ والأزرار</div></div>
+      <div class="color-picker">
+        <div class="color-opt selected" style="background:#0078d4" onclick="setAccent('#0078d4',this)"></div>
+        <div class="color-opt" style="background:#7c3aed" onclick="setAccent('#7c3aed',this)"></div>
+        <div class="color-opt" style="background:#dc2626" onclick="setAccent('#dc2626',this)"></div>
+        <div class="color-opt" style="background:#059669" onclick="setAccent('#059669',this)"></div>
+        <div class="color-opt" style="background:#d97706" onclick="setAccent('#d97706',this)"></div>
+      </div></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">المظهر</div>
+      <div class="settings-row"><span class="sr-icon">💎</span><div class="sr-info"><div class="sr-title">تأثيرات الشفافية</div><div class="sr-desc">Mica و Acrylic effects</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="settings-row"><span class="sr-icon">🌙</span><div class="sr-info"><div class="sr-title">الوضع الداكن</div><div class="sr-desc">نشط حالياً</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    </div>`,
+  system: `
+    <h2>🖥️ النظام</h2>
+    <div class="settings-group">
+      <div class="settings-group-title">حول الجهاز</div>
+      <div class="settings-row"><span class="sr-icon">💻</span><div class="sr-info"><div class="sr-title">Windows 12 Pro — Nova Edition</div><div class="sr-desc">إصدار 12.0.0.1 (Build 24000)</div></div></div>
+      <div class="settings-row"><span class="sr-icon">🔧</span><div class="sr-info"><div class="sr-title">المعالج</div><div class="sr-desc">Intel Core i9-14900K @ 3.2GHz</div></div></div>
+      <div class="settings-row"><span class="sr-icon">🧠</span><div class="sr-info"><div class="sr-title">الذاكرة (RAM)</div><div class="sr-desc">32 GB DDR5</div></div></div>
+      <div class="settings-row"><span class="sr-icon">🎮</span><div class="sr-info"><div class="sr-title">كرت الشاشة</div><div class="sr-desc">NVIDIA RTX 4080 SUPER</div></div></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">التخزين</div>
+      <div class="settings-row"><span class="sr-icon">💾</span><div class="sr-info"><div class="sr-title">القرص الصلب</div><div class="sr-desc">مستخدم: 266 GB من أصل 500 GB</div></div></div>
+    </div>`,
+  wifi: `
+    <h2>📶 الشبكة والإنترنت</h2>
+    <div class="settings-group">
+      <div class="settings-group-title">Wi-Fi</div>
+      <div class="settings-row"><span class="sr-icon">📶</span><div class="sr-info"><div class="sr-title">Wi-Fi مفعّل</div><div class="sr-desc">متصل بـ HomeNetwork_5G</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="settings-row"><span class="sr-icon">🔒</span><div class="sr-info"><div class="sr-title">HomeNetwork_5G</div><div class="sr-desc">محمي — قوة الإشارة: ممتازة</div></div></div>
+    </div>`,
+  privacy: `
+    <h2>🔒 الخصوصية والأمان</h2>
+    <div class="settings-group">
+      <div class="settings-group-title">الأمان</div>
+      <div class="settings-row"><span class="sr-icon">🛡️</span><div class="sr-info"><div class="sr-title">Windows Defender</div><div class="sr-desc">الحماية نشطة — آخر فحص: اليوم</div></div><div class="toggle on"></div></div>
+      <div class="settings-row"><span class="sr-icon">🔥</span><div class="sr-info"><div class="sr-title">جدار الحماية</div><div class="sr-desc">مفعّل ومحمي</div></div><div class="toggle on"></div></div>
+    </div>`,
+  nova: `
+    <h2>🤖 Nova AI</h2>
+    <div class="settings-group">
+      <div class="settings-group-title">المساعد الذكي</div>
+      <div class="settings-row"><span class="sr-icon">🤖</span><div class="sr-info"><div class="sr-title">تفعيل Nova AI</div><div class="sr-desc">المساعد الذكي المدمج في Windows 12</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="settings-row"><span class="sr-icon">🎙️</span><div class="sr-info"><div class="sr-title">التعرف على الصوت</div><div class="sr-desc">قل "Hey Nova" لتفعيل المساعد</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="settings-row"><span class="sr-icon">💬</span><div class="sr-info"><div class="sr-title">حفظ المحادثات</div><div class="sr-desc">Nova تتعلم من محادثاتك</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="settings-row"><span class="sr-icon">🌐</span><div class="sr-info"><div class="sr-title">الوصول للإنترنت</div><div class="sr-desc">Nova تبحث تلقائياً للحصول على معلومات</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    </div>`,
+  update: `
+    <h2>🔄 Windows Update</h2>
+    <div class="settings-group">
+      <div class="settings-group-title">الحالة</div>
+      <div class="settings-row"><span class="sr-icon">✅</span><div class="sr-info"><div class="sr-title">Windows محدّث</div><div class="sr-desc">آخر تحديث: اليوم 10:30 ص</div></div></div>
+      <div class="settings-row"><span class="sr-icon">🔔</span><div class="sr-info"><div class="sr-title">تحديثات اختيارية (2)</div><div class="sr-desc">تحديث الأجهزة والسائقات</div></div></div>
+    </div>`,
+  accounts: `
+    <h2>👤 الحسابات</h2>
+    <div class="settings-group">
+      <div class="settings-group-title">حسابك</div>
+      <div class="settings-row"><span class="sr-icon">👤</span><div class="sr-info"><div class="sr-title">Anas</div><div class="sr-desc">حساب محلي — مدير النظام</div></div></div>
+      <div class="settings-row"><span class="sr-icon">📧</span><div class="sr-info"><div class="sr-title">ربط بحساب Microsoft</div><div class="sr-desc">احصل على مزايا إضافية</div></div></div>
+    </div>`,
+};
+
+function showSettingsPage(page, el) {
+  document.querySelectorAll('.settings-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  const content = settingsPages[page] || '<h2>قريباً...</h2>';
+  document.getElementById('settingsContent').innerHTML = content;
+}
+
+/* ========== WALLPAPERS ========== */
+const wallpapers = {
+  1: 'linear-gradient(135deg,#0a0a1a 0%,#0d1b3e 20%,#0a2155 40%,#061640 60%,#0d0d2b 80%,#050510 100%)',
+  2: 'linear-gradient(135deg,#1a0a2e 0%,#2d1b69 30%,#6b21a8 60%,#1a0a2e 100%)',
+  3: 'linear-gradient(135deg,#0f2027,#203a43,#2c5364)',
+  4: 'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)',
+};
+function setWallpaper(el, n) {
+  document.getElementById('desktop').style.background = wallpapers[n];
+  document.querySelectorAll('.wp-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function setAccent(color, el) {
+  document.documentElement.style.setProperty('--accent', color);
+  document.documentElement.style.setProperty('--accent2', color);
+  document.querySelectorAll('.color-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>
