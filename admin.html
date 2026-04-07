@@ -4,456 +4,395 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CCRAFT SPACE | لوحة الإدارة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <style>
-
-body { overflow-x: hidden; }
-
-/* ============================================================
-   Login
-   ============================================================ */
-
-#loginScreen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+:root {
+    --sb-w: 258px;
+    --topbar-h: 56px;
+    --s0: #07080f;
+    --s1: #0d0f1e;
+    --s2: #111422;
+    --s3: #161929;
+    --bg: rgba(13,15,30,0.95);
+    --border: rgba(255,255,255,0.06);
+    --glow: rgba(139,92,246,0.18);
+    --accent: #8b5cf6;
+    --cyan: #00f2fe;
+    --hi: #f0f0ff;
+    --mid: #7878a0;
+    --lo: #3e3e58;
+    --red: #f87171;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --tr: all 0.18s cubic-bezier(0.4,0,0.2,1);
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-height:100vh;overflow-x:hidden;}
 
-.login-box {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 28px;
-    padding: 48px 40px;
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    animation: fadeIn 0.5s ease both;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+/* ═══ LOGIN ═══ */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse 60% 60% at 30% 20%,rgba(139,92,246,0.1) 0%,transparent 70%),
+  radial-gradient(ellipse 50% 50% at 80% 80%,rgba(0,242,254,0.05) 0%,transparent 70%),var(--s0);padding:20px;}
+.login-box{background:rgba(13,15,30,0.92);border:1px solid var(--glow);border-radius:22px;
+  padding:44px 38px;width:100%;max-width:400px;text-align:center;
+  backdrop-filter:blur(20px);box-shadow:0 40px 80px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.05);
+  animation:loginIn 0.5s cubic-bezier(0.22,1,0.36,1) both;position:relative;overflow:hidden;}
+@keyframes loginIn{from{opacity:0;transform:translateY(20px) scale(0.97)}to{opacity:1;transform:none}}
+.login-box::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,0.6),transparent);}
+.login-box .lk{font-size:2.8rem;margin-bottom:12px;display:block;filter:drop-shadow(0 0 14px rgba(139,92,246,0.5));}
+.login-box h1{font-size:1.65rem;font-weight:900;background:linear-gradient(135deg,#a78bfa,#00f2fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.login-box p{color:var(--mid);font-size:0.83rem;margin-bottom:24px;}
+.login-box input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;
+  padding:12px 14px;color:var(--hi);font-family:'Tajawal',sans-serif;font-size:0.9rem;outline:none;
+  direction:rtl;transition:var(--tr);margin-bottom:9px;}
+.login-box input:focus{border-color:rgba(139,92,246,0.45);box-shadow:0 0 0 3px rgba(139,92,246,0.08);}
+.login-box input::placeholder{color:var(--lo);}
+#loginBtn{width:100%;margin-top:4px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;
+  border:none;border-radius:12px;padding:13px;font-size:0.92rem;font-weight:800;
+  font-family:'Tajawal',sans-serif;cursor:pointer;box-shadow:0 8px 22px rgba(124,58,237,0.4);transition:var(--tr);}
+#loginBtn:hover{box-shadow:0 12px 30px rgba(124,58,237,0.55);transform:translateY(-1px);}
+#loginError{color:var(--red);font-size:0.8rem;margin-top:10px;min-height:18px;}
+
+/* ═══ LAYOUT ═══ */
+#adminPanel{display:none;}
+.admin-layout{display:flex;min-height:100vh;}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{width:var(--sb-w);background:var(--s1);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;position:fixed;top:0;right:0;height:100vh;
+  z-index:50;overflow-y:auto;overflow-x:hidden;}
+.sidebar::-webkit-scrollbar{width:3px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--glow);border-radius:2px;}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:11px;position:relative;}
+.sb-logo::after{content:'';position:absolute;bottom:0;left:18%;right:18%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(139,92,246,0.4),transparent);}
+.logo-icon{width:38px;height:38px;border-radius:11px;
+  background:linear-gradient(135deg,#7c3aed,#00bcd4);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(124,58,237,0.4);}
+.sb-logo-txt h2{font-size:0.85rem;font-weight:900;color:var(--hi);letter-spacing:0.5px;}
+.sb-logo-txt p{font-size:0.62rem;color:var(--lo);margin-top:1px;}
+.sb-nav{flex:1;padding:8px 9px;display:flex;flex-direction:column;gap:1px;}
+.nav-sec{font-size:0.56rem;font-weight:900;color:var(--lo);text-transform:uppercase;letter-spacing:2px;padding:10px 9px 4px;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:9px;
+  cursor:pointer;color:var(--mid);font-weight:700;font-size:0.84rem;
+  border:1px solid transparent;background:none;width:100%;text-align:right;
+  font-family:'Tajawal',sans-serif;margin:0;transition:var(--tr);position:relative;}
+.nav-item:hover{background:rgba(139,92,246,0.07);color:var(--hi);transform:none;filter:none;}
+.nav-item.active{background:linear-gradient(135deg,rgba(124,58,237,0.18),rgba(0,242,254,0.05));
+  color:#a78bfa;border-color:rgba(139,92,246,0.22);}
+.nav-item.active::before{content:'';position:absolute;right:0;top:20%;bottom:20%;
+  width:3px;background:linear-gradient(to bottom,#8b5cf6,#00f2fe);border-radius:2px 0 0 2px;}
+.nav-icon{font-size:0.9rem;flex-shrink:0;width:17px;text-align:center;}
+.nav-badge{margin-right:auto;background:#7c3aed;color:white;font-size:0.57rem;
+  font-weight:900;padding:2px 6px;border-radius:50px;min-width:17px;text-align:center;line-height:1.4;}
+.nav-badge.red{background:var(--red);}
+.sb-footer{padding:10px 9px;border-top:1px solid var(--border);}
+.admin-user-mini{display:flex;align-items:center;gap:9px;background:rgba(139,92,246,0.07);
+  border:1px solid rgba(139,92,246,0.14);border-radius:11px;padding:9px 11px;margin-bottom:7px;}
+.admin-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#00bcd4);
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.8rem;color:white;flex-shrink:0;}
+#adminLogoutBtn{width:100%;background:rgba(248,113,113,0.07);color:var(--red);
+  border:1px solid rgba(248,113,113,0.16);border-radius:9px;padding:8px;
+  font-size:0.8rem;font-weight:800;margin:0;font-family:'Tajawal',sans-serif;cursor:pointer;transition:var(--tr);}
+#adminLogoutBtn:hover{background:var(--red);color:white;transform:none;filter:none;}
+
+/* ═══ MAIN ═══ */
+.admin-main{flex:1;margin-right:var(--sb-w);max-width:calc(100vw - var(--sb-w));display:flex;flex-direction:column;}
+.topbar{position:sticky;top:0;z-index:40;height:var(--topbar-h);
+  background:rgba(7,8,15,0.88);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px);display:flex;align-items:center;padding:0 26px;gap:14px;flex-shrink:0;}
+.topbar h1{font-size:1.1rem;font-weight:900;
+  background:linear-gradient(135deg,#a78bfa,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.topbar-pill{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);border-radius:50px;padding:4px 11px 4px 5px;margin-right:auto;}
+.main-content{flex:1;padding:22px 26px 80px;overflow-y:auto;}
+
+/* ═══ SECTIONS ═══ */
+.section{display:none;animation:secIn 0.3s cubic-bezier(0.22,1,0.36,1) both;}
+.section.active{display:block;}
+@keyframes secIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ═══ STAT CARDS ═══ */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-bottom:22px;}
+.stat-box{background:var(--s2);border:1px solid var(--border);border-radius:15px;
+  padding:17px 15px;position:relative;overflow:hidden;cursor:default;transition:var(--tr);}
+.stat-box::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0.7;}
+.stat-box:nth-child(1)::after{background:linear-gradient(90deg,#8b5cf6,#6d28d9);}
+.stat-box:nth-child(2)::after{background:linear-gradient(90deg,#00f2fe,#00bcd4);}
+.stat-box:nth-child(3)::after{background:linear-gradient(90deg,#f87171,#ef4444);}
+.stat-box:nth-child(4)::after{background:linear-gradient(90deg,#fbbf24,#f59e0b);}
+.stat-box:nth-child(5)::after{background:linear-gradient(90deg,#4ade80,#22c55e);}
+.stat-box:nth-child(6)::after{background:linear-gradient(90deg,#a78bfa,#8b5cf6);}
+.stat-box:hover{border-color:rgba(139,92,246,0.22);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.3);}
+.s-icon{font-size:1.4rem;margin-bottom:7px;display:block;}
+.s-num{font-size:1.75rem;font-weight:900;display:block;color:var(--hi);line-height:1;margin-bottom:3px;}
+.s-label{color:var(--lo);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ═══ PANEL CARDS ═══ */
+.panel-card{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
+.pc-head{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.pc-title{font-size:0.68rem;font-weight:800;color:var(--lo);text-transform:uppercase;
+  letter-spacing:1.5px;flex:1;display:flex;align-items:center;gap:7px;}
+.pc-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+
+/* ═══ TABLE ═══ */
+.table-wrap{overflow-x:auto;}
+.data-table{width:100%;border-collapse:collapse;}
+.data-table thead tr{background:rgba(0,0,0,0.18);border-bottom:1px solid var(--border);}
+.data-table th{padding:9px 13px;text-align:right;font-size:0.62rem;font-weight:800;
+  color:var(--lo);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
+.data-table td{padding:11px 13px;font-size:0.84rem;color:var(--hi);
+  border-bottom:1px solid rgba(255,255,255,0.025);vertical-align:middle;}
+.data-table tr:hover td{background:rgba(139,92,246,0.035);}
+.data-table .empty-row td{text-align:center;color:var(--lo);padding:32px;}
+.t-title{font-weight:700;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.t-cat{background:rgba(139,92,246,0.1);color:#a78bfa;padding:2px 9px;border-radius:50px;
+  font-size:0.65rem;font-weight:800;white-space:nowrap;border:1px solid rgba(139,92,246,0.18);}
+.t-actions{display:flex;gap:4px;flex-wrap:wrap;}
+.t-btn{padding:4px 10px;border-radius:6px;font-size:0.7rem;font-weight:800;
+  border:1px solid transparent;cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--tr);}
+.t-btn:hover{transform:translateY(-1px);}
+.t-btn.edit{background:rgba(0,242,254,0.07);color:#67e8f9;border-color:rgba(0,242,254,0.16);}
+.t-btn.del{background:rgba(248,113,113,0.07);color:var(--red);border-color:rgba(248,113,113,0.16);}
+.t-btn.view{background:rgba(139,92,246,0.07);color:#a78bfa;border-color:rgba(139,92,246,0.16);}
+.t-btn.ban{background:rgba(248,113,113,0.07);color:var(--red);border-color:rgba(248,113,113,0.16);}
+.t-btn.unban{background:rgba(74,222,128,0.07);color:var(--green);border-color:rgba(74,222,128,0.16);}
+.t-btn.pts{background:rgba(251,191,36,0.07);color:var(--yellow);border-color:rgba(251,191,36,0.16);}
+.t-btn.edit:hover{background:rgba(0,242,254,0.18);}
+.t-btn.del:hover{background:rgba(248,113,113,0.18);}
+.t-btn.view:hover{background:rgba(139,92,246,0.18);}
+.t-btn.ban:hover{background:rgba(248,113,113,0.18);}
+.t-btn.unban:hover{background:rgba(74,222,128,0.18);}
+.t-btn.pts:hover{background:rgba(251,191,36,0.18);}
+.banned-badge{background:rgba(248,113,113,0.1);color:var(--red);padding:2px 7px;
+  border-radius:50px;font-size:0.62rem;font-weight:800;border:1px solid rgba(248,113,113,0.18);}
+
+/* ═══ SEARCH BAR ═══ */
+.search-bar{display:flex;gap:7px;margin-bottom:11px;}
+.search-bar input{flex:1;margin:0;border-radius:11px;padding:9px 14px;font-size:0.85rem;
+  background:rgba(0,0,0,0.28);border:1px solid var(--border);color:var(--hi);
+  font-family:'Tajawal',sans-serif;outline:none;transition:var(--tr);}
+.search-bar input:focus{border-color:rgba(139,92,246,0.35);}
+.search-bar input::placeholder{color:var(--lo);}
+
+/* ═══ FIELD GROUPS ═══ */
+.field-group{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
+.field-label{font-size:0.67rem;font-weight:800;color:var(--mid);text-transform:uppercase;letter-spacing:1px;}
+.field-group input,.field-group textarea,.field-group select{
+  background:rgba(0,0,0,0.28);border:1px solid var(--border);border-radius:11px;
+  padding:11px 13px;color:var(--hi);font-family:'Tajawal',sans-serif;
+  font-size:0.88rem;outline:none;transition:var(--tr);direction:rtl;margin:0;}
+.field-group input:focus,.field-group textarea:focus,.field-group select:focus{
+  border-color:rgba(139,92,246,0.38);box-shadow:0 0 0 3px rgba(139,92,246,0.07);}
+.field-group input::placeholder,.field-group textarea::placeholder{color:var(--lo);}
+.field-group textarea{resize:vertical;min-height:90px;}
+.field-group select option{background:#1a1a2e;}
+
+/* ═══ PUBLISH ═══ */
+.publish-layout{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;}
+.pub-main,.pub-aside{display:flex;flex-direction:column;gap:13px;}
+
+.code-field{background:#040610!important;font-family:'Fira Code',monospace!important;
+  font-size:0.8rem!important;color:#8be9fd!important;min-height:200px!important;
+  border-color:rgba(0,242,254,0.1)!important;line-height:1.75!important;
+  direction:ltr!important;text-align:left!important;}
+.code-field:focus{border-color:rgba(0,242,254,0.28)!important;}
+
+.map-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:5px;}
+.map-mini-btn{background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:9px;padding:7px 5px;text-align:center;cursor:pointer;
+  font-size:0.65rem;font-weight:700;color:var(--mid);transition:var(--tr);
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-family:'Tajawal',sans-serif;}
+.map-mini-btn:hover{border-color:rgba(139,92,246,0.3);color:var(--hi);}
+.map-mini-btn.selected{background:rgba(139,92,246,0.14);border-color:rgba(139,92,246,0.38);color:#a78bfa;}
+.map-mini-btn .mi-icon{font-size:1.1rem;}
+
+.img-upload-zone{border:2px dashed var(--border);border-radius:11px;padding:22px;
+  text-align:center;cursor:pointer;transition:var(--tr);background:rgba(0,0,0,0.18);
+  position:relative;overflow:hidden;}
+.img-upload-zone:hover{border-color:rgba(139,92,246,0.32);background:rgba(139,92,246,0.04);}
+.img-upload-zone.has-img{border-style:solid;border-color:rgba(139,92,246,0.3);padding:0;}
+.img-upload-zone img{width:100%;max-height:180px;object-fit:cover;border-radius:9px;display:none;}
+.img-upload-zone.has-img img{display:block;}
+.img-upload-zone.has-img .img-ph{display:none;}
+.ip-icon{font-size:1.8rem;display:block;margin-bottom:7px;}
+.ip-text{font-size:0.75rem;color:var(--lo);}
+.ip-limit{font-size:0.62rem;color:var(--lo);margin-top:3px;opacity:0.7;}
+
+.preview-card{background:var(--s3);border:1px solid var(--glow);border-radius:13px;padding:14px;}
+.preview-title{font-size:0.86rem;font-weight:800;color:var(--hi);margin-bottom:6px;}
+.preview-meta{font-size:0.7rem;color:var(--lo);display:flex;gap:8px;flex-wrap:wrap;}
+
+.char-counter{font-size:0.62rem;color:var(--lo);text-align:left;font-family:'Fira Code',monospace;}
+.char-counter.warn{color:var(--yellow);}
+
+.pub-submit-btn{width:100%;background:linear-gradient(135deg,#7c3aed,#5b21b6);
+  color:white;border:none;border-radius:13px;padding:13px;font-size:0.92rem;font-weight:900;
+  font-family:'Tajawal',sans-serif;cursor:pointer;
+  box-shadow:0 8px 22px rgba(124,58,237,0.35);transition:var(--tr);
+  display:flex;align-items:center;justify-content:center;gap:7px;}
+.pub-submit-btn:hover{box-shadow:0 12px 30px rgba(124,58,237,0.5);transform:translateY(-2px);}
+.pub-submit-btn:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+
+/* ═══ CONTROL CARDS ═══ */
+.control-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:12px;margin-bottom:14px;}
+.control-card{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;transition:var(--tr);}
+.control-card:hover{border-color:rgba(139,92,246,0.18);}
+.control-card h4{font-size:0.65rem;font-weight:800;color:var(--lo);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.ctrl-row{display:flex;gap:6px;align-items:center;margin-bottom:7px;}
+.ctrl-row input,.ctrl-row select{flex:1;background:rgba(0,0,0,0.28);border:1px solid var(--border);
+  border-radius:9px;padding:8px 11px;color:var(--hi);font-family:'Tajawal',sans-serif;
+  font-size:0.83rem;outline:none;transition:var(--tr);margin:0;}
+.ctrl-row input:focus,.ctrl-row select:focus{border-color:rgba(139,92,246,0.32);}
+.ctrl-row input::placeholder{color:var(--lo);}
+.ctrl-btn{flex-shrink:0;border-radius:9px;padding:8px 13px;font-size:0.78rem;font-weight:800;
+  border:1px solid transparent;font-family:'Tajawal',sans-serif;cursor:pointer;transition:var(--tr);white-space:nowrap;margin:0;}
+.ctrl-btn.gold{background:rgba(251,191,36,0.1);color:var(--yellow);border-color:rgba(251,191,36,0.22);}
+.ctrl-btn.purple{background:rgba(139,92,246,0.1);color:#a78bfa;border-color:rgba(139,92,246,0.22);}
+.ctrl-btn.red{background:rgba(248,113,113,0.1);color:var(--red);border-color:rgba(248,113,113,0.22);}
+.ctrl-btn.green{background:rgba(74,222,128,0.08);color:var(--green);border-color:rgba(74,222,128,0.2);}
+.ctrl-btn.gold:hover{background:var(--yellow);color:#1a0a00;}
+.ctrl-btn.purple:hover{background:var(--accent);color:white;}
+.ctrl-btn.red:hover{background:var(--red);color:white;}
+.ctrl-btn.green:hover{background:var(--green);color:#0a1a0a;}
+
+/* ═══ SETTINGS ═══ */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;}
+.setting-item{background:var(--s2);border:1px solid var(--border);border-radius:13px;
+  padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;transition:var(--tr);}
+.setting-item:hover{border-color:rgba(139,92,246,0.18);}
+.si-label{font-size:0.86rem;font-weight:800;color:var(--hi);margin-bottom:2px;}
+.si-desc{font-size:0.68rem;color:var(--lo);}
+.toggle{position:relative;width:42px;height:22px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:#1a1a2e;border-radius:50px;cursor:pointer;transition:0.25s;border:1px solid rgba(255,255,255,0.06);}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:2px;bottom:2px;background:#3a3a52;border-radius:50%;transition:0.25s;}
+.toggle input:checked + .toggle-slider{background:rgba(124,58,237,0.28);border-color:rgba(124,58,237,0.45);}
+.toggle input:checked + .toggle-slider::before{background:#a78bfa;transform:translateX(20px);}
+
+/* ═══ CHAT ═══ */
+#chatContainer{height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:4px;margin-bottom:4px;}
+#chatContainer::-webkit-scrollbar{width:3px;}
+#chatContainer::-webkit-scrollbar-thumb{background:var(--glow);border-radius:2px;}
+.chat-msg{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:11px;
+  padding:9px 11px;display:flex;align-items:flex-start;gap:8px;
+  transition:var(--tr);animation:secIn 0.3s ease both;}
+.chat-msg:hover{border-color:rgba(139,92,246,0.16);}
+.msg-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#00bcd4);
+  display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:900;color:white;flex-shrink:0;}
+.msg-body{flex:1;min-width:0;}
+.msg-user{font-size:0.72rem;font-weight:800;color:#a78bfa;margin-bottom:2px;}
+.msg-text{font-size:0.83rem;color:var(--hi);line-height:1.5;word-break:break-word;}
+.msg-time{font-size:0.6rem;color:var(--lo);margin-top:2px;}
+.msg-actions{display:flex;gap:3px;flex-shrink:0;}
+
+/* ═══ ANNOUNCE ═══ */
+.ann-item{background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.16);
+  border-radius:11px;padding:11px 15px;display:flex;justify-content:space-between;
+  align-items:flex-start;gap:9px;margin-bottom:7px;animation:secIn 0.3s ease both;}
+.ann-item p{color:var(--hi);font-size:0.85rem;margin:0;flex:1;}
+.ann-time{color:var(--lo);font-size:0.62rem;white-space:nowrap;font-family:'Fira Code',monospace;}
+
+/* ═══ REPORTS ═══ */
+.reports-filter{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap;}
+.rf-tab{padding:5px 13px;border-radius:50px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.03);color:var(--lo);font-size:0.73rem;font-weight:800;
+  cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--tr);}
+.rf-tab:hover{border-color:rgba(139,92,246,0.22);color:var(--mid);transform:none;filter:none;}
+.rf-tab.active{background:rgba(139,92,246,0.1);color:#a78bfa;border-color:rgba(139,92,246,0.28);}
+.report-item{background:var(--s2);border:1px solid var(--border);border-radius:13px;
+  padding:15px;margin-bottom:9px;animation:secIn 0.3s ease both;transition:var(--tr);position:relative;}
+.report-item:hover{border-color:rgba(139,92,246,0.18);}
+.report-item.status-pending{border-right:3px solid var(--red);}
+.report-item.status-reviewed{border-right:3px solid var(--yellow);}
+.report-item.status-resolved{border-right:3px solid var(--green);}
+.ri-header{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px;flex-wrap:wrap;}
+.ri-reason{background:rgba(248,113,113,0.09);color:var(--red);border:1px solid rgba(248,113,113,0.18);
+  border-radius:50px;padding:2px 9px;font-size:0.65rem;font-weight:800;white-space:nowrap;}
+.ri-script{font-size:0.86rem;font-weight:800;color:var(--hi);flex:1;}
+.ri-meta{font-size:0.68rem;color:var(--lo);margin-bottom:9px;font-family:'Fira Code',monospace;}
+.ri-status{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:50px;font-size:0.62rem;font-weight:800;}
+.ri-status.pending{background:rgba(248,113,113,0.08);color:var(--red);}
+.ri-status.reviewed{background:rgba(251,191,36,0.08);color:var(--yellow);}
+.ri-status.resolved{background:rgba(74,222,128,0.08);color:var(--green);}
+.ri-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;}
+.ri-details{display:none;background:rgba(0,0,0,0.22);border:1px solid var(--border);
+  border-radius:8px;padding:9px 12px;font-size:0.8rem;color:var(--mid);margin-bottom:9px;line-height:1.6;}
+.ri-details.show{display:block;}
+.reply-box{display:none;margin-top:9px;background:rgba(139,92,246,0.05);
+  border:1px solid rgba(139,92,246,0.16);border-radius:9px;padding:11px;}
+.reply-box.show{display:block;}
+.reply-box textarea{width:100%;min-height:65px;background:rgba(0,0,0,0.28);
+  border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--hi);
+  font-family:'Tajawal',sans-serif;font-size:0.84rem;resize:vertical;outline:none;
+  direction:rtl;margin-bottom:7px;}
+.reply-box textarea:focus{border-color:rgba(139,92,246,0.32);}
+.ri-existing-reply{background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.16);
+  border-radius:8px;padding:8px 12px;font-size:0.8rem;color:var(--mid);margin-top:7px;line-height:1.6;}
+.ri-existing-reply strong{color:var(--green);display:block;margin-bottom:2px;}
+
+/* ═══ LOG ═══ */
+.log-entry{display:flex;align-items:center;gap:9px;padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.025);font-size:0.8rem;}
+.log-entry:last-child{border-bottom:none;}
+.le-icon{font-size:0.9rem;flex-shrink:0;width:22px;text-align:center;}
+.le-text{flex:1;color:var(--mid);}
+.le-time{font-size:0.6rem;color:var(--lo);font-family:'Fira Code',monospace;white-space:nowrap;}
+
+/* ═══ MODAL ═══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(12px);
+  z-index:200;display:none;align-items:center;justify-content:center;padding:18px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--s2);border:1px solid rgba(139,92,246,0.28);border-radius:18px;
+  padding:24px;width:100%;max-width:500px;animation:secIn 0.3s ease both;
+  position:relative;overflow:hidden;}
+.modal-box::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(139,92,246,0.5),transparent);}
+.modal-box h3{font-size:0.95rem;font-weight:900;margin-bottom:16px;color:var(--hi);}
+.modal-actions{display:flex;gap:8px;margin-top:10px;}
+#saveEditBtn{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;border:none;
+  border-radius:11px;padding:10px 22px;margin:0;cursor:pointer;font-family:'Tajawal',sans-serif;
+  font-weight:800;box-shadow:0 5px 16px rgba(124,58,237,0.3);transition:var(--tr);}
+#saveEditBtn:hover{box-shadow:0 8px 22px rgba(124,58,237,0.45);}
+#cancelEditBtn{background:rgba(255,255,255,0.04);color:var(--mid);border:1px solid var(--border);
+  border-radius:11px;padding:10px 16px;margin:0;cursor:pointer;font-family:'Tajawal',sans-serif;font-weight:800;}
+
+/* ═══ TOAST ═══ */
+.admin-toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(55px);
+  background:var(--s2);border:1px solid var(--glow);border-radius:50px;
+  padding:9px 20px;font-size:0.8rem;font-weight:800;color:var(--hi);
+  z-index:999;transition:transform 0.32s cubic-bezier(0.175,0.885,0.32,1.275);
+  box-shadow:0 6px 20px rgba(0,0,0,0.4);pointer-events:none;white-space:nowrap;}
+.admin-toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ═══ PRIMARY BUTTON ═══ */
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;border:none;
+  border-radius:11px;padding:11px 22px;font-family:'Tajawal',sans-serif;font-weight:800;
+  font-size:0.88rem;cursor:pointer;box-shadow:0 6px 18px rgba(124,58,237,0.32);transition:var(--tr);}
+.btn-primary:hover{box-shadow:0 8px 24px rgba(124,58,237,0.48);transform:translateY(-1px);}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:900px){:root{--sb-w:210px;} .publish-layout{grid-template-columns:1fr;}}
+@media(max-width:640px){
+  .sidebar{display:none;} .admin-main{margin-right:0;max-width:100vw;}
+  .main-content{padding:14px 12px 60px;} .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .control-grid,.settings-grid{grid-template-columns:1fr;}
 }
-
-.login-box::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background:var(--accent-gradient); }
-
-.login-box .lock-icon { font-size: 3rem; margin-bottom: 14px; display: block; }
-.login-box h1 { font-size: 1.8rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
-.login-box p  { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 28px; }
-.login-box input { margin-bottom: 12px; border-radius: 14px; text-align: right; }
-
-#loginBtn { width:100%; background:var(--accent-gradient); color:white; border:none; border-radius:var(--radius-btn); padding:14px; font-size:1rem; margin-top:4px; box-shadow:0 8px 22px rgba(139,92,246,0.35); }
-#loginError { color:var(--danger); font-size:0.85rem; margin-top:12px; min-height:20px; }
-
-
-/* ============================================================
-   Admin Layout
-   ============================================================ */
-
-#adminPanel { display: none; min-height: 100vh; }
-.admin-layout { display: flex; min-height: 100vh; }
-
-/* Sidebar */
-.sidebar {
-    width: 265px;
-    background: var(--bg-card);
-    border-left: 1px solid var(--border-color);
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0; right: 0;
-    height: 100vh;
-    z-index: 50;
-    overflow-y: auto;
-}
-
-.sidebar-logo {
-    padding: 22px 20px 18px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.sidebar-logo .logo-icon {
-    width: 40px; height: 40px;
-    border-radius: 12px;
-    background: var(--accent-gradient);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-}
-
-.sidebar-logo h2 { font-size: 0.95rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 2px; }
-.sidebar-logo p  { color: var(--text-muted); font-size: 0.68rem; margin: 0; }
-
-.sidebar-section-label {
-    font-size: 0.62rem;
-    font-weight: 900;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding: 16px 20px 6px;
-}
-
-.sidebar-nav { flex: 1; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: var(--transition);
-    color: var(--text-muted);
-    font-weight: 700;
-    font-size: 0.88rem;
-    border: 1px solid transparent;
-    background: none;
-    width: 100%;
-    text-align: right;
-    font-family: 'Tajawal', sans-serif;
-    margin: 0;
-}
-
-.nav-item:hover { background: rgba(139,92,246,0.07); color: var(--text-main); transform: none; filter: none; }
-.nav-item.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.25); }
-.nav-item .nav-icon { font-size: 1rem; flex-shrink: 0; }
-.nav-item .nav-badge { margin-right: auto; background: var(--primary); color: white; font-size: 0.6rem; font-weight: 900; padding: 2px 6px; border-radius: 50px; min-width: 18px; text-align: center; }
-.nav-item .nav-badge.red { background: var(--danger); }
-
-.sidebar-footer { padding: 14px 10px; border-top: 1px solid var(--border-color); }
-
-.admin-user-mini {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(139,92,246,0.07);
-    border: 1px solid rgba(139,92,246,0.15);
-    border-radius: 14px;
-    padding: 10px 14px;
-    margin-bottom: 10px;
-}
-
-.admin-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem; color: white; flex-shrink: 0; }
-
-#adminLogoutBtn { width:100%; background:rgba(248,113,113,0.08); color:var(--danger); border:1px solid rgba(248,113,113,0.2); border-radius:12px; padding:10px; font-size:0.85rem; margin:0; }
-#adminLogoutBtn:hover { background:var(--danger); color:white; filter:none; transform:none; }
-
-
-/* Main */
-.admin-main { flex:1; margin-right:265px; padding:24px 24px 80px; max-width:calc(100vw - 265px); }
-
-.topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
-.topbar h1 { font-size:1.5rem; font-weight:900; background:var(--accent-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-
-.topbar-right { display:flex; align-items:center; gap:10px; }
-
-.topbar-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 50px;
-    padding: 7px 16px 7px 8px;
-    font-size: 0.8rem;
-}
-
-.section { display:none; animation: fadeIn 0.4s ease both; }
-.section.active { display:block; }
-
-
-/* Stats Row */
-.stats-row { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:14px; margin-bottom:24px; }
-
-.stat-box {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 18px 16px;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-    cursor: default;
-}
-
-.stat-box:hover { border-color:var(--border-hover); transform:translateY(-3px); }
-
-.stat-box::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:3px; background:var(--accent-gradient); opacity:0.6; }
-
-.stat-box .s-icon  { font-size:1.6rem; margin-bottom:8px; display:block; }
-.stat-box .s-num   { font-size:1.8rem; font-weight:900; background:var(--accent-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; display:block; }
-.stat-box .s-label { color:var(--text-muted); font-size:0.75rem; font-weight:700; }
-
-
-/* Panel Card */
-.panel-card { background:var(--bg-card); border:1px solid var(--border-color); border-radius:18px; padding:22px; margin-bottom:20px; }
-
-.panel-card h3 {
-    font-size:0.75rem; font-weight:800; color:var(--text-muted);
-    text-transform:uppercase; letter-spacing:1px; margin-bottom:18px;
-    display:flex; align-items:center; gap:8px;
-}
-
-.panel-card h3::after { content:''; flex:1; height:1px; background:var(--border-color); }
-
-
-/* Tables */
-.data-table { width:100%; border-collapse:collapse; }
-.data-table th { text-align:right; padding:10px 14px; font-size:0.72rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--border-color); }
-.data-table td { padding:12px 14px; font-size:0.87rem; color:var(--text-main); border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
-.data-table tr:hover td { background:rgba(139,92,246,0.03); }
-.data-table .empty-row td { text-align:center; color:var(--text-muted); padding:36px; }
-.t-title { font-weight:700; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.t-cat { background:var(--primary-dim); color:#b48bf8; padding:3px 10px; border-radius:50px; font-size:0.7rem; font-weight:700; white-space:nowrap; }
-.t-actions { display:flex; gap:6px; }
-
-.t-btn { padding:6px 12px; border-radius:8px; font-size:0.75rem; font-weight:800; border:none; cursor:pointer; font-family:'Tajawal',sans-serif; margin:0; transition:var(--transition); }
-.t-btn:hover { transform:translateY(-2px); filter:brightness(1.1); }
-.t-btn:active { transform:scale(0.95); }
-.t-btn.edit  { background:rgba(0,242,254,0.1); color:var(--secondary); border:1px solid rgba(0,242,254,0.2); }
-.t-btn.del   { background:rgba(248,113,113,0.1); color:var(--danger); border:1px solid rgba(248,113,113,0.2); }
-.t-btn.view  { background:rgba(139,92,246,0.1); color:var(--primary); border:1px solid rgba(139,92,246,0.2); }
-.t-btn.ban   { background:rgba(248,113,113,0.1); color:var(--danger); border:1px solid rgba(248,113,113,0.2); }
-.t-btn.unban { background:rgba(74,222,128,0.1); color:var(--success); border:1px solid rgba(74,222,128,0.2); }
-.t-btn.pts   { background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2); }
-.t-btn.badge { background:rgba(139,92,246,0.1); color:var(--primary); border:1px solid rgba(139,92,246,0.2); }
-
-.t-btn.edit:hover  { background:var(--secondary); color:var(--bg-base); }
-.t-btn.del:hover   { background:var(--danger); color:white; }
-.t-btn.ban:hover   { background:var(--danger); color:white; }
-.t-btn.unban:hover { background:var(--success); color:var(--bg-base); }
-.t-btn.pts:hover   { background:#fbbf24; color:var(--bg-base); }
-
-
-/* Pub grid */
-.pub-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.pub-grid .full { grid-column:1/-1; }
-.pub-grid input, .pub-grid textarea, .pub-grid select { margin:0; }
-.pub-grid textarea { min-height:140px; }
-
-
-/* Chat */
-#chatContainer { height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px; margin-bottom:4px; }
-.chat-msg { background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:12px; padding:10px 14px; display:flex; align-items:flex-start; gap:10px; transition:var(--transition); }
-.chat-msg:hover { border-color:var(--border-hover); }
-.msg-avatar { width:30px; height:30px; border-radius:50%; background:var(--accent-gradient); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:900; color:white; flex-shrink:0; }
-.msg-body { flex:1; min-width:0; }
-.msg-user { font-size:0.78rem; font-weight:800; color:var(--primary); margin-bottom:2px; }
-.msg-text { font-size:0.87rem; color:var(--text-main); line-height:1.5; word-break:break-word; }
-.msg-time { font-size:0.65rem; color:var(--text-muted); margin-top:3px; }
-.msg-actions { display:flex; gap:5px; flex-shrink:0; }
-
-
-/* Announce */
-.ann-item { background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.2); border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px; }
-.ann-item p { color:var(--text-main); font-size:0.87rem; margin:0; flex:1; }
-.ann-item .ann-time { color:var(--text-muted); font-size:0.68rem; white-space:nowrap; }
-
-
-/* Points & Badges Controls */
-.control-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; margin-bottom:20px; }
-
-.control-card { background:var(--bg-card); border:1px solid var(--border-color); border-radius:16px; padding:20px; }
-.control-card h4 { font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px; }
-
-.ctrl-row { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
-.ctrl-row input  { flex:1; margin:0; padding:10px 14px; font-size:0.88rem; border-radius:12px; }
-.ctrl-row select { flex:1; margin:0; padding:10px 14px; font-size:0.88rem; border-radius:12px; }
-.ctrl-row button { flex-shrink:0; margin:0; border-radius:12px; padding:10px 16px; font-size:0.82rem; }
-
-.ctrl-btn-gold { background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); font-family:'Tajawal',sans-serif; font-weight:800; cursor:pointer; transition:var(--transition); }
-.ctrl-btn-gold:hover { background:#fbbf24; color:var(--bg-base); transform:none; filter:none; }
-
-.ctrl-btn-purple { background:var(--primary-dim); color:var(--primary); border:1px solid rgba(139,92,246,0.3); font-family:'Tajawal',sans-serif; font-weight:800; cursor:pointer; transition:var(--transition); }
-.ctrl-btn-purple:hover { background:var(--primary); color:white; transform:none; filter:none; }
-
-.ctrl-btn-red { background:rgba(248,113,113,0.12); color:var(--danger); border:1px solid rgba(248,113,113,0.25); font-family:'Tajawal',sans-serif; font-weight:800; cursor:pointer; transition:var(--transition); }
-.ctrl-btn-red:hover { background:var(--danger); color:white; transform:none; filter:none; }
-
-.ctrl-btn-green { background:rgba(74,222,128,0.1); color:var(--success); border:1px solid rgba(74,222,128,0.25); font-family:'Tajawal',sans-serif; font-weight:800; cursor:pointer; transition:var(--transition); }
-.ctrl-btn-green:hover { background:var(--success); color:var(--bg-base); transform:none; filter:none; }
-
-
-/* Site Settings */
-.settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.setting-item { background:var(--bg-card); border:1px solid var(--border-color); border-radius:16px; padding:18px 20px; display:flex; align-items:center; justify-content:space-between; gap:14px; transition:var(--transition); }
-.setting-item:hover { border-color:var(--border-hover); }
-.setting-info .si-label { font-size:0.9rem; font-weight:800; color:var(--text-main); margin-bottom:3px; }
-.setting-info .si-desc  { font-size:0.72rem; color:var(--text-muted); }
-
-/* Toggle Switch */
-.toggle { position:relative; width:46px; height:24px; flex-shrink:0; }
-.toggle input { opacity:0; width:0; height:0; }
-.toggle-slider {
-    position:absolute; inset:0; background:#2d2d3d; border-radius:50px; cursor:pointer; transition:0.3s;
-}
-.toggle-slider::before {
-    content:''; position:absolute; width:18px; height:18px; left:3px; bottom:3px;
-    background:white; border-radius:50%; transition:0.3s;
-}
-.toggle input:checked + .toggle-slider { background:var(--primary); }
-.toggle input:checked + .toggle-slider::before { transform:translateX(22px); }
-
-
-/* Banned badge */
-.banned-badge { background:rgba(248,113,113,0.15); color:var(--danger); padding:2px 8px; border-radius:50px; font-size:0.68rem; font-weight:800; }
-
-
-/* Action Log */
-.log-entry { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.82rem; }
-.log-entry:last-child { border-bottom:none; }
-.log-entry .le-icon { font-size:1rem; flex-shrink:0; }
-.log-entry .le-text { flex:1; color:var(--text-muted); }
-.log-entry .le-time { font-size:0.68rem; color:var(--text-muted); }
-
-
-/* Modal */
-.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:200; display:none; align-items:center; justify-content:center; padding:20px; }
-.modal-overlay.open { display:flex; }
-.modal-box { background:var(--bg-card); border:1px solid var(--primary); border-radius:22px; padding:28px; width:100%; max-width:500px; animation:fadeIn 0.3s ease both; }
-.modal-box h3 { font-size:1.05rem; font-weight:900; margin-bottom:18px; background:var(--accent-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.modal-box input, .modal-box textarea, .modal-box select { margin-bottom:10px; }
-.modal-actions { display:flex; gap:10px; margin-top:8px; }
-#saveEditBtn { background:var(--accent-gradient); color:white; border:none; border-radius:var(--radius-btn); padding:11px 24px; margin:0; box-shadow:0 6px 16px rgba(139,92,246,0.3); }
-#cancelEditBtn { background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-color); border-radius:var(--radius-btn); padding:11px 18px; margin:0; }
-
-
-/* Search bar */
-.search-bar { display:flex; gap:10px; margin-bottom:14px; }
-.search-bar input { flex:1; margin:0; border-radius:var(--radius-btn); padding:11px 18px; font-size:0.88rem; }
-
-
-/* Responsive */
-@media (max-width: 900px) {
-    .sidebar { width:220px; }
-    .admin-main { margin-right:220px; max-width:calc(100vw - 220px); }
-}
-
-@media (max-width: 680px) {
-    .sidebar { display:none; }
-    .admin-main { margin-right:0; max-width:100vw; padding:16px 12px 60px; }
-    .pub-grid, .settings-grid, .control-grid { grid-template-columns:1fr; }
-    .stats-row { grid-template-columns:repeat(2,1fr); }
-}
-
-/* Reports */
-.report-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 18px 20px;
-    margin-bottom: 12px;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-    animation: fadeIn 0.4s ease both;
-}
-
-.report-item:hover { border-color: var(--border-hover); }
-
-.report-item.status-pending  { border-right: 4px solid var(--danger); }
-.report-item.status-reviewed { border-right: 4px solid #fbbf24; }
-.report-item.status-resolved { border-right: 4px solid var(--success); }
-
-.ri-header {
-    display: flex; align-items: flex-start; gap: 12px;
-    margin-bottom: 12px; flex-wrap: wrap;
-}
-
-.ri-reason {
-    background: rgba(248,113,113,0.1); color: #f87171;
-    border: 1px solid rgba(248,113,113,0.25);
-    border-radius: 50px; padding: 3px 12px;
-    font-size: 0.72rem; font-weight: 800; white-space: nowrap;
-}
-
-.ri-script { font-size: 0.9rem; font-weight: 800; color: var(--text-main); flex: 1; min-width: 0; }
-.ri-meta   { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px; }
-.ri-details {
-    background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);
-    border-radius: 10px; padding: 10px 14px;
-    font-size: 0.83rem; color: var(--text-muted); line-height: 1.6;
-    margin-bottom: 12px; display: none;
-}
-
-.ri-details.show { display: block; }
-
-.ri-status {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 10px; border-radius: 50px;
-    font-size: 0.68rem; font-weight: 800;
-}
-
-.ri-status.pending  { background: rgba(248,113,113,0.1); color: #f87171; }
-.ri-status.reviewed { background: rgba(251,191,36,0.1);  color: #fbbf24; }
-.ri-status.resolved { background: rgba(74,222,128,0.1);  color: #4ade80; }
-
-.ri-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-
-/* Reply box */
-.reply-box {
-    display: none; margin-top: 12px;
-    background: rgba(139,92,246,0.05);
-    border: 1px solid rgba(139,92,246,0.2);
-    border-radius: 12px; padding: 14px;
-}
-
-.reply-box.show { display: block; }
-
-.reply-box textarea {
-    width: 100%; min-height: 80px;
-    background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);
-    border-radius: 10px; padding: 10px 14px;
-    color: var(--text-main); font-family: 'Tajawal', sans-serif;
-    font-size: 0.88rem; line-height: 1.6; resize: vertical;
-    outline: none; direction: rtl; box-sizing: border-box;
-    margin-bottom: 10px;
-}
-
-.reply-box textarea:focus { border-color: var(--primary); }
-
-.ri-existing-reply {
-    background: rgba(74,222,128,0.07);
-    border: 1px solid rgba(74,222,128,0.2);
-    border-radius: 10px; padding: 10px 14px;
-    font-size: 0.83rem; color: var(--text-muted);
-    margin-top: 10px; line-height: 1.6;
-}
-
-.ri-existing-reply strong { color: var(--success); display: block; margin-bottom: 4px; }
-
-/* Reports filter tabs */
-.reports-filter {
-    display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;
-}
-
-.rf-tab {
-    padding: 7px 16px; border-radius: 50px;
-    border: 1px solid var(--border-color);
-    background: rgba(255,255,255,0.03);
-    color: var(--text-muted); font-size: 0.78rem; font-weight: 800;
-    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
-    transition: var(--transition);
-}
-
-.rf-tab:hover  { transform: none; filter: none; border-color: var(--border-hover); }
-.rf-tab.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.35); }
-
 </style>
 </head>
 <body>
 
-
-<!-- Login -->
+<!-- ═══════════ LOGIN ═══════════ -->
 <div id="loginScreen">
     <div class="login-box">
-        <span class="lock-icon">🛡️</span>
+        <span class="lk">🛡️</span>
         <h1>لوحة الإدارة</h1>
-        <p>هذه الصفحة للأدمن فقط — CCRAFT SPACE</p>
+        <p>CCRAFT SPACE — للأدمن فقط</p>
         <input type="email"    id="email"    placeholder="البريد الإلكتروني">
         <input type="password" id="password" placeholder="كلمة المرور">
         <button id="loginBtn">⚡ دخول</button>
@@ -461,496 +400,289 @@ body { overflow-x: hidden; }
     </div>
 </div>
 
-
-<!-- Admin Panel -->
+<!-- ═══════════ ADMIN PANEL ═══════════ -->
 <div id="adminPanel">
 <div class="admin-layout">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
+<aside class="sidebar">
+    <div class="sb-logo">
+        <div class="logo-icon">⚡</div>
+        <div class="sb-logo-txt"><h2>CCRAFT ADMIN</h2><p>Control Panel v2</p></div>
+    </div>
+    <nav class="sb-nav">
+        <div class="nav-sec">الرئيسية</div>
+        <button class="nav-item active" data-section="overview"><span class="nav-icon">📊</span> نظرة عامة</button>
 
-        <div class="sidebar-logo">
-            <div class="logo-icon">⚡</div>
-            <div>
-                <h2>CCRAFT ADMIN</h2>
-                <p>لوحة التحكم الكاملة</p>
+        <div class="nav-sec">المحتوى</div>
+        <button class="nav-item" data-section="scripts"><span class="nav-icon">📜</span> السكربتات <span class="nav-badge" id="scriptsBadge">0</span></button>
+        <button class="nav-item" data-section="publish"><span class="nav-icon">📤</span> نشر سكربت</button>
+
+        <div class="nav-sec">المجتمع</div>
+        <button class="nav-item" data-section="users"><span class="nav-icon">👥</span> المستخدمون <span class="nav-badge" id="usersBadge">0</span></button>
+        <button class="nav-item" data-section="points-ctrl"><span class="nav-icon">⭐</span> النقاط</button>
+        <button class="nav-item" data-section="badges-ctrl"><span class="nav-icon">🏅</span> البادجات</button>
+        <button class="nav-item" data-section="chat"><span class="nav-icon">💬</span> الشات</button>
+
+        <div class="nav-sec">الإدارة</div>
+        <button class="nav-item" data-section="reports"><span class="nav-icon">🚩</span> البلاغات <span class="nav-badge red" id="reportsBadge" style="display:none">0</span></button>
+        <button class="nav-item" data-section="announce"><span class="nav-icon">📢</span> الإعلانات</button>
+        <button class="nav-item" data-section="settings"><span class="nav-icon">⚙️</span> الإعدادات</button>
+        <button class="nav-item" data-section="log"><span class="nav-icon">📋</span> سجل الأنشطة</button>
+    </nav>
+    <div class="sb-footer">
+        <div class="admin-user-mini">
+            <div class="admin-avatar" id="sideAvatar">A</div>
+            <div style="min-width:0">
+                <div style="font-size:0.7rem;font-weight:800;color:var(--hi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="sideEmail">—</div>
+                <div style="font-size:0.58rem;color:#a78bfa">✅ أدمن</div>
             </div>
         </div>
+        <button id="adminLogoutBtn">🚪 تسجيل خروج</button>
+    </div>
+</aside>
 
-        <nav class="sidebar-nav">
-
-            <div class="sidebar-section-label">الرئيسية</div>
-
-            <button class="nav-item active" data-section="overview">
-                <span class="nav-icon">📊</span> نظرة عامة
-            </button>
-
-            <div class="sidebar-section-label">المحتوى</div>
-
-            <button class="nav-item" data-section="scripts">
-                <span class="nav-icon">📜</span> السكربتات
-                <span class="nav-badge" id="scriptsBadge">0</span>
-            </button>
-            <button class="nav-item" data-section="publish">
-                <span class="nav-icon">📤</span> نشر سكربت
-            </button>
-
-            <div class="sidebar-section-label">المجتمع</div>
-
-            <button class="nav-item" data-section="users">
-                <span class="nav-icon">👥</span> المستخدمون
-                <span class="nav-badge" id="usersBadge">0</span>
-            </button>
-            <button class="nav-item" data-section="points-ctrl">
-                <span class="nav-icon">⭐</span> التحكم بالنقاط
-            </button>
-            <button class="nav-item" data-section="badges-ctrl">
-                <span class="nav-icon">🏅</span> إدارة البادجات
-            </button>
-            <button class="nav-item" data-section="chat">
-                <span class="nav-icon">💬</span> الشات
-            </button>
-
-            <div class="sidebar-section-label">الإدارة</div>
-
-            <button class="nav-item" data-section="reports">
-                <span class="nav-icon">🚩</span> البلاغات
-                <span class="nav-badge red" id="reportsBadge" style="display:none">0</span>
-            </button>
-            <button class="nav-item" data-section="announce">
-                <span class="nav-icon">📢</span> إعلانات
-            </button>
-            <button class="nav-item" data-section="settings">
-                <span class="nav-icon">⚙️</span> إعدادات الموقع
-            </button>
-            <button class="nav-item" data-section="log">
-                <span class="nav-icon">📋</span> سجل الأنشطة
-            </button>
-
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="admin-user-mini">
-                <div class="admin-avatar" id="sideAvatar">A</div>
-                <div style="min-width:0">
-                    <div style="font-size:0.75rem;font-weight:800;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="sideEmail">—</div>
-                    <div style="font-size:0.65rem;color:var(--primary)">✅ أدمن</div>
-                </div>
-            </div>
-            <button id="adminLogoutBtn">🚪 تسجيل خروج</button>
+<main class="admin-main">
+    <div class="topbar">
+        <h1 id="pageTitle">📊 نظرة عامة</h1>
+        <div class="topbar-pill">
+            <div class="admin-avatar" id="topAvatar" style="width:24px;height:24px;font-size:0.7rem">A</div>
+            <span style="color:var(--mid);font-size:0.76rem" id="topEmail">—</span>
         </div>
-    </aside>
+    </div>
 
+    <div class="main-content">
 
-    <!-- Main -->
-    <main class="admin-main">
-
-        <div class="topbar">
-            <h1 id="pageTitle">📊 نظرة عامة</h1>
-            <div class="topbar-right">
-                <div class="topbar-pill">
-                    <div class="admin-avatar" id="topAvatar" style="width:26px;height:26px;font-size:0.75rem">A</div>
-                    <span style="color:var(--text-muted);font-size:0.78rem" id="topEmail">—</span>
-                </div>
-            </div>
+    <!-- ─── OVERVIEW ─── -->
+    <div class="section active" id="sec-overview">
+        <div class="stats-grid">
+            <div class="stat-box"><span class="s-icon">📜</span><span class="s-num" id="st-scripts">0</span><span class="s-label">سكربت</span></div>
+            <div class="stat-box"><span class="s-icon">👥</span><span class="s-num" id="st-users">0</span><span class="s-label">مستخدم</span></div>
+            <div class="stat-box"><span class="s-icon">👍</span><span class="s-num" id="st-likes">0</span><span class="s-label">لايك</span></div>
+            <div class="stat-box"><span class="s-icon">⭐</span><span class="s-num" id="st-pts">0</span><span class="s-label">نقطة</span></div>
+            <div class="stat-box"><span class="s-icon">🏅</span><span class="s-num" id="st-badges">0</span><span class="s-label">بادج</span></div>
+            <div class="stat-box"><span class="s-icon">💬</span><span class="s-num" id="st-msgs">0</span><span class="s-label">رسالة</span></div>
         </div>
-
-
-        <!-- ======= Overview ======= -->
-        <div class="section active" id="sec-overview">
-
-            <div class="stats-row">
-                <div class="stat-box"><span class="s-icon">📜</span><span class="s-num" id="st-scripts">0</span><span class="s-label">سكربت</span></div>
-                <div class="stat-box"><span class="s-icon">👥</span><span class="s-num" id="st-users">0</span><span class="s-label">مستخدم</span></div>
-                <div class="stat-box"><span class="s-icon">👍</span><span class="s-num" id="st-likes">0</span><span class="s-label">لايك</span></div>
-                <div class="stat-box"><span class="s-icon">⭐</span><span class="s-num" id="st-pts">0</span><span class="s-label">نقطة موزعة</span></div>
-                <div class="stat-box"><span class="s-icon">🏅</span><span class="s-num" id="st-badges">0</span><span class="s-label">بادج مُكتسب</span></div>
-                <div class="stat-box"><span class="s-icon">💬</span><span class="s-num" id="st-msgs">0</span><span class="s-label">رسالة شات</span></div>
-            </div>
-
-            <div class="panel-card">
-                <h3>📜 آخر 5 سكربتات</h3>
-                <div style="overflow-x:auto">
-                    <table class="data-table">
-                        <thead><tr><th>العنوان</th><th>القسم</th><th>المؤلف</th><th>👍</th></tr></thead>
-                        <tbody id="recentBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="panel-card">
-                <h3>👥 آخر 5 مستخدمين</h3>
-                <div style="overflow-x:auto">
-                    <table class="data-table">
-                        <thead><tr><th>الاسم</th><th>البادجات</th><th>النقاط</th><th>السكربتات</th></tr></thead>
-                        <tbody id="recentUsersBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">📜 آخر السكربتات</div></div>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>العنوان</th><th>القسم</th><th>المؤلف</th><th>👍</th></tr></thead><tbody id="recentBody"></tbody></table></div>
         </div>
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">👥 آخر المستخدمين</div></div>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>المستخدم</th><th>النقاط</th><th>البادجات</th><th>السكربتات</th></tr></thead><tbody id="recentUsersBody"></tbody></table></div>
+        </div>
+    </div>
 
+    <!-- ─── SCRIPTS ─── -->
+    <div class="section" id="sec-scripts">
+        <div class="search-bar"><input type="text" id="scriptSearch" placeholder="🔍 ابحث في السكربتات..."></div>
+        <div class="panel-card" style="padding:0;overflow:hidden">
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>العنوان</th><th>القسم</th><th>المؤلف</th><th>👍</th><th>⭐</th><th>إجراءات</th></tr></thead><tbody id="fullScriptsBody"></tbody></table></div>
+        </div>
+    </div>
 
-        <!-- ======= Scripts ======= -->
-        <div class="section" id="sec-scripts">
-            <div class="search-bar">
-                <input type="text" id="scriptSearch" placeholder="🔍 ابحث في السكربتات...">
-            </div>
-            <div class="panel-card" style="padding:0;overflow:hidden">
-                <div style="overflow-x:auto">
-                    <table class="data-table">
-                        <thead><tr><th>#</th><th>العنوان</th><th>القسم</th><th>المؤلف</th><th>👍</th><th>⭐</th><th>إجراءات</th></tr></thead>
-                        <tbody id="fullScriptsBody"></tbody>
-                    </table>
+    <!-- ─── PUBLISH ─── -->
+    <div class="section" id="sec-publish">
+        <div class="publish-layout">
+            <div class="pub-main">
+                <div class="panel-card">
+                    <div class="pc-head"><div class="pc-title">✍️ معلومات السكربت</div></div>
+                    <div class="field-group"><label class="field-label">العنوان</label><input type="text" id="newTitle" placeholder="اسم السكربت..." maxlength="80"></div>
+                    <div class="field-group"><label class="field-label">الكود <span class="char-counter" id="codeCounter" style="font-size:0.6rem;margin-right:6px">0 حرف</span></label><textarea id="newCode" class="code-field" placeholder="-- الصق كود Lua هنا..."></textarea></div>
+                    <div class="field-group"><label class="field-label">الوصف</label><textarea id="newDesc" placeholder="وصف مختصر للسكربت..."></textarea></div>
+                    <div class="field-group"><label class="field-label">القسم</label>
+                        <select id="newCategory">
+                            <option value="">اختر القسم</option>
+                            <option value="game">🎮 Game Scripts</option>
+                            <option value="admin">🛡️ Admin Scripts</option>
+                            <option value="ai">🤖 AI & NPCs</option>
+                            <option value="سكربت من الادارة">👑 سكربت من الإدارة</option>
+                        </select>
+                    </div>
                 </div>
+                <div class="panel-card">
+                    <div class="pc-head"><div class="pc-title">🗺️ الماب</div></div>
+                    <div class="map-mini-grid" id="mapGrid">
+                        <div class="map-mini-btn no-map selected" data-map=""><span class="mi-icon">🌐</span>أي ماب</div>
+                        <div class="map-mini-btn" data-map="Jailbreak"><span class="mi-icon">🚔</span>Jailbreak</div>
+                        <div class="map-mini-btn" data-map="Adopt Me"><span class="mi-icon">🏡</span>Adopt Me</div>
+                        <div class="map-mini-btn" data-map="Bloxburg"><span class="mi-icon">🏗️</span>Bloxburg</div>
+                        <div class="map-mini-btn" data-map="Brookhaven"><span class="mi-icon">🌆</span>Brookhaven</div>
+                        <div class="map-mini-btn" data-map="Arsenal"><span class="mi-icon">🔫</span>Arsenal</div>
+                        <div class="map-mini-btn" data-map="Bedwars"><span class="mi-icon">🛏️</span>Bedwars</div>
+                        <div class="map-mini-btn" data-map="Doors"><span class="mi-icon">🚪</span>Doors</div>
+                        <div class="map-mini-btn" data-map="Da Hood"><span class="mi-icon">🏙️</span>Da Hood</div>
+                    </div>
+                    <input type="text" id="customMapInput" placeholder="أو اكتب اسم الماب يدوياً..." style="margin-top:7px;background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:9px;padding:8px 12px;color:var(--hi);font-family:Tajawal,sans-serif;font-size:0.83rem;outline:none;width:100%;transition:var(--tr);">
+                </div>
+            </div>
+            <div class="pub-aside">
+                <div class="panel-card">
+                    <div class="pc-head"><div class="pc-title">🖼️ صورة السكربت</div></div>
+                    <div class="img-upload-zone" id="pubUploadZone">
+                        <img id="pubImgPreview" alt="preview">
+                        <div class="img-ph">
+                            <span class="ip-icon">🖼️</span>
+                            <p class="ip-text">اسحب أو اضغط للاختيار</p>
+                            <p class="ip-limit">PNG · JPG · حد أقصى 12MB</p>
+                        </div>
+                    </div>
+                    <input type="file" id="pubImgInput" accept="image/*" style="display:none">
+                    <div style="font-size:0.68rem;color:var(--lo);margin-top:5px" id="pubImgStatus"></div>
+                    <div id="pubImgActions" style="display:none;margin-top:6px;display:flex;gap:6px">
+                        <button class="t-btn edit" onclick="changePubImg()">🔄 تغيير</button>
+                        <button class="t-btn del"  onclick="removePubImg()">🗑️ حذف</button>
+                    </div>
+                </div>
+                <div class="panel-card preview-card" id="pubPreview" style="display:none">
+                    <div class="pc-head"><div class="pc-title">👁️ معاينة</div></div>
+                    <div class="preview-title" id="previewTitle">—</div>
+                    <div class="preview-meta" id="previewMeta"></div>
+                </div>
+                <button class="pub-submit-btn" id="addScriptBtn">📤 نشر السكربت</button>
             </div>
         </div>
+    </div>
 
-
-        <!-- ======= Publish ======= -->
-        <div class="section" id="sec-publish">
-            <div class="panel-card">
-                <h3>📤 نشر سكربت جديد</h3>
-                <div class="pub-grid">
-                    <input type="text" id="newTitle"    placeholder="عنوان السكربت" class="full">
-                    <textarea         id="newCode"      placeholder="كود السكربت..." class="full"></textarea>
-                    <textarea         id="newDesc"      placeholder="وصف السكربت..." style="min-height:80px"></textarea>
-                    <select           id="newCategory">
-                        <option value="">اختر القسم</option>
-                        <option value="game">Game Scripts</option>
-                        <option value="admin">Admin Scripts</option>
-                        <option value="ai">AI & NPCs</option>
-                        <option value="سكربت من الادارة">سكربت من الإدارة</option>
-                    </select>
-                </div>
-                <button id="addScriptBtn" style="background:var(--accent-gradient);color:white;border:none;border-radius:var(--radius-btn);padding:13px 28px;margin-top:10px;box-shadow:0 8px 20px rgba(139,92,246,0.3)">📤 نشر السكربت</button>
-            </div>
+    <!-- ─── USERS ─── -->
+    <div class="section" id="sec-users">
+        <div class="search-bar"><input type="text" id="userSearch" placeholder="🔍 ابحث عن مستخدم..."></div>
+        <div class="panel-card" style="padding:0;overflow:hidden">
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>المستخدم</th><th>السكربتات</th><th>النقاط</th><th>البادجات</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="usersBody"></tbody></table></div>
         </div>
+    </div>
 
-
-        <!-- ======= Users ======= -->
-        <div class="section" id="sec-users">
-            <div class="search-bar">
-                <input type="text" id="userSearch" placeholder="🔍 ابحث عن مستخدم...">
-            </div>
-            <div class="panel-card" style="padding:0;overflow:hidden">
-                <div style="overflow-x:auto">
-                    <table class="data-table">
-                        <thead><tr><th>المستخدم</th><th>السكربتات</th><th>النقاط</th><th>البادجات</th><th>الحالة</th><th>إجراءات</th></tr></thead>
-                        <tbody id="usersBody"></tbody>
-                    </table>
-                </div>
-            </div>
+    <!-- ─── POINTS ─── -->
+    <div class="section" id="sec-points-ctrl">
+        <div class="control-grid">
+            <div class="control-card"><h4>➕ إضافة نقاط</h4><div class="ctrl-row"><input type="email" id="pts-email" placeholder="بريد المستخدم"></div><div class="ctrl-row"><input type="number" id="pts-amount" placeholder="العدد" min="1"><button class="ctrl-btn gold" onclick="addPointsToUser()">إضافة</button></div></div>
+            <div class="control-card"><h4>➖ خصم نقاط</h4><div class="ctrl-row"><input type="email" id="pts-remove-email" placeholder="بريد المستخدم"></div><div class="ctrl-row"><input type="number" id="pts-remove-amount" placeholder="العدد" min="1"><button class="ctrl-btn red" onclick="removePointsFromUser()">خصم</button></div></div>
+            <div class="control-card"><h4>🎁 نقاط للجميع</h4><div class="ctrl-row"><input type="number" id="pts-all-amount" placeholder="عدد النقاط" min="1"><button class="ctrl-btn gold" onclick="addPointsToAll()">منح</button></div><div style="font-size:0.65rem;color:var(--lo);margin-top:4px">يضيف لكل المستخدمين المسجلين</div></div>
+            <div class="control-card"><h4>🔄 إعادة تعيين</h4><div class="ctrl-row"><input type="email" id="pts-reset-email" placeholder="بريد المستخدم"><button class="ctrl-btn red" onclick="resetUserPoints()">إعادة</button></div></div>
         </div>
-
-
-        <!-- ======= Points Control ======= -->
-        <div class="section" id="sec-points-ctrl">
-
-            <div class="control-grid">
-
-                <div class="control-card">
-                    <h4>➕ إضافة نقاط ليوزر</h4>
-                    <div class="ctrl-row">
-                        <input type="email" id="pts-email" placeholder="بريد المستخدم">
-                    </div>
-                    <div class="ctrl-row">
-                        <input type="number" id="pts-amount" placeholder="عدد النقاط" min="1">
-                        <button class="ctrl-btn-gold" onclick="addPointsToUser()">➕ إضافة</button>
-                    </div>
-                </div>
-
-                <div class="control-card">
-                    <h4>➖ خصم نقاط من يوزر</h4>
-                    <div class="ctrl-row">
-                        <input type="email" id="pts-remove-email" placeholder="بريد المستخدم">
-                    </div>
-                    <div class="ctrl-row">
-                        <input type="number" id="pts-remove-amount" placeholder="عدد النقاط" min="1">
-                        <button class="ctrl-btn-red" onclick="removePointsFromUser()">➖ خصم</button>
-                    </div>
-                </div>
-
-                <div class="control-card">
-                    <h4>🎁 نقاط لكل المستخدمين</h4>
-                    <div class="ctrl-row">
-                        <input type="number" id="pts-all-amount" placeholder="عدد النقاط" min="1">
-                        <button class="ctrl-btn-gold" onclick="addPointsToAll()">🎁 للجميع</button>
-                    </div>
-                    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:6px">
-                        سيضيف النقاط لكل المستخدمين المسجلين
-                    </div>
-                </div>
-
-                <div class="control-card">
-                    <h4>🔄 إعادة تعيين نقاط يوزر</h4>
-                    <div class="ctrl-row">
-                        <input type="email" id="pts-reset-email" placeholder="بريد المستخدم">
-                        <button class="ctrl-btn-red" onclick="resetUserPoints()">🔄 إعادة</button>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="panel-card">
-                <h3>⭐ أكثر المستخدمين نقاطاً</h3>
-                <div style="overflow-x:auto">
-                    <table class="data-table">
-                        <thead><tr><th>#</th><th>المستخدم</th><th>النقاط</th><th>الدعوات</th></tr></thead>
-                        <tbody id="topPointsBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">⭐ أكثر المستخدمين نقاطاً</div></div>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>المستخدم</th><th>النقاط</th><th>الدعوات</th></tr></thead><tbody id="topPointsBody"></tbody></table></div>
         </div>
+    </div>
 
-
-        <!-- ======= Badges Control ======= -->
-        <div class="section" id="sec-badges-ctrl">
-
-            <div class="control-grid">
-
-                <div class="control-card">
-                    <h4>🏅 منح بادج ليوزر</h4>
-                    <div class="ctrl-row">
-                        <input type="email" id="badge-email" placeholder="بريد المستخدم">
-                    </div>
-                    <div class="ctrl-row">
-                        <select id="badge-select">
-                            <option value="">اختر البادج</option>
-                            <option value="first_script">🚀 الانطلاقة</option>
-                            <option value="five_scripts">📦 مجموعة</option>
-                            <option value="ten_scripts">💎 محترف</option>
-                            <option value="first_like">👍 محبوب</option>
-                            <option value="ten_likes">🔥 مشهور</option>
-                            <option value="fifty_likes">⭐ نجم</option>
-                            <option value="hundred_likes">👑 أسطورة</option>
-                            <option value="good_rating">🏆 تقييم ممتاز</option>
-                            <option value="all_categories">🌈 متنوع</option>
-                            <option value="veteran">🎖️ مخضرم</option>
-                            <option value="pts_first">🌱 أول خطوة</option>
-                            <option value="pts_50">💫 صاعد</option>
-                            <option value="pts_150">🌟 مؤثر</option>
-                            <option value="pts_500">💥 قائد</option>
-                            <option value="pts_1000">🔮 أسطورة الإحالة</option>
-                            <option value="ref_1">🤝 مُضيف</option>
-                            <option value="ref_5">📣 داعية</option>
-                            <option value="ref_20">🌐 موسع المجتمع</option>
+    <!-- ─── BADGES ─── -->
+    <div class="section" id="sec-badges-ctrl">
+        <div class="control-grid">
+            <div class="control-card">
+                <h4>🏅 منح بادج</h4>
+                <div class="ctrl-row"><input type="email" id="badge-email" placeholder="بريد المستخدم"></div>
+                <div class="ctrl-row">
+                    <select id="badge-select">
+                        <option value="">اختر البادج</option>
+                        <optgroup label="سكربتات"><option value="first_script">🚀 الانطلاقة</option><option value="five_scripts">📦 مجموعة</option><option value="ten_scripts">💎 محترف</option></optgroup>
+                        <optgroup label="لايكات"><option value="first_like">👍 محبوب</option><option value="ten_likes">🔥 مشهور</option><option value="fifty_likes">⭐ نجم</option><option value="hundred_likes">👑 أسطورة</option></optgroup>
+                        <optgroup label="نقاط"><option value="pts_first">🌱 أول خطوة</option><option value="pts_50">💫 صاعد</option><option value="pts_150">🌟 مؤثر</option><option value="pts_500">💥 قائد</option><option value="pts_1000">🔮 أسطورة الإحالة</option></optgroup>
+                        <optgroup label="إحالة"><option value="ref_1">🤝 مُضيف</option><option value="ref_5">📣 داعية</option><option value="ref_20">🌐 موسع المجتمع</option></optgroup>
+                        <optgroup label="بادجات خاصة">
+                            <option value="og_member">🌟 أول المستخدمين</option>
+                            <option value="og">🏆 OG — عضو أصلي</option>
+                            <option value="founder">🔱 مؤسس</option>
+                            <option value="pioneer">🚀 رائد</option>
                             <option value="admin_choice">👑 اختيار الأدمن</option>
-                           <option value="og_member">اول مستخدمين🌟</option>
-                           <option value="founder">مؤسس</option>
-                           <option value="pioneer">رائد — أول 10 مستخدمين</option>
-                           <option value="og">OG — عضو أصلي </option>
-                        </select>
-                        <button class="ctrl-btn-purple" onclick="grantBadge()">🎖️ منح</button>
-                    </div>
-                </div>
-
-                <div class="control-card">
-                    <h4>🗑️ سحب بادج من يوزر</h4>
-                    <div class="ctrl-row">
-                        <input type="email" id="badge-remove-email" placeholder="بريد المستخدم">
-                    </div>
-                    <div class="ctrl-row">
-                        <input type="text" id="badge-remove-id" placeholder="ID البادج (مثال: veteran)">
-                        <button class="ctrl-btn-red" onclick="revokeBadge()">🗑️ سحب</button>
-                    </div>
-                </div>
-
-                <div class="control-card">
-                    <h4>🧹 مسح كل بادجات يوزر</h4>
-                    <div class="ctrl-row">
-                        <input type="email" id="badge-clear-email" placeholder="بريد المستخدم">
-                        <button class="ctrl-btn-red" onclick="clearAllBadges()">🧹 مسح</button>
-                    </div>
-                    <div style="font-size:0.72rem;color:var(--danger);margin-top:6px">⚠️ سيحذف جميع بادجات المستخدم</div>
-                </div>
-
-                <div class="control-card">
-                    <h4>🎯 منح بادج للجميع</h4>
-                    <div class="ctrl-row">
-                        <select id="badge-all-select">
-                            <option value="veteran">🎖️ مخضرم</option>
-                            <option value="first_script">🚀 الانطلاقة</option>
-                        </select>
-                        <button class="ctrl-btn-purple" onclick="grantBadgeToAll()">🎯 للجميع</button>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="panel-card">
-                <h3>🏅 أكثر المستخدمين بادجات</h3>
-                <div style="overflow-x:auto">
-                    <table class="data-table">
-                        <thead><tr><th>#</th><th>المستخدم</th><th>عدد البادجات</th><th>آخر بادج</th></tr></thead>
-                        <tbody id="topBadgesBody"></tbody>
-                    </table>
+                            <option value="verified">✅ موثّق</option>
+                            <option value="vip">💎 VIP</option>
+                            <option value="moderator">🛡️ مراقب</option>
+                            <option value="legend">🌟 أسطورة</option>
+                            <option value="creator">🎨 منشئ محتوى</option>
+                            <option value="partner">🤝 شريك</option>
+                        </optgroup>
+                    </select>
+                    <button class="ctrl-btn purple" onclick="grantBadge()">منح</button>
                 </div>
             </div>
-
+            <div class="control-card"><h4>🗑️ سحب بادج</h4><div class="ctrl-row"><input type="email" id="badge-remove-email" placeholder="بريد المستخدم"></div><div class="ctrl-row"><input type="text" id="badge-remove-id" placeholder="ID البادج (مثال: veteran)"><button class="ctrl-btn red" onclick="revokeBadge()">سحب</button></div></div>
+            <div class="control-card"><h4>🧹 مسح كل البادجات</h4><div class="ctrl-row"><input type="email" id="badge-clear-email" placeholder="بريد المستخدم"><button class="ctrl-btn red" onclick="clearAllBadges()">مسح</button></div><div style="font-size:0.65rem;color:var(--red);margin-top:4px">⚠️ لا يمكن التراجع</div></div>
+            <div class="control-card"><h4>🎯 بادج للجميع</h4><div class="ctrl-row"><select id="badge-all-select"><option value="veteran">🎖️ مخضرم</option><option value="first_script">🚀 الانطلاقة</option></select><button class="ctrl-btn purple" onclick="grantBadgeToAll()">للجميع</button></div></div>
         </div>
-
-
-        <!-- ======= Chat ======= -->
-        <div class="section" id="sec-chat">
-            <div class="panel-card">
-                <h3>💬 رسائل الشات</h3>
-                <div id="chatContainer"></div>
-            </div>
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">🏅 أكثر المستخدمين بادجات</div></div>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>المستخدم</th><th>عدد البادجات</th><th>آخر بادج</th></tr></thead><tbody id="topBadgesBody"></tbody></table></div>
         </div>
+    </div>
 
-
-        <!-- ======= Announce ======= -->
-        <div class="section" id="sec-announce">
-            <div class="panel-card">
-                <h3>📢 إرسال إعلان</h3>
-                <textarea id="annText" placeholder="اكتب نص الإعلان هنا..." style="min-height:100px;color:var(--text-main)"></textarea>
-                <button id="sendAnnBtn" style="background:var(--accent-gradient);color:white;border:none;border-radius:var(--radius-btn);padding:13px 28px;margin-top:8px;box-shadow:0 8px 20px rgba(139,92,246,0.3)">📢 إرسال</button>
-            </div>
-            <div class="panel-card">
-                <h3>📋 سجل الإعلانات</h3>
-                <div id="annHistory"></div>
-            </div>
+    <!-- ─── CHAT ─── -->
+    <div class="section" id="sec-chat">
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">💬 رسائل الشات</div></div>
+            <div id="chatContainer"></div>
         </div>
+    </div>
 
-
-        <!-- ======= Site Settings ======= -->
-        <div class="section" id="sec-settings">
-
-            <div class="panel-card">
-                <h3>⚙️ إعدادات الموقع</h3>
-                <div class="settings-grid">
-
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <div class="si-label">🔒 وضع الصيانة</div>
-                            <div class="si-desc">يمنع المستخدمين من الدخول</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="toggle-maintenance">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <div class="si-label">📤 السماح بالنشر</div>
-                            <div class="si-desc">يسمح لليوزرز بنشر سكربتات</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="toggle-publish" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <div class="si-label">💬 الشات العام</div>
-                            <div class="si-desc">تفعيل أو تعطيل الشات</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="toggle-chat" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <div class="si-label">🎁 نظام الإحالة</div>
-                            <div class="si-desc">تفعيل كسب النقاط بالدعوة</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="toggle-referral" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <div class="si-label">👍 نظام اللايكات</div>
-                            <div class="si-desc">السماح بلايك السكربتات</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="toggle-likes" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <div class="si-label">🔖 تسجيل جديد</div>
-                            <div class="si-desc">السماح بإنشاء حسابات جديدة</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="toggle-register" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                </div>
-
-                <div style="margin-top:16px">
-                    <button id="saveSettingsBtn" style="background:var(--accent-gradient);color:white;border:none;border-radius:var(--radius-btn);padding:12px 28px;box-shadow:0 8px 20px rgba(139,92,246,0.3)">💾 حفظ الإعدادات</button>
-                </div>
-            </div>
-
-            <div class="panel-card">
-                <h3>🔑 إضافة أدمن جديد</h3>
-                <div style="display:flex;gap:10px;flex-wrap:wrap">
-                    <input type="text" id="newAdminUid" placeholder="UID المستخدم الجديد" style="flex:1;margin:0;border-radius:12px">
-                    <button onclick="addNewAdmin()" style="background:var(--accent-gradient);color:white;border:none;border-radius:12px;padding:12px 20px;margin:0;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800">➕ إضافة</button>
-                </div>
-                <div style="font-size:0.72rem;color:var(--text-muted);margin-top:8px">اذهب لبروفايل المستخدم في Firebase لتحصل على الـ UID</div>
-            </div>
-
+    <!-- ─── ANNOUNCE ─── -->
+    <div class="section" id="sec-announce">
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">📢 إرسال إعلان</div></div>
+            <div class="field-group"><textarea id="annText" placeholder="اكتب نص الإعلان هنا..." style="min-height:90px"></textarea></div>
+            <button class="btn-primary" id="sendAnnBtn">📢 إرسال</button>
         </div>
-
-
-        <!-- ======= Reports ======= -->
-        <div class="section" id="sec-reports">
-
-            <div class="reports-filter">
-                <button class="rf-tab active" data-status="all"     onclick="filterReports(this,'all')">🚩 الكل</button>
-                <button class="rf-tab"        data-status="pending"  onclick="filterReports(this,'pending')">🔴 جديد</button>
-                <button class="rf-tab"        data-status="reviewed" onclick="filterReports(this,'reviewed')">🟡 قيد المراجعة</button>
-                <button class="rf-tab"        data-status="resolved" onclick="filterReports(this,'resolved')">✅ محلول</button>
-            </div>
-
-            <div id="reportsContainer">
-                <div style="text-align:center;padding:40px;color:var(--text-muted)">⏳ جارٍ التحميل...</div>
-            </div>
-
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">📋 سجل الإعلانات</div></div>
+            <div id="annHistory"></div>
         </div>
+    </div>
 
-
-        <!-- ======= Activity Log ======= -->
-        <div class="section" id="sec-log">
-            <div class="panel-card">
-                <h3>📋 سجل أنشطة الأدمن</h3>
-                <div id="activityLog"></div>
+    <!-- ─── SETTINGS ─── -->
+    <div class="section" id="sec-settings">
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">⚙️ إعدادات الموقع</div></div>
+            <div class="settings-grid">
+                <div class="setting-item"><div class="setting-info"><div class="si-label">🔒 وضع الصيانة</div><div class="si-desc">يمنع المستخدمين من الدخول</div></div><label class="toggle"><input type="checkbox" id="toggle-maintenance"><span class="toggle-slider"></span></label></div>
+                <div class="setting-item"><div class="setting-info"><div class="si-label">📤 السماح بالنشر</div><div class="si-desc">يسمح لليوزرز بنشر سكربتات</div></div><label class="toggle"><input type="checkbox" id="toggle-publish" checked><span class="toggle-slider"></span></label></div>
+                <div class="setting-item"><div class="setting-info"><div class="si-label">💬 الشات العام</div><div class="si-desc">تفعيل أو تعطيل الشات</div></div><label class="toggle"><input type="checkbox" id="toggle-chat" checked><span class="toggle-slider"></span></label></div>
+                <div class="setting-item"><div class="setting-info"><div class="si-label">🎁 نظام الإحالة</div><div class="si-desc">كسب النقاط بالدعوة</div></div><label class="toggle"><input type="checkbox" id="toggle-referral" checked><span class="toggle-slider"></span></label></div>
+                <div class="setting-item"><div class="setting-info"><div class="si-label">👍 نظام اللايكات</div><div class="si-desc">السماح بلايك السكربتات</div></div><label class="toggle"><input type="checkbox" id="toggle-likes" checked><span class="toggle-slider"></span></label></div>
+                <div class="setting-item"><div class="setting-info"><div class="si-label">🔖 تسجيل جديد</div><div class="si-desc">السماح بإنشاء حسابات</div></div><label class="toggle"><input type="checkbox" id="toggle-register" checked><span class="toggle-slider"></span></label></div>
             </div>
+            <div style="margin-top:14px"><button class="btn-primary" id="saveSettingsBtn">💾 حفظ الإعدادات</button></div>
         </div>
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">🔑 إضافة أدمن جديد</div></div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <input type="text" id="newAdminUid" placeholder="UID المستخدم الجديد" style="flex:1;background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--hi);font-family:Tajawal,sans-serif;outline:none;margin:0;min-width:200px">
+                <button onclick="addNewAdmin()" class="btn-primary" style="padding:9px 18px">➕ إضافة</button>
+            </div>
+            <div style="font-size:0.65rem;color:var(--lo);margin-top:6px">اذهب لـ Firebase Console للحصول على الـ UID</div>
+        </div>
+    </div>
 
-    </main>
+    <!-- ─── REPORTS ─── -->
+    <div class="section" id="sec-reports">
+        <div class="reports-filter">
+            <button class="rf-tab active" onclick="filterReports(this,'all')">🚩 الكل</button>
+            <button class="rf-tab" onclick="filterReports(this,'pending')">🔴 جديد</button>
+            <button class="rf-tab" onclick="filterReports(this,'reviewed')">🟡 مراجعة</button>
+            <button class="rf-tab" onclick="filterReports(this,'resolved')">✅ محلول</button>
+        </div>
+        <div id="reportsContainer"><div style="text-align:center;padding:36px;color:var(--lo)">⏳ جارٍ التحميل...</div></div>
+    </div>
+
+    <!-- ─── LOG ─── -->
+    <div class="section" id="sec-log">
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">📋 سجل أنشطة الأدمن</div></div>
+            <div id="activityLog"></div>
+        </div>
+    </div>
+
+    </div><!-- end main-content -->
+</main>
 </div>
 </div>
-
 
 <!-- Edit Modal -->
 <div class="modal-overlay" id="editModal">
     <div class="modal-box">
         <h3>✏️ تعديل السكربت</h3>
         <input type="hidden" id="editId">
-        <input type="text"   id="editTitle"    placeholder="العنوان">
-        <textarea            id="editCode"     placeholder="الكود" style="min-height:120px"></textarea>
-        <textarea            id="editDesc"     placeholder="الوصف" style="min-height:60px"></textarea>
-        <select              id="editCategory">
-            <option value="game">Game Scripts</option>
-            <option value="admin">Admin Scripts</option>
-            <option value="ai">AI & NPCs</option>
-            <option value="سكربت من الادارة">سكربت من الإدارة</option>
-        </select>
+        <div class="field-group"><label class="field-label">العنوان</label><input type="text" id="editTitle"></div>
+        <div class="field-group"><label class="field-label">الكود</label><textarea id="editCode" class="code-field" style="min-height:110px"></textarea></div>
+        <div class="field-group"><label class="field-label">الوصف</label><textarea id="editDesc" style="min-height:55px"></textarea></div>
+        <div class="field-group"><label class="field-label">القسم</label><select id="editCategory"><option value="game">🎮 Game</option><option value="admin">🛡️ Admin</option><option value="ai">🤖 AI</option><option value="سكربت من الادارة">👑 من الإدارة</option></select></div>
         <div class="modal-actions">
             <button id="saveEditBtn">💾 حفظ</button>
             <button id="cancelEditBtn">إلغاء</button>
@@ -958,755 +690,495 @@ body { overflow-x: hidden; }
     </div>
 </div>
 
+<div class="admin-toast" id="adminToast"></div>
 
 <script type="module">
-import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, push, set, remove, update, onChildAdded }
-    from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-    from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, get, push, set, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-    authDomain: "ccraft-space-scripts.firebaseapp.com",
-    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-    projectId: "ccraft-space-scripts",
-    storageBucket: "ccraft-space-scripts.firebasestorage.app",
-    messagingSenderId: "816078027492",
-    appId: "1:816078027492:web:6472cce474078fd4d90af1"
+const fc = { apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1" };
+const app=initializeApp(fc), db=getDatabase(app), auth=getAuth(app);
+
+let allScripts={}, allUsers={}, chatLoaded=false, adminUid=null, allReports={}, currentFilter='all';
+
+const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكربتات',publish:'📤 نشر سكربت',users:'👥 المستخدمون','points-ctrl':'⭐ النقاط','badges-ctrl':'🏅 البادجات',chat:'💬 الشات',announce:'📢 الإعلانات',settings:'⚙️ الإعدادات',reports:'🚩 البلاغات',log:'📋 سجل الأنشطة'};
+
+/* ─── Toast ─── */
+function toast(msg,dur=2500){ const t=document.getElementById('adminToast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),dur); }
+
+/* ─── Auth ─── */
+document.getElementById('loginBtn').onclick=async()=>{
+  const e=document.getElementById('email').value.trim(), p=document.getElementById('password').value.trim(), err=document.getElementById('loginError');
+  if(!e||!p){err.textContent='ادخل البريد وكلمة المرور';return;}
+  try{const c=await signInWithEmailAndPassword(auth,e,p),s=await get(ref(db,`admins/${c.user.uid}`));
+    if(s.exists()&&s.val()===true)showAdmin(c.user);else{err.textContent='ليس لديك صلاحيات أدمن';await signOut(auth);}}
+  catch{document.getElementById('loginError').textContent='بريد أو كلمة مرور خاطئة';}
 };
 
-const app  = initializeApp(firebaseConfig);
-const db   = getDatabase(app);
-const auth = getAuth(app);
+onAuthStateChanged(auth,async u=>{if(!u)return;const s=await get(ref(db,`admins/${u.uid}`));if(s.exists()&&s.val()===true)showAdmin(u);});
 
-let allScripts = {}, allUsers = {}, chatLoaded = false;
-let adminUid = null;
-
-const titles = {
-    overview:    '📊 نظرة عامة',
-    scripts:     '📜 السكربتات',
-    publish:     '📤 نشر سكربت',
-    users:       '👥 المستخدمون',
-    'points-ctrl': '⭐ التحكم بالنقاط',
-    'badges-ctrl': '🏅 إدارة البادجات',
-    chat:        '💬 الشات',
-    announce:    '📢 الإعلانات',
-    settings:    '⚙️ إعدادات الموقع',
-    reports:     '🚩 البلاغات',
-    log:         '📋 سجل الأنشطة',
-};
-
-
-/* ---- Auth ---- */
-
-document.getElementById('loginBtn').onclick = async () => {
-    const email = document.getElementById('email').value.trim();
-    const pass  = document.getElementById('password').value.trim();
-    const err   = document.getElementById('loginError');
-    if (!email || !pass) { err.textContent = 'ادخل البريد وكلمة المرور'; return; }
-    try {
-        const cred = await signInWithEmailAndPassword(auth, email, pass);
-        const snap = await get(ref(db, `admins/${cred.user.uid}`));
-        if (snap.exists() && snap.val() === true) {
-            showAdmin(cred.user);
-        } else {
-            err.textContent = 'ليس لديك صلاحيات أدمن';
-            await signOut(auth);
-        }
-    } catch { document.getElementById('loginError').textContent = 'بريد أو كلمة مرور خاطئة'; }
-};
-
-onAuthStateChanged(auth, async user => {
-    if (!user) return;
-    const snap = await get(ref(db, `admins/${user.uid}`));
-    if (snap.exists() && snap.val() === true) showAdmin(user);
-});
-
-function showAdmin(user) {
-    adminUid = user.uid;
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display  = 'block';
-    const name = user.email.split('@')[0];
-    ['sideAvatar','topAvatar'].forEach(id => document.getElementById(id).innerText = name.charAt(0).toUpperCase());
-    document.getElementById('sideEmail').innerText = user.email;
-    document.getElementById('topEmail').innerText  = user.email;
-    loadAll();
-    loadSettings();
-    loadActivityLog();
+function showAdmin(user){
+  adminUid=user.uid;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('adminPanel').style.display='block';
+  const n=user.email.split('@')[0];
+  ['sideAvatar','topAvatar'].forEach(id=>document.getElementById(id).innerText=n.charAt(0).toUpperCase());
+  document.getElementById('sideEmail').innerText=user.email;
+  document.getElementById('topEmail').innerText=user.email;
+  loadAll();loadSettings();loadActivityLog();
 }
 
-document.getElementById('adminLogoutBtn').onclick = async () => { await signOut(auth); location.reload(); };
-
-
-/* ---- Navigation ---- */
-
-document.querySelectorAll('.nav-item').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const sec = btn.dataset.section;
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(`sec-${sec}`).classList.add('active');
-        document.getElementById('pageTitle').innerText = titles[sec] || sec;
-        if (sec === 'chat' && !chatLoaded) { loadChat(); chatLoaded = true; }
-        if (sec === 'points-ctrl') renderTopPoints();
-        if (sec === 'badges-ctrl') renderTopBadges();
-        if (sec === 'log') loadActivityLog();
-        if (sec === 'reports') loadReports();
-    });
-});
-
-
-/* ---- Load All ---- */
-
-async function loadAll() {
-    const [scriptsSnap, usersSnap, chatSnap, annSnap] = await Promise.all([
-        get(ref(db, 'scripts')),
-        get(ref(db, 'users')),
-        get(ref(db, 'chat')),
-        get(ref(db, 'announcements')),
-    ]);
-
-    allScripts = scriptsSnap.exists() ? scriptsSnap.val() : {};
-    allUsers   = usersSnap.exists()   ? usersSnap.val()   : {};
-    const chatMsgs = chatSnap.exists() ? Object.keys(chatSnap.val()).length : 0;
-
-    let totalLikes = 0, totalPts = 0, totalBadges = 0;
-    Object.values(allScripts).forEach(s => totalLikes += s.likes || 0);
-    Object.values(allUsers).forEach(u => {
-        totalPts    += u.points || 0;
-        totalBadges += u.badges ? Object.keys(u.badges).length : 0;
-    });
-
-    document.getElementById('st-scripts').innerText = Object.keys(allScripts).length;
-    document.getElementById('st-users').innerText   = Object.keys(allUsers).length;
-    document.getElementById('st-likes').innerText   = totalLikes;
-    document.getElementById('st-pts').innerText     = totalPts;
-    document.getElementById('st-badges').innerText  = totalBadges;
-    document.getElementById('st-msgs').innerText    = chatMsgs;
-    document.getElementById('scriptsBadge').innerText = Object.keys(allScripts).length;
-    document.getElementById('usersBadge').innerText   = Object.keys(allUsers).length;
-
-    renderRecentScripts();
-    renderRecentUsers();
-    renderFullScripts();
-    renderUsers();
-    if (annSnap.exists()) renderAnnouncements(annSnap.val());
-}
-
-
-/* ---- Recent Scripts ---- */
-
-function renderRecentScripts() {
-    const body = document.getElementById('recentBody');
-    body.innerHTML = '';
-    const entries = Object.entries(allScripts).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0)).slice(0,5);
-    if (!entries.length) { body.innerHTML='<tr class="empty-row"><td colspan="4">لا توجد سكربتات</td></tr>'; return; }
-    entries.forEach(([,s]) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td class="t-title">${s.title||'—'}</td><td><span class="t-cat">${s.category||'—'}</span></td><td style="color:var(--text-muted)">${s.author||'مجهول'}</td><td>👍 ${s.likes||0}</td>`;
-        body.appendChild(tr);
-    });
-}
-
-function renderRecentUsers() {
-    const body = document.getElementById('recentUsersBody');
-    body.innerHTML = '';
-    const entries = Object.entries(allUsers).slice(0,5);
-    entries.forEach(([uid,u]) => {
-        const name = (u.email||'').split('@')[0];
-        const badges = u.badges ? Object.keys(u.badges).length : 0;
-        const pts    = u.points || 0;
-        const scripts = Object.values(allScripts).filter(s=>s.authorUid===uid||s.authorEmail===u.email).length;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${name}</td><td>🏅 ${badges}</td><td>⭐ ${pts}</td><td>📜 ${scripts}</td>`;
-        body.appendChild(tr);
-    });
-}
-
-
-/* ---- Full Scripts Table ---- */
-
-function renderFullScripts(filter='') {
-    const body = document.getElementById('fullScriptsBody');
-    body.innerHTML = '';
-    const entries = Object.entries(allScripts)
-        .filter(([,s]) => !filter ||
-            (s.title||'').toLowerCase().includes(filter) ||
-            (s.author||'').toLowerCase().includes(filter) ||
-            (s.category||'').toLowerCase().includes(filter))
-        .sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0));
-    if (!entries.length) { body.innerHTML='<tr class="empty-row"><td colspan="7">لا توجد نتائج</td></tr>'; return; }
-    entries.forEach(([id,s],i) => {
-        const avg = s.votes ? (s.rating/s.votes).toFixed(1) : '—';
-        const tr  = document.createElement('tr');
-        tr.innerHTML = `
-            <td style="color:var(--text-muted);font-size:0.78rem">${i+1}</td>
-            <td class="t-title">${s.title||'—'}</td>
-            <td><span class="t-cat">${s.category||'—'}</span></td>
-            <td style="color:var(--text-muted)">${s.author||'مجهول'}</td>
-            <td>👍 ${s.likes||0}</td>
-            <td>⭐ ${avg}</td>
-            <td><div class="t-actions">
-                <button class="t-btn edit">✏️</button>
-                <button class="t-btn del">🗑️</button>
-            </div></td>
-        `;
-        tr.querySelector('.edit').onclick = () => openEdit(id,s);
-        tr.querySelector('.del').onclick  = () => deleteScript(id,tr);
-        body.appendChild(tr);
-    });
-}
-
-document.getElementById('scriptSearch').addEventListener('input', e => renderFullScripts(e.target.value.toLowerCase().trim()));
-
-async function deleteScript(id, row) {
-    if (!confirm('حذف هذا السكربت نهائياً؟')) return;
-    await remove(ref(db, `scripts/${id}`));
-    delete allScripts[id];
-    row.style.cssText += 'opacity:0;transition:0.3s';
-    setTimeout(()=>{row.remove();renderRecentScripts();updateScriptCount();},300);
-    logActivity('🗑️', `حذف سكربت: ${allScripts[id]?.title || id}`);
-}
-
-function updateScriptCount() {
-    const n = Object.keys(allScripts).length;
-    document.getElementById('st-scripts').innerText   = n;
-    document.getElementById('scriptsBadge').innerText = n;
-}
-
-
-/* ---- Edit Modal ---- */
-
-function openEdit(id,s) {
-    document.getElementById('editId').value       = id;
-    document.getElementById('editTitle').value    = s.title||'';
-    document.getElementById('editCode').value     = s.code||'';
-    document.getElementById('editDesc').value     = s.description||'';
-    document.getElementById('editCategory').value = s.category||'';
-    document.getElementById('editModal').classList.add('open');
-}
-
-document.getElementById('cancelEditBtn').onclick = () => document.getElementById('editModal').classList.remove('open');
-document.getElementById('editModal').addEventListener('click', e => { if(e.target===document.getElementById('editModal')) document.getElementById('editModal').classList.remove('open'); });
-
-document.getElementById('saveEditBtn').onclick = async () => {
-    const id  = document.getElementById('editId').value;
-    const upd = {
-        title:       document.getElementById('editTitle').value.trim(),
-        code:        document.getElementById('editCode').value.trim(),
-        description: document.getElementById('editDesc').value.trim(),
-        category:    document.getElementById('editCategory').value,
-    };
-    if (!upd.title||!upd.code) return alert('العنوان والكود مطلوبان');
-    await update(ref(db,`scripts/${id}`), upd);
-    Object.assign(allScripts[id],upd);
-    renderFullScripts(document.getElementById('scriptSearch').value.toLowerCase());
-    renderRecentScripts();
-    document.getElementById('editModal').classList.remove('open');
-    logActivity('✏️', `تعديل سكربت: ${upd.title}`);
-};
-
-
-/* ---- Publish ---- */
-
-document.getElementById('addScriptBtn').onclick = async () => {
-    const title    = document.getElementById('newTitle').value.trim();
-    const code     = document.getElementById('newCode').value.trim();
-    const desc     = document.getElementById('newDesc').value.trim();
-    const category = document.getElementById('newCategory').value;
-    if (!title||!code||!category) return alert('العنوان والكود والقسم مطلوبين');
-    const newRef = push(ref(db,'scripts'));
-    const data   = {title,code,description:desc,category,author:'سكربت من الإدارة',timestamp:Date.now(),likes:0,rating:0,votes:0};
-    await set(newRef,data);
-    allScripts[newRef.key]=data;
-    alert('✅ تم نشر السكربت!');
-    ['newTitle','newCode','newDesc'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('newCategory').value='';
-    renderFullScripts(); renderRecentScripts(); updateScriptCount();
-    logActivity('📤', `نشر سكربت: ${title}`);
-};
-
-
-/* ---- Users Table ---- */
-
-function renderUsers(filter='') {
-    const body = document.getElementById('usersBody');
-    body.innerHTML = '';
-    let entries = Object.entries(allUsers);
-    if (filter) entries = entries.filter(([,u])=>(u.email||'').toLowerCase().includes(filter));
-    if (!entries.length) { body.innerHTML='<tr class="empty-row"><td colspan="6">لا يوجد مستخدمون</td></tr>'; return; }
-    entries.forEach(([uid,u]) => {
-        const name    = (u.email||'').split('@')[0];
-        const scripts = Object.values(allScripts).filter(s=>s.authorUid===uid||s.authorEmail===u.email).length;
-        const pts     = u.points||0;
-        const badges  = u.badges ? Object.keys(u.badges).length : 0;
-        const banned  = u.banned === true;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><div style="font-weight:800">${name}</div><div style="font-size:0.72rem;color:var(--text-muted)">${u.email||'—'}</div></td>
-            <td>📜 ${scripts}</td>
-            <td>⭐ ${pts}</td>
-            <td>🏅 ${badges}</td>
-            <td>${banned ? '<span class="banned-badge">محظور</span>' : '<span style="color:var(--success);font-size:0.78rem;font-weight:800">✅ نشط</span>'}</td>
-            <td><div class="t-actions">
-                <button class="t-btn view" data-uid="${uid}">👤</button>
-                <button class="t-btn pts"  data-uid="${uid}" data-email="${u.email}">⭐</button>
-                <button class="t-btn ${banned?'unban':'ban'}" data-uid="${uid}">${banned?'✅ رفع':'🚫 حظر'}</button>
-            </div></td>
-        `;
-        tr.querySelector('.view').onclick = () => window.open(`profile.html?uid=${uid}`,'_blank');
-        tr.querySelector('.pts').onclick  = () => {
-            const pts = prompt(`إضافة نقاط لـ ${name}:`);
-            if (!pts || isNaN(pts)) return;
-            addPtsToUid(uid, parseInt(pts));
-        };
-        tr.querySelector(`.${banned?'unban':'ban'}`).onclick = () => toggleBan(uid, u, banned, tr);
-        body.appendChild(tr);
-    });
-}
-
-document.getElementById('userSearch')?.addEventListener('input', e => renderUsers(e.target.value.toLowerCase().trim()));
-
-async function toggleBan(uid, u, isBanned, row) {
-    const action = isBanned ? 'رفع الحظر عن' : 'حظر';
-    if (!confirm(`هل تريد ${action} ${(u.email||'').split('@')[0]}؟`)) return;
-    await update(ref(db,`users/${uid}`), {banned: !isBanned});
-    allUsers[uid].banned = !isBanned;
-    renderUsers(document.getElementById('userSearch')?.value?.toLowerCase()||'');
-    logActivity(isBanned?'✅':'🚫', `${action} المستخدم: ${u.email}`);
-}
-
-
-/* ---- Points Control ---- */
-
-async function findUidByEmail(email) {
-    const entry = Object.entries(allUsers).find(([,u])=>u.email===email);
-    return entry ? entry[0] : null;
-}
-
-async function addPtsToUid(uid, amount) {
-    if (!uid || !amount || amount <= 0) return;
-    const snap = await get(ref(db,`users/${uid}/points`));
-    const current = snap.exists() ? snap.val() : 0;
-    await set(ref(db,`users/${uid}/points`), current + amount);
-    await set(ref(db,`users/${uid}/pointsLog/${Date.now()}`), {type:'admin',points:amount,timestamp:Date.now()});
-    if (allUsers[uid]) allUsers[uid].points = (allUsers[uid].points||0)+amount;
-    logActivity('⭐', `إضافة ${amount} نقطة للمستخدم ${allUsers[uid]?.email||uid}`);
-}
-
-window.addPointsToUser = async () => {
-    const email  = document.getElementById('pts-email').value.trim();
-    const amount = parseInt(document.getElementById('pts-amount').value);
-    if (!email||!amount) return alert('مطلوب البريد والعدد');
-    const uid = await findUidByEmail(email);
-    if (!uid) return alert('المستخدم غير موجود');
-    await addPtsToUid(uid, amount);
-    alert(`✅ تم إضافة ${amount} نقطة`);
-};
-
-window.removePointsFromUser = async () => {
-    const email  = document.getElementById('pts-remove-email').value.trim();
-    const amount = parseInt(document.getElementById('pts-remove-amount').value);
-    if (!email||!amount) return alert('مطلوب البريد والعدد');
-    const uid = await findUidByEmail(email);
-    if (!uid) return alert('المستخدم غير موجود');
-    const snap = await get(ref(db,`users/${uid}/points`));
-    const current = snap.exists() ? snap.val() : 0;
-    await set(ref(db,`users/${uid}/points`), Math.max(0, current-amount));
-    logActivity('➖', `خصم ${amount} نقطة من ${email}`);
-    alert('✅ تم الخصم');
-};
-
-window.addPointsToAll = async () => {
-    const amount = parseInt(document.getElementById('pts-all-amount').value);
-    if (!amount) return alert('أدخل عدد النقاط');
-    if (!confirm(`إضافة ${amount} نقطة لكل المستخدمين؟`)) return;
-    for (const [uid,u] of Object.entries(allUsers)) {
-        const snap = await get(ref(db,`users/${uid}/points`));
-        const cur  = snap.exists() ? snap.val() : 0;
-        await set(ref(db,`users/${uid}/points`), cur+amount);
-    }
-    logActivity('🎁', `إضافة ${amount} نقطة لكل المستخدمين`);
-    alert('✅ تم');
-};
-
-window.resetUserPoints = async () => {
-    const email = document.getElementById('pts-reset-email').value.trim();
-    if (!email) return alert('أدخل البريد');
-    const uid = await findUidByEmail(email);
-    if (!uid) return alert('غير موجود');
-    if (!confirm(`إعادة تعيين نقاط ${email} إلى 0؟`)) return;
-    await set(ref(db,`users/${uid}/points`), 0);
-    logActivity('🔄', `إعادة تعيين نقاط ${email}`);
-    alert('✅ تم');
-};
-
-function renderTopPoints() {
-    const body = document.getElementById('topPointsBody');
-    body.innerHTML = '';
-    const sorted = Object.entries(allUsers)
-        .filter(([,u])=>(u.points||0)>0)
-        .sort((a,b)=>(b[1].points||0)-(a[1].points||0))
-        .slice(0,10);
-    if (!sorted.length) { body.innerHTML='<tr class="empty-row"><td colspan="4">لا توجد نقاط</td></tr>'; return; }
-    sorted.forEach(([uid,u],i)=>{
-        const refs = 0; // يمكن جلبه من referrals
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${i+1}</td><td>${(u.email||'').split('@')[0]}</td><td>⭐ ${u.points||0}</td><td>—</td>`;
-        body.appendChild(tr);
-    });
-}
-
-
-/* ---- Badges Control ---- */
-
-window.grantBadge = async () => {
-    const email   = document.getElementById('badge-email').value.trim();
-    const badgeId = document.getElementById('badge-select').value;
-    if (!email||!badgeId) return alert('مطلوب البريد والبادج');
-    const uid = await findUidByEmail(email);
-    if (!uid) return alert('المستخدم غير موجود');
-    await set(ref(db,`users/${uid}/badges/${badgeId}`), {earnedAt:Date.now(),rarity:'admin',grantedByAdmin:true});
-    logActivity('🏅', `منح بادج ${badgeId} لـ ${email}`);
-    alert('✅ تم منح البادج');
-};
-
-window.revokeBadge = async () => {
-    const email   = document.getElementById('badge-remove-email').value.trim();
-    const badgeId = document.getElementById('badge-remove-id').value.trim();
-    if (!email||!badgeId) return alert('مطلوب البريد والـ ID');
-    const uid = await findUidByEmail(email);
-    if (!uid) return alert('المستخدم غير موجود');
-    if (!confirm(`سحب بادج "${badgeId}" من ${email}؟`)) return;
-    await remove(ref(db,`users/${uid}/badges/${badgeId}`));
-    logActivity('🗑️', `سحب بادج ${badgeId} من ${email}`);
-    alert('✅ تم السحب');
-};
-
-window.clearAllBadges = async () => {
-    const email = document.getElementById('badge-clear-email').value.trim();
-    if (!email) return alert('أدخل البريد');
-    const uid = await findUidByEmail(email);
-    if (!uid) return alert('غير موجود');
-    if (!confirm(`مسح جميع بادجات ${email}؟ لا يمكن التراجع!`)) return;
-    await remove(ref(db,`users/${uid}/badges`));
-    logActivity('🧹', `مسح بادجات ${email}`);
-    alert('✅ تم المسح');
-};
-
-window.grantBadgeToAll = async () => {
-    const badgeId = document.getElementById('badge-all-select').value;
-    if (!confirm(`منح بادج "${badgeId}" لجميع المستخدمين؟`)) return;
-    for (const uid of Object.keys(allUsers)) {
-        await set(ref(db,`users/${uid}/badges/${badgeId}`), {earnedAt:Date.now(),rarity:'admin',grantedByAdmin:true});
-    }
-    logActivity('🎯', `منح بادج ${badgeId} لجميع المستخدمين`);
-    alert('✅ تم');
-};
-
-function renderTopBadges() {
-    const body = document.getElementById('topBadgesBody');
-    body.innerHTML = '';
-    const sorted = Object.entries(allUsers)
-        .filter(([,u])=>u.badges&&Object.keys(u.badges).length>0)
-        .sort((a,b)=>Object.keys(b[1].badges||{}).length-Object.keys(a[1].badges||{}).length)
-        .slice(0,10);
-    if (!sorted.length) { body.innerHTML='<tr class="empty-row"><td colspan="4">لا بيانات</td></tr>'; return; }
-    sorted.forEach(([uid,u],i)=>{
-        const badges   = u.badges||{};
-        const count    = Object.keys(badges).length;
-        const lastBadge= Object.entries(badges).sort((a,b)=>(b[1].earnedAt||0)-(a[1].earnedAt||0))[0];
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${i+1}</td><td>${(u.email||'').split('@')[0]}</td><td>🏅 ${count}</td><td style="font-size:0.75rem;color:var(--text-muted)">${lastBadge?lastBadge[0]:'—'}</td>`;
-        body.appendChild(tr);
-    });
-}
-
-
-/* ---- Chat ---- */
-
-function loadChat() {
-    const container = document.getElementById('chatContainer');
-    container.innerHTML='';
-    onChildAdded(ref(db,'chat'), snapshot => {
-        const msg = snapshot.val(), key = snapshot.key;
-        const div = document.createElement('div');
-        div.className='chat-msg';
-        const name = msg.username||'مجهول';
-        const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString('ar-EG') : '';
-        div.innerHTML=`
-            <div class="msg-avatar">${name.charAt(0).toUpperCase()}</div>
-            <div class="msg-body">
-                <div class="msg-user">${name}</div>
-                <div class="msg-text" id="mt-${key}">${msg.text}</div>
-                <div class="msg-time">${time}</div>
-            </div>
-            <div class="msg-actions">
-                <button class="t-btn edit">✏️</button>
-                <button class="t-btn del">🗑️</button>
-            </div>
-        `;
-        div.querySelector('.del').onclick = async ()=>{
-            if(!confirm('حذف الرسالة؟')) return;
-            await remove(ref(db,`chat/${key}`));
-            div.remove();
-        };
-        div.querySelector('.edit').onclick = async ()=>{
-            const cur  = document.getElementById(`mt-${key}`).innerText;
-            const text = prompt('عدل الرسالة:',cur);
-            if(!text) return;
-            await update(ref(db,`chat/${key}`),{text});
-            document.getElementById(`mt-${key}`).innerText=text;
-        };
-        container.appendChild(div);
-        container.scrollTop=container.scrollHeight;
-    });
-}
-
-
-/* ---- Announcements ---- */
-
-document.getElementById('sendAnnBtn').onclick = async () => {
-    const text = document.getElementById('annText').value.trim();
-    if (!text) return alert('اكتب نص الإعلان');
-    const newRef = push(ref(db,'announcements'));
-    await set(newRef,{text,timestamp:Date.now()});
-    document.getElementById('annText').value='';
-    const snap = await get(ref(db,'announcements'));
-    if(snap.exists()) renderAnnouncements(snap.val());
-    logActivity('📢',`إعلان جديد: ${text.slice(0,40)}...`);
-};
-
-function renderAnnouncements(data) {
-    const container = document.getElementById('annHistory');
-    container.innerHTML='';
-    Object.entries(data).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0)).forEach(([id,ann])=>{
-        const d = new Date(ann.timestamp||0);
-        const div = document.createElement('div');
-        div.className='ann-item';
-        div.innerHTML=`<p>${ann.text}</p><span class="ann-time">${d.toLocaleDateString('ar-EG')}</span>`;
-        container.appendChild(div);
-    });
-}
-
-
-/* ---- Site Settings ---- */
-
-async function loadSettings() {
-    const snap = await get(ref(db,'siteSettings'));
-    if (!snap.exists()) return;
-    const s = snap.val();
-    ['maintenance','publish','chat','referral','likes','register'].forEach(key=>{
-        const el = document.getElementById(`toggle-${key}`);
-        if (el && s[key] !== undefined) el.checked = s[key];
-    });
-}
-
-document.getElementById('saveSettingsBtn').onclick = async () => {
-    const settings = {};
-    ['maintenance','publish','chat','referral','likes','register'].forEach(key=>{
-        settings[key] = document.getElementById(`toggle-${key}`)?.checked ?? true;
-    });
-    await set(ref(db,'siteSettings'), settings);
-    logActivity('⚙️','حفظ إعدادات الموقع');
-    alert('✅ تم حفظ الإعدادات');
-};
-
-
-/* ---- Add Admin ---- */
-
-window.addNewAdmin = async () => {
-    const uid = document.getElementById('newAdminUid').value.trim();
-    if (!uid) return alert('أدخل الـ UID');
-    if (!confirm(`إضافة ${uid} كأدمن؟`)) return;
-    await set(ref(db,`admins/${uid}`), true);
-    logActivity('🔑',`إضافة أدمن جديد: ${uid}`);
-    alert('✅ تم إضافة الأدمن');
-};
-
-
-/* ---- Activity Log ---- */
-
-async function logActivity(icon, text) {
-    if (!adminUid) return;
-    const logRef = push(ref(db,`adminLog`));
-    await set(logRef, { icon, text, timestamp: Date.now(), adminUid });
-}
-
-async function loadActivityLog() {
-    const snap = await get(ref(db,'adminLog'));
-    const container = document.getElementById('activityLog');
-    container.innerHTML='';
-    if (!snap.exists()) {
-        container.innerHTML='<div style="text-align:center;padding:24px;color:var(--text-muted)">لا توجد أنشطة بعد</div>';
-        return;
-    }
-    Object.entries(snap.val())
-        .sort((a,b)=>b[0]-a[0])
-        .slice(0,30)
-        .forEach(([ts,log])=>{
-            const div = document.createElement('div');
-            div.className='log-entry';
-            const d = new Date(parseInt(ts)).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-            div.innerHTML=`<span class="le-icon">${log.icon}</span><span class="le-text">${log.text}</span><span class="le-time">${d}</span>`;
-            container.appendChild(div);
-        });
-}
-
-/* ---- Reports ---- */
-
-let allReports     = {};
-let currentFilter  = 'all';
-
-async function loadReports() {
-    const snap = await get(ref(db,'reports'));
-    allReports = snap.exists() ? snap.val() : {};
-    renderReports();
-
-    // عدد البلاغات الجديدة في الـ badge
-    const pending = Object.values(allReports).filter(r=>r.status==='pending').length;
-    const badge   = document.getElementById('reportsBadge');
-    if (pending > 0) {
-        badge.innerText      = pending;
-        badge.style.display  = 'inline-block';
-    } else {
-        badge.style.display  = 'none';
-    }
-}
-
-function renderReports(filter = currentFilter) {
-    const container = document.getElementById('reportsContainer');
-    if (!container) return;
-    container.innerHTML = '';
-
-    let entries = Object.entries(allReports)
-        .sort((a,b) => (b[1].timestamp||0) - (a[1].timestamp||0));
-
-    if (filter !== 'all') {
-        entries = entries.filter(([,r]) => r.status === filter);
-    }
-
-    if (!entries.length) {
-        container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:0.9rem">
-            لا توجد بلاغات ${filter !== 'all' ? 'في هذه الفئة' : ''}
-        </div>`;
-        return;
-    }
-
-    entries.forEach(([id, r]) => {
-        const date   = new Date(r.timestamp||0).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-        const status = r.status || 'pending';
-        const statusLabel = { pending:'🔴 جديد', reviewed:'🟡 قيد المراجعة', resolved:'✅ محلول' }[status] || status;
-
-        const item = document.createElement('div');
-        item.className = `report-item status-${status}`;
-        item.dataset.id = id;
-
-        item.innerHTML = `
-            <div class="ri-header">
-                <span class="ri-reason">${r.reason || '—'}</span>
-                <span class="ri-status ${status}">${statusLabel}</span>
-            </div>
-            <div class="ri-script">📜 ${r.scriptTitle || r.scriptId || '—'}</div>
-            <div class="ri-meta">
-                👤 ${r.reporterEmail || 'مجهول'} &nbsp;·&nbsp; 🕐 ${date}
-            </div>
-            ${r.details ? `
-            <div class="ri-details" id="det-${id}">
-                <strong style="color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px">تفاصيل المُبلِّغ:</strong>
-                <p style="margin:4px 0 0">${r.details}</p>
-            </div>` : ''}
-            ${r.adminReply ? `
-            <div class="ri-existing-reply">
-                <strong>✅ رد الأدمن:</strong>
-                ${r.adminReply}
-            </div>` : ''}
-            <div class="ri-actions">
-                ${r.details ? `<button class="t-btn view" onclick="toggleDetails('${id}')">📋 التفاصيل</button>` : ''}
-                <button class="t-btn edit" onclick="openScriptLink('${r.scriptId}')">🔗 فتح السكربت</button>
-                <button class="t-btn view" onclick="toggleReply('${id}')">💬 رد</button>
-                ${status !== 'resolved' ? `<button class="t-btn edit" onclick="changeStatus('${id}','reviewed')">🟡 مراجعة</button>` : ''}
-                ${status !== 'resolved' ? `<button class="t-btn"     onclick="changeStatus('${id}','resolved')" style="background:rgba(74,222,128,0.1);color:var(--success);border:1px solid rgba(74,222,128,0.25)">✅ حل</button>` : ''}
-                <button class="t-btn del" onclick="deleteReport('${id}')">🗑️</button>
-            </div>
-            <div class="reply-box" id="reply-${id}">
-                <textarea placeholder="اكتب ردك على البلاغ هنا..." id="replyText-${id}"></textarea>
-                <div style="display:flex;gap:8px">
-                    <button class="t-btn edit" onclick="sendReply('${id}')">📨 إرسال الرد</button>
-                    <button class="t-btn del" onclick="toggleReply('${id}')">إلغاء</button>
-                </div>
-            </div>
-        `;
-
-        container.appendChild(item);
-    });
-}
-
-function filterReports(btn, status) {
-    document.querySelectorAll('.rf-tab').forEach(b=>b.classList.remove('active'));
+document.getElementById('adminLogoutBtn').onclick=async()=>{await signOut(auth);location.reload();};
+
+/* ─── Nav ─── */
+document.querySelectorAll('.nav-item').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const sec=btn.dataset.section;
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    currentFilter = status;
-    renderReports(status);
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById(`sec-${sec}`).classList.add('active');
+    document.getElementById('pageTitle').innerText=sectionTitles[sec]||sec;
+    if(sec==='chat'&&!chatLoaded){loadChat();chatLoaded=true;}
+    if(sec==='points-ctrl')renderTopPoints();
+    if(sec==='badges-ctrl')renderTopBadges();
+    if(sec==='log')loadActivityLog();
+    if(sec==='reports')loadReports();
+  });
+});
+
+/* ─── Load All ─── */
+async function loadAll(){
+  const[ss,us,cs,as]=await Promise.all([get(ref(db,'scripts')),get(ref(db,'users')),get(ref(db,'chat')),get(ref(db,'announcements'))]);
+  allScripts=ss.exists()?ss.val():{};
+  allUsers=us.exists()?us.val():{};
+  const cm=cs.exists()?Object.keys(cs.val()).length:0;
+  let tl=0,tp=0,tb=0;
+  Object.values(allScripts).forEach(s=>tl+=s.likes||0);
+  Object.values(allUsers).forEach(u=>{tp+=u.points||0;tb+=u.badges?Object.keys(u.badges).length:0;});
+  document.getElementById('st-scripts').innerText=Object.keys(allScripts).length;
+  document.getElementById('st-users').innerText=Object.keys(allUsers).length;
+  document.getElementById('st-likes').innerText=tl;
+  document.getElementById('st-pts').innerText=tp;
+  document.getElementById('st-badges').innerText=tb;
+  document.getElementById('st-msgs').innerText=cm;
+  document.getElementById('scriptsBadge').innerText=Object.keys(allScripts).length;
+  document.getElementById('usersBadge').innerText=Object.keys(allUsers).length;
+  renderRecentScripts();renderRecentUsers();renderFullScripts();renderUsers();
+  if(as.exists())renderAnnouncements(as.val());
 }
 
-function toggleDetails(id) {
-    document.getElementById(`det-${id}`)?.classList.toggle('show');
+/* ─── Overview Tables ─── */
+function renderRecentScripts(){
+  const b=document.getElementById('recentBody');b.innerHTML='';
+  const e=Object.entries(allScripts).sort((a,x)=>(x[1].timestamp||0)-(a[1].timestamp||0)).slice(0,5);
+  if(!e.length){b.innerHTML='<tr class="empty-row"><td colspan="4">لا توجد سكربتات</td></tr>';return;}
+  e.forEach(([,s])=>{const tr=document.createElement('tr');tr.innerHTML=`<td class="t-title">${s.title||'—'}</td><td><span class="t-cat">${s.category||'—'}</span></td><td style="color:var(--mid)">${s.author||'مجهول'}</td><td>👍 ${s.likes||0}</td>`;b.appendChild(tr);});
 }
 
-function toggleReply(id) {
-    document.getElementById(`reply-${id}`)?.classList.toggle('show');
+function renderRecentUsers(){
+  const b=document.getElementById('recentUsersBody');b.innerHTML='';
+  Object.entries(allUsers).slice(0,5).forEach(([uid,u])=>{
+    const s=Object.values(allScripts).filter(x=>x.authorUid===uid||x.authorEmail===u.email).length;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${(u.email||'').split('@')[0]}</td><td>⭐ ${u.points||0}</td><td>🏅 ${u.badges?Object.keys(u.badges).length:0}</td><td>📜 ${s}</td>`;
+    b.appendChild(tr);
+  });
 }
 
-function openScriptLink(scriptId) {
-    if (scriptId && scriptId !== 'unknown') {
-        window.open(`script.html?id=${scriptId}`, '_blank');
-    }
+/* ─── Scripts Table ─── */
+function renderFullScripts(f=''){
+  const b=document.getElementById('fullScriptsBody');b.innerHTML='';
+  const e=Object.entries(allScripts).filter(([,s])=>!f||(s.title||'').toLowerCase().includes(f)||(s.author||'').toLowerCase().includes(f)).sort((a,x)=>(x[1].timestamp||0)-(a[1].timestamp||0));
+  if(!e.length){b.innerHTML='<tr class="empty-row"><td colspan="7">لا توجد نتائج</td></tr>';return;}
+  e.forEach(([id,s],i)=>{
+    const avg=s.votes?(s.rating/s.votes).toFixed(1):'—';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:var(--lo);font-size:0.72rem">${i+1}</td><td class="t-title">${s.title||'—'}</td><td><span class="t-cat">${s.category||'—'}</span></td><td style="color:var(--mid)">${s.author||'مجهول'}</td><td>👍 ${s.likes||0}</td><td>⭐ ${avg}</td><td><div class="t-actions"><button class="t-btn edit">✏️</button><button class="t-btn del">🗑️</button></div></td>`;
+    tr.querySelector('.edit').onclick=()=>openEdit(id,s);
+    tr.querySelector('.del').onclick=()=>deleteScript(id,tr,s.title);
+    b.appendChild(tr);
+  });
 }
 
-async function changeStatus(id, newStatus) {
-    await update(ref(db,`reports/${id}`), { status: newStatus });
-    allReports[id].status = newStatus;
-    logActivity('🚩', `تغيير حالة البلاغ إلى: ${newStatus}`);
-    renderReports();
-    loadReports(); // تحديث العداد
+document.getElementById('scriptSearch').addEventListener('input',e=>renderFullScripts(e.target.value.toLowerCase().trim()));
+
+async function deleteScript(id,row,title){
+  if(!confirm(`حذف "${title}" نهائياً؟`))return;
+  await remove(ref(db,`scripts/${id}`));delete allScripts[id];
+  row.style.cssText+='opacity:0;transition:0.3s';
+  setTimeout(()=>{row.remove();updateScriptCount();renderRecentScripts();},300);
+  logActivity('🗑️',`حذف سكربت: ${title}`);toast(`🗑️ تم حذف "${title}"`);
 }
 
-async function sendReply(id) {
-    const text = document.getElementById(`replyText-${id}`)?.value.trim();
-    if (!text) return alert('اكتب الرد أولاً');
+function updateScriptCount(){const n=Object.keys(allScripts).length;document.getElementById('st-scripts').innerText=n;document.getElementById('scriptsBadge').innerText=n;}
 
-    await update(ref(db,`reports/${id}`), {
-        adminReply: text,
-        repliedAt:  Date.now(),
-        status:     'resolved',
-    });
-
-    allReports[id].adminReply = text;
-    allReports[id].status     = 'resolved';
-
-    logActivity('💬', `رد على بلاغ: ${allReports[id]?.scriptTitle || id}`);
-    renderReports();
-    loadReports();
+/* ─── Edit Modal ─── */
+function openEdit(id,s){
+  document.getElementById('editId').value=id;
+  document.getElementById('editTitle').value=s.title||'';
+  document.getElementById('editCode').value=s.code||'';
+  document.getElementById('editDesc').value=s.description||'';
+  document.getElementById('editCategory').value=s.category||'';
+  document.getElementById('editModal').classList.add('open');
 }
 
-async function deleteReport(id) {
-    if (!confirm('حذف هذا البلاغ نهائياً؟')) return;
-    await remove(ref(db,`reports/${id}`));
-    delete allReports[id];
-    renderReports();
-    loadReports();
+document.getElementById('cancelEditBtn').onclick=()=>document.getElementById('editModal').classList.remove('open');
+document.getElementById('editModal').addEventListener('click',e=>{if(e.target===document.getElementById('editModal'))document.getElementById('editModal').classList.remove('open');});
+
+document.getElementById('saveEditBtn').onclick=async()=>{
+  const id=document.getElementById('editId').value;
+  const upd={title:document.getElementById('editTitle').value.trim(),code:document.getElementById('editCode').value.trim(),description:document.getElementById('editDesc').value.trim(),category:document.getElementById('editCategory').value};
+  if(!upd.title||!upd.code)return alert('العنوان والكود مطلوبان');
+  await update(ref(db,`scripts/${id}`),upd);
+  Object.assign(allScripts[id],upd);
+  renderFullScripts(document.getElementById('scriptSearch').value.toLowerCase());
+  renderRecentScripts();
+  document.getElementById('editModal').classList.remove('open');
+  logActivity('✏️',`تعديل: ${upd.title}`);toast('✅ تم حفظ التعديلات');
+};
+
+/* ─── PUBLISH ─── */
+let pubSelectedMap=null, pubImageBase64=null;
+
+document.querySelectorAll('.map-mini-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.map-mini-btn').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+    pubSelectedMap=btn.dataset.map||null;
+    document.getElementById('customMapInput').value='';
+    updatePreview();
+  });
+});
+
+document.getElementById('customMapInput').addEventListener('input',e=>{
+  const v=e.target.value.trim();
+  document.querySelectorAll('.map-mini-btn').forEach(b=>b.classList.remove('selected'));
+  pubSelectedMap=v||null;updatePreview();
+});
+
+['newTitle','newDesc','newCategory'].forEach(id=>document.getElementById(id)?.addEventListener('input',updatePreview));
+
+function updatePreview(){
+  const t=document.getElementById('newTitle').value.trim(),c=document.getElementById('newCategory').value,pr=document.getElementById('pubPreview');
+  if(t||c){pr.style.display='block';document.getElementById('previewTitle').innerText=t||'—';const m=[];if(c)m.push(`📁 ${c}`);if(pubSelectedMap)m.push(`🗺️ ${pubSelectedMap}`);document.getElementById('previewMeta').innerText=m.join('  ·  ')||'لم يُحدد';}
+  else pr.style.display='none';
 }
 
-window.filterReports   = filterReports;
-window.toggleDetails   = toggleDetails;
-window.toggleReply     = toggleReply;
-window.openScriptLink  = openScriptLink;
-window.changeStatus    = changeStatus;
-window.sendReply       = sendReply;
-window.deleteReport    = deleteReport;
+document.getElementById('newCode').addEventListener('input',e=>{
+  const n=e.target.value.length,el=document.getElementById('codeCounter');
+  el.textContent=`${n.toLocaleString()} حرف`;el.classList.toggle('warn',n>50000);
+});
 
+// Image upload
+const pubZone=document.getElementById('pubUploadZone'),pubInput=document.getElementById('pubImgInput');
+pubZone.addEventListener('click',()=>{if(!pubZone.classList.contains('has-img'))pubInput.click();});
+pubZone.addEventListener('dragover',e=>{e.preventDefault();pubZone.style.borderColor='rgba(139,92,246,0.45)';});
+pubZone.addEventListener('dragleave',()=>pubZone.style.borderColor='');
+pubZone.addEventListener('drop',e=>{e.preventDefault();pubZone.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processPubImage(f);});
+pubInput.addEventListener('change',e=>{if(e.target.files[0])processPubImage(e.target.files[0]);});
+
+async function processPubImage(file){
+  if(!file.type.startsWith('image/')){toast('❌ ليس ملف صورة');return;}
+  if(file.size>12*1024*1024){toast('❌ الصورة أكبر من 12MB');return;}
+  document.getElementById('pubImgStatus').textContent='⏳ معالجة...';
+  const compressed=await new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>800){h=Math.round(h*800/w);w=800;}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',0.82));};img.onerror=rej;img.src=e.target.result;};
+    r.onerror=rej;r.readAsDataURL(file);
+  });
+  pubImageBase64=compressed;
+  document.getElementById('pubImgPreview').src=compressed;
+  pubZone.classList.add('has-img');
+  document.getElementById('pubImgStatus').textContent=`✅ جاهز — ${((compressed.length*0.75)/1024/1024).toFixed(2)} MB`;
+  document.getElementById('pubImgActions').style.display='flex';
+}
+
+window.changePubImg=()=>{pubInput.click();};
+window.removePubImg=()=>{pubImageBase64=null;document.getElementById('pubImgPreview').src='';pubZone.classList.remove('has-img');pubInput.value='';document.getElementById('pubImgStatus').textContent='';document.getElementById('pubImgActions').style.display='none';};
+
+document.getElementById('addScriptBtn').onclick=async()=>{
+  const title=document.getElementById('newTitle').value.trim();
+  const code=document.getElementById('newCode').value.trim();
+  const desc=document.getElementById('newDesc').value.trim();
+  const category=document.getElementById('newCategory').value;
+  if(!title||!code||!category){toast('❌ العنوان والكود والقسم مطلوبين');return;}
+  const btn=document.getElementById('addScriptBtn');
+  btn.disabled=true;btn.innerHTML='⏳ جارٍ النشر...';
+  const newRef=push(ref(db,'scripts'));
+  const data={title,code,description:desc,category,map:pubSelectedMap||null,author:'سكربت من الإدارة',timestamp:Date.now(),likes:0,rating:0,votes:0};
+  if(pubImageBase64)data.image=pubImageBase64;
+  await set(newRef,data);
+  allScripts[newRef.key]=data;
+  toast('✅ تم نشر السكربت!');
+  document.getElementById('newTitle').value='';document.getElementById('newCode').value='';document.getElementById('newDesc').value='';document.getElementById('newCategory').value='';
+  document.getElementById('codeCounter').textContent='0 حرف';
+  document.querySelectorAll('.map-mini-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelector('.map-mini-btn.no-map').classList.add('selected');
+  pubSelectedMap=null;pubImageBase64=null;
+  window.removePubImg();updatePreview();
+  renderFullScripts();renderRecentScripts();updateScriptCount();
+  logActivity('📤',`نشر سكربت: ${title}`);
+  btn.disabled=false;btn.innerHTML='📤 نشر السكربت';
+};
+
+/* ─── Users ─── */
+function renderUsers(f=''){
+  const b=document.getElementById('usersBody');b.innerHTML='';
+  let e=Object.entries(allUsers);
+  if(f)e=e.filter(([,u])=>(u.email||'').toLowerCase().includes(f));
+  if(!e.length){b.innerHTML='<tr class="empty-row"><td colspan="6">لا يوجد مستخدمون</td></tr>';return;}
+  e.forEach(([uid,u])=>{
+    const name=(u.email||'').split('@')[0];
+    const scripts=Object.values(allScripts).filter(s=>s.authorUid===uid||s.authorEmail===u.email).length;
+    const banned=u.banned===true;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><div style="font-weight:800">${name}</div><div style="font-size:0.68rem;color:var(--lo)">${u.email||'—'}</div></td><td>📜 ${scripts}</td><td>⭐ ${u.points||0}</td><td>🏅 ${u.badges?Object.keys(u.badges).length:0}</td><td>${banned?'<span class="banned-badge">محظور</span>':'<span style="color:var(--green);font-size:0.72rem;font-weight:800">✅ نشط</span>'}</td><td><div class="t-actions"><button class="t-btn view">👤</button><button class="t-btn pts">⭐</button><button class="t-btn ${banned?'unban':'ban'}">${banned?'✅ رفع':'🚫 حظر'}</button></div></td>`;
+    tr.querySelector('.view').onclick=()=>window.open(`profile.html?uid=${uid}`,'_blank');
+    tr.querySelector('.pts').onclick=()=>{const p=prompt(`إضافة نقاط لـ ${name}:`);if(!p||isNaN(p))return;addPtsToUid(uid,parseInt(p));};
+    tr.querySelector(`.${banned?'unban':'ban'}`).onclick=()=>toggleBan(uid,u,banned);
+    b.appendChild(tr);
+  });
+}
+
+document.getElementById('userSearch')?.addEventListener('input',e=>renderUsers(e.target.value.toLowerCase().trim()));
+
+async function toggleBan(uid,u,isBanned){
+  if(!confirm(`${isBanned?'رفع الحظر عن':'حظر'} ${(u.email||'').split('@')[0]}؟`))return;
+  await update(ref(db,`users/${uid}`),{banned:!isBanned});
+  allUsers[uid].banned=!isBanned;
+  renderUsers(document.getElementById('userSearch')?.value?.toLowerCase()||'');
+  logActivity(isBanned?'✅':'🚫',`${isBanned?'رفع حظر':'حظر'}: ${u.email}`);
+  toast(isBanned?'✅ تم رفع الحظر':'🚫 تم الحظر');
+}
+
+/* ─── Points ─── */
+async function findUidByEmail(email){const e=Object.entries(allUsers).find(([,u])=>u.email===email);return e?e[0]:null;}
+
+async function addPtsToUid(uid,amount){
+  if(!uid||!amount||amount<=0)return;
+  const s=await get(ref(db,`users/${uid}/points`));
+  const cur=s.exists()?s.val():0;
+  await set(ref(db,`users/${uid}/points`),cur+amount);
+  await set(ref(db,`users/${uid}/pointsLog/${Date.now()}`),{type:'admin',points:amount,timestamp:Date.now()});
+  if(allUsers[uid])allUsers[uid].points=(allUsers[uid].points||0)+amount;
+  logActivity('⭐',`إضافة ${amount} نقطة للمستخدم ${allUsers[uid]?.email||uid}`);
+  toast(`✅ تم إضافة ${amount} نقطة`);
+}
+
+window.addPointsToUser=async()=>{const e=document.getElementById('pts-email').value.trim(),a=parseInt(document.getElementById('pts-amount').value);if(!e||!a)return toast('❌ مطلوب البريد والعدد');const uid=await findUidByEmail(e);if(!uid)return toast('❌ المستخدم غير موجود');await addPtsToUid(uid,a);};
+
+window.removePointsFromUser=async()=>{
+  const e=document.getElementById('pts-remove-email').value.trim(),a=parseInt(document.getElementById('pts-remove-amount').value);
+  if(!e||!a)return toast('❌ مطلوب البريد والعدد');
+  const uid=await findUidByEmail(e);if(!uid)return toast('❌ غير موجود');
+  const s=await get(ref(db,`users/${uid}/points`));
+  await set(ref(db,`users/${uid}/points`),Math.max(0,(s.exists()?s.val():0)-a));
+  logActivity('➖',`خصم ${a} نقطة من ${e}`);toast('✅ تم الخصم');
+};
+
+window.addPointsToAll=async()=>{
+  const a=parseInt(document.getElementById('pts-all-amount').value);
+  if(!a)return toast('❌ أدخل عدد النقاط');
+  if(!confirm(`إضافة ${a} نقطة لكل المستخدمين؟`))return;
+  for(const[uid]of Object.entries(allUsers)){const s=await get(ref(db,`users/${uid}/points`));await set(ref(db,`users/${uid}/points`),(s.exists()?s.val():0)+a);}
+  logActivity('🎁',`إضافة ${a} نقطة للجميع`);toast('✅ تم');
+};
+
+window.resetUserPoints=async()=>{
+  const e=document.getElementById('pts-reset-email').value.trim();if(!e)return toast('❌ أدخل البريد');
+  const uid=await findUidByEmail(e);if(!uid)return toast('❌ غير موجود');
+  if(!confirm(`إعادة نقاط ${e} إلى 0؟`))return;
+  await set(ref(db,`users/${uid}/points`),0);logActivity('🔄',`إعادة تعيين نقاط ${e}`);toast('✅ تم');
+};
+
+function renderTopPoints(){
+  const b=document.getElementById('topPointsBody');b.innerHTML='';
+  const s=Object.entries(allUsers).filter(([,u])=>(u.points||0)>0).sort((a,x)=>(x[1].points||0)-(a[1].points||0)).slice(0,10);
+  if(!s.length){b.innerHTML='<tr class="empty-row"><td colspan="4">لا توجد نقاط</td></tr>';return;}
+  s.forEach(([,u],i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${(u.email||'').split('@')[0]}</td><td>⭐ ${u.points||0}</td><td>—</td>`;b.appendChild(tr);});
+}
+
+/* ─── Badges ─── */
+window.grantBadge=async()=>{
+  const e=document.getElementById('badge-email').value.trim(),bid=document.getElementById('badge-select').value;
+  if(!e||!bid)return toast('❌ مطلوب البريد والبادج');
+  const uid=await findUidByEmail(e);if(!uid)return toast('❌ غير موجود');
+  await set(ref(db,`users/${uid}/badges/${bid}`),{earnedAt:Date.now(),rarity:'admin',grantedByAdmin:true});
+  logActivity('🏅',`منح بادج ${bid} لـ ${e}`);toast('✅ تم منح البادج');
+};
+
+window.revokeBadge=async()=>{
+  const e=document.getElementById('badge-remove-email').value.trim(),bid=document.getElementById('badge-remove-id').value.trim();
+  if(!e||!bid)return toast('❌ مطلوب البريد والـ ID');
+  const uid=await findUidByEmail(e);if(!uid)return toast('❌ غير موجود');
+  if(!confirm(`سحب بادج "${bid}" من ${e}؟`))return;
+  await remove(ref(db,`users/${uid}/badges/${bid}`));
+  logActivity('🗑️',`سحب بادج ${bid} من ${e}`);toast('✅ تم السحب');
+};
+
+window.clearAllBadges=async()=>{
+  const e=document.getElementById('badge-clear-email').value.trim();if(!e)return toast('❌ أدخل البريد');
+  const uid=await findUidByEmail(e);if(!uid)return toast('❌ غير موجود');
+  if(!confirm(`مسح جميع بادجات ${e}؟`))return;
+  await remove(ref(db,`users/${uid}/badges`));
+  logActivity('🧹',`مسح بادجات ${e}`);toast('✅ تم المسح');
+};
+
+window.grantBadgeToAll=async()=>{
+  const bid=document.getElementById('badge-all-select').value;
+  if(!confirm(`منح بادج "${bid}" لجميع المستخدمين؟`))return;
+  for(const uid of Object.keys(allUsers))await set(ref(db,`users/${uid}/badges/${bid}`),{earnedAt:Date.now(),rarity:'admin',grantedByAdmin:true});
+  logActivity('🎯',`منح بادج ${bid} للجميع`);toast('✅ تم');
+};
+
+function renderTopBadges(){
+  const b=document.getElementById('topBadgesBody');b.innerHTML='';
+  const s=Object.entries(allUsers).filter(([,u])=>u.badges&&Object.keys(u.badges).length>0).sort((a,x)=>Object.keys(x[1].badges||{}).length-Object.keys(a[1].badges||{}).length).slice(0,10);
+  if(!s.length){b.innerHTML='<tr class="empty-row"><td colspan="4">لا بيانات</td></tr>';return;}
+  s.forEach(([,u],i)=>{
+    const bg=u.badges||{},cnt=Object.keys(bg).length;
+    const lb=Object.entries(bg).sort((a,x)=>(x[1].earnedAt||0)-(a[1].earnedAt||0))[0];
+    const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${(u.email||'').split('@')[0]}</td><td>🏅 ${cnt}</td><td style="font-size:0.72rem;color:var(--lo)">${lb?lb[0]:'—'}</td>`;b.appendChild(tr);
+  });
+}
+
+/* ─── Chat ─── */
+function loadChat(){
+  const c=document.getElementById('chatContainer');c.innerHTML='';
+  onChildAdded(ref(db,'chat'),snapshot=>{
+    const msg=snapshot.val(),key=snapshot.key;
+    const div=document.createElement('div');div.className='chat-msg';
+    const name=msg.username||'مجهول',time=msg.timestamp?new Date(msg.timestamp).toLocaleTimeString('ar-EG'):'';
+    div.innerHTML=`<div class="msg-avatar">${name.charAt(0).toUpperCase()}</div><div class="msg-body"><div class="msg-user">${name}</div><div class="msg-text" id="mt-${key}">${msg.text}</div><div class="msg-time">${time}</div></div><div class="msg-actions"><button class="t-btn edit">✏️</button><button class="t-btn del">🗑️</button></div>`;
+    div.querySelector('.del').onclick=async()=>{if(!confirm('حذف الرسالة؟'))return;await remove(ref(db,`chat/${key}`));div.remove();};
+    div.querySelector('.edit').onclick=async()=>{const cur=document.getElementById(`mt-${key}`).innerText,t=prompt('عدل الرسالة:',cur);if(!t)return;await update(ref(db,`chat/${key}`),{text:t});document.getElementById(`mt-${key}`).innerText=t;};
+    c.appendChild(div);c.scrollTop=c.scrollHeight;
+  });
+}
+
+/* ─── Announcements ─── */
+document.getElementById('sendAnnBtn').onclick=async()=>{
+  const t=document.getElementById('annText').value.trim();if(!t)return toast('❌ اكتب نص الإعلان');
+  const nr=push(ref(db,'announcements'));await set(nr,{text:t,timestamp:Date.now()});
+  document.getElementById('annText').value='';
+  const s=await get(ref(db,'announcements'));if(s.exists())renderAnnouncements(s.val());
+  logActivity('📢',`إعلان: ${t.slice(0,40)}`);toast('✅ تم إرسال الإعلان');
+};
+
+function renderAnnouncements(data){
+  const c=document.getElementById('annHistory');c.innerHTML='';
+  Object.entries(data).sort((a,x)=>(x[1].timestamp||0)-(a[1].timestamp||0)).forEach(([id,ann])=>{
+    const div=document.createElement('div');div.className='ann-item';
+    div.innerHTML=`<p>${ann.text}</p><span class="ann-time">${new Date(ann.timestamp||0).toLocaleDateString('ar-EG')}</span>`;
+    c.appendChild(div);
+  });
+}
+
+/* ─── Settings ─── */
+async function loadSettings(){
+  const s=await get(ref(db,'siteSettings'));if(!s.exists())return;
+  const v=s.val();['maintenance','publish','chat','referral','likes','register'].forEach(k=>{const el=document.getElementById(`toggle-${k}`);if(el&&v[k]!==undefined)el.checked=v[k];});
+}
+
+document.getElementById('saveSettingsBtn').onclick=async()=>{
+  const s={};['maintenance','publish','chat','referral','likes','register'].forEach(k=>{s[k]=document.getElementById(`toggle-${k}`)?.checked??true;});
+  await set(ref(db,'siteSettings'),s);
+  logActivity('⚙️','حفظ إعدادات الموقع');toast('✅ تم حفظ الإعدادات');
+};
+
+window.addNewAdmin=async()=>{
+  const uid=document.getElementById('newAdminUid').value.trim();if(!uid)return toast('❌ أدخل الـ UID');
+  if(!confirm(`إضافة ${uid} كأدمن؟`))return;
+  await set(ref(db,`admins/${uid}`),true);
+  logActivity('🔑',`إضافة أدمن: ${uid}`);toast('✅ تم إضافة الأدمن');
+};
+
+/* ─── Reports ─── */
+async function loadReports(){
+  const s=await get(ref(db,'reports'));allReports=s.exists()?s.val():{};renderReports();
+  const p=Object.values(allReports).filter(r=>r.status==='pending').length;
+  const badge=document.getElementById('reportsBadge');
+  if(p>0){badge.innerText=p;badge.style.display='inline-block';}else badge.style.display='none';
+}
+
+function renderReports(f=currentFilter){
+  const c=document.getElementById('reportsContainer');if(!c)return;c.innerHTML='';
+  let e=Object.entries(allReports).sort((a,x)=>(x[1].timestamp||0)-(a[1].timestamp||0));
+  if(f!=='all')e=e.filter(([,r])=>r.status===f);
+  if(!e.length){c.innerHTML=`<div style="text-align:center;padding:36px;color:var(--lo)">لا توجد بلاغات ${f!=='all'?'في هذه الفئة':''}</div>`;return;}
+  e.forEach(([id,r])=>{
+    const date=new Date(r.timestamp||0).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const status=r.status||'pending';
+    const sl={pending:'🔴 جديد',reviewed:'🟡 مراجعة',resolved:'✅ محلول'}[status]||status;
+    const item=document.createElement('div');item.className=`report-item status-${status}`;
+    item.innerHTML=`
+      <div class="ri-header">
+        <span class="ri-reason">${r.reason||'—'}</span>
+        <span class="ri-status ${status}">${sl}</span>
+      </div>
+      <div class="ri-script">📜 ${r.scriptTitle||r.scriptId||'—'}</div>
+      <div class="ri-meta">👤 ${r.reporterEmail||'مجهول'} &nbsp;·&nbsp; 🕐 ${date}</div>
+      ${r.details?`<div class="ri-details" id="det-${id}"><strong style="color:var(--lo);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px">تفاصيل:</strong><p style="margin:3px 0 0">${r.details}</p></div>`:''}
+      ${r.adminReply?`<div class="ri-existing-reply"><strong>✅ رد الأدمن:</strong>${r.adminReply}</div>`:''}
+      <div class="ri-actions">
+        ${r.details?`<button class="t-btn view" onclick="toggleDetails('${id}')">📋 التفاصيل</button>`:''}
+        <button class="t-btn edit" onclick="openScriptLink('${r.scriptId}')">🔗 فتح</button>
+        <button class="t-btn view" onclick="toggleReply('${id}')">💬 رد</button>
+        ${status!=='resolved'?`<button class="t-btn edit" onclick="changeStatus('${id}','reviewed')">🟡 مراجعة</button>`:''}
+        ${status!=='resolved'?`<button class="t-btn unban" onclick="changeStatus('${id}','resolved')">✅ حل</button>`:''}
+        <button class="t-btn del" onclick="deleteReport('${id}')">🗑️</button>
+      </div>
+      <div class="reply-box" id="reply-${id}">
+        <textarea placeholder="اكتب ردك..." id="replyText-${id}"></textarea>
+        <div style="display:flex;gap:6px">
+          <button class="t-btn edit" onclick="sendReply('${id}')">📨 إرسال</button>
+          <button class="t-btn del"  onclick="toggleReply('${id}')">إلغاء</button>
+        </div>
+      </div>`;
+    c.appendChild(item);
+  });
+}
+
+window.filterReports=(btn,s)=>{document.querySelectorAll('.rf-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=s;renderReports(s);};
+window.toggleDetails=id=>document.getElementById(`det-${id}`)?.classList.toggle('show');
+window.toggleReply=id=>document.getElementById(`reply-${id}`)?.classList.toggle('show');
+window.openScriptLink=id=>{if(id&&id!=='unknown')window.open(`script.html?id=${id}`,'_blank');};
+
+window.changeStatus=async(id,ns)=>{
+  await update(ref(db,`reports/${id}`),{status:ns});allReports[id].status=ns;
+  logActivity('🚩',`تغيير حالة بلاغ → ${ns}`);renderReports();loadReports();
+};
+
+window.sendReply=async(id)=>{
+  const t=document.getElementById(`replyText-${id}`)?.value.trim();if(!t)return toast('❌ اكتب الرد أولاً');
+  await update(ref(db,`reports/${id}`),{adminReply:t,repliedAt:Date.now(),status:'resolved'});
+  allReports[id].adminReply=t;allReports[id].status='resolved';
+  logActivity('💬',`رد على بلاغ`);toast('✅ تم إرسال الرد');renderReports();loadReports();
+};
+
+window.deleteReport=async(id)=>{
+  if(!confirm('حذف هذا البلاغ؟'))return;
+  await remove(ref(db,`reports/${id}`));delete allReports[id];renderReports();loadReports();toast('🗑️ تم الحذف');
+};
+
+/* ─── Activity Log ─── */
+async function logActivity(icon,text){
+  if(!adminUid)return;
+  await set(push(ref(db,'adminLog')),{icon,text,timestamp:Date.now(),adminUid});
+}
+
+async function loadActivityLog(){
+  const s=await get(ref(db,'adminLog'));const c=document.getElementById('activityLog');c.innerHTML='';
+  if(!s.exists()){c.innerHTML='<div style="text-align:center;padding:22px;color:var(--lo)">لا توجد أنشطة بعد</div>';return;}
+  Object.entries(s.val()).sort((a,x)=>x[0]-a[0]).slice(0,30).forEach(([ts,log])=>{
+    const div=document.createElement('div');div.className='log-entry';
+    const d=new Date(parseInt(ts)).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    div.innerHTML=`<span class="le-icon">${log.icon}</span><span class="le-text">${log.text}</span><span class="le-time">${d}</span>`;
+    c.appendChild(div);
+  });
+}
 </script>
 </body>
 </html>
