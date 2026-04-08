@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /script.html
 Disallow: /login.html
 Disallow: /avatar.html
 Disallow: /publish.html
