@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
+Disallow: /login.html
+Disallow: /avatar.html
+Disallow: /publish.html
+Disallow: /admin.html
+Disallow: /page-builder.html
+Disallow: /referral.html
+Disallow: /report.html
 
 Sitemap: https://ccraftspace.ddnsking.com/sitemap.xml
