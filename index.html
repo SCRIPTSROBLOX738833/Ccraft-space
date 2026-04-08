@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCRAFT SPACE | الرئيسية</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9131038282158705"
-     crossorigin="anonymous"></script>
     <meta property="og:site_name"   content="CCRAFT SPACE">
     <meta name="application-name"   content="CCRAFT SPACE">
     <meta name="description"        content="أفضل منصة عربية لسكربتات Roblox">
@@ -110,7 +108,7 @@
         <img src="cCraft.jpg" alt="CCRAFT SPACE" class="site-logo">
     </div>
     <h1 class="hero-title">CCRAFT SPACE</h1>
-    <p class="hero-sub">CCRAFT space</p>
+    <p class="hero-sub">  ⚡</p>
     <div class="live-stats">
         <div class="live-dot"></div>
         <div class="ls-item">📜 <span class="ls-val" id="ls-scripts">—</span> سكربت</div>
@@ -123,12 +121,10 @@
     </div>
     <nav class="nav-grid">
         <button class="nav-btn nb-c1"  onclick="location.href='profile.html'"><span class="nb-icon">👤</span><span>بروفايلي</span></button>
-        <button class="nav-btn nb-c1"  onclick="location.href='api.html'"><span class="nb-icon">🗝</span><span>api</span></button>
         <button class="nav-btn nb-c2"  onclick="location.href='nova.html'"><span class="nb-icon">🤖</span><span>NOVA AI</span></button>
         <button class="nav-btn nb-c3"  onclick="location.href='chat.html'"><span class="nb-icon">💬</span><span>شات</span></button>
         <button class="nav-btn nb-c4"  onclick="location.href='publish.html'"><span class="nb-icon">📤</span><span>نشر سكربت</span></button>
         <button class="nav-btn nb-c5"  onclick="location.href='scripts.html'"><span class="nb-icon">📜</span><span>السكربتات</span></button>
-        <button class="nav-btn nb-c1"  onclick="location.href='privacy.html'"><span class="nb-icon">💬</span><span>سياسة الخصوصية</span></button>
         <button class="nav-btn nb-c6"  onclick="location.href='leaderboard.html'"><span class="nb-icon">🏆</span><span>ليدربورد</span></button>
         <button class="nav-btn nb-c7"  onclick="location.href='top-badges.html'"><span class="nb-icon">🏅</span><span>أكثر بادجات</span></button>
         <button class="nav-btn nb-c8"  onclick="location.href='stats.html'"><span class="nb-icon">📊</span><span>إحصائيات</span></button>
@@ -136,6 +132,7 @@
         <button class="nav-btn nb-c10" onclick="location.href='avatar.html'"><span class="nb-icon">🎭</span><span>شخصيتي</span></button>
         <button class="nav-btn nb-c11" onclick="location.href='help.html'"><span class="nb-icon">🛠️</span><span>الدعم</span></button>
         <button class="nav-btn nb-c12" onclick="window.open('https://t.me/cCraftspace','_blank')"><span class="nb-icon">📢</span><span>تلجرام</span></button>
+        <button class="nav-btn" onclick="location.href='page-builder.html'" style="border-bottom:3px solid #f472b6;grid-column:span 2;background:linear-gradient(135deg,rgba(244,114,182,0.08),rgba(139,92,246,0.06))"><span class="nb-icon">🌐</span><span>أنشئ صفحتك!</span></button>
     </nav>
 </section>
 
@@ -159,6 +156,11 @@
     <div class="users-row" id="topUsers">
         <div style="color:var(--text-muted);text-align:center;padding:28px;font-size:0.85rem;grid-column:1/-1">⏳ جارٍ التحميل...</div>
     </div>
+    <div class="section-head"><h3>🌐 صفحات المستخدمين</h3><button class="see-all" onclick="location.href='page-builder.html'">أنشئ صفحتك ←</button></div>
+    <div id="userPagesGallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:8px">
+        <div style="color:var(--text-muted);text-align:center;padding:24px;font-size:0.82rem;grid-column:1/-1">⏳ جارٍ التحميل...</div>
+    </div>
+
     <div class="section-head"><h3>⚡ إجراءات سريعة</h3></div>
     <div class="quick-actions">
         <div class="qa-card" onclick="location.href='publish.html'"><span class="qa-icon">📤</span><div class="qa-text"><div class="qa-t">انشر سكربت الآن</div><div class="qa-d">شارك سكربتك واكسب لايكات وبادجات</div></div></div>
@@ -273,6 +275,28 @@ async function loadAnnouncement(){
 
 loadStats();
 loadAnnouncement();
+loadUserPages();
+
+async function loadUserPages(){
+    const snap=await get(ref(db,'userPages'));
+    const container=document.getElementById('userPagesGallery');
+    if(!snap.exists()||!container){if(container)container.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:24px;font-size:0.82rem;grid-column:1/-1">لا توجد صفحات بعد — <a href="page-builder.html" style="color:var(--primary)">كن أول من ينشئ صفحته!</a></div>';return;}
+    const pages=Object.entries(snap.val()).sort((a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0,8);
+    if(!pages.length){container.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:24px;font-size:0.82rem;grid-column:1/-1">لا توجد صفحات — <a href="page-builder.html" style="color:var(--primary)">أنشئ صفحتك!</a></div>';return;}
+    container.innerHTML='';
+    const THEME_COLORS={dark:'#8b5cf6',space:'#818cf8',ocean:'#00bcd4',sunset:'#f97316',forest:'#4ade80',neon:'#a78bfa'};
+    pages.forEach(([uid,p])=>{
+        const accent=p.accent||THEME_COLORS[p.theme]||'#8b5cf6';
+        const name=(p.name||p.displayName||'مستخدم').replace(/[<>&"]/g,'');
+        const card=document.createElement('div');
+        card.style.cssText=`background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;cursor:pointer;transition:var(--transition);`;
+        card.onmouseenter=()=>{card.style.transform='translateY(-4px)';card.style.borderColor=accent+'55';};
+        card.onmouseleave=()=>{card.style.transform='';card.style.borderColor='';};
+        card.onclick=()=>location.href=`user-page.html?uid=${uid}`;
+        card.innerHTML=`<div style="height:72px;background:linear-gradient(135deg,${accent}22,${accent}08);display:flex;align-items:center;justify-content:center;font-size:2.2rem">🌐</div><div style="padding:10px 12px"><div style="font-size:0.85rem;font-weight:800;color:var(--text-main);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div><div style="font-size:0.68rem;color:var(--text-muted)">صفحة شخصية</div></div>`;
+        container.appendChild(card);
+    });
+}
 </script>
 </body>
 </html>
