@@ -138,13 +138,7 @@ end
 -- ══════════════════════════════════
 local function FetchScripts()
     local ok, result = pcall(function()
-        local url = CCRAFT.API .. "/scripts.json?orderBy=\"timestamp\"&limitToLast=50"
-        -- استخدام game:HttpGet لضمان التوافق مع أغلب المحاكيات (Executors)
-        if type(game.HttpGet) == "function" or type(game.HttpGetAsync) == "function" then
-            return game:HttpGet(url)
-        else
-            return HttpService:GetAsync(url)
-        end
+        return HttpService:GetAsync(CCRAFT.API .. "/scripts.json?orderBy=\"timestamp\"&limitToLast=50")
     end)
 
     if not ok then
@@ -372,7 +366,6 @@ function CCRAFT.CreateGUI()
 
     -- Close button
     local CloseBtn = MakeInstance("TextButton", {
-        Name             = "CloseBtn",
         Text             = "✕",
         Size             = UDim2.new(0,32,0,32),
         Position         = UDim2.new(1,-42,0,9),
@@ -381,12 +374,9 @@ function CCRAFT.CreateGUI()
         TextColor3       = Theme.TEXT_MID,
         BackgroundColor3 = Color3.fromRGB(248,113,113),
         BackgroundTransparency = 0.8,
-        ZIndex           = 100,
-        Active           = true,
-        Selectable       = true
+        ZIndex           = 12,
     }, TitleBar)
     Corner(CloseBtn, 8)
-
 
     CloseBtn.MouseEnter:Connect(function()
         Tween(CloseBtn, { BackgroundTransparency=0.3, TextColor3=Color3.fromRGB(255,255,255) }, 0.15)
@@ -406,8 +396,6 @@ function CCRAFT.CreateGUI()
         BackgroundColor3 = Theme.GOLD,
         BackgroundTransparency = 0.8,
         ZIndex           = 12,
-        Active           = true,
-        Selectable       = true
     }, TitleBar)
     Corner(MinBtn, 8)
 
@@ -488,33 +476,6 @@ function CCRAFT.CreateGUI()
     -- ── TAB BUTTON CREATOR ───────────────
     local tabButtons = {}
 
-    local function ActivateTab(pageName)
-        activeTab = pageName
-        -- إخفاء كل الصفحات
-        for pn, page in pairs(pages) do
-            if page then page.Visible = false end
-        end
-        -- إعادة الأزرار لشكلها العادي
-        for _, tb in pairs(tabButtons) do
-            Tween(tb.btn,  { BackgroundTransparency=0.7 }, 0.2)
-            Tween(tb.ic,   { TextColor3=Theme.TEXT_MID  }, 0.2)
-            Tween(tb.lb,   { TextColor3=Theme.TEXT_LO   }, 0.2)
-            Tween(tb.ind,  { BackgroundTransparency=1   }, 0.2)
-        end
-        
-        -- إظهار الصفحة المطلوبة
-        if pages[pageName] then pages[pageName].Visible = true end
-        
-        -- تفعيل شكل الزر المحدد
-        local tb = tabButtons[pageName]
-        if tb then
-            Tween(tb.btn, { BackgroundTransparency=0.2 }, 0.2)
-            Tween(tb.ic,  { TextColor3=Theme.VIOLET    }, 0.2)
-            Tween(tb.lb,  { TextColor3=Theme.VIOLET    }, 0.2)
-            Tween(tb.ind, { BackgroundTransparency=0 }, 0.2)
-        end
-    end
-
     local function CreateTab(icon, label, pageName)
         local btn = MakeInstance("TextButton", {
             Text             = "",
@@ -574,7 +535,23 @@ function CCRAFT.CreateGUI()
         end)
 
         btn.MouseButton1Click:Connect(function()
-            ActivateTab(pageName)
+            -- Deactivate all
+            for pn, _ in pairs(pages) do
+                if pages[pn] then pages[pn].Visible = false end
+            end
+            for _, tb in pairs(tabButtons) do
+                Tween(tb.btn,  { BackgroundTransparency=0.7 }, 0.2)
+                Tween(tb.ic,   { TextColor3=Theme.TEXT_MID  }, 0.2)
+                Tween(tb.lb,   { TextColor3=Theme.TEXT_LO   }, 0.2)
+                Tween(tb.ind,  { BackgroundTransparency=1   }, 0.2)
+            end
+            -- Activate this
+            activeTab = pageName
+            if pages[pageName] then pages[pageName].Visible = true end
+            Tween(btn, { BackgroundTransparency=0.2 }, 0.2)
+            Tween(ic,  { TextColor3=Theme.VIOLET    }, 0.2)
+            Tween(lb,  { TextColor3=Theme.VIOLET    }, 0.2)
+            Tween(indicator, { BackgroundTransparency=0 }, 0.2)
         end)
 
         tabButtons[pageName] = { btn=btn, ic=ic, lb=lb, ind=indicator }
@@ -1012,9 +989,9 @@ function CCRAFT.CreateGUI()
     CreateTab("📜", "السكربتات","scripts")
     CreateTab("⚙️", "الإعدادات","settings")
 
-    -- حل مشكلة SimulateClick واستخدام الدالة الآمنة
+    -- Activate home by default
     task.wait(0.1)
-    ActivateTab("home")
+    tabButtons["home"].btn:SimulateClick()
 
     -- ══════════════════════════════════
     --  LOAD SCRIPTS FROM API
@@ -1099,31 +1076,19 @@ function CCRAFT.CreateGUI()
     local minimized = false
 
     CloseBtn.MouseButton1Click:Connect(function()
-        local closeTween = TweenService:Create(Window, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
-            Size = UDim2.new(0, 0, 0, 0),
-            Position = UDim2.new(0.5, 0, 0.5, 0),
-            BackgroundTransparency = 1
-        })
-        
-        closeTween:Play()
-        closeTween.Completed:Connect(function()
-            ScreenGui:Destroy()
-        end)
+        Tween(Window, { Size=UDim2.new(0,0,0,0), Position=UDim2.new(0.5,0,0.5,0) }, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        task.wait(0.35)
+        ScreenGui:Destroy()
     end)
 
     MinBtn.MouseButton1Click:Connect(function()
         minimized = not minimized
         if minimized then
-            Tween(Window, { Size = UDim2.new(0, 560, 0, 50) }, 0.25, Enum.EasingStyle.Quart)
+            Tween(Window, { Size=UDim2.new(0,560,0,50) }, 0.25, Enum.EasingStyle.Quart)
             MinBtn.Text = "□"
-            ContentArea.Visible = false
-            Sidebar.Visible = false
         else
-            Tween(Window, { Size = UDim2.new(0, 560, 0, 580) }, 0.3, Enum.EasingStyle.Back)
+            Tween(Window, { Size=UDim2.new(0,560,0,580) }, 0.3, Enum.EasingStyle.Back)
             MinBtn.Text = "—"
-            task.wait(0.2)
-            ContentArea.Visible = true
-            Sidebar.Visible = true
         end
     end)
 
@@ -1132,4 +1097,50 @@ function CCRAFT.CreateGUI()
     -- ══════════════════════════════════
     MakeDraggable(Window, TitleBar)
 
-    -- ════════
+    -- ══════════════════════════════════
+    --  OPEN ANIMATION
+    -- ══════════════════════════════════
+    Window.Size     = UDim2.new(0,0,0,0)
+    Window.Position = UDim2.new(0.5,0,0.5,0)
+    Tween(Window, {
+        Size     = UDim2.new(0,560,0,580),
+        Position = UDim2.new(0.5,-280,0.5,-290),
+    }, 0.5, Enum.EasingStyle.Back)
+
+    Notify("🌐 CCRAFT SPACE", "مرحباً " .. LocalPlayer.Name .. "! GUI جاهز", 3, Theme.VIOLET)
+
+    return Window
+end
+
+-- ══════════════════════════════════
+--  TOGGLE (keybind)
+-- ══════════════════════════════════
+local guiOpen = false
+
+function CCRAFT.Toggle()
+    local gui = CoreGui:FindFirstChild("CCRAFTSpace")
+    if gui then
+        gui:Destroy()
+        guiOpen = false
+    else
+        CCRAFT.CreateGUI()
+        guiOpen = true
+    end
+end
+
+-- ══════════════════════════════════
+--  KEYBIND: RightShift to toggle
+-- ══════════════════════════════════
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        CCRAFT.Toggle()
+    end
+end)
+
+-- ══════════════════════════════════
+--  AUTO LAUNCH
+-- ══════════════════════════════════
+CCRAFT.CreateGUI()
+
+return CCRAFT
