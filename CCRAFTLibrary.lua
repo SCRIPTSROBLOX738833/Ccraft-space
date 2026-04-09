@@ -138,7 +138,7 @@ end
 -- ══════════════════════════════════
 local function FetchScripts()
     local ok, result = pcall(function()
-        return HttpService:GetAsync(CCRAFT.API .. "/scripts.json?orderBy=\"timestamp\"&limitToLast=50")
+        return HttpService:GetAsync(CCRAFT.API .. "/scripts.json")
     end)
 
     if not ok then
