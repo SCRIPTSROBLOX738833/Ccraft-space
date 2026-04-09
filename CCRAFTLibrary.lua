@@ -365,7 +365,9 @@ function CCRAFT.CreateGUI()
     }, TitleBar)
 
     -- Close button
+        -- Close button
     local CloseBtn = MakeInstance("TextButton", {
+        Name             = "CloseBtn", -- إضافة اسم للسهولة
         Text             = "✕",
         Size             = UDim2.new(0,32,0,32),
         Position         = UDim2.new(1,-42,0,9),
@@ -374,9 +376,13 @@ function CCRAFT.CreateGUI()
         TextColor3       = Theme.TEXT_MID,
         BackgroundColor3 = Color3.fromRGB(248,113,113),
         BackgroundTransparency = 0.8,
-        ZIndex           = 12,
+        ZIndex           = 100, -- ارفع الـ ZIndex جداً لضمان أنه في المقدمة
     }, TitleBar)
     Corner(CloseBtn, 8)
+
+    -- تأكد من إضافة هذا السطر لضمان استجابة الزر
+    CloseBtn.Active = true 
+
 
     CloseBtn.MouseEnter:Connect(function()
         Tween(CloseBtn, { BackgroundTransparency=0.3, TextColor3=Color3.fromRGB(255,255,255) }, 0.15)
