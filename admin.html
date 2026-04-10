@@ -425,6 +425,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
 
         <div class="nav-sec">الإدارة</div>
         <button class="nav-item" data-section="reports"><span class="nav-icon">🚩</span> البلاغات <span class="nav-badge red" id="reportsBadge" style="display:none">0</span></button>
+        <button class="nav-item" data-section="verify-scripts"><span class="nav-icon">✅</span> التحقق من السكربتات <span class="nav-badge red" id="verifyBadge" style="display:none">0</span></button>
         <button class="nav-item" data-section="announce"><span class="nav-icon">📢</span> الإعلانات</button>
         <button class="nav-item" data-section="settings"><span class="nav-icon">⚙️</span> الإعدادات</button>
         <button class="nav-item" data-section="log"><span class="nav-icon">📋</span> سجل الأنشطة</button>
@@ -650,6 +651,19 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
         </div>
     </div>
 
+
+    <!-- ─── VERIFY SCRIPTS ─── -->
+    <div class="section" id="sec-verify-scripts">
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">✅ السكربتات المنتظرة التحقق</div></div>
+            <div style="font-size:0.78rem;color:var(--lo);margin-bottom:14px">السكربتات التي طلب أصحابها التحقق منها. بعد الموافقة تظهر بشارة ✅ موثوق في قائمة السكربتات.</div>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>السكربت</th><th>المستخدم</th><th>السبب</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody id="verifyBody"></tbody></table></div>
+        </div>
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">✅ السكربتات الموثوقة</div></div>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>السكربت</th><th>المستخدم</th><th>تاريخ التوثيق</th><th>إجراء</th></tr></thead><tbody id="verifiedBody"></tbody></table></div>
+        </div>
+    </div>
     <!-- ─── REPORTS ─── -->
     <div class="section" id="sec-reports">
         <div class="reports-filter">
@@ -702,7 +716,7 @@ const app=initializeApp(fc), db=getDatabase(app), auth=getAuth(app);
 
 let allScripts={}, allUsers={}, chatLoaded=false, adminUid=null, allReports={}, currentFilter='all';
 
-const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكربتات',publish:'📤 نشر سكربت',users:'👥 المستخدمون','points-ctrl':'⭐ النقاط','badges-ctrl':'🏅 البادجات',chat:'💬 الشات',announce:'📢 الإعلانات',settings:'⚙️ الإعدادات',reports:'🚩 البلاغات',log:'📋 سجل الأنشطة'};
+const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكربتات',publish:'📤 نشر سكربت',users:'👥 المستخدمون','points-ctrl':'⭐ النقاط','badges-ctrl':'🏅 البادجات',chat:'💬 الشات',announce:'📢 الإعلانات',settings:'⚙️ الإعدادات',reports:'🚩 البلاغات',log:'📋 سجل الأنشطة','verify-scripts':'✅ التحقق من السكربتات'};
 
 /* ─── Toast ─── */
 function toast(msg,dur=2500){ const t=document.getElementById('adminToast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),dur); }
@@ -745,6 +759,7 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
     if(sec==='badges-ctrl')renderTopBadges();
     if(sec==='log')loadActivityLog();
     if(sec==='reports')loadReports();
+    if(sec==='verify-scripts')loadVerifyRequests();
   });
 });
 
@@ -1179,6 +1194,82 @@ async function loadActivityLog(){
     c.appendChild(div);
   });
 }
+
+/* ─── Verify Scripts ─── */
+async function loadVerifyRequests(){
+  const[vs,ss]=await Promise.all([get(ref(db,'verifyRequests')),get(ref(db,'scripts'))]);
+  const allS=ss.exists()?ss.val():{};
+
+  // Badge count
+  const pending=vs.exists()?Object.values(vs.val()).filter(r=>r.status==='pending').length:0;
+  const badge=document.getElementById('verifyBadge');
+  if(pending>0){badge.innerText=pending;badge.style.display='inline-block';}else badge.style.display='none';
+
+  // Pending table
+  const pb=document.getElementById('verifyBody'); pb.innerHTML='';
+  if(!vs.exists()||!Object.values(vs.val()).some(r=>r.status==='pending')){
+    pb.innerHTML='<tr class="empty-row"><td colspan="5">لا توجد طلبات تحقق بعد</td></tr>';
+  }else{
+    Object.entries(vs.val()).filter(([,r])=>r.status==='pending').forEach(([rid,r])=>{
+      const s=allS[r.scriptId]||{};
+      const date=new Date(r.timestamp||0).toLocaleDateString('ar-EG');
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td class="t-title">${s.title||r.scriptId||'—'}</td>
+        <td style="color:var(--mid)">${r.userEmail||'—'}</td>
+        <td style="font-size:0.78rem;color:var(--lo);max-width:160px">${r.reason||'—'}</td>
+        <td style="font-size:0.72rem;color:var(--lo)">${date}</td>
+        <td><div class="t-actions">
+          <button class="t-btn unban" onclick="approveVerify('${rid}','${r.scriptId}')">✅ موثوق</button>
+          <button class="t-btn del"   onclick="rejectVerify('${rid}')">❌ رفض</button>
+        </div></td>`;
+      pb.appendChild(tr);
+    });
+  }
+
+  // Verified table
+  const vb=document.getElementById('verifiedBody'); vb.innerHTML='';
+  const verified=Object.entries(allS).filter(([,s])=>s.verified===true);
+  if(!verified.length){
+    vb.innerHTML='<tr class="empty-row"><td colspan="4">لا توجد سكربتات موثوقة بعد</td></tr>';
+  }else{
+    verified.forEach(([id,s])=>{
+      const date=new Date(s.verifiedAt||0).toLocaleDateString('ar-EG');
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td class="t-title">${s.title||'—'}</td>
+        <td style="color:var(--mid)">${s.author||'—'}</td>
+        <td style="font-size:0.72rem;color:var(--lo)">${date}</td>
+        <td><button class="t-btn del" onclick="removeVerify('${id}')">❌ إزالة التوثيق</button></td>`;
+      vb.appendChild(tr);
+    });
+  }
+}
+
+window.approveVerify=async(rid,scriptId)=>{
+  if(!confirm('تأكيد توثيق هذا السكربت؟'))return;
+  await update(ref(db,`scripts/${scriptId}`),{verified:true,verifiedAt:Date.now()});
+  await update(ref(db,`verifyRequests/${rid}`),{status:'approved'});
+  toast('✅ تم توثيق السكربت!');
+  logActivity('✅',`تم توثيق سكربت: ${scriptId}`);
+  loadVerifyRequests();
+};
+
+window.rejectVerify=async(rid)=>{
+  if(!confirm('رفض طلب التحقق؟'))return;
+  await update(ref(db,`verifyRequests/${rid}`),{status:'rejected'});
+  toast('❌ تم رفض الطلب');
+  logActivity('❌',`رفض طلب تحقق`);
+  loadVerifyRequests();
+};
+
+window.removeVerify=async(scriptId)=>{
+  if(!confirm('إزالة توثيق هذا السكربت؟'))return;
+  await update(ref(db,`scripts/${scriptId}`),{verified:false});
+  toast('🗑️ تم إزالة التوثيق');
+  logActivity('🗑️',`إزالة توثيق: ${scriptId}`);
+  loadVerifyRequests();
+};
 </script>
 </body>
 </html>
