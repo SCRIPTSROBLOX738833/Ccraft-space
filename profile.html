@@ -892,6 +892,32 @@ async function renderBadges(uid, stats, canAward) {
 // Scripts
 // ============================================================
 
+// أضف زر التحقق في profileActions (لو كان المستخدم ينظر لبروفايله)
+const verifySnap = await get(ref(db, `verifyRequests`));
+const myRequest = verifySnap.exists()
+  ? Object.values(verifySnap.val()).find(r => r.userUid === user.uid)
+  : null;
+
+const verifyBtn = document.createElement('button');
+if (!myRequest) {
+  verifyBtn.className = 'verify-request-btn';
+  verifyBtn.innerHTML = '🔍 طلب التحقق من سكربتاتي';
+  verifyBtn.onclick = async () => {
+    const reason = prompt('لماذا تريد التحقق؟ (اختياري)') || '';
+    const newRef = push(ref(db,'verifyRequests'));
+    await set(newRef, { userUid:user.uid, userEmail:user.email, reason, status:'pending', timestamp:Date.now() });
+    alert('✅ تم إرسال طلب التحقق — سيراجعه الأدمن قريباً');
+  };
+} else if (myRequest.status === 'pending') {
+  verifyBtn.className = 'verify-request-btn pending';
+  verifyBtn.innerHTML = '⏳ طلب التحقق قيد المراجعة';
+} else if (myRequest.status === 'approved') {
+  verifyBtn.className = 'verify-request-btn verified';
+  verifyBtn.innerHTML = '✅ موثّق';
+}
+document.getElementById('profileActions').appendChild(verifyBtn);
+
+    
 function renderScripts(uid, mine, canDelete) {
     const container = document.getElementById('userScripts');
     container.innerHTML = '';
