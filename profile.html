@@ -892,7 +892,20 @@ async function renderBadges(uid, stats, canAward) {
 // Scripts
 // ============================================================
 
-// أضف زر التحقق في profileActions (لو كان المستخدم ينظر لبروفايله)
+    
+function renderScripts(uid, mine, canDelete) {
+    const container = document.getElementById('userScripts');
+    container.innerHTML = '';
+
+    if (!mine.length) {
+        container.innerHTML = `<div class="empty-state">
+            <p>${canDelete ? 'ما نشرتش أي سكربت لحد دلوقتي 😅' : 'المستخدم ده ما نشرش أي سكربت بعد.'}</p>
+            ${canDelete ? `<button onclick="location.href='publish.html'" style="background:var(--accent-gradient);color:white;border:none;border-radius:50px;padding:13px 30px;font-family:Tajawal,sans-serif;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(139,92,246,0.3)">📤 انشر أول سكربت</button>` : ''}
+        </div>`;
+        return;
+    }
+
+    // أضف زر التحقق في profileActions (لو كان المستخدم ينظر لبروفايله)
 const verifySnap = await get(ref(db, `verifyRequests`));
 const myRequest = verifySnap.exists()
   ? Object.values(verifySnap.val()).find(r => r.userUid === user.uid)
@@ -916,19 +929,6 @@ if (!myRequest) {
   verifyBtn.innerHTML = '✅ موثّق';
 }
 document.getElementById('profileActions').appendChild(verifyBtn);
-
-    
-function renderScripts(uid, mine, canDelete) {
-    const container = document.getElementById('userScripts');
-    container.innerHTML = '';
-
-    if (!mine.length) {
-        container.innerHTML = `<div class="empty-state">
-            <p>${canDelete ? 'ما نشرتش أي سكربت لحد دلوقتي 😅' : 'المستخدم ده ما نشرش أي سكربت بعد.'}</p>
-            ${canDelete ? `<button onclick="location.href='publish.html'" style="background:var(--accent-gradient);color:white;border:none;border-radius:50px;padding:13px 30px;font-family:Tajawal,sans-serif;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(139,92,246,0.3)">📤 انشر أول سكربت</button>` : ''}
-        </div>`;
-        return;
-    }
 
     mine.sort((a,b) => (b[1].timestamp||0) - (a[1].timestamp||0));
 
