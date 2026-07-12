@@ -76,6 +76,7 @@ header { display: none; }
 .ub-icon { font-size: 1rem; flex-shrink: 0; }
 .ub-text { line-height: 1.5; }
 .ub-text b { font-weight: 900; }
+.ub-text-short { display: none; }
 
 .ub-cta {
     background: rgba(7,8,15,0.85); color: #f0f0ff;
@@ -83,23 +84,39 @@ header { display: none; }
     padding: 5px 14px; font-size: 0.74rem; font-weight: 900;
     font-family: 'Tajawal', sans-serif; cursor: pointer;
     margin: 0; white-space: nowrap; transition: var(--tr);
+    flex-shrink: 0;
 }
 .ub-cta:hover { transform: scale(1.05); filter: brightness(1.15); }
 
 .ub-close {
-    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
     background: none; border: none; color: rgba(7,8,15,0.6);
-    font-size: 0.95rem; cursor: pointer; margin: 0; padding: 4px;
-    transition: color 0.2s;
+    font-size: 0.95rem; cursor: pointer; margin: 0; padding: 6px;
+    transition: color 0.2s; line-height: 1; flex-shrink: 0;
 }
 .ub-close:hover { color: #07080f; }
 
 body.has-update-banner .hero { padding-top: 78px; }
 
 @media (max-width: 640px) {
-    .update-banner { padding: 9px 34px; font-size: 0.72rem; }
-    .ub-cta { padding: 4px 11px; font-size: 0.68rem; }
-    body.has-update-banner .hero { padding-top: 92px; }
+    .update-banner {
+        flex-direction: column;
+        padding: 9px 38px 10px;
+        gap: 5px;
+        font-size: 0.72rem;
+        text-align: center;
+    }
+    .ub-icon { font-size: 0.9rem; }
+    .ub-text-full  { display: none; }
+    .ub-text-short { display: inline; }
+    .ub-cta { padding: 5px 16px; font-size: 0.7rem; }
+    .ub-close { top: 8px; transform: none; }
+    body.has-update-banner .hero { padding-top: 96px; }
+}
+
+@media (max-width: 380px) {
+    .update-banner { padding: 8px 34px 9px; font-size: 0.68rem; }
+    body.has-update-banner .hero { padding-top: 100px; }
 }
 
 /* ════════════════════════════════════════
@@ -685,7 +702,10 @@ body.has-update-banner .hero { padding-top: 78px; }
 <!-- شريط تحديث جديد — ظاهر لأي زائر فور دخوله الموقع -->
 <div class="update-banner" id="updateBanner">
     <span class="ub-icon">🎉</span>
-    <div class="ub-text"><b>تحديث جديد:</b> قسم تطبيقات وألعاب أندرويد معدلة (APK Mods) بقى متاح دلوقتي!</div>
+    <div class="ub-text">
+        <span class="ub-text-full"><b>تحديث جديد:</b> قسم تطبيقات وألعاب أندرويد معدلة (APK Mods) بقى متاح دلوقتي!</span>
+        <span class="ub-text-short"><b>جديد:</b> قسم APK Mods بقى متاح!</span>
+    </div>
     <button class="ub-cta" onclick="location.href='apks.html'">جرّبه الآن ←</button>
     <button class="ub-close" onclick="document.getElementById('updateBanner').remove(); document.body.classList.remove('has-update-banner');">✕</button>
 </div>
