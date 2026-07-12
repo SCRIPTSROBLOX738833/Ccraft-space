@@ -53,6 +53,56 @@ body {
 header { display: none; }
 
 /* ════════════════════════════════════════
+   UPDATE BANNER (شريط تحديث جديد ثابت فوق الصفحة)
+════════════════════════════════════════ */
+.update-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    background: linear-gradient(135deg, #4ade80 0%, #00f2fe 100%);
+    color: #07080f;
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; flex-wrap: wrap;
+    padding: 10px 44px;
+    font-size: 0.8rem; font-weight: 800;
+    text-align: center;
+    box-shadow: 0 4px 22px rgba(0,0,0,0.35);
+    animation: slideDownBanner 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+
+@keyframes slideDownBanner {
+    from { transform: translateY(-100%); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+
+.ub-icon { font-size: 1rem; flex-shrink: 0; }
+.ub-text { line-height: 1.5; }
+.ub-text b { font-weight: 900; }
+
+.ub-cta {
+    background: rgba(7,8,15,0.85); color: #f0f0ff;
+    border: none; border-radius: 50px;
+    padding: 5px 14px; font-size: 0.74rem; font-weight: 900;
+    font-family: 'Tajawal', sans-serif; cursor: pointer;
+    margin: 0; white-space: nowrap; transition: var(--tr);
+}
+.ub-cta:hover { transform: scale(1.05); filter: brightness(1.15); }
+
+.ub-close {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: rgba(7,8,15,0.6);
+    font-size: 0.95rem; cursor: pointer; margin: 0; padding: 4px;
+    transition: color 0.2s;
+}
+.ub-close:hover { color: #07080f; }
+
+body.has-update-banner .hero { padding-top: 78px; }
+
+@media (max-width: 640px) {
+    .update-banner { padding: 9px 34px; font-size: 0.72rem; }
+    .ub-cta { padding: 4px 11px; font-size: 0.68rem; }
+    body.has-update-banner .hero { padding-top: 92px; }
+}
+
+/* ════════════════════════════════════════
    BACKGROUND CANVAS
 ════════════════════════════════════════ */
 .bg-canvas {
@@ -96,6 +146,7 @@ header { display: none; }
     align-items: center; justify-content: center;
     padding: 40px 20px 24px;
     text-align: center;
+    transition: padding-top 0.3s ease;
 }
 
 /* Logo */
@@ -272,6 +323,22 @@ header { display: none; }
 .nb-icon { font-size: 1.55rem; line-height: 1; position: relative; z-index: 1; }
 .nb-label { position: relative; z-index: 1; line-height: 1.2; }
 
+/* شارة "جديد" على أي زرار */
+.nav-btn-badge {
+    position: absolute; top: 6px; left: 6px; z-index: 2;
+    background: linear-gradient(135deg, #f87171, #fbbf24);
+    color: #07080f; font-size: 0.55rem; font-weight: 900;
+    padding: 2px 7px; border-radius: 50px;
+    letter-spacing: 0.3px;
+    animation: badgePulse 1.6s ease infinite;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.12); opacity: 0.85; }
+}
+
 /* Bottom accent lines */
 .nav-btn.c-violet  { border-bottom: 2.5px solid #8b5cf6; --nb-color: rgba(139,92,246,0.1); --nb-glow: rgba(139,92,246,0.4); }
 .nav-btn.c-cyan    { border-bottom: 2.5px solid #00f2fe; --nb-color: rgba(0,242,254,0.08); --nb-glow: rgba(0,242,254,0.35); }
@@ -297,6 +364,14 @@ header { display: none; }
     border: 1px solid rgba(244,114,182,0.2);
     border-bottom: 2.5px solid #f472b6;
     --nb-glow: rgba(244,114,182,0.4);
+}
+
+/* APK Mods button — جديد */
+.nav-btn.c-apk {
+    background: linear-gradient(135deg, rgba(74,222,128,0.1), rgba(0,242,254,0.06));
+    border: 1px solid rgba(74,222,128,0.25);
+    border-bottom: 2.5px solid #4ade80;
+    --nb-glow: rgba(74,222,128,0.4);
 }
 
 @keyframes navIn {
@@ -605,7 +680,15 @@ header { display: none; }
 }
 </style>
 </head>
-<body>
+<body class="has-update-banner">
+
+<!-- شريط تحديث جديد — ظاهر لأي زائر فور دخوله الموقع -->
+<div class="update-banner" id="updateBanner">
+    <span class="ub-icon">🎉</span>
+    <div class="ub-text"><b>تحديث جديد:</b> قسم تطبيقات وألعاب أندرويد معدلة (APK Mods) بقى متاح دلوقتي!</div>
+    <button class="ub-cta" onclick="location.href='apks.html'">جرّبه الآن ←</button>
+    <button class="ub-close" onclick="document.getElementById('updateBanner').remove(); document.body.classList.remove('has-update-banner');">✕</button>
+</div>
 
 <!-- Background -->
 <div class="bg-canvas"></div>
@@ -650,6 +733,7 @@ header { display: none; }
         <button class="nav-btn c-cyan"    onclick="location.href='nova.html'">     <span class="nb-icon">🤖</span><span class="nb-label">NOVA AI</span></button>
         <button class="nav-btn c-pink"    onclick="location.href='chat.html'">     <span class="nb-icon">💬</span><span class="nb-label">شات</span></button>
         <button class="nav-btn c-orange"  onclick="location.href='publish.html'">  <span class="nb-icon">📤</span><span class="nb-label">نشر سكربت</span></button>
+        <button class="nav-btn c-apk"     onclick="location.href='apks.html'">     <span class="nav-btn-badge">جديد</span><span class="nb-icon">📱</span><span class="nb-label">APK موديفايد</span></button>
         <button class="nav-btn c-indigo"  onclick="location.href='scripts.html'">  <span class="nb-icon">📜</span><span class="nb-label">السكربتات</span></button>
         <button class="nav-btn c-gold"    onclick="location.href='leaderboard.html'"><span class="nb-icon">🏆</span><span class="nb-label">ليدربورد</span></button>
         <button class="nav-btn c-green"   onclick="location.href='top-badges.html'"><span class="nb-icon">🏅</span><span class="nb-label">بادجات</span></button>
@@ -709,6 +793,10 @@ header { display: none; }
             <span class="ac-icon">📤</span>
             <div><div class="ac-title">انشر سكربت الآن</div><div class="ac-desc">شارك سكربتك واكسب لايكات وبادجات</div></div>
         </div>
+        <div class="action-card" onclick="location.href='apks.html'" style="--ac-color:rgba(74,222,128,0.35)">
+            <span class="ac-icon">📱</span>
+            <div><div class="ac-title">تصفح تطبيقات APK</div><div class="ac-desc">ألعاب وتطبيقات أندرويد معدلة — تحديث جديد</div></div>
+        </div>
         <div class="action-card" onclick="location.href='avatar.html'" style="--ac-color:rgba(244,114,182,0.3)">
             <span class="ac-icon">🎭</span>
             <div><div class="ac-title">خصّص شخصيتك</div><div class="ac-desc">ابدو مميزاً في الشات والتعليقات</div></div>
@@ -716,10 +804,6 @@ header { display: none; }
         <div class="action-card" onclick="location.href='nova.html'" style="--ac-color:rgba(0,242,254,0.25)">
             <span class="ac-icon">🤖</span>
             <div><div class="ac-title">اسأل NOVA AI</div><div class="ac-desc">مساعدة فورية في الكود والسكربتات</div></div>
-        </div>
-        <div class="action-card" onclick="location.href='profile.html'" style="--ac-color:rgba(251,191,36,0.3)">
-            <span class="ac-icon">🏅</span>
-            <div><div class="ac-title">اجمع البادجات</div><div class="ac-desc">أنجز تحديات الموقع واكسب بادجات نادرة</div></div>
         </div>
     </div>
 
@@ -729,6 +813,7 @@ header { display: none; }
 <footer class="site-footer">
     <div class="footer-links">
         <a href="scripts.html">السكربتات</a>
+        <a href="apks.html">APK Mods</a>
         <a href="leaderboard.html">الليدربورد</a>
         <a href="stats.html">الإحصائيات</a>
         <a href="api.html">API</a>
