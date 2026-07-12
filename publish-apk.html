@@ -162,6 +162,36 @@ body { min-height: 100svh; }
     .pf-form { padding: 18px; }
 }
 
+/* ---- تسجيل الدخول ---- */
+#authNotice { max-width: 640px; margin: 40px auto; padding: 0 20px; display: none; }
+
+.notice-card {
+    background: var(--bg-card); border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 20px; padding: 40px 32px; text-align: center;
+    animation: fadeIn 0.5s ease both;
+}
+
+.notice-card .n-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
+.notice-card h2 { font-size: 1.4rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+.notice-card p  { color: var(--text-muted); margin-bottom: 24px; font-size: 0.95rem; line-height: 1.7; }
+.notice-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.notice-btns button { background: var(--accent-gradient); color: white; border: none; border-radius: var(--radius-btn); padding: 13px 28px; box-shadow: 0 8px 20px rgba(139,92,246,0.3); cursor: pointer; font-family: 'Tajawal', sans-serif; font-weight: 800; margin: 0; }
+.notice-btns .ghost { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); box-shadow: none; }
+
+#userInfo { display: none; max-width: 640px; margin: 30px auto 0; padding: 0 20px; }
+.user-bar { display: flex; align-items: center; gap: 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px 18px; }
+.ub-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; font-size: 0.9rem; flex-shrink: 0; }
+.ub-name  { font-weight: 800; font-size: 0.9rem; }
+.ub-email { color: var(--text-muted); font-size: 0.78rem; }
+.ub-badge { margin-right: auto; background: var(--primary-dim); color: var(--primary); font-size: 0.72rem; font-weight: 800; padding: 4px 12px; border-radius: 50px; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 640px) {
+    #authNotice, #userInfo { margin-top: 24px; }
+    .notice-card { padding: 30px 20px; }
+}
+
 </style>
 </head>
 <body>
@@ -171,11 +201,34 @@ body { min-height: 100svh; }
   <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
-<div class="publish-page">
+<div id="authNotice">
+    <div class="notice-card">
+        <span class="n-icon">🔐</span>
+        <h2>محتاج تسجّل دخول الأول</h2>
+        <p>عشان تنشر تطبيق أو لعبة معدّلة ويتحسب باسمك،<br>لازم يكون عندك حساب على CCRAFT SPACE.</p>
+        <div class="notice-btns">
+            <button onclick="location.href='login.html'">🚀 تسجيل الدخول</button>
+            <button class="ghost" onclick="location.href='apks.html'">رجوع لقائمة التطبيقات</button>
+        </div>
+    </div>
+</div>
+
+<div id="userInfo">
+    <div class="user-bar">
+        <div class="ub-avatar" id="ubAvatar">أ</div>
+        <div>
+            <div class="ub-name"  id="ubName">—</div>
+            <div class="ub-email" id="ubEmail">—</div>
+        </div>
+        <span class="ub-badge">✅ مسجل دخول</span>
+    </div>
+</div>
+
+<div class="publish-page" id="publishMain" style="display:none">
 
     <div class="page-hero">
         <h1>📤 نشر تطبيق أو لعبة معدّلة</h1>
-        <p>هننشر رابط التحميل بتاعك بس، مش هنرفع ملف الـ APK على السيرفر. بعد الإرسال هيتراجع الطلب قبل ما يظهر في القائمة العامة.</p>
+        <p>هننشر رابط التحميل بتاعك بس، مش هنرفع ملف الـ APK على السيرفر. التطبيق هيظهر في القائمة العامة فورًا بعد النشر.</p>
     </div>
 
     <form class="pf-form" id="pfForm">
@@ -206,11 +259,6 @@ body { min-height: 100svh; }
         </div>
 
         <div class="pf-group">
-            <label class="pf-label">👤 اسم الناشر (اختياري)</label>
-            <input class="pf-input" id="pfAuthor" type="text" placeholder="اسمك أو اسم مستعار" maxlength="40">
-        </div>
-
-        <div class="pf-group">
             <label class="pf-label">🖼️ أيقونة التطبيق</label>
             <div class="pf-drop" id="pfDrop">
                 <span class="pf-drop-icon">📷</span>
@@ -228,7 +276,7 @@ body { min-height: 100svh; }
 
         <div class="pf-status" id="pfStatus"></div>
 
-        <button type="submit" class="pf-submit-btn" id="pfSubmitBtn">📤 إرسال للمراجعة</button>
+        <button type="submit" class="pf-submit-btn" id="pfSubmitBtn">📤 نشر الآن</button>
 
     </form>
 
