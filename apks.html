@@ -3,163 +3,341 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CCRAFT SPACE | نشر تطبيق أو لعبة أندرويد معدلة</title>
+  <title>CCRAFT SPACE | تطبيقات وألعاب أندرويد معدلة (APK Mods)</title>
+  <meta name="application-name" content="CCRAFT SPACE">
+  <meta name="description" content="CCRAFT SPACE — تطبيقات وألعاب أندرويد معدلة (APK Mods) روابط تحميل مباشرة.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://ccraftspace.ddnsking.com/publish-apk.html">
+  <link rel="canonical" href="https://ccraftspace.ddnsking.com/apks.html">
+  <meta property="og:site_name" content="CCRAFT SPACE">
+  <meta property="og:title"     content="CCRAFT SPACE | تطبيقات وألعاب أندرويد معدلة">
+  <meta property="og:image"     content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:secure_url" content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:width"  content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:type"  content="website">
+  <meta property="og:url"   content="https://ccraftspace.ddnsking.com/apks.html">
   <link rel="icon"            type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
   <link rel="shortcut icon"   type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
   <link rel="apple-touch-icon"                  href="https://ccraftspace.ddnsking.com/cCraft.jpg">
   <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"CCRAFT SPACE",
+   "url":"https://ccraftspace.ddnsking.com/","image":"https://ccraftspace.ddnsking.com/cCraft.jpg"}
+  </script>
 
 <style>
 
+/* ============================================================
+   Page Layout (نفس تصميم صفحة السكربتات بالظبط)
+   ============================================================ */
+
 body { min-height: 100svh; }
 
-.publish-page {
-    max-width: 640px;
+.scripts-page {
+    max-width: 980px;
     margin: 0 auto;
     padding: 0 20px 80px;
 }
 
+/* ---- Page Hero ---- */
 .page-hero {
     padding: 28px 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 24px;
 }
 
 .page-hero h1 {
-    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
     font-weight: 900;
     background: var(--accent-gradient);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin: 0 0 6px;
-}
-
-.page-hero p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    line-height: 1.7;
     margin: 0;
 }
 
-.pf-form {
+.scripts-count-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 7px 16px;
+    font-size: 0.82rem; color: var(--text-muted); font-weight: 700;
+}
+
+.scripts-count-pill .scp-num {
+    font-weight: 900; color: var(--primary); font-size: 0.95rem;
+}
+
+
+/* ============================================================
+   Search & Filters
+   ============================================================ */
+
+.search-section { margin-bottom: 22px; }
+
+.search-wrap {
+    position: relative;
+    margin-bottom: 14px;
+}
+
+.search-wrap .search-icon {
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem; pointer-events: none;
+    color: var(--text-muted);
+}
+
+#searchScripts {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 14px 48px 14px 20px;
+    color: var(--text-main);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: var(--transition);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    direction: rtl;
+    box-sizing: border-box;
+}
+
+#searchScripts:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.15), 0 2px 10px rgba(0,0,0,0.2);
+}
+
+#searchScripts::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+/* Filter row */
+.filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-label {
+    font-size: 0.72rem; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+}
+
+.filter-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 7px 16px;
+    font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    margin: 0; transition: var(--transition); white-space: nowrap;
+}
+
+.filter-btn:hover  { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
+.filter-btn.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.4); }
+
+/* Sort row */
+.sort-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; flex-wrap: wrap;
+}
+
+.sort-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+
+.sort-select {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 10px; padding: 7px 12px;
+    color: var(--text-main); font-family: 'Tajawal', sans-serif;
+    font-size: 0.8rem; outline: none; cursor: pointer;
+}
+
+.results-info {
+    font-size: 0.78rem; color: var(--text-muted);
+    margin-right: auto;
+}
+
+.results-info span { color: var(--primary); font-weight: 800; }
+
+
+/* ============================================================
+   Scripts Grid (كروت التطبيقات)
+   ============================================================ */
+
+.scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.sc-thumb {
+    width: 100%; height: 140px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--border-color);
+    transition: transform 0.3s ease;
+    background: var(--bg-card);
+}
+
+.script-card:hover .sc-thumb { transform: scale(1.04); }
+
+.script-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 20px;
-    padding: 24px;
+    padding: 0;
+    overflow: hidden;
+    transition: var(--transition);
     display: flex;
     flex-direction: column;
-    gap: 18px;
-}
-
-.pf-group { display: flex; flex-direction: column; gap: 6px; }
-
-.pf-label {
-    font-size: 0.8rem; font-weight: 800; color: var(--text-main);
-    display: flex; align-items: center; gap: 6px;
-}
-
-.pf-hint { font-size: 0.72rem; color: var(--text-muted); line-height: 1.6; }
-
-.pf-input, .pf-textarea, .pf-select {
-    width: 100%;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px 14px;
-    color: var(--text-main);
-    font-family: 'Tajawal', sans-serif;
-    font-size: 0.9rem;
-    outline: none;
-    transition: var(--transition);
-    box-sizing: border-box;
-    direction: rtl;
-}
-
-.pf-input:focus, .pf-textarea:focus, .pf-select:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
-}
-
-.pf-textarea { resize: vertical; min-height: 80px; font-family: 'Tajawal', sans-serif; }
-
-.pf-cat-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
-.pf-cat-btn {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border-color);
-    border-radius: 50px; padding: 8px 18px;
-    font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
-    cursor: pointer; font-family: 'Tajawal', sans-serif;
-    margin: 0; transition: var(--transition);
-}
-
-.pf-cat-btn.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.4); }
-
-.pf-drop {
-    border: 2px dashed var(--border-color);
-    border-radius: 16px;
-    padding: 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: var(--transition);
+    animation: fadeIn 0.4s ease both;
     position: relative;
 }
 
-.pf-drop:hover { border-color: var(--primary); background: rgba(139,92,246,0.04); }
-.pf-drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-
-.pf-drop-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
-.pf-drop-text { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
-
-.pf-preview-wrap {
-    display: none;
-    align-items: center; gap: 14px;
-    margin-top: 10px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 12px;
+.script-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
 }
 
-.pf-preview-wrap.show { display: flex; }
-
-#pfIconPreview {
-    width: 72px; height: 72px; border-radius: 14px;
-    object-fit: cover; border: 1px solid var(--border-color);
-    flex-shrink: 0;
+.script-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
-.pf-preview-info { font-size: 0.75rem; color: var(--text-muted); line-height: 1.7; }
-.pf-preview-info b { color: var(--text-main); }
+.script-card:hover::before { opacity: 1; }
+.script-card[data-cat="game"] .sc-top-bar,
+.script-card[data-cat="game"]::before  { background: linear-gradient(90deg, #4ade80, #22c55e); }
+.script-card[data-cat="app"]  .sc-top-bar,
+.script-card[data-cat="app"]::before   { background: linear-gradient(90deg, #00f2fe, #4facfe); }
+.script-card[data-cat="mod"]  .sc-top-bar,
+.script-card[data-cat="mod"]::before   { background: linear-gradient(90deg, #f87171, #ef4444); }
+.script-card::before                   { background: var(--accent-gradient); }
 
-.pf-submit-btn {
-    background: var(--accent-gradient);
-    color: white; border: none;
-    border-radius: 14px; padding: 14px;
-    font-size: 0.95rem; font-weight: 900;
-    cursor: pointer; font-family: 'Tajawal', sans-serif;
-    margin: 0; transition: var(--transition);
-    box-shadow: 0 4px 16px rgba(139,92,246,0.35);
+.sc-body { padding: 20px 20px 16px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+.sc-header { display: flex; align-items: flex-start; gap: 10px; }
+
+.sc-title {
+    font-size: 1rem; font-weight: 900; color: var(--text-main);
+    flex: 1; line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.pf-submit-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
-.pf-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.pf-status {
-    display: none;
-    font-size: 0.82rem; font-weight: 700;
-    padding: 12px 16px; border-radius: 12px;
-    line-height: 1.6;
+.sc-new-badge {
+    background: var(--accent-gradient); color: white;
+    font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
+    border-radius: 50px; flex-shrink: 0; align-self: flex-start;
+    margin-top: 2px;
 }
 
-.pf-status.show { display: block; }
-.pf-status.ok   { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); color: #4ade80; }
-.pf-status.err  { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: #f87171; }
-.pf-status.busy { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.25); color: #b48bf8; }
+.sc-pending-badge {
+    background: rgba(250,204,21,0.15); border: 1px solid rgba(250,204,21,0.4);
+    color: #facc15;
+    font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
+    border-radius: 50px; flex-shrink: 0; align-self: flex-start;
+    margin-top: 2px;
+}
+
+.sc-desc {
+    font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.sc-cat {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--primary-dim); color: #b48bf8;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-stats {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.78rem; color: var(--text-muted);
+}
+
+.sc-stat { display: flex; align-items: center; gap: 4px; }
+
+.sc-stars { display: flex; align-items: center; gap: 2px; }
+
+.sc-star {
+    cursor: pointer; font-size: 0.95rem; color: #3a3a4a;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.sc-star:hover { transform: scale(1.2); }
+.sc-star.filled { color: gold; }
+
+.sc-avg { font-size: 0.72rem; color: var(--text-muted); }
+
+.sc-footer {
+    display: flex; gap: 8px; padding: 12px 20px 16px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    flex-wrap: wrap;
+}
+
+.sc-btn {
+    flex: 1; min-width: 80px;
+    padding: 9px 12px; border-radius: 12px;
+    font-size: 0.78rem; font-weight: 800;
+    border: none; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; margin: 0;
+    transition: var(--transition); display: flex;
+    align-items: center; justify-content: center; gap: 5px;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.sc-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.sc-btn:active { transform: scale(0.96); }
+
+.sc-btn.view { background: var(--accent-gradient); color: white; box-shadow: 0 4px 12px rgba(139,92,246,0.3); }
+.sc-btn.like { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); }
+.sc-btn.like.liked  { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.3); }
+.sc-btn.report { background: rgba(248,113,113,0.06); color: var(--text-muted); border: 1px solid var(--border-color); }
+.sc-btn.report:hover { color: #f87171; border-color: rgba(248,113,113,0.3); }
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center; padding: 60px 20px;
+    color: var(--text-muted);
+    animation: fadeIn 0.4s ease both;
+}
+
+.empty-state .es-icon { font-size: 3rem; display: block; margin-bottom: 14px; }
+.empty-state h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+.empty-state p  { font-size: 0.88rem; line-height: 1.7; }
+
+.loading-grid {
+    grid-column: 1 / -1;
+    display: flex; flex-direction: column; gap: 12px;
+}
+
+.skeleton {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 20px; padding: 20px; height: 180px;
+    animation: shimmer 1.5s ease infinite;
+}
+
+@keyframes shimmer {
+    0%,100% { opacity: 1; } 50% { opacity: 0.5; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 
 @media (max-width: 640px) {
-    .pf-form { padding: 18px; }
+    .scripts-grid { grid-template-columns: 1fr; }
+    .page-hero { flex-direction: column; align-items: flex-start; gap: 10px; }
 }
 
 </style>
@@ -167,76 +345,61 @@ body { min-height: 100svh; }
 <body>
 
 <header>
-  <button onclick="location.href='apks.html'">📱 قائمة التطبيقات</button>
+  <button onclick="location.href='publish-apk.html'">📤 نشر تطبيق / APK</button>
   <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
-<div class="publish-page">
+<div class="scripts-page">
 
     <div class="page-hero">
-        <h1>📤 نشر تطبيق أو لعبة معدّلة</h1>
-        <p>هننشر رابط التحميل بتاعك بس، مش هنرفع ملف الـ APK على السيرفر. بعد الإرسال هيتراجع الطلب قبل ما يظهر في القائمة العامة.</p>
+        <h1>📱 تطبيقات وألعاب أندرويد معدلة</h1>
+        <div class="scripts-count-pill">
+            إجمالي التطبيقات: <span class="scp-num" id="scriptCount">—</span>
+        </div>
     </div>
 
-    <form class="pf-form" id="pfForm">
+    <div class="search-section">
 
-        <div class="pf-group">
-            <label class="pf-label">📛 اسم التطبيق / اللعبة</label>
-            <input class="pf-input" id="pfTitle" type="text" placeholder="مثال: PUBG Mobile Mod Menu" required maxlength="80">
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchScripts" placeholder="ابحث عن اسم تطبيق أو لعبة...">
         </div>
 
-        <div class="pf-group">
-            <label class="pf-label">📝 وصف مختصر (اختياري)</label>
-            <textarea class="pf-textarea" id="pfDesc" placeholder="ايه اللي اتعدل في النسخة دي؟" maxlength="300"></textarea>
+        <div class="filter-row">
+            <span class="filter-label">القسم:</span>
+            <button class="filter-btn active" data-cat="all">🌟 الكل</button>
+            <button class="filter-btn" data-cat="game">🎮 ألعاب</button>
+            <button class="filter-btn" data-cat="app">📲 تطبيقات</button>
+            <button class="filter-btn" data-cat="mod">🧩 مودات</button>
         </div>
 
-        <div class="pf-group">
-            <label class="pf-label">🗂️ القسم</label>
-            <div class="pf-cat-row" id="pfCatRow">
-                <button type="button" class="pf-cat-btn active" data-cat="game">🎮 لعبة</button>
-                <button type="button" class="pf-cat-btn" data-cat="app">📲 تطبيق</button>
-                <button type="button" class="pf-cat-btn" data-cat="mod">🧩 مود</button>
-            </div>
+        <div class="sort-row">
+            <span class="sort-label">ترتيب:</span>
+            <select class="sort-select" id="sortSelect">
+                <option value="newest">🕐 الأحدث أولاً</option>
+                <option value="oldest">🕑 الأقدم أولاً</option>
+                <option value="likes">👍 الأكثر لايكات</option>
+                <option value="rating">⭐ الأعلى تقييماً</option>
+            </select>
+            <span class="results-info">عرض <span id="resultsCount">—</span> تطبيق</span>
         </div>
 
-        <div class="pf-group">
-            <label class="pf-label">🔗 رابط التحميل الخارجي</label>
-            <input class="pf-input" id="pfUrl" type="url" placeholder="https://www.mediafire.com/... أو https://mega.nz/..." required>
-            <span class="pf-hint">استخدم رابط تحميل مباشر من مصدر موثوق (MediaFire، Mega، Google Drive...).</span>
+    </div>
+
+    <div class="scripts-grid" id="scriptsList">
+        <div class="loading-grid">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
         </div>
-
-        <div class="pf-group">
-            <label class="pf-label">👤 اسم الناشر (اختياري)</label>
-            <input class="pf-input" id="pfAuthor" type="text" placeholder="اسمك أو اسم مستعار" maxlength="40">
-        </div>
-
-        <div class="pf-group">
-            <label class="pf-label">🖼️ أيقونة التطبيق</label>
-            <div class="pf-drop" id="pfDrop">
-                <span class="pf-drop-icon">📷</span>
-                <span class="pf-drop-text">اضغط أو اسحب صورة هنا (هتتضغط تلقائيًا)</span>
-                <input type="file" id="pfIconInput" accept="image/*">
-            </div>
-            <div class="pf-preview-wrap" id="pfPreviewWrap">
-                <img id="pfIconPreview" alt="معاينة الأيقونة">
-                <div class="pf-preview-info">
-                    الحجم الأصلي: <b id="pfOrigSize">—</b><br>
-                    بعد الضغط: <b id="pfNewSize">—</b> (400×400 كحد أقصى، جودة 60%)
-                </div>
-            </div>
-        </div>
-
-        <div class="pf-status" id="pfStatus"></div>
-
-        <button type="submit" class="pf-submit-btn" id="pfSubmitBtn">📤 إرسال للمراجعة</button>
-
-    </form>
+    </div>
 
 </div>
 
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -252,158 +415,180 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
-const MAX_DIM   = 400;   // أقصى بعد (عرض أو ارتفاع) بالبكسل
-const JPEG_QUALITY = 0.6; // جودة الضغط
-
-let activeCat = 'game';
-let compressedBase64 = null;
-
-// اختيار القسم
-document.querySelectorAll('.pf-cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.pf-cat-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        activeCat = btn.dataset.cat;
-    });
-});
-
-const pfIconInput   = document.getElementById('pfIconInput');
-const pfPreviewWrap = document.getElementById('pfPreviewWrap');
-const pfIconPreview = document.getElementById('pfIconPreview');
-const pfOrigSize    = document.getElementById('pfOrigSize');
-const pfNewSize     = document.getElementById('pfNewSize');
-const pfStatus      = document.getElementById('pfStatus');
-const pfSubmitBtn   = document.getElementById('pfSubmitBtn');
-
-function formatBytes(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    return (bytes/1024).toFixed(1) + ' KB';
-}
-
-function showStatus(type, msg) {
-    pfStatus.className = `pf-status show ${type}`;
-    pfStatus.innerHTML = msg;
-}
+let allApks      = [];
+let activeFilter = 'all';
+let activeSort   = 'newest';
 
 /* ============================================================
-   ضغط الصورة عبر Canvas: تصغير الأبعاد لحد أقصى 400×400
-   وتقليل الجودة لـ 60% ثم تحويلها لـ Base64 (JPEG)
+   تحميل التطبيقات (المعتمدة فقط: status === 'approved')
    ============================================================ */
-function compressImage(file, maxDim, quality) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-                let { width, height } = img;
 
-                if (width > height) {
-                    if (width > maxDim) { height = Math.round(height * (maxDim/width)); width = maxDim; }
-                } else {
-                    if (height > maxDim) { width = Math.round(width * (maxDim/height)); height = maxDim; }
-                }
+async function loadApks() {
+    const snap = await get(ref(db,'apks'));
+    const data = snap.exists() ? snap.val() : {};
 
-                const canvas = document.createElement('canvas');
-                canvas.width = width; canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
+    allApks = Object.entries(data)
+        .map(([id,a]) => ({id,...a}))
+        .filter(a => a.status === 'approved');
 
-                const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                resolve(dataUrl);
-            };
-            img.onerror = () => reject(new Error('تعذّر قراءة الصورة'));
-            img.src = e.target.result;
-        };
-        reader.onerror = () => reject(new Error('تعذّر قراءة الملف'));
-        reader.readAsDataURL(file);
+    document.getElementById('scriptCount').innerText = allApks.length;
+    renderApks(getQuery());
+}
+
+function getQuery() {
+    return new URLSearchParams(location.search).get('search')?.toLowerCase().trim() || '';
+}
+
+function sortApks(arr) {
+    const s = [...arr];
+    if (activeSort === 'newest')  return s.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    if (activeSort === 'oldest')  return s.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+    if (activeSort === 'likes')   return s.sort((a,b)=>(b.likes||0)-(a.likes||0));
+    if (activeSort === 'rating')  return s.sort((a,b)=>{
+        const ra = a.votes ? a.rating/a.votes : 0;
+        const rb = b.votes ? b.rating/b.votes : 0;
+        return rb - ra;
+    });
+    return s;
+}
+
+function renderApks(query = '') {
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = '';
+
+    let results = allApks;
+
+    if (activeFilter !== 'all') {
+        results = results.filter(a => (a.category||'') === activeFilter);
+    }
+    if (query) {
+        results = results.filter(a =>
+            (a.title||'').toLowerCase().includes(query) ||
+            (a.category||'').toLowerCase().includes(query) ||
+            (a.description||'').toLowerCase().includes(query) ||
+            (a.author||'').toLowerCase().includes(query)
+        );
+    }
+
+    results = sortApks(results);
+    document.getElementById('resultsCount').innerText = results.length;
+
+    if (!results.length) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <span class="es-icon">📱</span>
+                <h3>لا توجد نتائج</h3>
+                <p>جرّب كلمات مختلفة، أو كن أول من ينشر تطبيقًا هنا.</p>
+            </div>`;
+        return;
+    }
+
+    const now = Date.now();
+    const catLabels = { game: '🎮 لعبة', app: '📲 تطبيق', mod: '🧩 مود' };
+
+    results.forEach(a => {
+        const isNew = (now - (a.timestamp||0)) < 3 * 24 * 3600 * 1000;
+        const avg   = a.votes ? (a.rating / a.votes) : 0;
+        const liked = !!localStorage.getItem(`apk_liked_${a.id}`);
+        const rated = !!localStorage.getItem(`apk_rated_${a.id}`);
+
+        const card = document.createElement('div');
+        card.className = 'script-card';
+        card.dataset.cat = a.category || '';
+
+        card.innerHTML = `
+            <img class="sc-thumb" src="${a.icon || ''}" alt="${escapeHtml(a.title||'')}" loading="lazy">
+            <div class="sc-body">
+                <div class="sc-header">
+                    <div class="sc-title">${escapeHtml(a.title || 'بدون اسم')}</div>
+                    ${isNew ? '<span class="sc-new-badge">جديد</span>' : ''}
+                </div>
+                ${a.description ? `<div class="sc-desc">${escapeHtml(a.description)}</div>` : ''}
+                <div class="sc-badges">
+                    <span class="sc-cat">${catLabels[a.category] || '📦 عام'}</span>
+                </div>
+                <div class="sc-stats">
+                    <div class="sc-stat sc-stars" data-id="${a.id}">
+                        ${[1,2,3,4,5].map(n => `<span class="sc-star ${n<=Math.round(avg)?'filled':''}" data-star="${n}">★</span>`).join('')}
+                    </div>
+                    <span class="sc-avg">${avg ? avg.toFixed(1) : '—'} (${a.votes||0})</span>
+                    <div class="sc-stat">👍 <span class="sc-likes-num">${a.likes||0}</span></div>
+                </div>
+            </div>
+            <div class="sc-footer">
+                <a class="sc-btn view" href="${a.url||'#'}" target="_blank" rel="noopener noreferrer nofollow">⬇️ تحميل</a>
+                <button class="sc-btn like ${liked?'liked':''}" data-id="${a.id}">${liked?'❤️':'🤍'} إعجاب</button>
+                <button class="sc-btn report" data-id="${a.id}">🚩 إبلاغ</button>
+            </div>
+        `;
+
+        // تقييم بالنجوم
+        card.querySelectorAll('.sc-star').forEach(star => {
+            star.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (localStorage.getItem(`apk_rated_${a.id}`)) return;
+                const val = parseInt(star.dataset.star,10);
+                const newRating = (a.rating||0) + val;
+                const newVotes  = (a.votes||0) + 1;
+                await update(ref(db, `apks/${a.id}`), { rating: newRating, votes: newVotes });
+                localStorage.setItem(`apk_rated_${a.id}`, '1');
+                a.rating = newRating; a.votes = newVotes;
+                renderApks(getQuery());
+            });
+        });
+
+        // لايك
+        const likeBtn = card.querySelector('.sc-btn.like');
+        likeBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (localStorage.getItem(`apk_liked_${a.id}`)) return;
+            const newLikes = (a.likes||0) + 1;
+            await update(ref(db, `apks/${a.id}`), { likes: newLikes });
+            localStorage.setItem(`apk_liked_${a.id}`, '1');
+            a.likes = newLikes;
+            renderApks(getQuery());
+        });
+
+        // إبلاغ
+        card.querySelector('.sc-btn.report').addEventListener('click', (e) => {
+            e.stopPropagation();
+            alert('تم إرسال بلاغك، شكرًا لمساعدتك في تحسين المنصة.');
+        });
+
+        list.appendChild(card);
     });
 }
 
-function base64SizeBytes(dataUrl) {
-    const base64 = dataUrl.split(',')[1] || '';
-    return Math.round(base64.length * 0.75);
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-pfIconInput.addEventListener('change', async () => {
-    const file = pfIconInput.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-        showStatus('err', '⚠️ من فضلك اختر ملف صورة صالح.');
-        return;
-    }
-
-    pfOrigSize.textContent = formatBytes(file.size);
-
-    try {
-        compressedBase64 = await compressImage(file, MAX_DIM, JPEG_QUALITY);
-        pfIconPreview.src = compressedBase64;
-        pfNewSize.textContent = formatBytes(base64SizeBytes(compressedBase64));
-        pfPreviewWrap.classList.add('show');
-        pfStatus.classList.remove('show');
-    } catch (err) {
-        showStatus('err', '⚠️ حصل خطأ أثناء ضغط الصورة: ' + err.message);
-        compressedBase64 = null;
-    }
+// فلاتر
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.cat;
+        renderApks(getQuery());
+    });
 });
 
-document.getElementById('pfForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const title  = document.getElementById('pfTitle').value.trim();
-    const desc   = document.getElementById('pfDesc').value.trim();
-    const url    = document.getElementById('pfUrl').value.trim();
-    const author = document.getElementById('pfAuthor').value.trim();
-
-    if (!title || !url) {
-        showStatus('err', '⚠️ من فضلك املأ اسم التطبيق ورابط التحميل.');
-        return;
-    }
-
-    let validUrl;
-    try { validUrl = new URL(url); }
-    catch { showStatus('err', '⚠️ رابط التحميل غير صالح.'); return; }
-    if (!['http:','https:'].includes(validUrl.protocol)) {
-        showStatus('err', '⚠️ الرابط لازم يبدأ بـ http:// أو https://'); return;
-    }
-
-    if (!compressedBase64) {
-        showStatus('err', '⚠️ من فضلك ارفع أيقونة للتطبيق.');
-        return;
-    }
-
-    pfSubmitBtn.disabled = true;
-    showStatus('busy', '⏳ جاري إرسال طلبك...');
-
-    try {
-        const newRef = push(ref(db, 'apks'));
-        await set(newRef, {
-            title,
-            description: desc,
-            category: activeCat,
-            url,
-            author: author || 'مجهول',
-            icon: compressedBase64,
-            status: 'pending',
-            timestamp: Date.now(),
-            likes: 0,
-            rating: 0,
-            votes: 0
-        });
-
-        showStatus('ok', '✅ تم إرسال طلبك بنجاح! هيظهر التطبيق في القائمة العامة بعد المراجعة.');
-        document.getElementById('pfForm').reset();
-        pfPreviewWrap.classList.remove('show');
-        compressedBase64 = null;
-        activeCat = 'game';
-        document.querySelectorAll('.pf-cat-btn').forEach(b=>b.classList.remove('active'));
-        document.querySelector('.pf-cat-btn[data-cat="game"]').classList.add('active');
-    } catch (err) {
-        showStatus('err', '⚠️ حصل خطأ أثناء الإرسال: ' + err.message);
-    } finally {
-        pfSubmitBtn.disabled = false;
-    }
+// ترتيب
+document.getElementById('sortSelect').addEventListener('change', (e) => {
+    activeSort = e.target.value;
+    renderApks(getQuery());
 });
+
+// بحث
+let searchTimeout;
+document.getElementById('searchScripts').addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => renderApks(e.target.value.toLowerCase().trim()), 200);
+});
+
+loadApks();
 </script>
 
 </body>
