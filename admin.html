@@ -170,6 +170,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
 .t-btn.pts:hover{background:rgba(251,191,36,0.18);}
 .banned-badge{background:rgba(248,113,113,0.1);color:var(--red);padding:2px 7px;
   border-radius:50px;font-size:0.62rem;font-weight:800;border:1px solid rgba(248,113,113,0.18);}
+.t-icon{width:32px;height:32px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--border);background:rgba(255,255,255,0.03);}
+.status-pill{padding:2px 9px;border-radius:50px;font-size:0.62rem;font-weight:800;white-space:nowrap;border:1px solid transparent;}
+.status-pill.on{background:rgba(74,222,128,0.1);color:var(--green);border-color:rgba(74,222,128,0.18);}
+.status-pill.off{background:rgba(248,113,113,0.1);color:var(--red);border-color:rgba(248,113,113,0.18);}
 
 /* ═══ SEARCH BAR ═══ */
 .search-bar{display:flex;gap:7px;margin-bottom:11px;}
@@ -355,11 +359,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
   background:linear-gradient(90deg,transparent,rgba(139,92,246,0.5),transparent);}
 .modal-box h3{font-size:0.95rem;font-weight:900;margin-bottom:16px;color:var(--hi);}
 .modal-actions{display:flex;gap:8px;margin-top:10px;}
-#saveEditBtn{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;border:none;
+#saveEditBtn,#saveApkEditBtn{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;border:none;
   border-radius:11px;padding:10px 22px;margin:0;cursor:pointer;font-family:'Tajawal',sans-serif;
   font-weight:800;box-shadow:0 5px 16px rgba(124,58,237,0.3);transition:var(--tr);}
-#saveEditBtn:hover{box-shadow:0 8px 22px rgba(124,58,237,0.45);}
-#cancelEditBtn{background:rgba(255,255,255,0.04);color:var(--mid);border:1px solid var(--border);
+#saveEditBtn:hover,#saveApkEditBtn:hover{box-shadow:0 8px 22px rgba(124,58,237,0.45);}
+#cancelEditBtn,#cancelApkEditBtn{background:rgba(255,255,255,0.04);color:var(--mid);border:1px solid var(--border);
   border-radius:11px;padding:10px 16px;margin:0;cursor:pointer;font-family:'Tajawal',sans-serif;font-weight:800;}
 
 /* ═══ TOAST ═══ */
@@ -415,6 +419,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
 
         <div class="nav-sec">المحتوى</div>
         <button class="nav-item" data-section="scripts"><span class="nav-icon">📜</span> السكربتات <span class="nav-badge" id="scriptsBadge">0</span></button>
+        <button class="nav-item" data-section="apks"><span class="nav-icon">📱</span> تطبيقات APK <span class="nav-badge" id="apksBadge">0</span></button>
         <button class="nav-item" data-section="publish"><span class="nav-icon">📤</span> نشر سكربت</button>
 
         <div class="nav-sec">المجتمع</div>
@@ -462,10 +467,15 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
             <div class="stat-box"><span class="s-icon">⭐</span><span class="s-num" id="st-pts">0</span><span class="s-label">نقطة</span></div>
             <div class="stat-box"><span class="s-icon">🏅</span><span class="s-num" id="st-badges">0</span><span class="s-label">بادج</span></div>
             <div class="stat-box"><span class="s-icon">💬</span><span class="s-num" id="st-msgs">0</span><span class="s-label">رسالة</span></div>
+            <div class="stat-box"><span class="s-icon">📱</span><span class="s-num" id="st-apks">0</span><span class="s-label">تطبيق APK</span></div>
         </div>
         <div class="panel-card">
             <div class="pc-head"><div class="pc-title">📜 آخر السكربتات</div></div>
             <div class="table-wrap"><table class="data-table"><thead><tr><th>العنوان</th><th>القسم</th><th>المؤلف</th><th>👍</th></tr></thead><tbody id="recentBody"></tbody></table></div>
+        </div>
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">📱 آخر تطبيقات APK</div></div>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>الاسم</th><th>القسم</th><th>الناشر</th><th>👍</th></tr></thead><tbody id="recentApksBody"></tbody></table></div>
         </div>
         <div class="panel-card">
             <div class="pc-head"><div class="pc-title">👥 آخر المستخدمين</div></div>
@@ -478,6 +488,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
         <div class="search-bar"><input type="text" id="scriptSearch" placeholder="🔍 ابحث في السكربتات..."></div>
         <div class="panel-card" style="padding:0;overflow:hidden">
             <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>العنوان</th><th>القسم</th><th>المؤلف</th><th>👍</th><th>⭐</th><th>إجراءات</th></tr></thead><tbody id="fullScriptsBody"></tbody></table></div>
+        </div>
+    </div>
+
+    <!-- ─── APKS ─── -->
+    <div class="section" id="sec-apks">
+        <div class="search-bar"><input type="text" id="apkSearch" placeholder="🔍 ابحث في تطبيقات APK..."></div>
+        <div class="panel-card" style="padding:0;overflow:hidden">
+            <div class="table-wrap"><table class="data-table"><thead><tr><th></th><th>الاسم</th><th>القسم</th><th>الناشر</th><th>👍</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="apksBody"></tbody></table></div>
         </div>
     </div>
 
@@ -634,6 +652,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
             <div class="settings-grid">
                 <div class="setting-item"><div class="setting-info"><div class="si-label">🔒 وضع الصيانة</div><div class="si-desc">يمنع المستخدمين من الدخول</div></div><label class="toggle"><input type="checkbox" id="toggle-maintenance"><span class="toggle-slider"></span></label></div>
                 <div class="setting-item"><div class="setting-info"><div class="si-label">📤 السماح بالنشر</div><div class="si-desc">يسمح لليوزرز بنشر سكربتات</div></div><label class="toggle"><input type="checkbox" id="toggle-publish" checked><span class="toggle-slider"></span></label></div>
+                <div class="setting-item"><div class="setting-info"><div class="si-label">📱 السماح بنشر APK</div><div class="si-desc">يسمح لليوزرز بنشر تطبيقات APK</div></div><label class="toggle"><input type="checkbox" id="toggle-apks" checked><span class="toggle-slider"></span></label></div>
                 <div class="setting-item"><div class="setting-info"><div class="si-label">💬 الشات العام</div><div class="si-desc">تفعيل أو تعطيل الشات</div></div><label class="toggle"><input type="checkbox" id="toggle-chat" checked><span class="toggle-slider"></span></label></div>
                 <div class="setting-item"><div class="setting-info"><div class="si-label">🎁 نظام الإحالة</div><div class="si-desc">كسب النقاط بالدعوة</div></div><label class="toggle"><input type="checkbox" id="toggle-referral" checked><span class="toggle-slider"></span></label></div>
                 <div class="setting-item"><div class="setting-info"><div class="si-label">👍 نظام اللايكات</div><div class="si-desc">السماح بلايك السكربتات</div></div><label class="toggle"><input type="checkbox" id="toggle-likes" checked><span class="toggle-slider"></span></label></div>
@@ -688,7 +707,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
 </div>
 </div>
 
-<!-- Edit Modal -->
+<!-- Edit Modal (Scripts) -->
 <div class="modal-overlay" id="editModal">
     <div class="modal-box">
         <h3>✏️ تعديل السكربت</h3>
@@ -704,6 +723,28 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
     </div>
 </div>
 
+<!-- Edit Modal (APK) -->
+<div class="modal-overlay" id="editApkModal">
+    <div class="modal-box">
+        <h3>✏️ تعديل التطبيق</h3>
+        <input type="hidden" id="editApkId">
+        <div class="field-group"><label class="field-label">الاسم</label><input type="text" id="editApkTitle"></div>
+        <div class="field-group"><label class="field-label">الوصف</label><textarea id="editApkDesc" style="min-height:55px"></textarea></div>
+        <div class="field-group"><label class="field-label">القسم</label>
+            <select id="editApkCategory">
+                <option value="game">🎮 لعبة</option>
+                <option value="app">📲 تطبيق</option>
+                <option value="mod">🧩 مود</option>
+            </select>
+        </div>
+        <div class="field-group"><label class="field-label">رابط التحميل الخارجي</label><input type="url" id="editApkUrl"></div>
+        <div class="modal-actions">
+            <button id="saveApkEditBtn">💾 حفظ</button>
+            <button id="cancelApkEditBtn">إلغاء</button>
+        </div>
+    </div>
+</div>
+
 <div class="admin-toast" id="adminToast"></div>
 
 <script type="module">
@@ -714,9 +755,9 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from
 const fc = { apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1" };
 const app=initializeApp(fc), db=getDatabase(app), auth=getAuth(app);
 
-let allScripts={}, allUsers={}, chatLoaded=false, adminUid=null, allReports={}, currentFilter='all';
+let allScripts={}, allUsers={}, allApks={}, chatLoaded=false, adminUid=null, allReports={}, currentFilter='all';
 
-const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكربتات',publish:'📤 نشر سكربت',users:'👥 المستخدمون','points-ctrl':'⭐ النقاط','badges-ctrl':'🏅 البادجات',chat:'💬 الشات',announce:'📢 الإعلانات',settings:'⚙️ الإعدادات',reports:'🚩 البلاغات',log:'📋 سجل الأنشطة','verify-scripts':'✅ التحقق من السكربتات'};
+const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكربتات',apks:'📱 تطبيقات APK',publish:'📤 نشر سكربت',users:'👥 المستخدمون','points-ctrl':'⭐ النقاط','badges-ctrl':'🏅 البادجات',chat:'💬 الشات',announce:'📢 الإعلانات',settings:'⚙️ الإعدادات',reports:'🚩 البلاغات',log:'📋 سجل الأنشطة','verify-scripts':'✅ التحقق من السكربتات'};
 
 /* ─── Toast ─── */
 function toast(msg,dur=2500){ const t=document.getElementById('adminToast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),dur); }
@@ -760,14 +801,16 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
     if(sec==='log')loadActivityLog();
     if(sec==='reports')loadReports();
     if(sec==='verify-scripts')loadVerifyRequests();
+    if(sec==='apks')renderFullApks();
   });
 });
 
 /* ─── Load All ─── */
 async function loadAll(){
-  const[ss,us,cs,as]=await Promise.all([get(ref(db,'scripts')),get(ref(db,'users')),get(ref(db,'chat')),get(ref(db,'announcements'))]);
+  const[ss,us,cs,as,aps]=await Promise.all([get(ref(db,'scripts')),get(ref(db,'users')),get(ref(db,'chat')),get(ref(db,'announcements')),get(ref(db,'apks'))]);
   allScripts=ss.exists()?ss.val():{};
   allUsers=us.exists()?us.val():{};
+  allApks=aps.exists()?aps.val():{};
   const cm=cs.exists()?Object.keys(cs.val()).length:0;
   let tl=0,tp=0,tb=0;
   Object.values(allScripts).forEach(s=>tl+=s.likes||0);
@@ -778,9 +821,12 @@ async function loadAll(){
   document.getElementById('st-pts').innerText=tp;
   document.getElementById('st-badges').innerText=tb;
   document.getElementById('st-msgs').innerText=cm;
+  document.getElementById('st-apks').innerText=Object.keys(allApks).length;
   document.getElementById('scriptsBadge').innerText=Object.keys(allScripts).length;
   document.getElementById('usersBadge').innerText=Object.keys(allUsers).length;
+  document.getElementById('apksBadge').innerText=Object.keys(allApks).length;
   renderRecentScripts();renderRecentUsers();renderFullScripts();renderUsers();
+  renderRecentApks();renderFullApks();
   if(as.exists())renderAnnouncements(as.val());
 }
 
@@ -801,6 +847,95 @@ function renderRecentUsers(){
     b.appendChild(tr);
   });
 }
+
+/* ─── APKs: Overview mini table ─── */
+const apkCatLabels={game:'🎮 لعبة',app:'📲 تطبيق',mod:'🧩 مود'};
+
+function renderRecentApks(){
+  const b=document.getElementById('recentApksBody');b.innerHTML='';
+  const e=Object.entries(allApks).sort((a,x)=>(x[1].timestamp||0)-(a[1].timestamp||0)).slice(0,5);
+  if(!e.length){b.innerHTML='<tr class="empty-row"><td colspan="4">لا توجد تطبيقات بعد</td></tr>';return;}
+  e.forEach(([,a])=>{const tr=document.createElement('tr');tr.innerHTML=`<td class="t-title">${a.title||'—'}</td><td><span class="t-cat">${apkCatLabels[a.category]||a.category||'—'}</span></td><td style="color:var(--mid)">${a.author||'مجهول'}</td><td>👍 ${a.likes||0}</td>`;b.appendChild(tr);});
+}
+
+/* ─── APKs: Full management table ─── */
+function renderFullApks(f=''){
+  const b=document.getElementById('apksBody');if(!b)return;b.innerHTML='';
+  const e=Object.entries(allApks).filter(([,a])=>!f||(a.title||'').toLowerCase().includes(f)||(a.author||'').toLowerCase().includes(f)).sort((a,x)=>(x[1].timestamp||0)-(a[1].timestamp||0));
+  if(!e.length){b.innerHTML='<tr class="empty-row"><td colspan="7">لا توجد تطبيقات</td></tr>';return;}
+  e.forEach(([id,a])=>{
+    const isApproved=a.status!=='hidden';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><img class="t-icon" src="${a.icon||''}" alt=""></td>
+      <td class="t-title">${a.title||'—'}</td>
+      <td><span class="t-cat">${apkCatLabels[a.category]||a.category||'—'}</span></td>
+      <td style="color:var(--mid)">${a.author||'مجهول'}</td>
+      <td>👍 ${a.likes||0}</td>
+      <td><span class="status-pill ${isApproved?'on':'off'}">${isApproved?'✅ ظاهر':'🚫 مخفي'}</span></td>
+      <td><div class="t-actions">
+        <button class="t-btn view">🔗</button>
+        <button class="t-btn edit">✏️</button>
+        <button class="t-btn ${isApproved?'ban':'unban'}">${isApproved?'🚫 إخفاء':'✅ إظهار'}</button>
+        <button class="t-btn del">🗑️</button>
+      </div></td>`;
+    tr.querySelector('.view').onclick=()=>{if(a.url)window.open(a.url,'_blank');};
+    tr.querySelector('.edit').onclick=()=>openApkEdit(id,a);
+    tr.querySelector(`.${isApproved?'ban':'unban'}`).onclick=()=>toggleApkStatus(id,a,isApproved);
+    tr.querySelector('.del').onclick=()=>deleteApk(id,tr,a.title);
+    b.appendChild(tr);
+  });
+}
+
+document.getElementById('apkSearch').addEventListener('input',e=>renderFullApks(e.target.value.toLowerCase().trim()));
+
+async function toggleApkStatus(id,a,isApproved){
+  const newStatus=isApproved?'hidden':'approved';
+  await update(ref(db,`apks/${id}`),{status:newStatus});
+  allApks[id].status=newStatus;
+  renderFullApks(document.getElementById('apkSearch').value.toLowerCase().trim());
+  logActivity(isApproved?'🚫':'✅',`${isApproved?'إخفاء':'إظهار'} تطبيق: ${a.title}`);
+  toast(isApproved?'🚫 تم إخفاء التطبيق':'✅ تم إظهار التطبيق');
+}
+
+async function deleteApk(id,row,title){
+  if(!confirm(`حذف "${title}" نهائياً؟`))return;
+  await remove(ref(db,`apks/${id}`));delete allApks[id];
+  row.style.cssText+='opacity:0;transition:0.3s';
+  setTimeout(()=>{row.remove();updateApkCount();renderRecentApks();},300);
+  logActivity('🗑️',`حذف تطبيق: ${title}`);toast(`🗑️ تم حذف "${title}"`);
+}
+
+function updateApkCount(){const n=Object.keys(allApks).length;document.getElementById('st-apks').innerText=n;document.getElementById('apksBadge').innerText=n;}
+
+function openApkEdit(id,a){
+  document.getElementById('editApkId').value=id;
+  document.getElementById('editApkTitle').value=a.title||'';
+  document.getElementById('editApkDesc').value=a.description||'';
+  document.getElementById('editApkCategory').value=a.category||'game';
+  document.getElementById('editApkUrl').value=a.url||'';
+  document.getElementById('editApkModal').classList.add('open');
+}
+
+document.getElementById('cancelApkEditBtn').onclick=()=>document.getElementById('editApkModal').classList.remove('open');
+document.getElementById('editApkModal').addEventListener('click',e=>{if(e.target===document.getElementById('editApkModal'))document.getElementById('editApkModal').classList.remove('open');});
+
+document.getElementById('saveApkEditBtn').onclick=async()=>{
+  const id=document.getElementById('editApkId').value;
+  const upd={
+    title:document.getElementById('editApkTitle').value.trim(),
+    description:document.getElementById('editApkDesc').value.trim(),
+    category:document.getElementById('editApkCategory').value,
+    url:document.getElementById('editApkUrl').value.trim()
+  };
+  if(!upd.title||!upd.url)return alert('الاسم ورابط التحميل مطلوبان');
+  await update(ref(db,`apks/${id}`),upd);
+  Object.assign(allApks[id],upd);
+  renderFullApks(document.getElementById('apkSearch').value.toLowerCase());
+  renderRecentApks();
+  document.getElementById('editApkModal').classList.remove('open');
+  logActivity('✏️',`تعديل تطبيق: ${upd.title}`);toast('✅ تم حفظ التعديلات');
+};
 
 /* ─── Scripts Table ─── */
 function renderFullScripts(f=''){
@@ -1094,11 +1229,11 @@ function renderAnnouncements(data){
 /* ─── Settings ─── */
 async function loadSettings(){
   const s=await get(ref(db,'siteSettings'));if(!s.exists())return;
-  const v=s.val();['maintenance','publish','chat','referral','likes','register'].forEach(k=>{const el=document.getElementById(`toggle-${k}`);if(el&&v[k]!==undefined)el.checked=v[k];});
+  const v=s.val();['maintenance','publish','apks','chat','referral','likes','register'].forEach(k=>{const el=document.getElementById(`toggle-${k}`);if(el&&v[k]!==undefined)el.checked=v[k];});
 }
 
 document.getElementById('saveSettingsBtn').onclick=async()=>{
-  const s={};['maintenance','publish','chat','referral','likes','register'].forEach(k=>{s[k]=document.getElementById(`toggle-${k}`)?.checked??true;});
+  const s={};['maintenance','publish','apks','chat','referral','likes','register'].forEach(k=>{s[k]=document.getElementById(`toggle-${k}`)?.checked??true;});
   await set(ref(db,'siteSettings'),s);
   logActivity('⚙️','حفظ إعدادات الموقع');toast('✅ تم حفظ الإعدادات');
 };
