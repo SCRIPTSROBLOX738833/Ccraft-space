@@ -192,6 +192,15 @@ body { min-height: 100svh; }
     .notice-card { padding: 30px 20px; }
 }
 
+#loadError {
+    display: none;
+    max-width: 640px; margin: 40px auto; padding: 20px 24px;
+    background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3);
+    border-radius: 16px; color: #f87171; font-size: 0.88rem;
+    line-height: 1.8; text-align: center;
+}
+#loadError.show { display: block; }
+
 </style>
 </head>
 <body>
@@ -200,6 +209,21 @@ body { min-height: 100svh; }
   <button onclick="location.href='apks.html'">📱 قائمة التطبيقات</button>
   <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
+
+<div id="loadError">
+    ⚠️ الصفحة محتاجة تتشغّل من سيرفر (http/https) مش بفتح الملف مباشرة.<br>
+    لو أنت شايف الصفحة فاضية أونلاين، افتح Console (F12) وابعتلي رسالة الخطأ.
+</div>
+
+<script>
+    // Fallback: لو موديول Firebase اتأخر أو فشل، اظهار تنبيه بدل صفحة فاضية
+    window.__pfLoaded = false;
+    setTimeout(() => {
+        if (!window.__pfLoaded) {
+            document.getElementById('loadError').classList.add('show');
+        }
+    }, 4000);
+</script>
 
 <div id="authNotice">
     <div class="notice-card">
@@ -285,6 +309,7 @@ body { min-height: 100svh; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -297,16 +322,41 @@ const firebaseConfig = {
   measurementId:"G-MHDM7YYYBN"
 };
 
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getDatabase(app);
+const auth = getAuth(app);
 
 const MAX_DIM   = 400;   // أقصى بعد (عرض أو ارتفاع) بالبكسل
 const JPEG_QUALITY = 0.6; // جودة الضغط
 
-let activeCat = 'game';
+let activeCat    = 'game';
 let compressedBase64 = null;
+let currentUser  = null;
+
+/* ---- Auth: نفس نمط publish.html ---- */
+onAuthStateChanged(auth, user => {
+    window.__pfLoaded = true;
+    document.getElementById('loadError').classList.remove('show');
+    if (user) {
+        currentUser = user;
+        const name = user.email.split('@')[0];
+        document.getElementById('ubAvatar').innerText = name.charAt(0).toUpperCase();
+        document.getElementById('ubName').innerText   = name;
+        document.getElementById('ubEmail').innerText  = user.email;
+        document.getElementById('userInfo').style.display    = 'block';
+        document.getElementById('publishMain').style.display = 'block';
+        document.getElementById('authNotice').style.display  = 'none';
+    } else {
+        currentUser = null;
+        document.getElementById('authNotice').style.display  = 'block';
+        document.getElementById('publishMain').style.display = 'none';
+        document.getElementById('userInfo').style.display    = 'none';
+    }
+});
 
 // اختيار القسم
+try {
+
 document.querySelectorAll('.pf-cat-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.pf-cat-btn').forEach(b=>b.classList.remove('active'));
@@ -398,10 +448,14 @@ pfIconInput.addEventListener('change', async () => {
 document.getElementById('pfForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const title  = document.getElementById('pfTitle').value.trim();
-    const desc   = document.getElementById('pfDesc').value.trim();
-    const url    = document.getElementById('pfUrl').value.trim();
-    const author = document.getElementById('pfAuthor').value.trim();
+    if (!currentUser) {
+        showStatus('err', '⚠️ لازم تسجّل دخول الأول عشان تقدر تنشر.');
+        return;
+    }
+
+    const title = document.getElementById('pfTitle').value.trim();
+    const desc  = document.getElementById('pfDesc').value.trim();
+    const url   = document.getElementById('pfUrl').value.trim();
 
     if (!title || !url) {
         showStatus('err', '⚠️ من فضلك املأ اسم التطبيق ورابط التحميل.');
@@ -421,7 +475,7 @@ document.getElementById('pfForm').addEventListener('submit', async (e) => {
     }
 
     pfSubmitBtn.disabled = true;
-    showStatus('busy', '⏳ جاري إرسال طلبك...');
+    showStatus('busy', '⏳ جاري النشر...');
 
     try {
         const newRef = push(ref(db, 'apks'));
@@ -430,16 +484,18 @@ document.getElementById('pfForm').addEventListener('submit', async (e) => {
             description: desc,
             category: activeCat,
             url,
-            author: author || 'مجهول',
+            author: currentUser.email.split('@')[0],
+            authorUid: currentUser.uid,
+            authorEmail: currentUser.email,
             icon: compressedBase64,
-            status: 'pending',
+            status: 'approved',
             timestamp: Date.now(),
             likes: 0,
             rating: 0,
             votes: 0
         });
 
-        showStatus('ok', '✅ تم إرسال طلبك بنجاح! هيظهر التطبيق في القائمة العامة بعد المراجعة.');
+        showStatus('ok', '✅ تم نشر تطبيقك بنجاح! هو ظاهر دلوقتي في قائمة التطبيقات.');
         document.getElementById('pfForm').reset();
         pfPreviewWrap.classList.remove('show');
         compressedBase64 = null;
@@ -452,6 +508,13 @@ document.getElementById('pfForm').addEventListener('submit', async (e) => {
         pfSubmitBtn.disabled = false;
     }
 });
+
+} catch (err) {
+    document.getElementById('loadError').classList.add('show');
+    document.getElementById('loadError').innerHTML =
+        '⚠️ حصل خطأ في تحميل الصفحة: ' + (err && err.message ? err.message : err) +
+        '<br>افتح Console (F12) وشوف تفاصيل أكتر.';
+}
 </script>
 
 </body>
