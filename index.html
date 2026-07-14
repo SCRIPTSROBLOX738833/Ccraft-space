@@ -845,7 +845,7 @@ body.has-update-banner .hero { padding-top: 78px; }
 </footer>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
 
@@ -859,7 +859,7 @@ const fc = {
     appId:"1:816078027492:web:6472cce474078fd4d90af1",
     measurementId:"G-MHDM7YYYBN"
 };
-const app = initializeApp(fc), db = getDatabase(app);
+const app = getApps().length ? getApp() : initializeApp(fc), db = getDatabase(app);
 
 /* ── Stars ── */
 (function(){
@@ -896,35 +896,19 @@ async function loadStats(){
     loadTopUsers(users, scripts);
 }
 
-/* ── Online Presence ── */
-// رقم عشوائي أساسي يتغير ببطء لإعطاء إحساس بالنشاط
-// يُضاف إليه عدد المستخدمين الحقيقيين المتصلين
-const _baseOnline = Math.floor(Math.random() * 61) + 10; // 10–70
-let _lastOnline = _baseOnline;
+/* ── Online Presence (حقيقي — مبني على presence.js) ── */
+let _lastOnline = -1;
 
-function _displayOnline(realCount) {
-    // المجموع = قاعدة عشوائية + مستخدمون حقيقيون
-    const total = _baseOnline + realCount;
-    // تحديث تدريجي لمنع القفز المفاجئ
+onValue(ref(db,'presence'), snap => {
+    const realOnline = snap.exists()
+        ? Object.values(snap.val()).filter(p => p.online && Date.now() - p.ts < 60000).length
+        : 0;
+    // إحنا نفسنا بنتحسب أونلاين لحظة ما presence.js يشتغل، فأقل عدد منطقي هو 1
+    const total = Math.max(realOnline, 1);
     if (total !== _lastOnline) {
         _lastOnline = total;
         animCount('ls-online', total);
     }
-}
-
-// تحديث بسيط كل 3 دقائق للقاعدة العشوائية لإيهام التغيير الطبيعي
-// (لا يُظهر في console أي مؤشر على أنه عشوائي)
-setInterval(() => {
-    const drift = Math.floor(Math.random() * 7) - 3; // -3 إلى +3
-    const newBase = Math.max(10, Math.min(70, _baseOnline + drift));
-    document.getElementById('ls-online').innerText = (newBase + (_lastOnline - _baseOnline)).toLocaleString('ar-EG');
-}, 180000);
-
-onValue(ref(db,'presence'), snap => {
-    const realOnline = snap.exists()
-        ? Object.values(snap.val()).filter(p=>p.online && Date.now()-p.ts<60000).length
-        : 0;
-    _displayOnline(realOnline);
 });
 
 /* ── Featured Scripts ── */
@@ -1004,5 +988,8 @@ loadStats();
 loadAnnouncement();
 loadUserPages();
 </script>
+
+<!-- تسجيل هذه الصفحة ضمن المتصلين الآن فعليًا -->
+<script type="module" src="presence.js"></script>
 </body>
 </html>
