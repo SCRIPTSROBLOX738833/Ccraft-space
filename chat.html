@@ -586,11 +586,10 @@ header { flex-shrink: 0; }
 
 
 <script type="module">
-import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { initializeApp, getApps, getApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, update, remove, get, set, onValue, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -603,14 +602,14 @@ const firebaseConfig = {
     measurementId: "G-MHDM7YYYBN"
 };
 
-const app  = initializeApp(firebaseConfig);
+const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db   = getDatabase(app);
 const auth = getAuth(app);
 
 let currentUser  = null;
 let replyTo      = null;  // { key, username, text }
 let editingKey   = null;  // key of message being edited
-let avatarCache  = {};
+let avatarCache  = {};    // uid -> photo dataURL أو null (لو مفيش صورة)
 let lastDate     = null;
 let typingTimer  = null;
 let atBottom     = true;
@@ -668,18 +667,31 @@ document.addEventListener('click', e => {
 
 
 /* ============================================================
-   Avatar Helper
+   Avatar Helper — صورة بروفايل حقيقية بدل الشخصية الكرتونية
    ============================================================ */
 
-async function getAvatar(uid, size = 34) {
-    if (!uid) return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:${size*0.35}px">?</div>`;
-    if (avatarCache[uid]) return buildAvatar(avatarCache[uid], size);
+function initialsAvatarHTML(name, size) {
+    const initial = (name || '?').charAt(0).toUpperCase();
+    return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:${size*0.35}px">${initial}</div>`;
+}
+
+async function getAvatar(uid, size = 34, name = '') {
+    if (!uid) return initialsAvatarHTML(name, size);
+    if (avatarCache[uid] !== undefined) {
+        return avatarCache[uid]
+            ? `<img src="${avatarCache[uid]}" alt="" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;display:block">`
+            : initialsAvatarHTML(name, size);
+    }
     try {
-        const snap = await get(ref(db, `users/${uid}/avatar`));
-        const char = snap.exists() ? { ...DEFAULT_CHAR, ...snap.val() } : DEFAULT_CHAR;
-        avatarCache[uid] = char;
-        return buildAvatar(char, size);
-    } catch { return buildAvatar(DEFAULT_CHAR, size); }
+        const snap = await get(ref(db, `users/${uid}/photo`));
+        const photo = snap.exists() ? snap.val() : null;
+        avatarCache[uid] = photo;
+        return photo
+            ? `<img src="${photo}" alt="" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;display:block">`
+            : initialsAvatarHTML(name, size);
+    } catch {
+        return initialsAvatarHTML(name, size);
+    }
 }
 
 
@@ -704,7 +716,7 @@ function loadChat() {
             chatBox.appendChild(sep);
         }
 
-        const avatarHTML = await getAvatar(msg.userId, 34);
+        const avatarHTML = await getAvatar(msg.userId, 34, msg.username);
         const isOwn = msg.userId === currentUser.uid;
         const time  = date.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
 
