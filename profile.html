@@ -19,6 +19,17 @@
     .join-date{color:var(--text-muted);font-size:0.78rem;}
     .profile-actions{display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;}
 
+    /* ---- Avatar Upload ---- */
+    .avatar-upload-wrap{position:relative;width:90px;height:90px;flex-shrink:0;}
+    .avatar-circle{width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:linear-gradient(135deg,#8b5cf6,#00bcd4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3);position:relative;}
+    .avatar-circle img{width:100%;height:100%;object-fit:cover;display:block;}
+    .avatar-initials{font-size:2rem;font-weight:900;color:white;}
+    .avatar-upload-wrap.editable{cursor:pointer;}
+    .avatar-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:var(--transition);font-size:1.3rem;}
+    .avatar-upload-wrap.editable:hover .avatar-overlay{opacity:1;}
+    .avatar-upload-wrap.uploading .avatar-overlay{opacity:1;font-size:0.95rem;}
+    #avatarFileInput{display:none;}
+
     /* Verify Button */
     .verify-request-btn{background:linear-gradient(135deg,rgba(0,242,254,0.15),rgba(139,92,246,0.1));border:1px solid rgba(0,242,254,0.35);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;font-weight:800;color:#67e8f9;cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);display:inline-flex;align-items:center;gap:6px;}
     .verify-request-btn:hover{background:rgba(0,242,254,0.2);transform:translateY(-2px);filter:none;}
@@ -193,7 +204,10 @@
 
 <div class="profile-hero">
     <div class="profile-card">
-        <div id="avatarWrap"></div>
+        <div class="avatar-upload-wrap" id="avatarWrap">
+            <div class="avatar-circle" id="avatarCircle"><span class="avatar-initials" id="avatarInitials">؟</span></div>
+        </div>
+        <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp">
         <div class="profile-info">
             <div class="username-row">
                 <h2 id="username">جارٍ التحميل...</h2>
@@ -255,16 +269,100 @@
 <div id="userScripts"><div class="empty-state"><p>جارٍ التحميل...</p></div></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, set, remove, push, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
 
 const fc={apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1",measurementId:"G-MHDM7YYYBN"};
-const app=initializeApp(fc), db=getDatabase(app), auth=getAuth(app);
+const app=getApps().length?getApp():initializeApp(fc), db=getDatabase(app), auth=getAuth(app);
 const urlParams=new URLSearchParams(window.location.search);
 const targetUid=urlParams.get('uid');
 let currentUser=null;
+
+/* ============================================================
+   📷 Avatar Upload — صورة بروفايل حقيقية بدل شخصية avatar.js
+   الصورة بتتضغط في المتصفح (Canvas) قبل ما تتحفظ في Firebase
+   ============================================================ */
+const AVATAR_MAX_DIM = 320;      // أقصى بعد بالبكسل
+const AVATAR_QUALITY  = 0.75;    // جودة الضغط
+
+function avatarGradientFor(seed){
+    const grads=[
+        'linear-gradient(135deg,#8b5cf6,#00bcd4)',
+        'linear-gradient(135deg,#f472b6,#8b5cf6)',
+        'linear-gradient(135deg,#fb923c,#f472b6)',
+        'linear-gradient(135deg,#4ade80,#00bcd4)',
+        'linear-gradient(135deg,#60a5fa,#8b5cf6)',
+    ];
+    let h=0; for(const c of (seed||'')) h=(h*31+c.charCodeAt(0))>>>0;
+    return grads[h%grads.length];
+}
+
+function renderAvatar(name, photoUrl){
+    const circle=document.getElementById('avatarCircle');
+    if(photoUrl){
+        circle.style.background='#0a0a14';
+        circle.innerHTML=`<img src="${photoUrl}" alt="صورة البروفايل">`;
+    }else{
+        circle.style.background=avatarGradientFor(name||'?');
+        circle.innerHTML=`<span class="avatar-initials">${(name||'؟').charAt(0).toUpperCase()}</span>`;
+    }
+}
+
+function compressAvatarImage(file){
+    return new Promise((resolve,reject)=>{
+        if(!file.type.startsWith('image/')){reject(new Error('الملف المختار ليس صورة'));return;}
+        const reader=new FileReader();
+        reader.onload=e=>{
+            const img=new Image();
+            img.onload=()=>{
+                let {width,height}=img;
+                // نقص لمربع مركزي عشان الصورة تظهر مضبوطة جوه الدائرة
+                const side=Math.min(width,height);
+                const sx=(width-side)/2, sy=(height-side)/2;
+                const dim=Math.min(AVATAR_MAX_DIM, side);
+                const canvas=document.createElement('canvas');
+                canvas.width=dim; canvas.height=dim;
+                const ctx=canvas.getContext('2d');
+                ctx.drawImage(img, sx, sy, side, side, 0, 0, dim, dim);
+                resolve(canvas.toDataURL('image/jpeg', AVATAR_QUALITY));
+            };
+            img.onerror=()=>reject(new Error('تعذّر قراءة الصورة'));
+            img.src=e.target.result;
+        };
+        reader.onerror=()=>reject(new Error('تعذّر قراءة الملف'));
+        reader.readAsDataURL(file);
+    });
+}
+
+function enableAvatarEditing(uid,name){
+    const wrap=document.getElementById('avatarWrap');
+    const input=document.getElementById('avatarFileInput');
+    wrap.classList.add('editable');
+    wrap.innerHTML+=`<div class="avatar-overlay">🔄</div>`;
+    wrap.onclick=()=>input.click();
+    input.onchange=async ()=>{
+        const file=input.files[0];
+        if(!file)return;
+        wrap.classList.add('uploading');
+        const overlay=wrap.querySelector('.avatar-overlay');
+        if(overlay)overlay.innerHTML='⏳';
+        try{
+            const compressed=await compressAvatarImage(file);
+            await set(ref(db,`users/${uid}/photo`),compressed);
+            renderAvatar(name,compressed);
+            wrap.innerHTML+=`<div class="avatar-overlay">🔄</div>`;
+            showToast('✅ تم تحديث صورة البروفايل');
+        }catch(err){
+            alert('❌ '+err.message);
+            renderAvatar(name,null);
+            wrap.innerHTML+=`<div class="avatar-overlay">🔄</div>`;
+        }finally{
+            wrap.classList.remove('uploading');
+            input.value='';
+        }
+    };
+}
 
 /* ── Username Modal ── */
 const COOLDOWN_DAYS=30, USERNAME_REGEX=/^[a-zA-Z0-9_]{3,20}$/;
@@ -426,12 +524,14 @@ onAuthStateChanged(auth,async user=>{
 
 /* ── My Profile ── */
 async function loadMyProfile(user){
-    const[avatarSnap,userDataSnap]=await Promise.all([get(ref(db,`users/${user.uid}/avatar`)),get(ref(db,`users/${user.uid}`))]);
-    const charData=avatarSnap.exists()?{...DEFAULT_CHAR,...avatarSnap.val()}:DEFAULT_CHAR;
-    document.getElementById('avatarWrap').innerHTML=`<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:#0a0a14;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3)">${buildAvatar(charData,90)}</div>`;
+    const[userDataSnap]=await Promise.all([get(ref(db,`users/${user.uid}`))]);
     const userData=userDataSnap.exists()?userDataSnap.val():{};
     const savedUsername=userData.username||user.email.split('@')[0];
     const lastChangeTs=userData.usernameChangedAt||null;
+
+    renderAvatar(savedUsername, userData.photo||null);
+    enableAvatarEditing(user.uid, savedUsername);
+
     document.getElementById('username').innerText=savedUsername;
     document.getElementById('userEmail').innerText=user.email;
     document.getElementById('editNameBtn').style.display='inline-flex';
@@ -440,10 +540,8 @@ async function loadMyProfile(user){
     updateLastChangeLabel(lastChangeTs);
 
     document.getElementById('profileActions').innerHTML=`
-        <button id="editAvatarBtn" style="background:rgba(255,255,255,0.04);color:var(--text-muted);border:1px solid var(--border-color);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">🎭 تعديل الشخصية</button>
         <button id="logoutBtn" style="background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.2);border-radius:var(--radius-btn);padding:10px 18px;font-size:0.85rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">🚪 خروج</button>
     `;
-    document.getElementById('editAvatarBtn').onclick=()=>location.href='avatar.html';
     document.getElementById('logoutBtn').onclick=async()=>{await signOut(auth);location.href='index.html';};
     document.getElementById('scriptsTitle').innerText='📜 سكربتاتي';
     document.getElementById('pointsSection').style.display='block';
@@ -466,15 +564,14 @@ async function loadMyProfile(user){
 /* ── Other Profile ── */
 async function loadOtherProfile(uid){
     document.getElementById('viewingBadge').style.display='block';
-    const[userSnap,avatarSnap]=await Promise.all([get(ref(db,`users/${uid}`)),get(ref(db,`users/${uid}/avatar`))]);
+    const userSnap=await get(ref(db,`users/${uid}`));
     const userData=userSnap.exists()?userSnap.val():{};
     const email=userData.email||'غير معروف';
     const name=userData.username||email.split('@')[0];
     document.getElementById('viewingName').innerText=name;
     document.getElementById('username').innerText=name;
     document.getElementById('userEmail').innerText=email;
-    const charData=avatarSnap.exists()?{...DEFAULT_CHAR,...avatarSnap.val()}:DEFAULT_CHAR;
-    document.getElementById('avatarWrap').innerHTML=`<div style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:#0a0a14;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3)">${buildAvatar(charData,90)}</div>`;
+    renderAvatar(name, userData.photo||null);
     document.getElementById('profileActions').innerHTML='';
     document.getElementById('scriptsTitle').innerText=`📜 سكربتات ${name}`;
     await loadData(uid,email,null,false,name);
