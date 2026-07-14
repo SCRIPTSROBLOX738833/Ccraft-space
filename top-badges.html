@@ -229,9 +229,8 @@
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -244,7 +243,7 @@ const firebaseConfig = {
     measurementId: "G-MHDM7YYYBN"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
 /* ============================================================
@@ -279,6 +278,18 @@ const RARITY_ORDER  = { legendary: 4, epic: 3, rare: 2, common: 1 };
 let allUsersData  = [];
 let currentFilter = 'all';
 
+/* ============================================================
+   أفاتار — صورة بروفايل حقيقية بدل الشخصية الكرتونية
+   ============================================================ */
+
+function avatarHTML(photo, name, size) {
+    if (photo) {
+        return `<img src="${photo}" alt="" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;display:block">`;
+    }
+    const initial = (name || '?').charAt(0).toUpperCase();
+    return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#00bcd4);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:${size*0.4}px">${initial}</div>`;
+}
+
 
 /* ============================================================
    تحميل البيانات من Firebase
@@ -301,11 +312,9 @@ async function loadData() {
 
     for (const [uid, uData] of Object.entries(users)) {
 
-        const email    = uData.email || '';
-        const name     = email.split('@')[0] || uid.slice(0, 8);
-        const charData = uData.avatar
-            ? { ...DEFAULT_CHAR, ...uData.avatar }
-            : DEFAULT_CHAR;
+        const email = uData.email || '';
+        const name  = uData.username || email.split('@')[0] || uid.slice(0, 8);
+        const photo = uData.photo || null;
 
         /*
          * ✅ الإصلاح الأساسي:
@@ -330,7 +339,7 @@ async function loadData() {
 
         // بس نضيف اليوزر لو عنده بادج واحد على الأقل
         if (earnedIds.length > 0) {
-            allUsersData.push({ uid, name, email, charData, earnedIds, earnedByRarity });
+            allUsersData.push({ uid, name, email, photo, earnedIds, earnedByRarity });
         }
     }
 
@@ -404,7 +413,7 @@ function renderList() {
         card.innerHTML = `
             <div class="uc-rank ${rankClass[i] || ''}">${rankEmoji[i] || i + 1}</div>
 
-            <div class="uc-avatar">${buildAvatar(u.charData, 52)}</div>
+            <div class="uc-avatar">${avatarHTML(u.photo, u.name, 52)}</div>
 
             <div class="uc-info">
                 <div class="uc-name">${u.name}</div>
