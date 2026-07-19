@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فحص أمان السكربتات | CCraft Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- Firebase (compat build - يشتغل من غير bundler، زي باقي صفحاتك) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
+<style>
+  :root{
+    --bg:#0e0e1b;
+    --card:#171728;
+    --card-border:#26263f;
+    --input-bg:#10101d;
+    --text:#e9e9f5;
+    --muted:#9a9ab3;
+    --purple:#9333ea;
+    --cyan:#22d3ee;
+    --danger:#ef4444;
+    --danger-bg:#2c1414;
+    --danger-border:#5a1f1f;
+    --neutral:#5eb8ea;
+    --neutral-bg:#131c30;
+    --neutral-border:#223052;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(147,51,234,.18), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(34,211,238,.14), transparent 45%),
+      var(--bg);
+    font-family:'Tajawal', sans-serif;
+    color:var(--text);
+    padding:24px;
+  }
+  .card{
+    width:100%;
+    max-width:460px;
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:20px;
+    padding:32px 26px;
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+  }
+  .badge{
+    display:inline-block;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.3px;
+    color:var(--muted);
+    border:1px solid var(--card-border);
+    padding:4px 10px;
+    border-radius:999px;
+    margin-bottom:14px;
+  }
+  h1{
+    margin:0 0 8px;
+    font-size:23px;
+    font-weight:900;
+    line-height:1.35;
+    background:linear-gradient(90deg, var(--purple), var(--cyan));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  p.sub{
+    margin:0 0 24px;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.7;
+  }
+  .search-row{
+    display:flex;
+    gap:8px;
+  }
+  input[type=text]{
+    flex:1;
+    min-width:0;
+    padding:14px 16px;
+    border-radius:12px;
+    border:1px solid var(--card-border);
+    background:var(--input-bg);
+    color:var(--text);
+    font-family:inherit;
+    font-size:15px;
+    outline:none;
+    transition:border-color .15s;
+  }
+  input[type=text]:focus{ border-color:var(--purple); }
+  input[type=text]::placeholder{ color:#6b6b85; }
+
+  button{
+    flex-shrink:0;
+    padding:14px 22px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg, var(--purple), var(--cyan));
+    color:#fff;
+    font-family:inherit;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    transition:opacity .2s, transform .15s;
+  }
+  button:disabled{ opacity:.55; cursor:default; }
+  button:hover:not(:disabled){ opacity:.9; }
+  button:active:not(:disabled){ transform:scale(.97); }
+  button:focus-visible, input:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:2px;
+  }
+
+  .result{
+    margin-top:20px;
+    padding:18px;
+    border-radius:14px;
+    display:none;
+  }
+  .result.show{
+    display:block;
+    animation:fade .25s ease;
+  }
+  @keyframes fade{
+    from{ opacity:0; transform:translateY(4px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .result-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:16px;
+    margin-bottom:6px;
+  }
+  .result-detail{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.7;
+  }
+  .result.unsafe{ background:var(--danger-bg); border:1px solid var(--danger-border); }
+  .result.unsafe .result-title{ color:var(--danger); }
+  .result.unknown{ background:var(--neutral-bg); border:1px solid var(--neutral-border); }
+  .result.unknown .result-title{ color:var(--neutral); }
+
+  .footer-note{
+    margin-top:22px;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+    line-height:1.7;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .result.show{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <span class="badge">CCraft Space</span>
+    <h1>فحص أمان السكربتات</h1>
+    <p class="sub">اكتب اسم السكربت زي ما هو منشور بالظبط، عشان تتأكد إذا كانت الإدارة حذّرت منه.</p>
+
+    <div class="search-row">
+      <input type="text" id="scriptInput" placeholder="اسم السكربت..." autocomplete="off">
+      <button id="checkBtn" onclick="checkScript()">فحص</button>
+    </div>
+
+    <div class="result" id="result">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-detail" id="resultDetail"></div>
+    </div>
+
+    <p class="footer-note">
+      نتيجة "لم يتم الإبلاغ عنه" معناها إن الإدارة لسه ماحذّرتش منه - مش شهادة أمان 100%.
+      دايمًا حمّل من مصادر موثوقة وخلي عندك حماية على جهازك.
+    </p>
+  </div>
+
+<script>
+  // ⚠️ استبدل ده بنفس الـ firebaseConfig المستخدم في باقي صفحات موقعك
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID"
+  };
+
+  // لو الصفحة دي هتتحمل جنب صفحات تانية عملت initializeApp قبل كده، السطر ده بيمنع التكرار
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.database();
+
+  // بنخزن السكربتات الغير آمنة تحت node اسمه unsafeScripts، مفتاحه = اسم السكربت بعد التطبيع
+  // مثال شكل البيانات:
+  // unsafeScripts/
+  //   blox_fruits_auto_farm/
+  //     originalName: "Blox Fruits Auto Farm"
+  //     reason: "بيسرق بيانات تسجيل الدخول"
+  //     reportedAt: "2026-07-19T10:00:00.000Z"
+
+  function normalize(name) {
+    return name.trim().toLowerCase().replace(/\s+/g, ' ');
+  }
+
+  // Firebase مش بيسمح بـ . # $ [ ] / جوه المفتاح، فبنستبدلهم
+  function toKey(normalizedName) {
+    return normalizedName.replace(/[.#$[\]/]/g, '_');
+  }
+
+  function checkScript() {
+    const input = document.getElementById('scriptInput');
+    const btn = document.getElementById('checkBtn');
+    const rawName = input.value;
+
+    if (!rawName.trim()) {
+      input.focus();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'بيفحص...';
+
+    const key = toKey(normalize(rawName));
+
+    db.ref('unsafeScripts/' + key).once('value')
+      .then(function (snapshot) {
+        if (snapshot.exists()) {
+          showResult('unsafe', snapshot.val());
+        } else {
+          showResult('unknown', null);
+        }
+      })
+      .catch(function (err) {
+        console.error(err);
+        showResult('error', null);
+      })
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = 'فحص';
+      });
+  }
+
+  function showResult(type, data) {
+    const result = document.getElementById('result');
+    const title = document.getElementById('resultTitle');
+    const detail = document.getElementById('resultDetail');
+
+    result.className = 'result show ' + (type === 'unsafe' ? 'unsafe' : 'unknown');
+
+    if (type === 'unsafe') {
+      title.textContent = '⚠️ غير آمن - احذر';
+      detail.textContent = (data && data.reason)
+        ? data.reason
+        : 'تم الإبلاغ عن هذا السكربت من قبل إدارة CCraft Space.';
+    } else if (type === 'unknown') {
+      title.textContent = 'ℹ️ لم يتم الإبلاغ عنه';
+      detail.textContent = 'مفيش بلاغات عليه من الإدارة لحد دلوقتي.';
+    } else {
+      title.textContent = '⚠️ حصل خطأ في الفحص';
+      detail.textContent = 'مقدرناش نكمل الفحص دلوقتي، جرب تاني كمان شوية.';
+    }
+  }
+
+  document.getElementById('scriptInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') checkScript();
+  });
+
+  /* ============================================================
+     مرجع للإدارة فقط - مش لازم يتحط في صفحة عامة زي دي.
+     ده الشكل اللي لوحة التحكم هتنادي بيه لما تحب تضيف سكربت للقائمة:
+
+     function markScriptUnsafe(scriptName, reason) {
+       const key = toKey(normalize(scriptName));
+       db.ref('unsafeScripts/' + key).set({
+         originalName: scriptName,
+         reason: reason || 'تم الإبلاغ عنه من قبل الإدارة',
+         reportedAt: new Date().toISOString()
+       });
+     }
+
+     ولازم في Firebase Rules تقفل الكتابة على unsafeScripts للأدمن بس والقراءة تفضل عامة، مثال:
+
+     {
+       "rules": {
+         "unsafeScripts": {
+           ".read": true,
+           ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+         }
+       }
+     }
+     ============================================================ */
+</script>
+</body>
+</html>
