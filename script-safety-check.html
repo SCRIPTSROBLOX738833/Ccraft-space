@@ -3,304 +3,238 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>فحص أمان السكربتات | CCraft Space</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-<!-- Firebase (compat build - يشتغل من غير bundler، زي باقي صفحاتك) -->
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
-
+<title>CCRAFT SPACE | فحص أمان السكربتات</title>
+<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0e0e1b;
-    --card:#171728;
-    --card-border:#26263f;
-    --input-bg:#10101d;
-    --text:#e9e9f5;
-    --muted:#9a9ab3;
-    --purple:#9333ea;
-    --cyan:#22d3ee;
-    --danger:#ef4444;
-    --danger-bg:#2c1414;
-    --danger-border:#5a1f1f;
-    --neutral:#5eb8ea;
-    --neutral-bg:#131c30;
-    --neutral-border:#223052;
-  }
-  *{ box-sizing:border-box; }
-  body{
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:
-      radial-gradient(circle at 15% 10%, rgba(147,51,234,.18), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(34,211,238,.14), transparent 45%),
-      var(--bg);
-    font-family:'Tajawal', sans-serif;
-    color:var(--text);
-    padding:24px;
-  }
-  .card{
-    width:100%;
-    max-width:460px;
-    background:var(--card);
-    border:1px solid var(--card-border);
-    border-radius:20px;
-    padding:32px 26px;
-    box-shadow:0 20px 60px rgba(0,0,0,.45);
-  }
-  .badge{
-    display:inline-block;
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.3px;
-    color:var(--muted);
-    border:1px solid var(--card-border);
-    padding:4px 10px;
-    border-radius:999px;
-    margin-bottom:14px;
-  }
-  h1{
-    margin:0 0 8px;
-    font-size:23px;
-    font-weight:900;
-    line-height:1.35;
-    background:linear-gradient(90deg, var(--purple), var(--cyan));
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-  }
-  p.sub{
-    margin:0 0 24px;
-    color:var(--muted);
-    font-size:14px;
-    line-height:1.7;
-  }
-  .search-row{
-    display:flex;
-    gap:8px;
-  }
-  input[type=text]{
-    flex:1;
-    min-width:0;
-    padding:14px 16px;
-    border-radius:12px;
-    border:1px solid var(--card-border);
-    background:var(--input-bg);
-    color:var(--text);
-    font-family:inherit;
-    font-size:15px;
-    outline:none;
-    transition:border-color .15s;
-  }
-  input[type=text]:focus{ border-color:var(--purple); }
-  input[type=text]::placeholder{ color:#6b6b85; }
 
-  button{
-    flex-shrink:0;
-    padding:14px 22px;
-    border:none;
-    border-radius:12px;
-    background:linear-gradient(90deg, var(--purple), var(--cyan));
-    color:#fff;
-    font-family:inherit;
-    font-weight:700;
-    font-size:15px;
-    cursor:pointer;
-    transition:opacity .2s, transform .15s;
-  }
-  button:disabled{ opacity:.55; cursor:default; }
-  button:hover:not(:disabled){ opacity:.9; }
-  button:active:not(:disabled){ transform:scale(.97); }
-  button:focus-visible, input:focus-visible{
-    outline:2px solid var(--cyan);
-    outline-offset:2px;
-  }
+.sc-page { max-width: 640px; margin: 0 auto; padding: 0 20px 80px; }
 
-  .result{
-    margin-top:20px;
-    padding:18px;
-    border-radius:14px;
-    display:none;
-  }
-  .result.show{
-    display:block;
-    animation:fade .25s ease;
-  }
-  @keyframes fade{
-    from{ opacity:0; transform:translateY(4px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
-  .result-title{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-weight:700;
-    font-size:16px;
-    margin-bottom:6px;
-  }
-  .result-detail{
-    font-size:13px;
-    color:var(--muted);
-    line-height:1.7;
-  }
-  .result.unsafe{ background:var(--danger-bg); border:1px solid var(--danger-border); }
-  .result.unsafe .result-title{ color:var(--danger); }
-  .result.unknown{ background:var(--neutral-bg); border:1px solid var(--neutral-border); }
-  .result.unknown .result-title{ color:var(--neutral); }
+.sc-hero { text-align: center; padding: 40px 0 22px; }
+.sc-hero .hi { font-size: 2.6rem; display: block; margin-bottom: 10px; filter: drop-shadow(0 0 16px rgba(139,92,246,0.4)); }
+.sc-hero h1 {
+    font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 900;
+    background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+.sc-hero p { color: var(--text-muted); font-size: 0.86rem; line-height: 1.75; max-width: 460px; margin: 0 auto; }
 
-  .footer-note{
-    margin-top:22px;
-    font-size:12px;
-    color:var(--muted);
-    text-align:center;
-    line-height:1.7;
-  }
+.search-card {
+    background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 22px;
+    padding: 24px; margin-bottom: 20px; animation: fadeIn 0.4s ease both;
+}
+.search-row { display: flex; gap: 8px; }
+.search-row input {
+    flex: 1; min-width: 0; background: rgba(0,0,0,0.28); border: 1px solid var(--border-color);
+    border-radius: 14px; padding: 13px 16px; color: var(--text-main); font-family: 'Tajawal', sans-serif;
+    font-size: 0.9rem; outline: none; transition: var(--transition); direction: rtl;
+}
+.search-row input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139,92,246,0.12); }
+.search-row button {
+    flex-shrink: 0; background: var(--accent-gradient); color: white; border: none;
+    border-radius: 14px; padding: 13px 24px; font-family: 'Tajawal', sans-serif; font-weight: 800;
+    font-size: 0.88rem; cursor: pointer; margin: 0; transition: var(--transition);
+    box-shadow: 0 6px 16px rgba(139,92,246,0.3);
+}
+.search-row button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.08); }
+.search-row button:disabled { opacity: 0.55; cursor: default; transform: none; }
 
-  @media (prefers-reduced-motion: reduce){
-    .result.show{ animation:none; }
-  }
+/* ---- Result ---- */
+.result-box { margin-top: 18px; padding: 18px; border-radius: 14px; display: none; animation: fadeIn 0.3s ease both; }
+.result-box.show { display: block; }
+.result-title { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.95rem; margin-bottom: 6px; }
+.result-detail { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; }
+
+.result-box.unsafe { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3); }
+.result-box.unsafe .result-title { color: var(--danger); }
+.result-box.safe   { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.3); }
+.result-box.safe .result-title { color: var(--success); }
+.result-box.unknown { background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.25); }
+.result-box.unknown .result-title { color: #60a5fa; }
+
+.match-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.match-item {
+    background: rgba(0,0,0,0.2); border: 1px solid rgba(248,113,113,0.2); border-radius: 10px;
+    padding: 10px 14px; cursor: pointer; transition: var(--transition);
+}
+.match-item:hover { border-color: rgba(248,113,113,0.4); transform: none; filter: none; }
+.match-item .mi-name { font-size: 0.84rem; font-weight: 800; color: var(--text-main); }
+.match-item .mi-reason { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; }
+
+/* ---- Recent flagged list ---- */
+.sec-title {
+    font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 1px; display: flex; align-items: center; gap: 10px; margin: 30px 0 14px;
+}
+.sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+
+.flagged-item {
+    background: var(--bg-card); border: 1px solid var(--border-color); border-left: 3px solid var(--danger);
+    border-radius: 14px; padding: 14px 18px; margin-bottom: 10px; animation: fadeIn 0.4s ease both;
+}
+.flagged-item .fi-name { font-size: 0.88rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+.flagged-item .fi-reason { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 6px; }
+.flagged-item .fi-date { font-size: 0.68rem; color: var(--text-muted); opacity: 0.7; }
+
+.empty-note { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
+.loading-note { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
+
+.footer-note {
+    margin-top: 26px; font-size: 0.76rem; color: var(--text-muted); text-align: center;
+    line-height: 1.8; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color);
+    border-radius: 14px; padding: 14px 18px;
+}
+
+@media (max-width: 500px) {
+    .search-row { flex-direction: column; }
+}
+
 </style>
 </head>
 <body>
 
-  <div class="card">
-    <span class="badge">CCraft Space</span>
-    <h1>فحص أمان السكربتات</h1>
-    <p class="sub">اكتب اسم السكربت زي ما هو منشور بالظبط، عشان تتأكد إذا كانت الإدارة حذّرت منه.</p>
+<header>
+    <button onclick="location.href='scripts.html'">📜 السكربتات</button>
+    <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
+</header>
 
-    <div class="search-row">
-      <input type="text" id="scriptInput" placeholder="اسم السكربت..." autocomplete="off">
-      <button id="checkBtn" onclick="checkScript()">فحص</button>
+<div class="sc-page">
+
+    <div class="sc-hero">
+        <span class="hi">🛡️</span>
+        <h1>فحص أمان السكربتات</h1>
+        <p>اكتب اسم السكربت عشان تتأكد إذا كانت إدارة CCRAFT SPACE حذّرت منه قبل ما تحمّله أو تشغّله.</p>
     </div>
 
-    <div class="result" id="result">
-      <div class="result-title" id="resultTitle"></div>
-      <div class="result-detail" id="resultDetail"></div>
+    <div class="search-card">
+        <div class="search-row">
+            <input type="text" id="scriptInput" placeholder="اسم السكربت..." autocomplete="off">
+            <button id="checkBtn">🔍 فحص</button>
+        </div>
+
+        <div class="result-box" id="result">
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-detail" id="resultDetail"></div>
+            <div class="match-list" id="matchList"></div>
+        </div>
     </div>
+
+    <div class="sec-title">🚩 آخر السكربتات المُحذّر منها</div>
+    <div id="recentFlagged"><div class="loading-note">⏳ جارٍ التحميل...</div></div>
 
     <p class="footer-note">
-      نتيجة "لم يتم الإبلاغ عنه" معناها إن الإدارة لسه ماحذّرتش منه - مش شهادة أمان 100%.
-      دايمًا حمّل من مصادر موثوقة وخلي عندك حماية على جهازك.
+        نتيجة "لم يتم الإبلاغ عنه" معناها إن الإدارة لسه ما حذّرتش منه — مش شهادة أمان 100%.
+        دايمًا حمّل من مصادر موثوقة، وخلي عندك حماية على جهازك، وابلغ الإدارة لو شكيت في أي سكربت.
     </p>
-  </div>
 
-<script>
-  // ⚠️ استبدل ده بنفس الـ firebaseConfig المستخدم في باقي صفحات موقعك
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID"
-  };
+</div>
 
-  // لو الصفحة دي هتتحمل جنب صفحات تانية عملت initializeApp قبل كده، السطر ده بيمنع التكرار
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  const db = firebase.database();
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-  // بنخزن السكربتات الغير آمنة تحت node اسمه unsafeScripts، مفتاحه = اسم السكربت بعد التطبيع
-  // مثال شكل البيانات:
-  // unsafeScripts/
-  //   blox_fruits_auto_farm/
-  //     originalName: "Blox Fruits Auto Farm"
-  //     reason: "بيسرق بيانات تسجيل الدخول"
-  //     reportedAt: "2026-07-19T10:00:00.000Z"
+const fc = {apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1",measurementId:"G-MHDM7YYYBN"};
+const app = getApps().length ? getApp() : initializeApp(fc);
+const db  = getDatabase(app);
 
-  function normalize(name) {
-    return name.trim().toLowerCase().replace(/\s+/g, ' ');
-  }
+let unsafeMap = {}; // key -> {originalName, reason, reportedAt}
 
-  // Firebase مش بيسمح بـ . # $ [ ] / جوه المفتاح، فبنستبدلهم
-  function toKey(normalizedName) {
+function normalize(name) {
+    return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+function toKey(normalizedName) {
     return normalizedName.replace(/[.#$[\]/]/g, '_');
-  }
+}
+function escapeHTML(str) {
+    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function formatDate(iso) {
+    try { return new Date(iso).toLocaleDateString('ar-EG', { year:'numeric', month:'short', day:'numeric' }); }
+    catch { return ''; }
+}
 
-  function checkScript() {
-    const input = document.getElementById('scriptInput');
-    const btn = document.getElementById('checkBtn');
-    const rawName = input.value;
+async function loadUnsafeList() {
+    const snap = await get(ref(db, 'unsafeScripts'));
+    unsafeMap = snap.exists() ? snap.val() : {};
+    renderRecent();
+}
 
-    if (!rawName.trim()) {
-      input.focus();
-      return;
+function renderRecent() {
+    const box = document.getElementById('recentFlagged');
+    const entries = Object.values(unsafeMap).sort((a, b) => new Date(b.reportedAt||0) - new Date(a.reportedAt||0)).slice(0, 10);
+
+    if (!entries.length) {
+        box.innerHTML = `<div class="empty-note">مفيش سكربتات متحذّر منها لحد دلوقتي 🎉</div>`;
+        return;
     }
 
-    btn.disabled = true;
-    btn.textContent = 'بيفحص...';
+    box.innerHTML = '';
+    entries.forEach(e => {
+        const item = document.createElement('div');
+        item.className = 'flagged-item';
+        item.innerHTML = `
+            <div class="fi-name">⚠️ ${escapeHTML(e.originalName || '—')}</div>
+            <div class="fi-reason">${escapeHTML(e.reason || 'تم الإبلاغ عنه من قبل الإدارة')}</div>
+            <div class="fi-date">🕐 ${formatDate(e.reportedAt)}</div>
+        `;
+        box.appendChild(item);
+    });
+}
 
-    const key = toKey(normalize(rawName));
-
-    db.ref('unsafeScripts/' + key).once('value')
-      .then(function (snapshot) {
-        if (snapshot.exists()) {
-          showResult('unsafe', snapshot.val());
-        } else {
-          showResult('unknown', null);
-        }
-      })
-      .catch(function (err) {
-        console.error(err);
-        showResult('error', null);
-      })
-      .finally(function () {
-        btn.disabled = false;
-        btn.textContent = 'فحص';
-      });
-  }
-
-  function showResult(type, data) {
+function showResult(type, data, matches) {
     const result = document.getElementById('result');
-    const title = document.getElementById('resultTitle');
-    const detail = document.getElementById('resultDetail');
+    const title   = document.getElementById('resultTitle');
+    const detail  = document.getElementById('resultDetail');
+    const matchList = document.getElementById('matchList');
 
-    result.className = 'result show ' + (type === 'unsafe' ? 'unsafe' : 'unknown');
+    result.className = `result-box show ${type}`;
+    matchList.innerHTML = '';
 
     if (type === 'unsafe') {
-      title.textContent = '⚠️ غير آمن - احذر';
-      detail.textContent = (data && data.reason)
-        ? data.reason
-        : 'تم الإبلاغ عن هذا السكربت من قبل إدارة CCraft Space.';
-    } else if (type === 'unknown') {
-      title.textContent = 'ℹ️ لم يتم الإبلاغ عنه';
-      detail.textContent = 'مفيش بلاغات عليه من الإدارة لحد دلوقتي.';
+        title.textContent = '⚠️ غير آمن — احذر';
+        detail.textContent = (data && data.reason) ? data.reason : 'تم الإبلاغ عن هذا السكربت من قبل إدارة CCRAFT SPACE.';
+    } else if (type === 'unknown' && matches && matches.length) {
+        title.textContent = `🔎 لقينا ${matches.length} سكربت شبيه محذّر منه`;
+        detail.textContent = 'اتأكد إن اللي هتحمّله مش نفس دول:';
+        matches.forEach(m => {
+            const item = document.createElement('div');
+            item.className = 'match-item';
+            item.innerHTML = `<div class="mi-name">⚠️ ${escapeHTML(m.originalName)}</div><div class="mi-reason">${escapeHTML(m.reason || 'تم الإبلاغ عنه')}</div>`;
+            matchList.appendChild(item);
+        });
     } else {
-      title.textContent = '⚠️ حصل خطأ في الفحص';
-      detail.textContent = 'مقدرناش نكمل الفحص دلوقتي، جرب تاني كمان شوية.';
+        title.textContent = 'ℹ️ لم يتم الإبلاغ عنه';
+        detail.textContent = 'مفيش بلاغات عليه من الإدارة لحد دلوقتي — لسه برضه خلي بالك ودايمًا افحص الكود لو تقدر.';
     }
-  }
+}
 
-  document.getElementById('scriptInput').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') checkScript();
-  });
+async function checkScript() {
+    const input = document.getElementById('scriptInput');
+    const btn   = document.getElementById('checkBtn');
+    const rawName = input.value;
 
-  /* ============================================================
-     مرجع للإدارة فقط - مش لازم يتحط في صفحة عامة زي دي.
-     ده الشكل اللي لوحة التحكم هتنادي بيه لما تحب تضيف سكربت للقائمة:
+    if (!rawName.trim()) { input.focus(); return; }
 
-     function markScriptUnsafe(scriptName, reason) {
-       const key = toKey(normalize(scriptName));
-       db.ref('unsafeScripts/' + key).set({
-         originalName: scriptName,
-         reason: reason || 'تم الإبلاغ عنه من قبل الإدارة',
-         reportedAt: new Date().toISOString()
-       });
-     }
+    btn.disabled = true; btn.textContent = '⏳ بيفحص...';
 
-     ولازم في Firebase Rules تقفل الكتابة على unsafeScripts للأدمن بس والقراءة تفضل عامة، مثال:
+    const normalized = normalize(rawName);
+    const key = toKey(normalized);
 
-     {
-       "rules": {
-         "unsafeScripts": {
-           ".read": true,
-           ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
-         }
-       }
-     }
-     ============================================================ */
+    if (unsafeMap[key]) {
+        showResult('unsafe', unsafeMap[key]);
+    } else {
+        // بحث جزئي في كل الأسماء المسجلة كـ غير آمنة
+        const matches = Object.values(unsafeMap).filter(e => normalize(e.originalName || '').includes(normalized) || normalized.includes(normalize(e.originalName || '')));
+        showResult('unknown', null, matches);
+    }
+
+    btn.disabled = false; btn.textContent = '🔍 فحص';
+}
+
+document.getElementById('checkBtn').addEventListener('click', checkScript);
+document.getElementById('scriptInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkScript(); });
+
+loadUnsafeList();
 </script>
 </body>
 </html>
