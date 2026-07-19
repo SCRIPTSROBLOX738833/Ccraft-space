@@ -380,6 +380,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
   font-size:0.88rem;cursor:pointer;box-shadow:0 6px 18px rgba(124,58,237,0.32);transition:var(--tr);}
 .btn-primary:hover{box-shadow:0 8px 24px rgba(124,58,237,0.48);transform:translateY(-1px);}
 
+/* ═══ SAFETY (فحص الأمان) ═══ */
+.safety-hint { font-size: 0.78rem; color: var(--lo); margin-bottom: 14px; line-height: 1.7; }
+.safety-danger-note { font-size: 0.68rem; color: var(--red); margin-top: 4px; }
+
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:900px){:root{--sb-w:210px;} .publish-layout{grid-template-columns:1fr;}}
 @media(max-width:640px){
@@ -429,6 +433,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
         <button class="nav-item" data-section="chat"><span class="nav-icon">💬</span> الشات</button>
 
         <div class="nav-sec">الإدارة</div>
+        <button class="nav-item" data-section="safety"><span class="nav-icon">🛡️</span> فحص الأمان <span class="nav-badge" id="safetyBadge">0</span></button>
         <button class="nav-item" data-section="reports"><span class="nav-icon">🚩</span> البلاغات <span class="nav-badge red" id="reportsBadge" style="display:none">0</span></button>
         <button class="nav-item" data-section="verify-scripts"><span class="nav-icon">✅</span> التحقق من السكربتات <span class="nav-badge red" id="verifyBadge" style="display:none">0</span></button>
         <button class="nav-item" data-section="announce"><span class="nav-icon">📢</span> الإعلانات</button>
@@ -468,6 +473,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
             <div class="stat-box"><span class="s-icon">🏅</span><span class="s-num" id="st-badges">0</span><span class="s-label">بادج</span></div>
             <div class="stat-box"><span class="s-icon">💬</span><span class="s-num" id="st-msgs">0</span><span class="s-label">رسالة</span></div>
             <div class="stat-box"><span class="s-icon">📱</span><span class="s-num" id="st-apks">0</span><span class="s-label">تطبيق APK</span></div>
+            <div class="stat-box"><span class="s-icon">🛡️</span><span class="s-num" id="st-unsafe">0</span><span class="s-label">سكربت خطر</span></div>
         </div>
         <div class="panel-card">
             <div class="pc-head"><div class="pc-title">📜 آخر السكربتات</div></div>
@@ -569,13 +575,26 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
             <div class="table-wrap"><table class="data-table"><thead><tr><th>المستخدم</th><th>السكربتات</th><th>النقاط</th><th>البادجات</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="usersBody"></tbody></table></div>
         </div>
     </div>
-        <!-- ─── sefty ─── -->
-<div class="admin-section">
-  <h3>⚠️ إضافة سكربت للقائمة الغير آمنة</h3>
-  <input type="text" id="unsafeScriptName" placeholder="اسم السكربت بالظبط">
-  <textarea id="unsafeScriptReason" placeholder="السبب (اختياري)"></textarea>
-  <button onclick="markScriptUnsafe()">إضافة للقائمة</button>
-</div>
+
+    <!-- ─── SAFETY (فحص الأمان) ─── -->
+    <div class="section" id="sec-safety">
+        <div class="panel-card">
+            <div class="pc-head"><div class="pc-title">⚠️ إضافة سكربت للقائمة الغير آمنة</div></div>
+            <div class="safety-hint">
+                السكربتات اللي بتتضاف هنا بتظهر تحذير عليها لأي حد يفحصها من صفحة "فحص أمان السكربتات" العامة (safety-check.html).
+                اكتب اسم السكربت زي ما هو منشور بالظبط عشان الفحص يلاقيه صح.
+            </div>
+            <div class="field-group"><label class="field-label">اسم السكربت</label><input type="text" id="unsafeScriptName" placeholder="اسم السكربت بالظبط..."></div>
+            <div class="field-group"><label class="field-label">السبب</label><textarea id="unsafeScriptReason" placeholder="مثال: بيسرق بيانات تسجيل الدخول..." style="min-height:70px"></textarea></div>
+            <button class="btn-primary" id="addUnsafeBtn">⚠️ إضافة للقائمة</button>
+        </div>
+
+        <div class="search-bar"><input type="text" id="unsafeSearch" placeholder="🔍 ابحث في القائمة الغير آمنة..."></div>
+        <div class="panel-card" style="padding:0;overflow:hidden">
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>اسم السكربت</th><th>السبب</th><th>تاريخ الإبلاغ</th><th>إجراءات</th></tr></thead><tbody id="unsafeBody"></tbody></table></div>
+        </div>
+    </div>
+
     <!-- ─── POINTS ─── -->
     <div class="section" id="sec-points-ctrl">
         <div class="control-grid">
@@ -751,19 +770,33 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
     </div>
 </div>
 
+<!-- Edit Modal (Unsafe Script) -->
+<div class="modal-overlay" id="editUnsafeModal">
+    <div class="modal-box">
+        <h3>✏️ تعديل بلاغ السكربت</h3>
+        <input type="hidden" id="editUnsafeKey">
+        <div class="field-group"><label class="field-label">اسم السكربت</label><input type="text" id="editUnsafeName" disabled style="opacity:0.6"></div>
+        <div class="field-group"><label class="field-label">السبب</label><textarea id="editUnsafeReason" style="min-height:70px"></textarea></div>
+        <div class="modal-actions">
+            <button id="saveUnsafeEditBtn">💾 حفظ</button>
+            <button id="cancelUnsafeEditBtn">إلغاء</button>
+        </div>
+    </div>
+</div>
+
 <div class="admin-toast" id="adminToast"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, push, set, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 const fc = { apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1" };
-const app=initializeApp(fc), db=getDatabase(app), auth=getAuth(app);
+const app=getApps().length?getApp():initializeApp(fc), db=getDatabase(app), auth=getAuth(app);
 
-let allScripts={}, allUsers={}, allApks={}, chatLoaded=false, adminUid=null, allReports={}, currentFilter='all';
+let allScripts={}, allUsers={}, allApks={}, allUnsafe={}, chatLoaded=false, adminUid=null, allReports={}, currentFilter='all';
 
-const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكربتات',apks:'📱 تطبيقات APK',publish:'📤 نشر سكربت',users:'👥 المستخدمون','points-ctrl':'⭐ النقاط','badges-ctrl':'🏅 البادجات',chat:'💬 الشات',announce:'📢 الإعلانات',settings:'⚙️ الإعدادات',reports:'🚩 البلاغات',log:'📋 سجل الأنشطة','verify-scripts':'✅ التحقق من السكربتات'};
+const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكربتات',apks:'📱 تطبيقات APK',publish:'📤 نشر سكربت',users:'👥 المستخدمون','points-ctrl':'⭐ النقاط','badges-ctrl':'🏅 البادجات',chat:'💬 الشات',safety:'🛡️ فحص الأمان',announce:'📢 الإعلانات',settings:'⚙️ الإعدادات',reports:'🚩 البلاغات',log:'📋 سجل الأنشطة','verify-scripts':'✅ التحقق من السكربتات'};
 
 /* ─── Toast ─── */
 function toast(msg,dur=2500){ const t=document.getElementById('adminToast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),dur); }
@@ -808,15 +841,17 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
     if(sec==='reports')loadReports();
     if(sec==='verify-scripts')loadVerifyRequests();
     if(sec==='apks')renderFullApks();
+    if(sec==='safety')renderUnsafeList();
   });
 });
 
 /* ─── Load All ─── */
 async function loadAll(){
-  const[ss,us,cs,as,aps]=await Promise.all([get(ref(db,'scripts')),get(ref(db,'users')),get(ref(db,'chat')),get(ref(db,'announcements')),get(ref(db,'apks'))]);
+  const[ss,us,cs,as,aps,uns]=await Promise.all([get(ref(db,'scripts')),get(ref(db,'users')),get(ref(db,'chat')),get(ref(db,'announcements')),get(ref(db,'apks')),get(ref(db,'unsafeScripts'))]);
   allScripts=ss.exists()?ss.val():{};
   allUsers=us.exists()?us.val():{};
   allApks=aps.exists()?aps.val():{};
+  allUnsafe=uns.exists()?uns.val():{};
   const cm=cs.exists()?Object.keys(cs.val()).length:0;
   let tl=0,tp=0,tb=0;
   Object.values(allScripts).forEach(s=>tl+=s.likes||0);
@@ -828,9 +863,11 @@ async function loadAll(){
   document.getElementById('st-badges').innerText=tb;
   document.getElementById('st-msgs').innerText=cm;
   document.getElementById('st-apks').innerText=Object.keys(allApks).length;
+  document.getElementById('st-unsafe').innerText=Object.keys(allUnsafe).length;
   document.getElementById('scriptsBadge').innerText=Object.keys(allScripts).length;
   document.getElementById('usersBadge').innerText=Object.keys(allUsers).length;
   document.getElementById('apksBadge').innerText=Object.keys(allApks).length;
+  document.getElementById('safetyBadge').innerText=Object.keys(allUnsafe).length;
   renderRecentScripts();renderRecentUsers();renderFullScripts();renderUsers();
   renderRecentApks();renderFullApks();
   if(as.exists())renderAnnouncements(as.val());
@@ -1251,6 +1288,93 @@ window.addNewAdmin=async()=>{
   logActivity('🔑',`إضافة أدمن: ${uid}`);toast('✅ تم إضافة الأدمن');
 };
 
+/* ─── Safety (فحص الأمان) ─── */
+function normalizeScriptName(name){ return (name||'').trim().toLowerCase().replace(/\s+/g,' '); }
+function toUnsafeKey(normalizedName){ return normalizedName.replace(/[.#$[\]/]/g,'_'); }
+
+function renderUnsafeList(f=''){
+  const b=document.getElementById('unsafeBody'); if(!b) return; b.innerHTML='';
+  const e=Object.entries(allUnsafe).filter(([,u])=>!f||(u.originalName||'').toLowerCase().includes(f)).sort((a,x)=>new Date(x[1].reportedAt||0)-new Date(a[1].reportedAt||0));
+  if(!e.length){b.innerHTML='<tr class="empty-row"><td colspan="4">القائمة فاضية دلوقتي</td></tr>';return;}
+  e.forEach(([key,u])=>{
+    const date=u.reportedAt?new Date(u.reportedAt).toLocaleDateString('ar-EG'):'—';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="t-title">⚠️ ${u.originalName||key}</td>
+      <td style="color:var(--mid);max-width:220px">${u.reason||'—'}</td>
+      <td style="font-size:0.72rem;color:var(--lo)">${date}</td>
+      <td><div class="t-actions">
+        <button class="t-btn edit">✏️</button>
+        <button class="t-btn del">🗑️</button>
+      </div></td>`;
+    tr.querySelector('.edit').onclick=()=>openUnsafeEdit(key,u);
+    tr.querySelector('.del').onclick=()=>deleteUnsafe(key,tr,u.originalName);
+    b.appendChild(tr);
+  });
+}
+
+document.getElementById('unsafeSearch')?.addEventListener('input',e=>renderUnsafeList(e.target.value.toLowerCase().trim()));
+
+document.getElementById('addUnsafeBtn').onclick=async()=>{
+  const nameInput=document.getElementById('unsafeScriptName');
+  const reasonInput=document.getElementById('unsafeScriptReason');
+  const name=nameInput.value.trim();
+  if(!name){toast('❌ اكتب اسم السكربت الأول');return;}
+
+  const key=toUnsafeKey(normalizeScriptName(name));
+  const data={originalName:name,reason:reasonInput.value.trim()||'تم الإبلاغ عنه من قبل الإدارة',reportedAt:new Date().toISOString()};
+
+  const btn=document.getElementById('addUnsafeBtn');
+  btn.disabled=true;btn.innerText='⏳ جارٍ الإضافة...';
+  try{
+    await set(ref(db,`unsafeScripts/${key}`),data);
+    allUnsafe[key]=data;
+    document.getElementById('st-unsafe').innerText=Object.keys(allUnsafe).length;
+    document.getElementById('safetyBadge').innerText=Object.keys(allUnsafe).length;
+    nameInput.value='';reasonInput.value='';
+    renderUnsafeList();
+    logActivity('🛡️',`إضافة سكربت للقائمة الغير آمنة: ${name}`);
+    toast('✅ تم إضافة السكربت للقائمة');
+  }catch(err){
+    toast('❌ حصل خطأ: '+err.message);
+  }finally{
+    btn.disabled=false;btn.innerText='⚠️ إضافة للقائمة';
+  }
+};
+
+function openUnsafeEdit(key,u){
+  document.getElementById('editUnsafeKey').value=key;
+  document.getElementById('editUnsafeName').value=u.originalName||key;
+  document.getElementById('editUnsafeReason').value=u.reason||'';
+  document.getElementById('editUnsafeModal').classList.add('open');
+}
+
+document.getElementById('cancelUnsafeEditBtn').onclick=()=>document.getElementById('editUnsafeModal').classList.remove('open');
+document.getElementById('editUnsafeModal').addEventListener('click',e=>{if(e.target===document.getElementById('editUnsafeModal'))document.getElementById('editUnsafeModal').classList.remove('open');});
+
+document.getElementById('saveUnsafeEditBtn').onclick=async()=>{
+  const key=document.getElementById('editUnsafeKey').value;
+  const reason=document.getElementById('editUnsafeReason').value.trim();
+  await update(ref(db,`unsafeScripts/${key}`),{reason:reason||'تم الإبلاغ عنه من قبل الإدارة'});
+  if(allUnsafe[key])allUnsafe[key].reason=reason;
+  renderUnsafeList(document.getElementById('unsafeSearch')?.value?.toLowerCase()||'');
+  document.getElementById('editUnsafeModal').classList.remove('open');
+  logActivity('✏️',`تعديل بلاغ سكربت: ${allUnsafe[key]?.originalName||key}`);
+  toast('✅ تم حفظ التعديل');
+};
+
+async function deleteUnsafe(key,row,name){
+  if(!confirm(`إزالة "${name}" من القائمة الغير آمنة؟`))return;
+  await remove(ref(db,`unsafeScripts/${key}`));
+  delete allUnsafe[key];
+  document.getElementById('st-unsafe').innerText=Object.keys(allUnsafe).length;
+  document.getElementById('safetyBadge').innerText=Object.keys(allUnsafe).length;
+  row.style.cssText+='opacity:0;transition:0.3s';
+  setTimeout(()=>row.remove(),300);
+  logActivity('🗑️',`إزالة من القائمة الغير آمنة: ${name}`);
+  toast('🗑️ تم الحذف');
+}
+
 /* ─── Reports ─── */
 async function loadReports(){
   const s=await get(ref(db,'reports'));allReports=s.exists()?s.val():{};renderReports();
@@ -1411,28 +1535,6 @@ window.removeVerify=async(scriptId)=>{
   logActivity('🗑️',`إزالة توثيق: ${scriptId}`);
   loadVerifyRequests();
 };
-    function normalize(name) {
-  return name.trim().toLowerCase().replace(/\s+/g, ' ');
-}
-
-function markScriptUnsafe() {
-  const nameInput = document.getElementById('unsafeScriptName');
-  const reasonInput = document.getElementById('unsafeScriptReason');
-  const name = nameInput.value.trim();
-  if (!name) return;
-
-  const key = normalize(name).replace(/[.#$[\]/]/g, '_');
-
-  db.ref('unsafeScripts/' + key).set({
-    originalName: name,
-    reason: reasonInput.value.trim() || 'تم الإبلاغ عنه من قبل الإدارة',
-    reportedAt: new Date().toISOString()
-  }).then(() => {
-    alert('تم إضافة السكربت ✅');
-    nameInput.value = '';
-    reasonInput.value = '';
-  });
-}
 </script>
 </body>
 </html>
