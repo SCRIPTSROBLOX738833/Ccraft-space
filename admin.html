@@ -569,7 +569,13 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
             <div class="table-wrap"><table class="data-table"><thead><tr><th>المستخدم</th><th>السكربتات</th><th>النقاط</th><th>البادجات</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody id="usersBody"></tbody></table></div>
         </div>
     </div>
-
+        <!-- ─── sefty ─── -->
+<div class="admin-section">
+  <h3>⚠️ إضافة سكربت للقائمة الغير آمنة</h3>
+  <input type="text" id="unsafeScriptName" placeholder="اسم السكربت بالظبط">
+  <textarea id="unsafeScriptReason" placeholder="السبب (اختياري)"></textarea>
+  <button onclick="markScriptUnsafe()">إضافة للقائمة</button>
+</div>
     <!-- ─── POINTS ─── -->
     <div class="section" id="sec-points-ctrl">
         <div class="control-grid">
@@ -1405,6 +1411,28 @@ window.removeVerify=async(scriptId)=>{
   logActivity('🗑️',`إزالة توثيق: ${scriptId}`);
   loadVerifyRequests();
 };
+    function normalize(name) {
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function markScriptUnsafe() {
+  const nameInput = document.getElementById('unsafeScriptName');
+  const reasonInput = document.getElementById('unsafeScriptReason');
+  const name = nameInput.value.trim();
+  if (!name) return;
+
+  const key = normalize(name).replace(/[.#$[\]/]/g, '_');
+
+  db.ref('unsafeScripts/' + key).set({
+    originalName: name,
+    reason: reasonInput.value.trim() || 'تم الإبلاغ عنه من قبل الإدارة',
+    reportedAt: new Date().toISOString()
+  }).then(() => {
+    alert('تم إضافة السكربت ✅');
+    nameInput.value = '';
+    reasonInput.value = '';
+  });
+}
 </script>
 </body>
 </html>
