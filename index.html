@@ -698,42 +698,8 @@ header { display: none; }
     <h1 class="hero-title">
         <span class="title-cc">CCRAFT</span><span class="title-raft"> SPACE</span>
     </h1>
-<!-- الزرار بتاعك -->
-<button id="lang-toggler" onclick="toggleLanguage()" style="background: #12131C; color: #fff; border: 1px solid #2A2D3D; padding: 6px 12px; border-radius: 8px; cursor: pointer;">🌐 English / عربي</button>
 
-<!-- عنصر جوجل المخفي (لازم يكون موجود بس ممكن نخبيه بـ CSS) -->
-<div id="google_translate_element" style="display:none;"></div>
-
-<script type="text/javascript">
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-    pageLanguage: 'ar',
-    includedLanguages: 'en,ar',
-    autoDisplay: false
-  }, 'google_translate_element');
-}
-
-function toggleLanguage() {
-  
-  var selectField = document.querySelector(".goog-te-combo");
-  
-  if (selectField) {
-    
-    if (selectField.value === 'en') {
-      selectField.value = 'ar';
-    } else {
-      selectField.value = 'en';
-    }
-    
-    selectField.dispatchEvent(new Event('change'));
-  } else {
-    alert("جارٍ تحميل محرك الترجمة، حاول كمان ثانية..");
-  }
-}
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-    
+    <p class="hero-sub">⚡</p>
 
     <!-- Live Stats -->
     <div class="stats-bar">
@@ -1005,8 +971,6 @@ loadStats();
 loadAnnouncement();
 loadUserPages();
 
-
-    
 
 </script>
 
