@@ -357,24 +357,35 @@ header { display: none; }
 }
 
 /* Stagger nav buttons */
-.nav-btn:nth-child(1)  { animation-delay: 0.56s }
-.nav-btn:nth-child(2)  { animation-delay: 0.60s }
-.nav-btn:nth-child(3)  { animation-delay: 0.64s }
-.nav-btn:nth-child(4)  { animation-delay: 0.68s }
-.nav-btn:nth-child(5)  { animation-delay: 0.72s }
-.nav-btn:nth-child(6)  { animation-delay: 0.76s }
-.nav-btn:nth-child(7)  { animation-delay: 0.80s }
-.nav-btn:nth-child(8)  { animation-delay: 0.84s }
-.nav-btn:nth-child(9)  { animation-delay: 0.88s }
-.nav-btn:nth-child(10) { animation-delay: 0.92s }
-.nav-btn:nth-child(11) { animation-delay: 0.96s }
-.nav-btn:nth-child(12) { animation-delay: 1.00s }
-.nav-btn:nth-child(13) { animation-delay: 1.04s }
-.nav-btn:nth-child(14) { animation-delay: 1.08s }
-.nav-btn:nth-child(15) { animation-delay: 1.12s }
-.nav-btn:nth-child(16) { animation-delay: 1.16s }
-.nav-btn:nth-child(17) { animation-delay: 1.20s }
-.nav-btn:nth-child(18) { animation-delay: 1.24s }
+.nav-btn:nth-of-type(1)  { animation-delay: 0.56s }
+.nav-btn:nth-of-type(2)  { animation-delay: 0.60s }
+.nav-btn:nth-of-type(3)  { animation-delay: 0.64s }
+.nav-btn:nth-of-type(4)  { animation-delay: 0.68s }
+.nav-btn:nth-of-type(5)  { animation-delay: 0.72s }
+.nav-btn:nth-of-type(6)  { animation-delay: 0.76s }
+.nav-btn:nth-of-type(7)  { animation-delay: 0.80s }
+.nav-btn:nth-of-type(8)  { animation-delay: 0.84s }
+.nav-btn:nth-of-type(9)  { animation-delay: 0.88s }
+.nav-btn:nth-of-type(10) { animation-delay: 0.92s }
+.nav-btn:nth-of-type(11) { animation-delay: 0.96s }
+.nav-btn:nth-of-type(12) { animation-delay: 1.00s }
+.nav-btn:nth-of-type(13) { animation-delay: 1.04s }
+.nav-btn:nth-of-type(14) { animation-delay: 1.08s }
+.nav-btn:nth-of-type(15) { animation-delay: 1.12s }
+.nav-btn:nth-of-type(16) { animation-delay: 1.16s }
+.nav-btn:nth-of-type(17) { animation-delay: 1.20s }
+.nav-btn:nth-of-type(18) { animation-delay: 1.24s }
+
+/* عناوين المجموعات — نص واضح فوق كل مجموعة أزرار */
+.nav-group-label {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.68rem; font-weight: 900; color: var(--mid);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 2px 2px 0; margin-top: 6px;
+}
+.nav-group-label:first-child { margin-top: 0; }
+.nav-group-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
 /* ════════════════════════════════════════
    SCROLL INDICATOR
@@ -701,35 +712,33 @@ header { display: none; }
 
     <!-- Nav Grid -->
     <nav class="nav-grid">
-        <!-- الأساسيات -->
+        <div class="nav-group-label">🎯 الأساسيات</div>
         <button class="nav-btn c-indigo"  onclick="location.href='scripts.html'">   <span class="nb-icon">📜</span><span class="nb-label">السكربتات</span></button>
         <button class="nav-btn c-orange"  onclick="location.href='publish.html'">   <span class="nb-icon">📤</span><span class="nb-label">نشر سكربت</span></button>
         <button class="nav-btn c-apk"     onclick="location.href='apks.html'">      <span class="nav-btn-badge">جديد</span><span class="nb-icon">📱</span><span class="nb-label">APK موديفايد</span></button>
         <button class="nav-btn c-purple"  onclick="location.href='hacks.html'">     <span class="nb-icon">⚡</span><span class="nb-label">هاكات</span></button>
 
-        <!-- التبادل والاقتصاد -->
+        <div class="nav-group-label">💰 التبادل</div>
         <button class="nav-btn c-market"  onclick="location.href='market.html'">   <span class="nav-btn-badge">جديد</span><span class="nb-icon">🛒</span><span class="nb-label">سوق التبادل</span></button>
         <button class="nav-btn c-partner" onclick="location.href='partners.html'"> <span class="nav-btn-badge">جديد</span><span class="nb-icon">🤝</span><span class="nb-label">شركاء التبادل</span></button>
 
-        <!-- المجتمع -->
+        <div class="nav-group-label">👥 المجتمع</div>
         <button class="nav-btn c-pink"    onclick="location.href='community.html'"><span class="nb-icon">🗣️</span><span class="nb-label">المجتمع</span></button>
         <button class="nav-btn c-gold"    onclick="location.href='leaderboard.html'"><span class="nb-icon">🏆</span><span class="nb-label">ليدربورد</span></button>
         <button class="nav-btn c-green"   onclick="location.href='top-badges.html'"><span class="nb-icon">🏅</span><span class="nb-label">بادجات</span></button>
 
-        <!-- أدوات وذكاء اصطناعي -->
+        <div class="nav-group-label">🛠️ أدوات</div>
         <button class="nav-btn c-cyan"    onclick="location.href='nova.html'">      <span class="nb-icon">🤖</span><span class="nb-label">NOVA AI</span></button>
         <button class="nav-btn c-safety"  onclick="location.href='script-safety-check.html'"><span class="nb-icon">🛡️</span><span class="nb-label">فحص أمان سكربتات</span></button>
 
-        <!-- الحساب -->
+        <div class="nav-group-label">👤 حسابك</div>
         <button class="nav-btn c-violet"  onclick="location.href='profile.html'">   <span class="nb-icon">👤</span><span class="nb-label">بروفايلي</span></button>
         <button class="nav-btn c-emerald" onclick="location.href='login.html'">     <span class="nb-icon">🔐</span><span class="nb-label">تسجيل الدخول</span></button>
 
-        <!-- معلومات ودعم -->
+        <div class="nav-group-label">ℹ️ معلومات ودعم</div>
         <button class="nav-btn c-red"     onclick="location.href='stats.html'">     <span class="nb-icon">📊</span><span class="nb-label">إحصائيات</span></button>
         <button class="nav-btn c-blue"    onclick="location.href='help.html'">      <span class="nb-icon">🛠️</span><span class="nb-label">الدعم</span></button>
         <button class="nav-btn c-rose"    onclick="window.open('https://t.me/cCraftspace','_blank')"><span class="nb-icon">📢</span><span class="nb-label">تلجرام</span></button>
-
-        <!-- عريضة -->
         <button class="nav-btn c-teal wide-2" onclick="location.href='api.html'">   <span class="nb-icon">🗝️</span><span class="nb-label">واجهة API للمطورين</span></button>
         <button class="nav-btn c-special" onclick="location.href='page-builder.html'"><span class="nb-icon">🌐</span><span class="nb-label">أنشئ صفحتك!</span></button>
     </nav>
