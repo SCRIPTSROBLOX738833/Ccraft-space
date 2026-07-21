@@ -699,7 +699,8 @@ header { display: none; }
         <span class="title-cc">CCRAFT</span><span class="title-raft"> SPACE</span>
     </h1>
 
-    <p class="hero-sub">⚡</p>
+    <button id="lang-toggler" onclick="translateToEnglish()">🌐 English</button>
+    
 
     <!-- Live Stats -->
     <div class="stats-bar">
@@ -971,6 +972,15 @@ loadStats();
 loadAnnouncement();
 loadUserPages();
 
+function translateToEnglish() {
+    var select = document.querySelector('.goog-te-combo');
+    if (select) {
+        select.value = 'en'; // تحويل للإنقليزي
+        select.dispatchEvent(new Event('change')); // تشغيل الترجمة
+    }
+}
+    
+    
 
 </script>
 
