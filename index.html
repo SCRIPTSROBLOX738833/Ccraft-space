@@ -327,6 +327,30 @@ header { display: none; }
     --nb-glow: rgba(74,222,128,0.4);
 }
 
+/* شركاء التبادل — جديد */
+.nav-btn.c-partner {
+    background: linear-gradient(135deg, rgba(251,146,60,0.12), rgba(244,114,182,0.08));
+    border: 1px solid rgba(251,146,60,0.3);
+    border-bottom: 2.5px solid #fb923c;
+    --nb-glow: rgba(251,146,60,0.45);
+}
+
+/* سوق التبادل — جديد */
+.nav-btn.c-market {
+    background: linear-gradient(135deg, rgba(251,191,36,0.14), rgba(245,158,11,0.08));
+    border: 1px solid rgba(251,191,36,0.35);
+    border-bottom: 2.5px solid #fbbf24;
+    --nb-glow: rgba(251,191,36,0.5);
+}
+
+/* فحص أمان السكربتات */
+.nav-btn.c-safety {
+    background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(139,92,246,0.06));
+    border: 1px solid rgba(56,189,248,0.3);
+    border-bottom: 2.5px solid #38bdf8;
+    --nb-glow: rgba(56,189,248,0.45);
+}
+
 @keyframes navIn {
     from { opacity: 0; transform: translateY(16px) scale(0.92); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -348,6 +372,9 @@ header { display: none; }
 .nav-btn:nth-child(13) { animation-delay: 1.04s }
 .nav-btn:nth-child(14) { animation-delay: 1.08s }
 .nav-btn:nth-child(15) { animation-delay: 1.12s }
+.nav-btn:nth-child(16) { animation-delay: 1.16s }
+.nav-btn:nth-child(17) { animation-delay: 1.20s }
+.nav-btn:nth-child(18) { animation-delay: 1.24s }
 
 /* ════════════════════════════════════════
    SCROLL INDICATOR
@@ -674,25 +701,37 @@ header { display: none; }
 
     <!-- Nav Grid -->
     <nav class="nav-grid">
-        <button class="nav-btn c-violet"  onclick="location.href='profile.html'">  <span class="nb-icon">👤</span><span class="nb-label">بروفايلي</span></button>
-        <button class="nav-btn c-violet"  onclick="location.href='script-safety-check.html'">  <span class="nb-icon">🛡️</span><span class="nb-label">فحص امان سكربتات</span></button>
-        <button class="nav-btn c-cyan"    onclick="location.href='nova.html'">     <span class="nb-icon">🤖</span><span class="nb-label">NOVA AI</span></button>
+        <!-- الأساسيات -->
+        <button class="nav-btn c-indigo"  onclick="location.href='scripts.html'">   <span class="nb-icon">📜</span><span class="nb-label">السكربتات</span></button>
+        <button class="nav-btn c-orange"  onclick="location.href='publish.html'">   <span class="nb-icon">📤</span><span class="nb-label">نشر سكربت</span></button>
+        <button class="nav-btn c-apk"     onclick="location.href='apks.html'">      <span class="nav-btn-badge">جديد</span><span class="nb-icon">📱</span><span class="nb-label">APK موديفايد</span></button>
+        <button class="nav-btn c-purple"  onclick="location.href='hacks.html'">     <span class="nb-icon">⚡</span><span class="nb-label">هاكات</span></button>
+
+        <!-- التبادل والاقتصاد -->
+        <button class="nav-btn c-market"  onclick="location.href='market.html'">   <span class="nav-btn-badge">جديد</span><span class="nb-icon">🛒</span><span class="nb-label">سوق التبادل</span></button>
+        <button class="nav-btn c-partner" onclick="location.href='partners.html'"> <span class="nav-btn-badge">جديد</span><span class="nb-icon">🤝</span><span class="nb-label">شركاء التبادل</span></button>
+
+        <!-- المجتمع -->
         <button class="nav-btn c-pink"    onclick="location.href='community.html'"><span class="nb-icon">🗣️</span><span class="nb-label">المجتمع</span></button>
-        <button class="nav-btn c-orange"  onclick="location.href='publish.html'">  <span class="nb-icon">📤</span><span class="nb-label">نشر سكربت</span></button>
-        <button class="nav-btn c-apk"     onclick="location.href='apks.html'">     <span class="nav-btn-badge">جديد</span><span class="nb-icon">📱</span><span class="nb-label">APK موديفايد</span></button>
-        <button class="nav-btn c-partner" onclick="location.href='partners.html'"><span class="nav-btn-badge">جديد</span><span class="nb-icon">🤝</span><span class="nb-label">شركاء التبادل</span></button>
-        <button class="nav-btn c-market"  onclick="location.href='market.html'">  <span class="nav-btn-badge">جديد</span><span class="nb-icon">🛒</span><span class="nb-label">سوق التبادل</span></button>
-        <button class="nav-btn c-indigo"  onclick="location.href='scripts.html'">  <span class="nb-icon">📜</span><span class="nb-label">السكربتات</span></button>
         <button class="nav-btn c-gold"    onclick="location.href='leaderboard.html'"><span class="nb-icon">🏆</span><span class="nb-label">ليدربورد</span></button>
         <button class="nav-btn c-green"   onclick="location.href='top-badges.html'"><span class="nb-icon">🏅</span><span class="nb-label">بادجات</span></button>
-        <button class="nav-btn c-red"     onclick="location.href='stats.html'">    <span class="nb-icon">📊</span><span class="nb-label">إحصائيات</span></button>
-        <button class="nav-btn c-purple"  onclick="location.href='hacks.html'">    <span class="nb-icon">⚡</span><span class="nb-label">هاكات</span></button>
-        <button class="nav-btn c-emerald" onclick="location.href='profile.html'">   <span class="nb-icon">🖼️</span><span class="nb-label">صورتي</span></button>
-        <button class="nav-btn c-blue"    onclick="location.href='help.html'">     <span class="nb-icon">🛠️</span><span class="nb-label">الدعم</span></button>
+
+        <!-- أدوات وذكاء اصطناعي -->
+        <button class="nav-btn c-cyan"    onclick="location.href='nova.html'">      <span class="nb-icon">🤖</span><span class="nb-label">NOVA AI</span></button>
+        <button class="nav-btn c-safety"  onclick="location.href='script-safety-check.html'"><span class="nb-icon">🛡️</span><span class="nb-label">فحص أمان سكربتات</span></button>
+
+        <!-- الحساب -->
+        <button class="nav-btn c-violet"  onclick="location.href='profile.html'">   <span class="nb-icon">👤</span><span class="nb-label">بروفايلي</span></button>
+        <button class="nav-btn c-emerald" onclick="location.href='login.html'">     <span class="nb-icon">🔐</span><span class="nb-label">تسجيل الدخول</span></button>
+
+        <!-- معلومات ودعم -->
+        <button class="nav-btn c-red"     onclick="location.href='stats.html'">     <span class="nb-icon">📊</span><span class="nb-label">إحصائيات</span></button>
+        <button class="nav-btn c-blue"    onclick="location.href='help.html'">      <span class="nb-icon">🛠️</span><span class="nb-label">الدعم</span></button>
         <button class="nav-btn c-rose"    onclick="window.open('https://t.me/cCraftspace','_blank')"><span class="nb-icon">📢</span><span class="nb-label">تلجرام</span></button>
-        <button class="nav-btn c-teal wide-2" onclick="location.href='api.html'">  <span class="nb-icon">🗝️</span><span class="nb-label">واجهة API للمطورين</span></button>
+
+        <!-- عريضة -->
+        <button class="nav-btn c-teal wide-2" onclick="location.href='api.html'">   <span class="nb-icon">🗝️</span><span class="nb-label">واجهة API للمطورين</span></button>
         <button class="nav-btn c-special" onclick="location.href='page-builder.html'"><span class="nb-icon">🌐</span><span class="nb-label">أنشئ صفحتك!</span></button>
-        
     </nav>
 
     <div class="scroll-hint">▼ اكتشف المزيد</div>
