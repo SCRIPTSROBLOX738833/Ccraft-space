@@ -19,6 +19,20 @@
     .join-date{color:var(--text-muted);font-size:0.78rem;}
     .profile-actions{display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;}
 
+    /* ---- TikTok ---- */
+    .social-row{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
+    .tiktok-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border-color);border-radius:50px;padding:5px 14px;font-size:0.8rem;font-weight:700;color:var(--text-main);text-decoration:none;transition:var(--transition);}
+    .tiktok-pill:hover{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);transform:none;filter:none;}
+    .edit-tiktok-btn{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:4px 10px;font-size:0.7rem;font-weight:800;color:var(--primary);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);}
+    .edit-tiktok-btn:hover{background:var(--primary-dim);transform:none;filter:none;}
+    .add-tiktok-btn{background:rgba(255,255,255,0.04);border:1px dashed var(--border-color);border-radius:50px;padding:5px 14px;font-size:0.78rem;font-weight:700;color:var(--text-muted);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);}
+    .add-tiktok-btn:hover{border-color:rgba(139,92,246,0.4);color:var(--primary);transform:none;filter:none;}
+
+    .tiktok-input-wrap{position:relative;margin-bottom:10px;}
+    .tiktok-input-wrap input{width:100%;background:var(--bg-surface);border:2px solid var(--border-color);border-radius:14px;padding:13px 16px 13px 44px;color:var(--text-main);font-family:'Tajawal',sans-serif;font-size:1rem;font-weight:700;outline:none;transition:border-color 0.2s;direction:ltr;text-align:left;box-sizing:border-box;}
+    .tiktok-input-wrap input:focus{border-color:var(--primary);}
+    .tiktok-prefix{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:0.9rem;color:var(--text-muted);font-weight:800;pointer-events:none;}
+
     /* ---- Avatar Upload ---- */
     .avatar-upload-wrap{position:relative;width:90px;height:90px;flex-shrink:0;}
     .avatar-circle{width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:linear-gradient(135deg,#8b5cf6,#00bcd4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3);position:relative;}
@@ -155,7 +169,7 @@
 <div class="modal-overlay" id="usernameModal">
     <div class="modal-box">
         <div class="modal-title">✏️ تغيير اسم المستخدم</div>
-        <div class="modal-sub">الاسم يظهر في البروفايل والسكربتات والشات. يمكن تغييره مرة كل 30 يوم.</div>
+        <div class="modal-sub">الاسم يظهر في البروفايل والسكربتات والشات. يمكن تغييره مرة كل أسبوع.</div>
         <div class="username-input-wrap">
             <span class="username-prefix">@</span>
             <input type="text" id="usernameInput" placeholder="اسمك_هنا" maxlength="20" autocomplete="off" spellcheck="false">
@@ -165,12 +179,28 @@
             <li>3–20 حرف فقط</li>
             <li>حروف إنجليزية، أرقام، وشرطة سفلية _</li>
             <li>بدون مسافات أو رموز خاصة</li>
-            <li>لا يمكن تغييره لمدة 30 يوم بعد الحفظ</li>
+            <li>لا يمكن تغييره لمدة أسبوع بعد الحفظ</li>
         </ul>
         <div class="check-msg info" id="checkMsg">اكتب الاسم المطلوب</div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
             <button class="btn-save" id="saveNameBtn" disabled onclick="saveUsername()">💾 حفظ</button>
+        </div>
+    </div>
+</div>
+
+<!-- TikTok Modal -->
+<div class="modal-overlay" id="tiktokModal">
+    <div class="modal-box">
+        <div class="modal-title">🎵 حساب تيك توك</div>
+        <div class="modal-sub">اربط حساب تيك توك بتاعك عشان يظهر في بروفايلك.</div>
+        <div class="tiktok-input-wrap">
+            <span class="tiktok-prefix">@</span>
+            <input type="text" id="tiktokInput" placeholder="username" maxlength="30" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeTiktokModal()">إلغاء</button>
+            <button class="btn-save" id="saveTiktokBtn" onclick="saveTiktok()">💾 حفظ</button>
         </div>
     </div>
 </div>
@@ -216,6 +246,7 @@
             <div class="profile-email" id="userEmail"></div>
             <div class="join-date" id="joinDate"></div>
             <div class="join-date" id="lastNameChange" style="margin-top:2px;color:rgba(139,92,246,0.7)"></div>
+            <div class="social-row" id="socialRow"></div>
         </div>
         <div class="profile-actions" id="profileActions"></div>
     </div>
@@ -365,7 +396,7 @@ function enableAvatarEditing(uid,name){
 }
 
 /* ── Username Modal ── */
-const COOLDOWN_DAYS=30, USERNAME_REGEX=/^[a-zA-Z0-9_]{3,20}$/;
+const COOLDOWN_DAYS=7, USERNAME_REGEX=/^[a-zA-Z0-9_]{3,20}$/;
 let checkTimeout=null, nameIsValid=false;
 
 window.openModal=function(){document.getElementById('usernameModal').classList.add('open');document.getElementById('usernameInput').focus();};
@@ -514,6 +545,68 @@ const ALL_BADGES=[
 
 const RARITY_STYLES={common:{border:'rgba(139,92,246,0.3)',glow:'rgba(139,92,246,0.15)',label:'عادي',color:'#a78bfa'},rare:{border:'rgba(59,130,246,0.4)',glow:'rgba(59,130,246,0.2)',label:'نادر',color:'#60a5fa'},epic:{border:'rgba(168,85,247,0.5)',glow:'rgba(168,85,247,0.25)',label:'ملحمي',color:'#c084fc'},legendary:{border:'rgba(251,191,36,0.5)',glow:'rgba(251,191,36,0.2)',label:'أسطوري',color:'#fbbf24'},admin:{border:'rgba(139,92,246,0.5)',glow:'rgba(139,92,246,0.2)',label:'أدمن',color:'#c084fc'}};
 
+/* ── TikTok ── */
+let tiktokIsOwner = false, tiktokUid = null;
+
+function renderTiktok(uid, handle, isOwner){
+    tiktokUid = uid; tiktokIsOwner = isOwner;
+    const row = document.getElementById('socialRow');
+    row.innerHTML = '';
+
+    if (handle) {
+        const link = document.createElement('a');
+        link.className = 'tiktok-pill';
+        link.href = `https://www.tiktok.com/@${handle}`;
+        link.target = '_blank'; link.rel = 'noopener noreferrer';
+        link.innerHTML = `🎵 @${handle}`;
+        row.appendChild(link);
+        if (isOwner) {
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-tiktok-btn';
+            editBtn.innerHTML = '✏️ تغيير';
+            editBtn.onclick = openTiktokModal;
+            row.appendChild(editBtn);
+        }
+    } else if (isOwner) {
+        const addBtn = document.createElement('button');
+        addBtn.className = 'add-tiktok-btn';
+        addBtn.innerHTML = '🎵 إضافة تيك توك';
+        addBtn.onclick = openTiktokModal;
+        row.appendChild(addBtn);
+    }
+}
+
+window.openTiktokModal = function(){
+    const input = document.getElementById('tiktokInput');
+    input.value = '';
+    document.getElementById('tiktokModal').classList.add('open');
+    input.focus();
+};
+window.closeTiktokModal = function(){
+    document.getElementById('tiktokModal').classList.remove('open');
+};
+document.getElementById('tiktokModal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeTiktokModal(); });
+
+window.saveTiktok = async function(){
+    if(!tiktokIsOwner || !tiktokUid) return;
+    let handle = document.getElementById('tiktokInput').value.trim();
+    handle = handle.replace(/^@/, '').replace(/^https?:\/\/(www\.)?tiktok\.com\/@?/i, '').replace(/\/.*$/, '');
+    if(!handle) { alert('اكتب اسم المستخدم بتاعك في تيك توك'); return; }
+
+    const btn = document.getElementById('saveTiktokBtn');
+    btn.disabled = true; btn.innerText = '⏳ جارٍ الحفظ...';
+    try{
+        await set(ref(db, `users/${tiktokUid}/tiktok`), handle);
+        renderTiktok(tiktokUid, handle, true);
+        closeTiktokModal();
+        showToast('✅ تم ربط حساب تيك توك!');
+    }catch(e){
+        alert('❌ خطأ: '+e.message);
+    }finally{
+        btn.disabled = false; btn.innerText = '💾 حفظ';
+    }
+};
+
 /* ── Auth ── */
 onAuthStateChanged(auth,async user=>{
     currentUser=user;
@@ -531,6 +624,7 @@ async function loadMyProfile(user){
 
     renderAvatar(savedUsername, userData.photo||null);
     enableAvatarEditing(user.uid, savedUsername);
+    renderTiktok(user.uid, userData.tiktok||null, true);
 
     document.getElementById('username').innerText=savedUsername;
     document.getElementById('userEmail').innerText=user.email;
@@ -572,6 +666,7 @@ async function loadOtherProfile(uid){
     document.getElementById('username').innerText=name;
     document.getElementById('userEmail').innerText=email;
     renderAvatar(name, userData.photo||null);
+    renderTiktok(uid, userData.tiktok||null, false);
     document.getElementById('profileActions').innerHTML='';
     document.getElementById('scriptsTitle').innerText=`📜 سكربتات ${name}`;
     await loadData(uid,email,null,false,name);
