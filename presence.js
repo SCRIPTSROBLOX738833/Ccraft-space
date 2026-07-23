@@ -1,12 +1,6 @@
-// presence.js — نظام تتبع "المتصلين الآن" الحقيقي (Real-time Presence)
-//
-// طريقة الاستخدام: ضيف السطر ده في أي صفحة عايز تحسب زوارها ضمن عداد الأونلاين
-// (تقدر تحطه في <head> أو قبل نهاية <body>، مايهمش الترتيب):
-//
+
 //   <script type="module" src="presence.js"></script>
-//
-// كل صفحة فيها السطر ده هتسجل نفسها كـ "أونلاين" تلقائيًا، وهتتشال تلقائيًا
-// من غير أي كود إضافي لما التاب يتقفل أو النت يتقطع (بفضل onDisconnect).
+
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, set, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
