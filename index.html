@@ -798,48 +798,6 @@ header { display: none; }
 
 </div>
 
-
-    <!-- Discord Invite Modal -->
-<div id="discordModal" style="position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);font-family:'Tajawal',sans-serif;direction:rtl;opacity:0;transition:opacity 0.4s ease;">
-  <div id="discordBox" style="background:rgba(13,14,28,0.96);border:1px solid rgba(88,101,242,0.35);border-radius:22px;padding:36px 28px;width:100%;max-width:400px;text-align:center;position:relative;overflow:hidden;transform:scale(0.85) translateY(20px);transition:transform 0.5s cubic-bezier(0.175,0.885,0.32,1.275);box-shadow:0 30px 70px rgba(0,0,0,0.6);">
-    <div style="position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(88,101,242,0.08),transparent 60%);pointer-events:none;animation:discordGlow 4s ease infinite;"></div>
-    <div style="position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#5865F2,transparent);"></div>
-    <button id="discordClose" style="position:absolute;top:14px;left:14px;background:none;border:none;color:#7878a0;cursor:pointer;font-size:1.2rem;padding:4px;line-height:1;transition:color 0.2s,transform 0.2s;">✕</button>
-    <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#5865F2,#7289da);display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 18px;box-shadow:0 8px 28px rgba(88,101,242,0.45);animation:discordIconPulse 2.5s ease infinite;">🎮</div>
-    <h3 style="font-size:1.3rem;font-weight:900;color:#f0f0ff;margin-bottom:8px;position:relative;">انضم لسيرفر الديسكورد!</h3>
-    <p style="font-size:0.88rem;color:#7878a0;line-height:1.85;margin-bottom:24px;position:relative;">تابع آخر تحديثات الموقع، اتكلم مع باقي الأعضاء، واحصل على دعم مباشر من الإدارة.</p>
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;text-align:right;padding:0 8px;">
-      <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem;color:#a78bfa;font-weight:700;"><span style="width:22px;height:22px;border-radius:50%;background:rgba(88,101,242,0.15);display:flex;align-items:center;justify-content:center;font-size:0.7rem;">🔔</span><span>إشعارات فورية بكل جديد</span></div>
-      <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem;color:#67e8f9;font-weight:700;"><span style="width:22px;height:22px;border-radius:50%;background:rgba(0,242,254,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;">💬</span><span>دردشة مباشرة مع المجتمع</span></div>
-      <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem;color:#f472b6;font-weight:700;"><span style="width:22px;height:22px;border-radius:50%;background:rgba(244,114,182,0.1);display:flex;align-items:center;justify-content:center;font-size:0.7rem;">🎁</span><span>مفاجآت وحصرية للأعضاء</span></div>
-    </div>
-    <a id="discordJoin" href="https://discord.gg/9f5Sk6yMC" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,#5865F2,#4752c4);color:white;border:none;border-radius:14px;padding:14px;font-size:0.95rem;font-weight:800;cursor:pointer;text-decoration:none;box-shadow:0 8px 24px rgba(88,101,242,0.4);transition:transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;"><span style="position:relative;z-index:1;">🎮 انضم دلوقتي</span></a>
-    <button id="discordLater" style="display:block;margin:14px auto 0;background:none;border:none;color:#3a3a52;font-size:0.78rem;font-weight:700;cursor:pointer;padding:6px 12px;border-radius:8px;transition:color 0.2s,background 0.2s;">لأ، بعدين</button>
-    <div style="margin-top:16px;display:inline-flex;align-items:center;gap:6px;background:rgba(88,101,242,0.08);border:1px solid rgba(88,101,242,0.15);border-radius:50px;padding:6px 14px;"><span style="width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px rgba(74,222,128,0.6);animation:livePulse 1.5s ease infinite;"></span><span style="font-size:0.72rem;color:#7878a0;font-weight:700;">+ عضو نشط</span></div>
-  </div>
-</div>
-<style>
-@keyframes discordGlow{0%,100%{transform:rotate(0deg);}50%{transform:rotate(180deg);}}
-@keyframes discordIconPulse{0%,100%{transform:scale(1);box-shadow:0 8px 28px rgba(88,101,242,0.45);}50%{transform:scale(1.05);box-shadow:0 12px 36px rgba(88,101,242,0.6);}}
-@keyframes livePulse{0%,100%{opacity:1;box-shadow:0 0 8px rgba(74,222,128,0.6);}50%{opacity:0.4;box-shadow:none;}}
-</style>
-<script>
-(function(){
-  const modal=document.getElementById('discordModal'),box=document.getElementById('discordBox'),closeBtn=document.getElementById('discordClose'),laterBtn=document.getElementById('discordLater'),joinBtn=document.getElementById('discordJoin');
-  if(!sessionStorage.getItem('discordModalDismissed')){
-    setTimeout(()=>{modal.style.display='flex';void modal.offsetWidth;modal.style.opacity='1';box.style.transform='scale(1) translateY(0)';},800);
-  }
-  function closeModal(){modal.style.opacity='0';box.style.transform='scale(0.9) translateY(10px)';setTimeout(()=>{modal.style.display='none';},400);sessionStorage.setItem('discordModalDismissed','1');}
-  closeBtn.onclick=closeModal;laterBtn.onclick=closeModal;joinBtn.onclick=closeModal;modal.onclick=(e)=>{if(e.target===modal)closeModal();};
-  joinBtn.onmouseenter=()=>{joinBtn.style.transform='translateY(-2px)';joinBtn.style.boxShadow='0 12px 32px rgba(88,101,242,0.55)';};
-  joinBtn.onmouseleave=()=>{joinBtn.style.transform='translateY(0)';joinBtn.style.boxShadow='0 8px 24px rgba(88,101,242,0.4)';};
-  closeBtn.onmouseenter=()=>{closeBtn.style.color='#f0f0ff';closeBtn.style.transform='rotate(90deg)';};
-  closeBtn.onmouseleave=()=>{closeBtn.style.color='#7878a0';closeBtn.style.transform='rotate(0deg)';};
-  laterBtn.onmouseenter=()=>{laterBtn.style.color='#7878a0';laterBtn.style.background='rgba(255,255,255,0.03)';};
-  laterBtn.onmouseleave=()=>{laterBtn.style.color='#3a3a52';laterBtn.style.background='none';};
-})();
-</script>
-
 <!-- Footer -->
 <footer class="site-footer">
     <div class="footer-links">
