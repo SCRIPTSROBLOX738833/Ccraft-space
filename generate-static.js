@@ -18,13 +18,79 @@ const fs = require('fs');
 const path = require('path');
 
 // ---- إعدادات ----
-const FIREBASE_URL = 'https://ccraft-space-scripts-default-rtdb.firebaseio.com/scripts.json';
-const HTML_FILE     = path.join(__dirname, 'scripts.html');
-const START_MARKER  = '<!--STATIC_SCRIPTS_START-->';
-const END_MARKER    = '<!--STATIC_SCRIPTS_END-->';
+const FIREBASE_URL   = 'https://ccraft-space-scripts-default-rtdb.firebaseio.com/scripts.json';
+const HTML_FILE       = path.join(__dirname, 'scripts.html');
+const SCRIPT_TEMPLATE = path.join(__dirname, 'script.html');
+const PAGES_DIR        = path.join(__dirname, 'scripts');
+const START_MARKER   = '<!--STATIC_SCRIPTS_START-->';
+const END_MARKER     = '<!--STATIC_SCRIPTS_END-->';
 
 function escHTML(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ---- بناء صفحة HTML كاملة لسكربت واحد، بمحتوى ثابت حقيقي (مش JS) ----
+function buildScriptPage(template, s) {
+    const avg = s.votes ? (s.rating / s.votes) : 0;
+    const desc = s.description || 'لا يوجد وصف';
+    const tagsHTML = `<span class="tag tag-cat">📁 ${escHTML(s.category || '—')}</span>` +
+        (s.map ? `<span class="tag tag-map">🗺️ ${escHTML(s.map)}</span>` : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`);
+
+    let html = template;
+
+    html = html.replace('<body data-script-id="">', `<body data-script-id="${escHTML(s.id)}">`);
+    html = html.replace('<title>عرض السكربت | CCRAFT SPACE</title>', `<title>${escHTML(s.title || 'سكربت')} | CCRAFT SPACE</title>`);
+    html = html.replace(
+        '<h1 class="script-title" id="title">⏳ جارٍ التحميل...</h1>',
+        `<h1 class="script-title" id="title">${escHTML(s.title || 'بدون عنوان')}</h1>`
+    );
+    html = html.replace(
+        '<pre id="code">-- جارٍ التحميل...</pre>',
+        `<pre id="code">${escHTML(s.code || '-- لا يوجد كود')}</pre>`
+    );
+    html = html.replace(
+        '<p id="description" style="color:#6a6a88;font-style:italic">جارٍ التحميل...</p>',
+        `<p id="description" style="${s.description ? '' : 'color:#44445a;font-style:italic'}">${escHTML(desc)}</p>`
+    );
+    html = html.replace(
+        '<div class="tags-row" id="tagsRow"></div>',
+        `<div class="tags-row" id="tagsRow">${tagsHTML}</div>`
+    );
+    html = html.replace(
+        '<div class="author-name" id="authorName">—</div>',
+        `<div class="author-name" id="authorName">${escHTML(s.author || 'مجهول')}</div>`
+    );
+    html = html.replace(
+        '<div class="acs-name"  id="acName">—</div>',
+        `<div class="acs-name"  id="acName">${escHTML(s.author || 'مجهول')}</div>`
+    );
+    html = html.replace(
+        '<span class="sr-val" id="st-likes">—</span>',
+        `<span class="sr-val" id="st-likes">${s.likes || 0}</span>`
+    );
+    html = html.replace(
+        '<span class="sr-val" id="st-rating">—</span>',
+        `<span class="sr-val" id="st-rating">${s.votes ? avg.toFixed(1) + ' ⭐' : '—'}</span>`
+    );
+
+    return html;
+}
+
+async function generateScriptPages(scripts) {
+    if (!fs.existsSync(SCRIPT_TEMPLATE)) {
+        console.warn(`⚠️ ${SCRIPT_TEMPLATE} مش موجود — تم تخطي توليد صفحات السكربتات الفردية.`);
+        return;
+    }
+    const template = fs.readFileSync(SCRIPT_TEMPLATE, 'utf8');
+
+    if (!fs.existsSync(PAGES_DIR)) fs.mkdirSync(PAGES_DIR, { recursive: true });
+
+    for (const s of scripts) {
+        const page = buildScriptPage(template, s);
+        const filePath = path.join(PAGES_DIR, `${s.id}.html`);
+        fs.writeFileSync(filePath, page, 'utf8');
+    }
+    console.log(`✅ تم توليد ${scripts.length} صفحة ثابتة في مجلد /scripts.`);
 }
 
 // ---- بناء كارت HTML واحد (نسخة مبسطة، ثابتة، بدون تفاعل) ----
@@ -55,7 +121,7 @@ function buildCard(s) {
         </div>
     </div>
     <div class="sc-footer">
-        <a class="sc-btn view" href="script.html?id=${encodeURIComponent(s.id)}" style="text-decoration:none;display:flex">👁️ عرض</a>
+        <a class="sc-btn view" href="scripts/${encodeURIComponent(s.id)}.html" style="text-decoration:none;display:flex">👁️ عرض</a>
     </div>
 </div>`.trim();
 }
@@ -126,6 +192,9 @@ window.__SCRIPTS_DATA__ = ${JSON.stringify(dataMap)};
 `;
     fs.writeFileSync(dataFile, dataJS, 'utf8');
     console.log(`✅ تم إنشاء ${dataFile} ببيانات ${scripts.length} سكربت لصفحة script.html.`);
+
+    // ---- توليد صفحة HTML ثابتة حقيقية لكل سكربت (61 ملف) ----
+    await generateScriptPages(scripts);
 }
 
 main().catch(err => {
