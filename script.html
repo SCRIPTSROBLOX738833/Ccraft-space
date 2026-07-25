@@ -76,7 +76,6 @@ body {
 
 .script-image-wrap:hover img { transform: scale(1.03); }
 
-/* تدرج سفلي جميل */
 .script-image-wrap::after {
     content: '';
     position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
@@ -84,7 +83,6 @@ body {
     pointer-events: none;
 }
 
-/* زر التكبير */
 .img-expand-btn {
     position: absolute; bottom: 12px; left: 16px; z-index: 2;
     background: rgba(9,9,15,0.7); color: rgba(255,255,255,0.85);
@@ -157,7 +155,6 @@ body {
     to   { opacity:1; transform:translateY(0); }
 }
 
-/* شريط جانبي متوهج */
 .script-hero::before {
     content: '';
     position: absolute; top: 0; right: 0;
@@ -167,7 +164,6 @@ body {
     box-shadow: 0 0 20px rgba(139,92,246,0.5);
 }
 
-/* نجوم خلفية ديكورية */
 .script-hero::after {
     content: '';
     position: absolute; inset: 0;
@@ -189,7 +185,6 @@ body {
     position: relative; z-index: 1;
 }
 
-/* صف المؤلف */
 .author-row {
     display: flex; align-items: center; gap: 11px;
     margin-bottom: 18px;
@@ -219,7 +214,6 @@ body {
 .author-name { font-size: 0.9rem; font-weight: 800; color: #d4d4f0; transition: color 0.2s; }
 .author-date { font-size: 0.7rem; color: #5a5a78; margin-top: 1px; }
 
-/* التاجات */
 .tags-row {
     display: flex; gap: 7px; flex-wrap: wrap;
     position: relative; z-index: 1;
@@ -269,7 +263,6 @@ body {
     position: relative;
 }
 
-/* تأثير Glow علوي */
 .code-card::before {
     content: '';
     position: absolute; top: 0; left: 20%; right: 20%;
@@ -277,7 +270,6 @@ body {
     background: linear-gradient(90deg, transparent, rgba(139,92,246,0.5), transparent);
 }
 
-/* شريط الكود العلوي */
 .code-header {
     display: flex; align-items: center; gap: 12px;
     padding: 11px 18px;
@@ -317,7 +309,6 @@ body {
 .copy-inline:hover { background: rgba(139,92,246,0.25); color: #a78bfa; transform: none; filter: none; }
 .copy-inline.copied { background: rgba(34,197,94,0.12); color: #4ade80; border-color: rgba(34,197,94,0.3); }
 
-/* منطقة الكود */
 #code {
     background: transparent !important;
     margin: 0; border: none; border-radius: 0;
@@ -331,7 +322,6 @@ body {
     tab-size: 4;
 }
 
-/* شريط التمرير جميل */
 #code::-webkit-scrollbar { width: 5px; height: 5px; }
 #code::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
 #code::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
@@ -436,7 +426,6 @@ body {
     position: relative; overflow: hidden;
 }
 
-/* خط ديكوري علوي */
 .comments-card::before {
     content: '';
     position: absolute; top: 0; left: 40px; right: 40px;
@@ -450,7 +439,6 @@ body {
     min-height: 0;
 }
 
-/* تعليق واحد */
 .comment-item {
     display: flex; align-items: flex-start; gap: 10px;
     padding: 12px 14px;
@@ -472,7 +460,6 @@ body {
     background: rgba(139,92,246,0.04);
 }
 
-/* خط يسار التعليق */
 .comment-item::before {
     content: '';
     position: absolute; right: 0; top: 25%; bottom: 25%;
@@ -485,7 +472,6 @@ body {
 
 .comment-item:hover::before { opacity: 1; }
 
-/* أفاتار التعليق */
 .comment-avatar {
     width: 34px; height: 34px; border-radius: 50%;
     overflow: hidden; flex-shrink: 0;
@@ -528,7 +514,6 @@ body {
     line-height: 1.65; word-break: break-word;
 }
 
-/* رسالة "لا توجد تعليقات" */
 .no-comments {
     text-align: center; padding: 28px 20px;
     color: #383854; font-size: 0.85rem;
@@ -536,7 +521,6 @@ body {
 
 .no-comments .nc-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
 
-/* حقل التعليق الجديد */
 .comment-input-wrap {
     display: flex; gap: 8px; align-items: center;
     background: rgba(0,0,0,0.3);
@@ -581,7 +565,6 @@ body {
 
 #submitComment:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* عداد التعليقات */
 .comment-count-badge {
     display: inline-flex; align-items: center; gap: 5px;
     background: rgba(139,92,246,0.1);
@@ -598,7 +581,6 @@ body {
     position: sticky; top: 90px;
 }
 
-/* Thumbnail */
 .sidebar-thumb {
     display: none;
     border-radius: 16px; overflow: hidden;
@@ -613,7 +595,6 @@ body {
 .sidebar-thumb:hover { border-color: rgba(139,92,246,0.4); box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(139,92,246,0.1); }
 .sidebar-thumb:hover img { transform: scale(1.06); }
 
-/* بطاقات الـ Sidebar المشتركة */
 .side-card {
     background: linear-gradient(145deg, rgba(14,16,30,0.95), rgba(10,12,24,0.9));
     border: 1px solid rgba(255,255,255,0.06);
@@ -625,7 +606,6 @@ body {
 
 .side-card:hover { border-color: rgba(139,92,246,0.18); }
 
-/* Map Card */
 .map-card-side {
     text-align: center;
     cursor: default;
@@ -636,7 +616,6 @@ body {
 .mcs-name  { font-size: 0.98rem; font-weight: 900; color: #00d9e8; }
 .mcs-name.muted { color: #3d3d5a; font-size: 0.85rem; font-weight: 700; }
 
-/* Stats Card */
 .stats-side-label {
     font-size: 0.62rem; font-weight: 800; color: #35355a;
     text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
@@ -657,7 +636,6 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
-/* Like button in stats */
 .like-btn-inline {
     display: flex; align-items: center; gap: 6px;
     background: rgba(248,113,113,0.07);
@@ -672,7 +650,6 @@ body {
 .like-btn-inline:hover { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.3); transform: none; filter: none; }
 .like-btn-inline.liked { background: rgba(248,113,113,0.2); color: #fca5a5; cursor: default; }
 
-/* Author Card */
 .author-card-side {
     text-align: center; cursor: pointer;
 }
@@ -960,18 +937,28 @@ const MAP_ICONS = {
 };
 
 /* ============================================================
-   Auth
+   ✅ التعديل الأساسي: تحميل المحتوى فورًا للجميع
+   بدون انتظار تسجيل الدخول — auth بقى منفصل تمامًا
+   عن عرض المحتوى، وبيتحقق منه بس وقت التفاعل
+   (لايك / تعليق) مش وقت عرض الصفحة.
    ============================================================ */
 onAuthStateChanged(auth, user => {
-    if (!user) { alert("يجب تسجيل الدخول أولاً"); location.href="login.html"; return; }
-    currentUser = user;
-    loadScript();
+    currentUser = user; // ممكن تكون null — وده طبيعي وعادي تمامًا
 });
+
+// المحتوى يتحمّل فورًا لأي زائر، مسجل دخول أو لأ، وأي بوت زحف
+loadScript();
 
 /* ============================================================
    تحميل السكربت
    ============================================================ */
 async function loadScript() {
+    if (!scriptId) {
+        // مفيش id في الرابط — رجّع الزائر لصفحة القائمة بدل ما يفضل "جاري التحميل" للأبد
+        location.href = 'scripts.html';
+        return;
+    }
+
     const snap = await get(ref(db, `scripts/${scriptId}`));
     if (!snap.exists()) {
         document.getElementById('title').innerText = "❌ هذا السكربت غير موجود";
@@ -1051,7 +1038,7 @@ async function loadScript() {
     const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
     document.getElementById('st-rating').innerText = avg === '—' ? '—' : `${avg} ⭐`;
 
-    // --- زر اللايك ---
+    // --- زر اللايك (يحتاج تسجيل دخول) ---
     const liked = !!localStorage.getItem(`liked_${scriptId}`);
     const likeBtn = document.getElementById('likeBtn');
 
@@ -1062,6 +1049,7 @@ async function loadScript() {
     }
 
     likeBtn.addEventListener('click', async () => {
+        if (!currentUser) { alert("يجب تسجيل الدخول لإضافة لايك"); location.href = "login.html"; return; }
         if (liked || likeBtn.disabled) return;
         const likeRef = ref(db, `scripts/${scriptId}/likes`);
         const s = await get(likeRef);
@@ -1079,14 +1067,13 @@ async function loadScript() {
 }
 
 /* ============================================================
-   التعليقات
+   التعليقات (العرض عام، الإرسال يحتاج تسجيل دخول)
    ============================================================ */
 async function loadComments() {
     const commentsDiv = document.getElementById('comments');
     let firstLoad = true;
 
     onChildAdded(ref(db, `scripts/${scriptId}/comments`), async snapshot => {
-        // أخفي رسالة "لا توجد تعليقات"
         document.getElementById('noComments')?.remove();
 
         const c = snapshot.val();
@@ -1119,7 +1106,6 @@ async function loadComments() {
         item.querySelector('.comment-name').onclick   = goP;
         commentsDiv.appendChild(item);
 
-        // تحديث عداد التعليقات
         const count = document.querySelectorAll('.comment-item').length;
         document.getElementById('commentBadge').innerText = count;
         document.getElementById('st-comments').innerText  = count;
@@ -1129,9 +1115,11 @@ async function loadComments() {
 }
 
 /* ============================================================
-   إرسال تعليق جديد
+   إرسال تعليق جديد — يحتاج تسجيل دخول
    ============================================================ */
 document.getElementById('submitComment').addEventListener('click', async () => {
+    if (!currentUser) { alert("يجب تسجيل الدخول للتعليق"); location.href = "login.html"; return; }
+
     const inp  = document.getElementById('commentInput');
     const text = inp.value.trim();
     if (!text) return;
@@ -1177,7 +1165,7 @@ function copyCode() {
 
 document.getElementById('copyBtn').addEventListener('click',    copyCode);
 document.getElementById('copyInline').addEventListener('click', copyCode);
-document.getElementById('rawBtn').addEventListener('click',     () => location.href = `raw.html?id=${scriptId}`);
+document.getElementById('rawBtn').addEventListener('click',     () => { if (!currentUser) { alert("يجب تسجيل الدخول"); location.href="login.html"; return; } location.href = `raw.html?id=${scriptId}`; });
 document.getElementById('reportBtn').addEventListener('click',  () => location.href = `report.html?id=${scriptId}`);
 </script>
 </body>
