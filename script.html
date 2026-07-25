@@ -869,6 +869,70 @@ body {
 </div>
 
 
+<!-- بيانات ثابتة مولّدة تلقائيًا (كل السكربتات) — بتتحمّل فورًا قبل Firebase -->
+<script src="scripts-data.js"></script>
+<script>
+// ✅ حقن فوري للمحتوى من البيانات الثابتة، قبل ما Firebase يشتغل خالص
+// ده اللي بيضمن إن أي زائر (أو بوت زحف) يشوف محتوى حقيقي من أول لحظة
+(function () {
+    try {
+        const params   = new URLSearchParams(window.location.search);
+        const id       = params.get('id');
+        const data     = window.__SCRIPTS_DATA__ && id ? window.__SCRIPTS_DATA__[id] : null;
+        if (!data) return;
+
+        document.title = `${data.title} | CCRAFT SPACE`;
+
+        const titleEl = document.getElementById('title');
+        if (titleEl) titleEl.innerText = data.title;
+
+        const codeEl = document.getElementById('code');
+        if (codeEl) codeEl.innerText = data.code || '-- لا يوجد كود';
+
+        const descEl = document.getElementById('description');
+        if (descEl) {
+            descEl.innerText = data.description || 'لا يوجد وصف';
+            descEl.style.color = data.description ? '#b0b0cc' : '#44445a';
+            descEl.style.fontStyle = data.description ? 'normal' : 'italic';
+        }
+
+        const tagsRow = document.getElementById('tagsRow');
+        if (tagsRow) {
+            const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            tagsRow.innerHTML = `<span class="tag tag-cat">📁 ${esc(data.category||'—')}</span>`;
+            tagsRow.innerHTML += data.map
+                ? `<span class="tag tag-map">🗺️ ${esc(data.map)}</span>`
+                : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
+        }
+
+        const authorNameEl = document.getElementById('authorName');
+        if (authorNameEl) authorNameEl.innerText = data.author || 'مجهول';
+        const acNameEl = document.getElementById('acName');
+        if (acNameEl) acNameEl.innerText = data.author || 'مجهول';
+
+        if (data.image) {
+            const img = document.getElementById('scriptImage');
+            const wrap = document.getElementById('scriptImageWrap');
+            if (img && wrap) { img.src = data.image; wrap.classList.add('show'); }
+            const sideImg = document.getElementById('sideThumbImg');
+            const sideWrap = document.getElementById('sidebarThumb');
+            if (sideImg && sideWrap) { sideImg.src = data.image; sideWrap.classList.add('show'); }
+        }
+
+        const stLikes = document.getElementById('st-likes');
+        if (stLikes) stLikes.innerText = data.likes || 0;
+        const stRating = document.getElementById('st-rating');
+        if (stRating) {
+            const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
+            stRating.innerText = avg === '—' ? '—' : `${avg} ⭐`;
+        }
+    } catch (e) {
+        // أي خطأ هنا لا يوقف تحميل الصفحة — Firebase هيكمل تحميل المحتوى عادي بعد كده
+        console.warn('static data injection skipped:', e);
+    }
+})();
+</script>
+
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, set, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
