@@ -738,7 +738,7 @@ body {
 
 </style>
 </head>
-<body>
+<body data-script-id="">
 
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
@@ -877,7 +877,7 @@ body {
 (function () {
     try {
         const params   = new URLSearchParams(window.location.search);
-        const id       = params.get('id');
+        const id       = document.body.dataset.scriptId || params.get('id');
         const data     = window.__SCRIPTS_DATA__ && id ? window.__SCRIPTS_DATA__[id] : null;
         if (!data) return;
 
@@ -955,7 +955,7 @@ const db   = getDatabase(app);
 const auth = getAuth(app);
 
 const params    = new URLSearchParams(window.location.search);
-const scriptId  = params.get('id');
+const scriptId  = document.body.dataset.scriptId || params.get('id');
 let currentUser = null;
 const avatarCache = {};
 
