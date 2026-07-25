@@ -100,6 +100,32 @@ async function main() {
 
     fs.writeFileSync(HTML_FILE, html, 'utf8');
     console.log(`✅ تم تحديث ${HTML_FILE} بمحتوى ثابت لـ ${scripts.length} سكربت.`);
+
+    // ---- ملف بيانات ثابت لصفحة script.html (كل السكربتات بالكامل) ----
+    const dataMap = {};
+    for (const s of scripts) {
+        dataMap[s.id] = {
+            title: s.title || 'بدون عنوان',
+            description: s.description || '',
+            code: s.code || '',
+            category: s.category || '',
+            map: s.map || '',
+            author: s.author || 'مجهول',
+            authorUid: s.authorUid || '',
+            image: s.image || '',
+            likes: s.likes || 0,
+            rating: s.rating || 0,
+            votes: s.votes || 0,
+            timestamp: s.timestamp || 0
+        };
+    }
+
+    const dataFile = path.join(__dirname, 'scripts-data.js');
+    const dataJS = `// ⚠️ ملف مولّد تلقائيًا بواسطة generate-static.js — لا تعدّله يدويًا
+window.__SCRIPTS_DATA__ = ${JSON.stringify(dataMap)};
+`;
+    fs.writeFileSync(dataFile, dataJS, 'utf8');
+    console.log(`✅ تم إنشاء ${dataFile} ببيانات ${scripts.length} سكربت لصفحة script.html.`);
 }
 
 main().catch(err => {
