@@ -113,6 +113,7 @@ async function main() {
             author: s.author || 'مجهول',
             authorUid: s.authorUid || '',
             image: s.image || '',
+            key: s.key || '',
             likes: s.likes || 0,
             rating: s.rating || 0,
             votes: s.votes || 0,
