@@ -34,6 +34,9 @@ function buildCard(s) {
         .map(n => `<span class="sc-star${n <= Math.round(avg) ? ' filled' : ''}">★</span>`)
         .join('');
 
+    const codeFull = escHTML(s.code || '-- لا يوجد كود');
+    const codeSnippet = escHTML((s.code || '').replace(/\s+/g, ' ').trim().slice(0, 70));
+
     return `
 <div class="script-card" data-cat="${escHTML(s.category || 'other')}" data-static="1">
     ${s.image ? `<div style="overflow:hidden;border-radius:20px 20px 0 0"><img class="sc-thumb" src="${escHTML(s.image)}" alt="${escHTML(s.title || 'سكربت')}" loading="lazy"></div>` : ''}
@@ -45,14 +48,18 @@ function buildCard(s) {
         <div class="sc-badges">
             <span class="sc-cat">📁 ${escHTML(s.category || '—')}</span>
             ${s.map ? `<span class="sc-map">🗺️ ${escHTML(s.map)}</span>` : ''}
+            ${s.key ? '<span class="sc-key-badge">🔑 يتطلب مفتاح</span>' : ''}
         </div>
         <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin:0">${escHTML((s.description || '').slice(0, 140))}</p>
+        <div class="sc-code-snippet">💻 ${codeSnippet}${(s.code || '').length > 70 ? '…' : ''}</div>
         <div class="sc-stats">
             <span class="sc-stat">👍 <strong>${s.likes || 0}</strong></span>
             <span class="sc-stat">👤 ${escHTML(s.author || 'مجهول')}</span>
             <span style="margin-right:auto"></span>
             <div class="sc-stars">${stars}<span class="sc-avg">${s.votes ? avg.toFixed(1) : '—'}</span></div>
         </div>
+        <button type="button" class="sc-preview-btn" onclick="event.stopPropagation(); toggleCodePreview(this)">👁️ معاينة سريعة</button>
+        <pre class="sc-code-full" onclick="event.stopPropagation()">${codeFull}</pre>
     </div>
     <div class="sc-footer">
         <a class="sc-btn view" href="script.html?id=${encodeURIComponent(s.id)}" style="text-decoration:none;display:flex">👁️ عرض</a>
@@ -71,7 +78,9 @@ async function main() {
         return;
     }
 
-    const scripts = Object.entries(data).map(([id, s]) => ({ id, ...s }));
+    const scripts = Object.entries(data)
+        .map(([id, s]) => ({ id, ...s }))
+        .filter(s => s.id && s.title && s.title.trim()); // ✅ استبعاد السجلات التالفة (بدون id أو عنوان)
     // الأحدث أولاً
     scripts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
