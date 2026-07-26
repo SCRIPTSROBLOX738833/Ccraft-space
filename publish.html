@@ -142,6 +142,22 @@
     .map-preview.show { display: flex; }
     .map-preview .mp-icon { font-size: 1.2rem; }
 
+    /* ---- Key Field (optional) ---- */
+    .key-section {
+        margin-top: 4px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .key-label {
+        display: flex; align-items: center; gap: 8px;
+        color: var(--text-muted); font-size: 0.85rem; font-weight: 700;
+    }
+    .key-optional-tag {
+        background: rgba(255,255,255,0.06); color: var(--text-muted);
+        font-size: 0.65rem; font-weight: 800; padding: 2px 10px;
+        border-radius: 50px; border: 1px solid var(--border-color);
+    }
+    #scriptKey { margin: 0; border-radius: 14px; padding: 12px 18px; font-size: 0.9rem; }
+    .key-hint { font-size: 0.72rem; color: var(--text-muted); opacity: 0.75; }
+
   </style>
 </head>
 <body>
@@ -191,6 +207,18 @@
       <option value="admin">Admin Scripts</option>
       <option value="ai">AI & NPCs</option>
     </select>
+
+    <!-- ============================================================
+         🔑 المفتاح (اختياري)
+         ============================================================ -->
+    <div class="key-section">
+        <label class="key-label" for="scriptKey">
+            🔑 مفتاح السكربت
+            <span class="key-optional-tag">اختياري</span>
+        </label>
+        <input type="text" id="scriptKey" placeholder="اكتب المفتاح هنا لو السكربت يحتاج مفتاح للتشغيل...">
+        <div class="key-hint">لو السكربت محتاج مفتاح (Key) عشان يشتغل، اكتبه هنا وهيظهر للزوار في صفحة السكربت. سيبه فاضي لو مش محتاج.</div>
+    </div>
 
     <!-- ============================================================
          🖼️ صورة السكربت
@@ -502,6 +530,7 @@
     const code        = document.getElementById('scriptCode').value.trim();
     const category    = document.getElementById('category').value;
     const description = document.getElementById('scriptDescription').value.trim();
+    const key         = document.getElementById('scriptKey').value.trim(); // ✅ اختياري
 
     if (!title || !code || !category || !description) {
         alert('مطلوب كل الحقول!'); return;
@@ -528,6 +557,9 @@
         votes:       0,
         likes:       0,
     };
+
+    // ✅ ضيف المفتاح لو المستخدم كتب حاجة (اختياري تمامًا)
+    if (key) scriptData.key = key;
 
     // ضيف الصورة لو موجودة
     if (imageBase64) scriptData.image = imageBase64;
