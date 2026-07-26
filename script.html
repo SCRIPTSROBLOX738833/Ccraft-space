@@ -789,6 +789,15 @@ body {
             <pre id="code">-- جارٍ التحميل...</pre>
         </div>
 
+        <!-- المفتاح (يظهر بس لو السكربت عنده مفتاح) -->
+        <div class="desc-card" id="keyCard" style="display:none">
+            <h3>🔑 المفتاح</h3>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <code id="keyValue" style="background:rgba(0,0,0,0.3);border:1px solid rgba(139,92,246,0.25);border-radius:10px;padding:8px 14px;font-family:'Fira Code',monospace;font-size:0.85rem;color:#8be9fd;direction:ltr">—</code>
+                <button id="copyKeyBtn" class="copy-inline">📋 نسخ المفتاح</button>
+            </div>
+        </div>
+
         <!-- الوصف -->
         <div class="desc-card">
             <h3>📝 الوصف</h3>
@@ -896,6 +905,25 @@ body {
             descEl.style.fontStyle = data.description ? 'normal' : 'italic';
         }
 
+        if (data.key) {
+            const keyCard  = document.getElementById('keyCard');
+            const keyValue = document.getElementById('keyValue');
+            if (keyCard && keyValue) {
+                keyValue.innerText = data.key;
+                keyCard.style.display = 'block';
+                const copyBtn = document.getElementById('copyKeyBtn');
+                if (copyBtn) {
+                    copyBtn.onclick = () => {
+                        navigator.clipboard.writeText(data.key).then(() => {
+                            const orig = copyBtn.innerText;
+                            copyBtn.innerText = '✅ تم النسخ';
+                            setTimeout(() => { copyBtn.innerText = orig; }, 2000);
+                        });
+                    };
+                }
+            }
+        }
+
         const tagsRow = document.getElementById('tagsRow');
         if (tagsRow) {
             const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -909,6 +937,25 @@ body {
         if (authorNameEl) authorNameEl.innerText = data.author || 'مجهول';
         const acNameEl = document.getElementById('acName');
         if (acNameEl) acNameEl.innerText = data.author || 'مجهول';
+
+        const mapCard = document.getElementById('mapCardSide');
+        if (mapCard) {
+            const MAP_ICONS = {
+                'Adopt Me':'🏡','Bloxburg':'🏗️','Brookhaven':'🌆','Arsenal':'🔫',
+                'Bedwars':'🛏️','Murder Mystery 2':'🔪','Jailbreak':'🚔',
+                'Pet Simulator X':'🐾','Doors':'🚪','Da Hood':'🏙️',
+                'Anime Fighting Sim':'⚔️','Tower of Hell':'🗼',
+            };
+            const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            if (data.map) {
+                const icon = MAP_ICONS[data.map] || '🗺️';
+                mapCard.innerHTML = `<span class="mcs-icon">${icon}</span><div class="mcs-label">مخصص لماب</div><div class="mcs-name">${esc(data.map)}</div>`;
+                mapCard.style.borderColor = 'rgba(0,242,254,0.18)';
+                mapCard.style.boxShadow   = '0 0 20px rgba(0,242,254,0.05)';
+            } else {
+                mapCard.innerHTML = `<span class="mcs-icon">🌐</span><div class="mcs-label">الماب</div><div class="mcs-name muted">يعمل على أي لعبة</div>`;
+            }
+        }
 
         if (data.image) {
             const img = document.getElementById('scriptImage');
@@ -1037,6 +1084,22 @@ async function loadScript() {
     document.getElementById('description').innerText = data.description || "لا يوجد وصف";
     document.getElementById('description').style.color = data.description ? '#b0b0cc' : '#44445a';
     document.getElementById('description').style.fontStyle = data.description ? 'normal' : 'italic';
+
+    // --- المفتاح (اختياري) ---
+    if (data.key) {
+        const keyCard  = document.getElementById('keyCard');
+        const keyValue = document.getElementById('keyValue');
+        keyValue.innerText = data.key;
+        keyCard.style.display = 'block';
+        document.getElementById('copyKeyBtn').onclick = () => {
+            navigator.clipboard.writeText(data.key).then(() => {
+                const btn = document.getElementById('copyKeyBtn');
+                const orig = btn.innerText;
+                btn.innerText = '✅ تم النسخ';
+                setTimeout(() => { btn.innerText = orig; }, 2000);
+            });
+        };
+    }
 
     // --- الصورة ---
     if (data.image) {
