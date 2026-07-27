@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9131038282158705" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCRAFT SPACE | منصة سكربتات Roblox العربية</title>
@@ -580,17 +579,6 @@ header { display: none; }
 .ac-desc  { font-size: 0.7rem; color: var(--lo); line-height: 1.5; }
 
 /* ════════════════════════════════════════
-   AD SLOTS
-════════════════════════════════════════ */
-.ad-slot {
-    margin: 24px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 50px;
-}
-
-/* ════════════════════════════════════════
    FOOTER
 ════════════════════════════════════════ */
 .site-footer {
@@ -635,84 +623,9 @@ header { display: none; }
     .hero { padding: 30px 14px 20px; }
 }
 
-/* ════════════════════════════════════════
-   DISCORD INVITE MODAL
-════════════════════════════════════════ */
-.discord-modal-overlay {
-    position: fixed; inset: 0; z-index: 300;
-    background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
-    display: none; align-items: center; justify-content: center; padding: 20px;
-}
-.discord-modal-overlay.open { display: flex; }
-
-.discord-modal-box {
-    background: rgba(13,14,28,0.96); border: 1px solid rgba(88,101,242,0.35);
-    border-radius: 22px; padding: 32px 28px; width: 100%; max-width: 380px;
-    text-align: center; position: relative; overflow: hidden;
-    animation: discordPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both;
-    box-shadow: 0 30px 70px rgba(0,0,0,0.6);
-}
-@keyframes discordPop {
-    from { opacity: 0; transform: scale(0.9) translateY(10px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-.discord-modal-box::before {
-    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
-    background: linear-gradient(90deg, transparent, #5865F2, transparent);
-}
-.discord-close-btn {
-    position: absolute; top: 14px; left: 14px;
-    background: none; border: none; color: var(--mid);
-    font-size: 1.1rem; cursor: pointer; margin: 0; padding: 4px; line-height: 1;
-    transition: color 0.2s;
-}
-.discord-close-btn:hover { color: var(--hi); filter: none; transform: none; }
-
-.discord-icon {
-    width: 64px; height: 64px; border-radius: 50%;
-    background: linear-gradient(135deg, #5865F2, #7289da);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem; margin: 0 auto 16px;
-    box-shadow: 0 8px 24px rgba(88,101,242,0.45);
-}
-.discord-modal-box h3 {
-    font-size: 1.2rem; font-weight: 900; color: var(--hi); margin-bottom: 8px;
-}
-.discord-modal-box p {
-    font-size: 0.85rem; color: var(--mid); line-height: 1.75; margin-bottom: 22px;
-}
-.discord-join-btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; background: linear-gradient(135deg, #5865F2, #4752c4);
-    color: white; border: none; border-radius: 14px; padding: 13px;
-    font-size: 0.92rem; font-weight: 800; cursor: pointer;
-    font-family: 'Tajawal', sans-serif; margin: 0; text-decoration: none;
-    box-shadow: 0 8px 22px rgba(88,101,242,0.4); transition: var(--tr);
-}
-.discord-join-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-.discord-later-btn {
-    display: block; margin: 12px auto 0; background: none; border: none;
-    color: var(--lo); font-size: 0.78rem; font-weight: 700; cursor: pointer;
-    font-family: 'Tajawal', sans-serif; padding: 4px;
-}
-.discord-later-btn:hover { color: var(--mid); filter: none; transform: none; }
-
 </style>
 </head>
 <body>
-
-<!-- Discord Invite Modal -->
-<div class="discord-modal-overlay" id="discordModal">
-    <div class="discord-modal-box">
-        <button class="discord-close-btn" id="discordCloseBtn">✕</button>
-        <div class="discord-icon">🎮</div>
-        <h3>انضم لسيرفر الديسكورد!</h3>
-        <p>تابع آخر تحديثات الموقع، اتكلم مع باقي الأعضاء، واحصل على دعم مباشر من الإدارة.</p>
-        <a class="discord-join-btn" href="https://discord.gg/9f5Sk6yMC" target="_blank" rel="noopener noreferrer" id="discordJoinBtn">🎮 انضم دلوقتي</a>
-        <button class="discord-later-btn" id="discordLaterBtn">لأ، بعدين</button>
-    </div>
-</div>
-
 
 <!-- Background -->
 <div class="bg-canvas"></div>
@@ -763,12 +676,6 @@ header { display: none; }
         <button class="nav-btn c-market"  onclick="location.href='market.html'">   <span class="nav-btn-badge">جديد</span><span class="nb-icon">🛒</span><span class="nb-label">سوق التبادل</span></button>
         <button class="nav-btn c-partner" onclick="location.href='partners.html'"> <span class="nav-btn-badge">جديد</span><span class="nb-icon">🤝</span><span class="nb-label">شركاء التبادل</span></button>
 
-<script>(function(s){s.dataset.zone='11431310',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
-
-
-
-        
         <div class="nav-group-label">👥 المجتمع</div>
         <button class="nav-btn c-pink"    onclick="location.href='community.html'"><span class="nb-icon">🗣️</span><span class="nb-label">المجتمع</span></button>
         <button class="nav-btn c-gold"    onclick="location.href='leaderboard.html'"><span class="nb-icon">🏆</span><span class="nb-label">ليدربورد</span></button>
@@ -810,11 +717,6 @@ header { display: none; }
     </div>
     <div class="scripts-grid" id="featScripts">
         <div style="color:var(--lo);text-align:center;padding:28px;grid-column:1/-1;font-size:0.82rem">⏳ جارٍ التحميل...</div>
-    </div>
-
-    <!-- Ad: Banner -->
-    <div class="ad-slot" id="ad-banner-1">
-        <script>(function(s){s.dataset.zone='11431110',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     </div>
 
     <!-- User Pages -->
@@ -983,27 +885,8 @@ loadStats();
 loadAnnouncement();
 loadUserPages();
 
-/* ── Discord Invite Modal ── */
-(function(){
-    const modal = document.getElementById('discordModal');
-    if(!modal) return;
-    if(!sessionStorage.getItem('discordModalSeen')){
-        setTimeout(()=>modal.classList.add('open'), 500);
-    }
-    function closeModal(){
-        modal.classList.remove('open');
-        sessionStorage.setItem('discordModalSeen','1');
-    }
-    document.getElementById('discordCloseBtn').onclick = closeModal;
-    document.getElementById('discordLaterBtn').onclick = closeModal;
-    document.getElementById('discordJoinBtn').addEventListener('click', closeModal);
-    modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
-})();
 
 </script>
-
-<!-- Monetag In-Page Push -->
-<script>(function(s){s.dataset.zone='11428953',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 <!-- تسجيل هذه الصفحة ضمن المتصلين الآن فعليًا -->
 <script type="module" src="presence.js"></script>
