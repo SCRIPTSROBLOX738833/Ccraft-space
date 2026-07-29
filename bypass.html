@@ -164,13 +164,8 @@
     </div>
 
     <script>
-        // تحديد اسم اليوزر والريبو تلقائياً من رابط GitHub Pages
-        const pathSegments = window.location.pathname.split('/').filter(Boolean);
-        const REPO_OWNER = window.location.hostname.split('.')[0];
-        const REPO_NAME = pathSegments[0] || '';
-
-        // Personal Access Token الخاص بإرسال الـ Dispatch
-        const GITHUB_TOKEN = "github_pat_XXXXXXXXXXXXXX";
+        // رابط قاعدة بيانات Firebase الخاصة بمشروع CCRAFT SPACE Scripts
+        const FIREBASE_DB_URL = "https://ccraft-space-scripts-default-rtdb.firebaseio.com";
 
         const startBtn = document.getElementById('startBtn');
         const statusBox = document.getElementById('statusBox');
@@ -178,44 +173,80 @@
         const keyText = document.getElementById('keyText');
 
         startBtn.addEventListener('click', async () => {
-            const url = document.getElementById('urlInput').value;
+            const url = document.getElementById('urlInput').value.trim();
             if (!url) return alert('يرجى وضع الرابط أولاً!');
+
+            const requestId = 'req_' + Date.now();
 
             startBtn.disabled = true;
             statusBox.style.display = 'block';
             statusBox.className = 'status loading';
-            statusBox.innerText = 'جاري إرسال الأوامر لـ GitHub Actions... يرجى الانتظار';
+            statusBox.innerText = 'تم تسجيل الطلب، جاري التخطي عبر البوت... يرجى الانتظار';
             resultBox.style.display = 'none';
 
             try {
-                const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
+                // 1. كتابة طلب التخطي في Realtime Database
+                const res = await fetch(`${FIREBASE_DB_URL}/requests/${requestId}.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        event_type: 'run-bypass',
-                        client_payload: { url: url }
+                        url: url,
+                        status: 'pending',
+                        timestamp: Date.now()
                     })
                 });
 
-                if (res.status === 204) {
-                    statusBox.className = 'status success';
-                    statusBox.innerText = 'تم تشغيل البوت بنجاح! يمكنك متابعة العملية من تبويب Actions في المستودع.';
+                if (res.ok) {
+                    // 2. الانتظار والاستماع لوصول المفتاح من البوت
+                    listenForKey(requestId);
                 } else {
                     statusBox.className = 'status error';
-                    statusBox.innerText = 'فشل الاتصال بـ GitHub API. تأكد من صلاحيات الـ Token ووجود حدث run-bypass.';
+                    statusBox.innerText = 'فشل في الاتصال بقاعدة البيانات. تأكد من إعدادات Firebase Rules.';
+                    startBtn.disabled = false;
                 }
             } catch (err) {
                 statusBox.className = 'status error';
-                statusBox.innerText = 'حدث خطأ في الاتصال بالخادم.';
+                statusBox.innerText = 'حدث خطأ في الاتصال بالسيرفر.';
                 console.error(err);
-            } finally {
                 startBtn.disabled = false;
             }
         });
+
+        function listenForKey(requestId) {
+            let attempts = 0;
+            const maxAttempts = 40; // ينتظر لمدة دقيقتين ونصف تقريباً
+
+            const interval = setInterval(async () => {
+                attempts++;
+                try {
+                    const response = await fetch(`${FIREBASE_DB_URL}/requests/${requestId}.json`);
+                    const data = await response.json();
+
+                    if (data && data.status === 'completed' && data.key) {
+                        clearInterval(interval);
+                        statusBox.className = 'status success';
+                        statusBox.innerText = 'تم التخطي بنجاح!';
+                        resultBox.style.display = 'block';
+                        keyText.innerText = data.key;
+                        startBtn.disabled = false;
+                    } else if (data && data.status === 'failed') {
+                        clearInterval(interval);
+                        statusBox.className = 'status error';
+                        statusBox.innerText = 'فشل التخطي: ' + (data.error || 'حدث خطأ أثناء استخراج المفتاح');
+                        startBtn.disabled = false;
+                    }
+                } catch (err) {
+                    console.error('Error fetching key:', err);
+                }
+
+                if (attempts >= maxAttempts) {
+                    clearInterval(interval);
+                    statusBox.className = 'status error';
+                    statusBox.innerText = 'انتهت المهلة بدون استلام المفتاح. يرجى إعادة المحاولة.';
+                    startBtn.disabled = false;
+                }
+            }, 4000);
+        }
 
         function copyKey() {
             const text = keyText.innerText;
