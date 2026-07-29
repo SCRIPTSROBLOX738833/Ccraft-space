@@ -27,6 +27,7 @@
             position: relative;
         }
 
+        /* خلفية النجوم المتحركة */
         .stars {
             position: fixed;
             top: 0;
@@ -163,10 +164,13 @@
     </div>
 
     <script>
-        // === بيانات GitHub الخاصة بك ===
-        const GITHUB_TOKEN = "github_pat_XXXXXXXXXXXXXX"; // استبدل بـ Personal Access Token بتاعك
-        const REPO_OWNER = "حسابك_على_جيت_هاب";             // اسم المستخدم بتاعك
-        const REPO_NAME = "اسم_المستودع";                   // اسم الريبو
+        // تحديد اسم اليوزر والريبو تلقائياً من رابط GitHub Pages
+        const pathSegments = window.location.pathname.split('/').filter(Boolean);
+        const REPO_OWNER = window.location.hostname.split('.')[0];
+        const REPO_NAME = pathSegments[0] || '';
+
+        // Personal Access Token الخاص بإرسال الـ Dispatch
+        const GITHUB_TOKEN = "github_pat_XXXXXXXXXXXXXX";
 
         const startBtn = document.getElementById('startBtn');
         const statusBox = document.getElementById('statusBox');
@@ -180,11 +184,10 @@
             startBtn.disabled = true;
             statusBox.style.display = 'block';
             statusBox.className = 'status loading';
-            statusBox.innerText = 'تم إرسال الأوامر للباك إند... جاري تشغيل البوت في GitHub Actions (قد يستغرق 1-2 دقيقة)';
+            statusBox.innerText = 'جاري إرسال الأوامر لـ GitHub Actions... يرجى الانتظار';
             resultBox.style.display = 'none';
 
             try {
-                // إرسال طلب dispatch لتشغيل الـ Workflow
                 const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
                     method: 'POST',
                     headers: {
@@ -200,14 +203,14 @@
 
                 if (res.status === 204) {
                     statusBox.className = 'status success';
-                    statusBox.innerText = 'تم تشغيل البوت بنجاح على GitHub! يمكنك متابعة السجلات (Logs) للحصول على الكود.';
+                    statusBox.innerText = 'تم تشغيل البوت بنجاح! يمكنك متابعة العملية من تبويب Actions في المستودع.';
                 } else {
                     statusBox.className = 'status error';
-                    statusBox.innerText = 'فشل في الاتصال بـ GitHub API، تأكد من صحة الـ Token والمعلومات.';
+                    statusBox.innerText = 'فشل الاتصال بـ GitHub API. تأكد من صلاحيات الـ Token ووجود حدث run-bypass.';
                 }
             } catch (err) {
                 statusBox.className = 'status error';
-                statusBox.innerText = 'حدث خطأ أثناء الاتصال بالخادم.';
+                statusBox.innerText = 'حدث خطأ في الاتصال بالخادم.';
                 console.error(err);
             } finally {
                 startBtn.disabled = false;
