@@ -27,7 +27,6 @@
             position: relative;
         }
 
-        /* خلفية النجوم المتحركة */
         .stars {
             position: fixed;
             top: 0;
@@ -164,7 +163,11 @@
     </div>
 
     <script>
-        const API_URL = "https://8000-iwtgqaljh1zol4jk1c0r3-0b4eef62.sg1.manus.computer/api/bypass";
+        // === بيانات GitHub الخاصة بك ===
+        const GITHUB_TOKEN = "github_pat_XXXXXXXXXXXXXX"; // استبدل بـ Personal Access Token بتاعك
+        const REPO_OWNER = "حسابك_على_جيت_هاب";             // اسم المستخدم بتاعك
+        const REPO_NAME = "اسم_المستودع";                   // اسم الريبو
+
         const startBtn = document.getElementById('startBtn');
         const statusBox = document.getElementById('statusBox');
         const resultBox = document.getElementById('resultBox');
@@ -174,34 +177,37 @@
             const url = document.getElementById('urlInput').value;
             if (!url) return alert('يرجى وضع الرابط أولاً!');
 
-            // إعادة ضبط الواجهة
             startBtn.disabled = true;
             statusBox.style.display = 'block';
             statusBox.className = 'status loading';
-            statusBox.innerText = 'جاري التخطي... قد يستغرق الأمر دقيقة (يرجى الانتظار)';
+            statusBox.innerText = 'تم إرسال الأوامر للباك إند... جاري تشغيل البوت في GitHub Actions (قد يستغرق 1-2 دقيقة)';
             resultBox.style.display = 'none';
 
             try {
-                const response = await fetch(API_URL, {
+                // إرسال طلب dispatch لتشغيل الـ Workflow
+                const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: url })
+                    headers: {
+                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        event_type: 'run-bypass',
+                        client_payload: { url: url }
+                    })
                 });
 
-                const data = await response.json();
-
-                if (data.success) {
+                if (res.status === 204) {
                     statusBox.className = 'status success';
-                    statusBox.innerText = 'تم التخطي بنجاح!';
-                    resultBox.style.display = 'block';
-                    keyText.innerText = data.key;
+                    statusBox.innerText = 'تم تشغيل البوت بنجاح على GitHub! يمكنك متابعة السجلات (Logs) للحصول على الكود.';
                 } else {
                     statusBox.className = 'status error';
-                    statusBox.innerText = 'فشل: ' + (data.error || 'حدث خطأ غير معروف');
+                    statusBox.innerText = 'فشل في الاتصال بـ GitHub API، تأكد من صحة الـ Token والمعلومات.';
                 }
             } catch (err) {
                 statusBox.className = 'status error';
-                statusBox.innerText = 'فشل الاتصال بالسيرفر. تأكد من أن الـ API يعمل.';
+                statusBox.innerText = 'حدث خطأ أثناء الاتصال بالخادم.';
                 console.error(err);
             } finally {
                 startBtn.disabled = false;
