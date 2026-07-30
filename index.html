@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,783 +11,463 @@
     <meta property="og:image" content="https://ccraftspace.github.io/cCraft.jpg">
     <meta property="og:type" content="website">
     <meta name="referrer" content="no-referrer-when-downgrade" />
-    
+
     <link rel="icon" type="image/jpeg" href="cCraft.jpg">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 /* ════════════════════════════════════════
-   RESET & BASE
+   TOKENS
 ════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    --ink:    #07080f;
-    --ink2:   #0c0e1c;
-    --ink3:   #131628;
-    --violet: #8b5cf6;
-    --cyan:   #00f2fe;
-    --pink:   #f472b6;
-    --gold:   #fbbf24;
-    --green:  #4ade80;
-    --red:    #f87171;
-    --hi:     #f0f0ff;
-    --mid:    #7878a0;
-    --lo:     #3a3a52;
-    --border: rgba(255,255,255,0.07);
-    --glow-v: rgba(139,92,246,0.18);
-    --glow-c: rgba(0,242,254,0.12);
-    --tr:     all 0.22s cubic-bezier(0.4,0,0.2,1);
+    --void:    #0c0e13;
+    --panel:   #15181f;
+    --panel2:  #1b1f28;
+    --line:    rgba(255,255,255,0.08);
+    --signal:  #baff39;
+    --signal2: rgba(186,255,57,0.12);
+    --amber:   #ffb454;
+    --coral:   #ff6b6b;
+    --frost:   #eef1f6;
+    --ash:     #838a9a;
+    --ash-dim: #565c6b;
+    --mono:    'JetBrains Mono', monospace;
+    --sans:    'Tajawal', sans-serif;
+    --tr:      all 0.2s cubic-bezier(0.4,0,0.2,1);
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-    font-family: 'Tajawal', sans-serif;
-    background: var(--ink);
-    color: var(--hi);
+    font-family: var(--sans);
+    background: var(--void);
+    color: var(--frost);
     overflow-x: hidden;
     min-height: 100vh;
 }
 
-header { display: none; }
-
-
-/* ════════════════════════════════════════
-   BACKGROUND CANVAS
-════════════════════════════════════════ */
+/* subtle grid texture */
 .bg-canvas {
     position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background:
-        radial-gradient(ellipse 100% 70% at 15% 10%, rgba(139,92,246,0.09) 0%, transparent 60%),
-        radial-gradient(ellipse 80%  60% at 85% 80%, rgba(0,242,254,0.07)  0%, transparent 60%),
-        radial-gradient(ellipse 60%  50% at 50% 50%, rgba(244,114,182,0.04) 0%, transparent 60%),
-        var(--ink);
-}
-
-/* Stars */
-.stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-.star {
-    position: absolute; border-radius: 50%;
-    background: white; opacity: 0;
-    animation: twinkle var(--d, 4s) var(--del, 0s) ease infinite;
-}
-@keyframes twinkle {
-    0%, 100% { opacity: 0; transform: scale(0.5); }
-    50% { opacity: var(--op, 0.6); transform: scale(1); }
-}
-
-/* Floating orbs */
-.orb {
-    position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
-    filter: blur(80px); animation: drift var(--dt, 12s) ease infinite alternate;
-}
-@keyframes drift {
-    from { transform: translate(0, 0) scale(1); }
-    to   { transform: translate(var(--tx, 40px), var(--ty, 30px)) scale(var(--sc, 1.1)); }
+    background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 42px 42px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 70%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 70%);
 }
 
 /* ════════════════════════════════════════
-   HERO
+   TOP BAR
+════════════════════════════════════════ */
+.topbar {
+    position: relative; z-index: 2;
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1080px; margin: 0 auto;
+    padding: 18px 20px;
+}
+
+.tb-brand { display: flex; align-items: center; gap: 10px; }
+.tb-logo { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; }
+.tb-name { font-family: var(--mono); font-weight: 700; font-size: 0.92rem; letter-spacing: 0.5px; }
+.tb-name span { color: var(--signal); }
+
+.tb-controls { display: flex; align-items: center; gap: 8px; }
+
+.lang-switch {
+    display: flex; align-items: center; font-family: var(--mono);
+    font-size: 0.72rem; font-weight: 700;
+    border: 1px solid var(--line); border-radius: 8px;
+    overflow: hidden; background: var(--panel);
+}
+.lang-switch button {
+    padding: 7px 12px; background: transparent; border: none;
+    color: var(--ash); cursor: pointer; font-family: var(--mono); font-weight: 700; font-size: 0.72rem;
+    transition: var(--tr);
+}
+.lang-switch button.active { background: var(--signal); color: #0c0e13; }
+
+.tb-icon-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--panel); border: 1px solid var(--line);
+    color: var(--frost); cursor: pointer; font-size: 1rem; text-decoration: none;
+    transition: var(--tr);
+}
+.tb-icon-btn:hover { border-color: var(--signal); color: var(--signal); }
+
+/* ════════════════════════════════════════
+   HERO — split terminal
 ════════════════════════════════════════ */
 .hero {
     position: relative; z-index: 1;
-    min-height: 100svh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 40px 20px 24px;
-    text-align: center;
-    transition: padding-top 0.3s ease;
+    max-width: 1080px; margin: 0 auto;
+    padding: 30px 20px 50px;
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 40px;
+    align-items: center;
 }
 
-/* Logo */
-.logo-wrap {
-    position: relative; display: inline-block;
-    margin-bottom: 30px;
+.hero-copy { position: relative; z-index: 1; }
+
+.eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    color: var(--signal); background: var(--signal2);
+    border: 1px solid rgba(186,255,57,0.3);
+    padding: 5px 12px; border-radius: 6px; margin-bottom: 18px;
+}
+.eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--signal); animation: blink 1.4s ease infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+.hero h1 {
+    font-size: clamp(2.1rem, 5vw, 3.2rem);
+    font-weight: 900; line-height: 1.12; margin-bottom: 16px;
+}
+.hero h1 .accent { color: var(--signal); }
+
+.hero-desc {
+    color: var(--ash); font-size: 1rem; line-height: 1.85;
+    max-width: 460px; margin-bottom: 26px;
 }
 
-.logo-ring {
-    position: absolute; inset: -12px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, #8b5cf6, #00f2fe, #f472b6, #8b5cf6);
-    animation: spin-ring 6s linear infinite;
-    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 3px));
-    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), black calc(100% - 3px));
-    opacity: 0.7;
+.hero-ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 34px; }
+
+.btn-primary, .btn-ghost {
+    font-family: var(--sans); font-weight: 800; font-size: 0.88rem;
+    padding: 12px 22px; border-radius: 10px; cursor: pointer; border: none;
+    display: inline-flex; align-items: center; gap: 8px; transition: var(--tr);
 }
+.btn-primary { background: var(--signal); color: #0c0e13; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(186,255,57,0.25); }
+.btn-ghost { background: transparent; color: var(--frost); border: 1px solid var(--line); }
+.btn-ghost:hover { border-color: var(--ash); }
 
-@keyframes spin-ring { to { transform: rotate(360deg); } }
+/* stat ticker */
+.stat-row { display: flex; gap: 22px; flex-wrap: wrap; }
+.stat-item { font-family: var(--mono); }
+.stat-num { font-size: 1.3rem; font-weight: 700; color: var(--frost); display: block; }
+.stat-lbl { font-size: 0.68rem; color: var(--ash-dim); text-transform: uppercase; letter-spacing: 0.5px; }
 
-.logo-glow-ring {
-    position: absolute; inset: -24px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%);
-    animation: pulse-glow 3s ease infinite;
+/* terminal window */
+.term-wrap { position: relative; }
+.term {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.5);
 }
-
-@keyframes pulse-glow {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.1); }
-}
-
-.site-logo {
-    width: 130px; height: 130px; border-radius: 50%;
-    object-fit: cover; display: block; position: relative; z-index: 1;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-    animation: logoIn 0.8s cubic-bezier(0.175,0.885,0.32,1.275) both;
-    transition: transform 0.3s ease;
-}
-
-.site-logo:hover { transform: scale(1.08) rotate(4deg); }
-
-@keyframes logoIn {
-    from { opacity: 0; transform: scale(0.4) rotate(-20deg); }
-    to   { opacity: 1; transform: scale(1) rotate(0); }
-}
-
-/* Title */
-.hero-title {
-    font-size: clamp(2.4rem, 8vw, 4.2rem);
-    font-weight: 900;
-    line-height: 1.15;
-    margin-bottom: 10px;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.7s 0.2s ease both;
-    letter-spacing: -0.02em;
-}
-
-.title-cc { background: linear-gradient(135deg, #a78bfa 0%, #00f2fe 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.title-raft { color: rgba(240,240,255,0.9); }
-
-.hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25);
-    border-radius: 50px; padding: 5px 14px;
-    font-size: 0.75rem; font-weight: 800; color: #a78bfa;
-    margin-bottom: 16px; position: relative; z-index: 1;
-    animation: fadeUp 0.7s 0.3s ease both;
-    letter-spacing: 0.5px; text-transform: uppercase;
-}
-
-.hero-sub {
-    color: var(--mid); font-size: clamp(0.88rem, 2.5vw, 1.05rem);
-    line-height: 1.85; max-width: 480px; margin: 0 auto 28px;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.7s 0.4s ease both;
-}
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.hero-donate-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: linear-gradient(135deg, rgba(251,191,36,0.14), rgba(244,114,182,0.08));
-    border: 1px solid rgba(251,191,36,0.3);
-    color: var(--hi); font-family: 'Tajawal', sans-serif;
-    font-weight: 800; font-size: 0.85rem;
-    border-radius: 50px; padding: 10px 22px;
-    margin-bottom: 28px; cursor: pointer;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.7s 0.4s ease both;
-    transition: var(--tr);
-}
-.hero-donate-btn:hover {
-    transform: translateY(-2px);
-    border-color: rgba(251,191,36,0.5);
-    box-shadow: 0 8px 22px rgba(251,191,36,0.2);
-}
-
-/* Live Stats Bar */
-.stats-bar {
-    display: flex; align-items: center; gap: 0;
-    background: rgba(13,14,28,0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border);
-    border-radius: 50px;
-    padding: 0; margin-bottom: 36px;
-    position: relative; z-index: 1;
-    animation: fadeUp 0.7s 0.5s ease both;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
-}
-
-.sb-item {
+.term-head {
     display: flex; align-items: center; gap: 8px;
-    padding: 10px 18px; font-size: 0.8rem; color: var(--mid);
-    white-space: nowrap; position: relative;
+    padding: 11px 14px; background: var(--panel2);
+    border-bottom: 1px solid var(--line);
 }
+.term-dot { width: 10px; height: 10px; border-radius: 50%; }
+.term-dot.r { background: #ff6159; } .term-dot.y { background: #ffbd2e; } .term-dot.g { background: #28ca42; }
+.term-title { font-family: var(--mono); font-size: 0.7rem; color: var(--ash); margin-inline-start: 8px; }
 
-.sb-item + .sb-item::before {
-    content: ''; position: absolute; right: 0; top: 20%; bottom: 20%;
-    width: 1px; background: var(--border);
+.term-body {
+    padding: 18px 20px; font-family: var(--mono); font-size: 0.8rem;
+    line-height: 1.9; min-height: 210px; direction: ltr; text-align: left;
 }
-
-.sb-val {
-    font-weight: 900; font-size: 0.92rem;
-    background: linear-gradient(135deg, #a78bfa, #67e8f9);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-
-.live-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: #4ade80;
-    box-shadow: 0 0 8px rgba(74,222,128,0.8);
-    animation: live-pulse 1.5s ease infinite;
-}
-
-@keyframes live-pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(74,222,128,0.8); }
-    50% { opacity: 0.3; box-shadow: none; }
-}
+.term-line { white-space: pre; }
+.tk-c { color: var(--ash-dim); } /* comment */
+.tk-kw { color: var(--signal); } /* keyword */
+.tk-fn { color: #7dd3fc; }       /* function/property */
+.tk-str { color: var(--amber); } /* string */
+.term-cursor { display: inline-block; width: 7px; height: 14px; background: var(--signal); vertical-align: middle; animation: blink 0.9s step-end infinite; }
 
 /* ════════════════════════════════════════
-   NAV GRID
+   MAIN LAYOUT — sidebar tree + content
 ════════════════════════════════════════ */
-.nav-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 9px;
-    width: min(780px, 95%);
+.main-wrap {
     position: relative; z-index: 1;
-    animation: fadeUp 0.7s 0.55s ease both;
-}
-
-.nav-btn {
-    position: relative;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 7px; padding: 17px 10px;
-    border-radius: 18px;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.025);
-    cursor: pointer; color: var(--hi);
-    font-family: 'Tajawal', sans-serif;
-    font-weight: 800; font-size: 0.8rem;
-    overflow: hidden; text-align: center;
-    transition: var(--tr);
-    animation: navIn 0.45s ease both;
-    backdrop-filter: blur(4px);
-}
-
-.nav-btn::after {
-    content: ''; position: absolute; inset: 0;
-    background: var(--nb-color, rgba(139,92,246,0.12));
-    opacity: 0; transition: opacity 0.22s;
-}
-
-.nav-btn:hover { transform: translateY(-6px) scale(1.03); filter: none; box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--nb-glow, rgba(139,92,246,0.35)); }
-.nav-btn:hover::after { opacity: 1; }
-.nav-btn:active { transform: scale(0.96); }
-
-/* Shimmer on hover */
-.nav-btn::before {
-    content: ''; position: absolute;
-    top: 0; left: -100%; width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
-    transition: left 0.5s ease;
-}
-.nav-btn:hover::before { left: 100%; }
-
-.nb-icon { font-size: 1.55rem; line-height: 1; position: relative; z-index: 1; }
-.nb-label { position: relative; z-index: 1; line-height: 1.2; }
-
-/* شارة "جديد" على أي زرار */
-.nav-btn-badge {
-    position: absolute; top: 6px; left: 6px; z-index: 2;
-    background: linear-gradient(135deg, #f87171, #fbbf24);
-    color: #07080f; font-size: 0.55rem; font-weight: 900;
-    padding: 2px 7px; border-radius: 50px;
-    letter-spacing: 0.3px;
-    animation: badgePulse 1.6s ease infinite;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-@keyframes badgePulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50%      { transform: scale(1.12); opacity: 0.85; }
-}
-
-/* Bottom accent lines */
-.nav-btn.c-violet  { border-bottom: 2.5px solid #8b5cf6; --nb-color: rgba(139,92,246,0.1); --nb-glow: rgba(139,92,246,0.4); }
-.nav-btn.c-cyan    { border-bottom: 2.5px solid #00f2fe; --nb-color: rgba(0,242,254,0.08); --nb-glow: rgba(0,242,254,0.35); }
-.nav-btn.c-pink    { border-bottom: 2.5px solid #f472b6; --nb-color: rgba(244,114,182,0.08); --nb-glow: rgba(244,114,182,0.35); }
-.nav-btn.c-orange  { border-bottom: 2.5px solid #fb923c; --nb-color: rgba(251,146,60,0.08);  --nb-glow: rgba(251,146,60,0.35); }
-.nav-btn.c-indigo  { border-bottom: 2.5px solid #818cf8; --nb-color: rgba(129,140,248,0.08); --nb-glow: rgba(129,140,248,0.35); }
-.nav-btn.c-gold    { border-bottom: 2.5px solid #fbbf24; --nb-color: rgba(251,191,36,0.08);  --nb-glow: rgba(251,191,36,0.35); }
-.nav-btn.c-green   { border-bottom: 2.5px solid #4ade80; --nb-color: rgba(74,222,128,0.08);  --nb-glow: rgba(74,222,128,0.35); }
-.nav-btn.c-red     { border-bottom: 2.5px solid #f87171; --nb-color: rgba(248,113,113,0.08); --nb-glow: rgba(248,113,113,0.35); }
-.nav-btn.c-purple  { border-bottom: 2.5px solid #a78bfa; --nb-color: rgba(167,139,250,0.1);  --nb-glow: rgba(167,139,250,0.35); }
-.nav-btn.c-emerald { border-bottom: 2.5px solid #34d399; --nb-color: rgba(52,211,153,0.08);  --nb-glow: rgba(52,211,153,0.35); }
-.nav-btn.c-blue    { border-bottom: 2.5px solid #60a5fa; --nb-color: rgba(96,165,250,0.08);  --nb-glow: rgba(96,165,250,0.35); }
-.nav-btn.c-rose    { border-bottom: 2.5px solid #fb7185; --nb-color: rgba(251,113,133,0.08); --nb-glow: rgba(251,113,133,0.35); }
-.nav-btn.c-teal    { border-bottom: 2.5px solid #2dd4bf; --nb-color: rgba(45,212,191,0.08);  --nb-glow: rgba(45,212,191,0.35); }
-
-/* Wide API button */
-.nav-btn.wide-2 { grid-column: span 2; flex-direction: row; gap: 10px; padding: 14px 20px; justify-content: center; }
-
-/* Create page button — extra special */
-.nav-btn.c-special {
-    grid-column: span 2;
-    background: linear-gradient(135deg, rgba(244,114,182,0.08), rgba(139,92,246,0.06));
-    border: 1px solid rgba(244,114,182,0.2);
-    border-bottom: 2.5px solid #f472b6;
-    --nb-glow: rgba(244,114,182,0.4);
-}
-
-/* APK Mods button — جديد */
-.nav-btn.c-apk {
-    background: linear-gradient(135deg, rgba(74,222,128,0.1), rgba(0,242,254,0.06));
-    border: 1px solid rgba(74,222,128,0.25);
-    border-bottom: 2.5px solid #4ade80;
-    --nb-glow: rgba(74,222,128,0.4);
-}
-
-/* شركاء التبادل — جديد */
-.nav-btn.c-partner {
-    background: linear-gradient(135deg, rgba(251,146,60,0.12), rgba(244,114,182,0.08));
-    border: 1px solid rgba(251,146,60,0.3);
-    border-bottom: 2.5px solid #fb923c;
-    --nb-glow: rgba(251,146,60,0.45);
-}
-
-/* سوق التبادل — جديد */
-.nav-btn.c-market {
-    background: linear-gradient(135deg, rgba(251,191,36,0.14), rgba(245,158,11,0.08));
-    border: 1px solid rgba(251,191,36,0.35);
-    border-bottom: 2.5px solid #fbbf24;
-    --nb-glow: rgba(251,191,36,0.5);
-}
-
-/* فحص أمان السكربتات */
-.nav-btn.c-safety {
-    background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(139,92,246,0.06));
-    border: 1px solid rgba(56,189,248,0.3);
-    border-bottom: 2.5px solid #38bdf8;
-    --nb-glow: rgba(56,189,248,0.45);
-}
-
-@keyframes navIn {
-    from { opacity: 0; transform: translateY(16px) scale(0.92); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Stagger nav buttons */
-.nav-btn:nth-of-type(1)  { animation-delay: 0.56s }
-.nav-btn:nth-of-type(2)  { animation-delay: 0.60s }
-.nav-btn:nth-of-type(3)  { animation-delay: 0.64s }
-.nav-btn:nth-of-type(4)  { animation-delay: 0.68s }
-.nav-btn:nth-of-type(5)  { animation-delay: 0.72s }
-.nav-btn:nth-of-type(6)  { animation-delay: 0.76s }
-.nav-btn:nth-of-type(7)  { animation-delay: 0.80s }
-.nav-btn:nth-of-type(8)  { animation-delay: 0.84s }
-.nav-btn:nth-of-type(9)  { animation-delay: 0.88s }
-.nav-btn:nth-of-type(10) { animation-delay: 0.92s }
-.nav-btn:nth-of-type(11) { animation-delay: 0.96s }
-.nav-btn:nth-of-type(12) { animation-delay: 1.00s }
-.nav-btn:nth-of-type(13) { animation-delay: 1.04s }
-.nav-btn:nth-of-type(14) { animation-delay: 1.08s }
-.nav-btn:nth-of-type(15) { animation-delay: 1.12s }
-.nav-btn:nth-of-type(16) { animation-delay: 1.16s }
-.nav-btn:nth-of-type(17) { animation-delay: 1.20s }
-.nav-btn:nth-of-type(18) { animation-delay: 1.24s }
-
-/* عناوين المجموعات — نص واضح فوق كل مجموعة أزرار */
-.nav-group-label {
-    grid-column: 1 / -1;
-    display: flex; align-items: center; gap: 8px;
-    font-size: 0.68rem; font-weight: 900; color: var(--mid);
-    text-transform: uppercase; letter-spacing: 1px;
-    padding: 2px 2px 0; margin-top: 6px;
-}
-.nav-group-label:first-child { margin-top: 0; }
-.nav-group-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-/* ════════════════════════════════════════
-   SCROLL INDICATOR
-════════════════════════════════════════ */
-.scroll-hint {
-    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    color: var(--lo); font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
-    animation: bounce 2s ease infinite; z-index: 1;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(6px); }
-}
-
-/* ════════════════════════════════════════
-   CONTENT SECTIONS
-════════════════════════════════════════ */
-.content-wrap {
-    position: relative; z-index: 1;
-    max-width: 920px; margin: 0 auto;
+    max-width: 1080px; margin: 0 auto;
     padding: 0 20px 80px;
+    display: grid; grid-template-columns: 250px 1fr; gap: 22px;
+    align-items: start;
 }
 
-/* Announcement banner */
-.ann-banner {
-    display: none;
-    background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.07));
-    border: 1px solid rgba(139,92,246,0.28);
-    border-radius: 16px; padding: 14px 18px;
-    margin-bottom: 8px;
-    align-items: center; gap: 12px;
-    animation: fadeUp 0.5s ease both;
-    position: relative; overflow: hidden;
+/* file-tree nav */
+.tree {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px 10px;
+    position: sticky; top: 18px;
+    font-family: var(--mono); font-size: 0.8rem;
+}
+.tree-group { margin-bottom: 4px; }
+.tree-group-label {
+    color: var(--ash-dim); font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.6px;
+    padding: 10px 10px 6px;
+}
+.tree-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border-radius: 7px; cursor: pointer;
+    color: var(--frost); text-decoration: none;
+    transition: var(--tr); position: relative;
+}
+.tree-item:hover { background: var(--panel2); color: var(--signal); }
+.tree-item .ti-icon { font-size: 0.85rem; width: 16px; text-align: center; }
+.tree-item .ti-new {
+    font-size: 0.58rem; font-weight: 700; color: #0c0e13; background: var(--amber);
+    padding: 1px 5px; border-radius: 4px; margin-inline-start: auto;
 }
 
-.ann-banner::before {
-    content: ''; position: absolute; right: 0; top: 0; bottom: 0;
-    width: 3px; background: linear-gradient(to bottom, #8b5cf6, #00f2fe);
-}
-
-.ann-banner.show { display: flex; }
-.ann-icon { font-size: 1.2rem; flex-shrink: 0; }
-.ann-text { flex: 1; font-size: 0.88rem; color: var(--hi); line-height: 1.5; }
-.ann-close { background: none; border: none; color: var(--lo); cursor: pointer; font-size: 1rem; margin: 0; padding: 0; transition: color 0.2s; }
-.ann-close:hover { color: var(--red); }
-
-/* Section header */
+/* content column */
 .sec-head {
     display: flex; align-items: center; justify-content: space-between;
-    margin: 52px 0 18px;
+    margin: 0 0 14px;
 }
-
 .sec-head h3 {
-    font-size: 0.88rem; font-weight: 900; color: var(--hi);
-    display: flex; align-items: center; gap: 9px;
-    text-transform: uppercase; letter-spacing: 1px;
+    font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--frost);
+    display: flex; align-items: center; gap: 8px;
 }
-
-.sec-head h3::before {
-    content: ''; width: 3px; height: 18px; border-radius: 2px;
-    background: linear-gradient(to bottom, #8b5cf6, #00f2fe);
-}
-
+.sec-head h3::before { content: '›'; color: var(--signal); font-weight: 900; }
 .sec-all {
-    font-size: 0.75rem; font-weight: 800; color: var(--violet);
-    background: none; border: none; cursor: pointer;
-    font-family: 'Tajawal', sans-serif; padding: 6px 12px;
-    border-radius: 8px; transition: var(--tr); margin: 0;
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 700; color: var(--signal);
+    background: none; border: none; cursor: pointer; padding: 4px 8px;
 }
-.sec-all:hover { background: rgba(139,92,246,0.12); color: var(--hi); transform: none; filter: none; }
+.sec-all:hover { text-decoration: underline; }
 
-/* ════════════════════════════════════════
-   SCRIPT CARDS
-════════════════════════════════════════ */
-.scripts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
-    gap: 12px;
-}
+.content-section { margin-bottom: 40px; }
 
+/* script cards as mini terminal files */
+.scripts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 12px; }
 .feat-card {
-    background: rgba(13,14,28,0.6);
-    border: 1px solid var(--border);
-    border-radius: 16px; padding: 18px;
-    cursor: pointer; transition: var(--tr);
-    position: relative; overflow: hidden;
-    backdrop-filter: blur(8px);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    overflow: hidden; cursor: pointer; transition: var(--tr);
 }
+.feat-card:hover { border-color: var(--signal); transform: translateY(-3px); }
+.feat-head { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--panel2); border-bottom: 1px solid var(--line); }
+.feat-head .fdot { width: 7px; height: 7px; border-radius: 50%; }
+.feat-head .fdot.r{background:#ff6159}.feat-head .fdot.y{background:#ffbd2e}.feat-head .fdot.g{background:#28ca42}
+.feat-body { padding: 14px; }
+.fc-title { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fc-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-family: var(--mono); }
+.fc-cat { background: var(--signal2); color: var(--signal); padding: 2px 8px; border-radius: 5px; font-size: 0.62rem; font-weight: 700; }
+.fc-map { background: rgba(125,211,252,0.1); color: #7dd3fc; padding: 2px 8px; border-radius: 5px; font-size: 0.62rem; font-weight: 700; }
+.fc-stat { font-size: 0.68rem; color: var(--ash); }
 
-.feat-card::before {
-    content: ''; position: absolute; top: 0; right: 0;
-    width: 3px; height: 100%;
-    background: linear-gradient(to bottom, #8b5cf6, transparent);
-    opacity: 0; transition: opacity 0.3s;
-}
-
-.feat-card:hover {
-    border-color: rgba(139,92,246,0.3);
-    transform: translateY(-5px);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.12);
-}
-
-.feat-card:hover::before { opacity: 1; }
-
-.fc-title {
-    font-size: 0.92rem; font-weight: 800; color: var(--hi);
-    margin-bottom: 8px; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis;
-}
-
-.fc-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-
-.fc-cat {
-    background: rgba(139,92,246,0.12); color: #a78bfa;
-    padding: 2px 9px; border-radius: 50px;
-    font-size: 0.65rem; font-weight: 800;
-    border: 1px solid rgba(139,92,246,0.2);
-}
-
-.fc-map {
-    background: rgba(0,242,254,0.07); color: #67e8f9;
-    padding: 2px 9px; border-radius: 50px;
-    font-size: 0.65rem; font-weight: 800;
-    border: 1px solid rgba(0,242,254,0.18);
-}
-
-.fc-stat { font-size: 0.7rem; color: var(--lo); }
-
-/* ════════════════════════════════════════
-   USER PAGES GALLERY
-════════════════════════════════════════ */
-.pages-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 10px;
-}
-
-.page-card {
-    background: rgba(13,14,28,0.6);
-    border: 1px solid var(--border);
-    border-radius: 14px; overflow: hidden;
-    cursor: pointer; transition: var(--tr);
-    backdrop-filter: blur(8px);
-}
-
-.page-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.4); }
-
-.pc-banner {
-    height: 68px; display: flex;
-    align-items: center; justify-content: center;
-    font-size: 2.2rem;
-}
-
+/* user pages */
+.pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 10px; }
+.page-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; cursor: pointer; transition: var(--tr); }
+.page-card:hover { transform: translateY(-3px); border-color: var(--signal); }
+.pc-banner { height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.9rem; }
 .pc-body { padding: 10px 12px; }
-.pc-name  { font-size: 0.82rem; font-weight: 800; color: var(--hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pc-meta  { font-size: 0.65rem; color: var(--lo); margin-top: 1px; }
+.pc-name { font-family: var(--mono); font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-meta { font-size: 0.65rem; color: var(--ash-dim); margin-top: 2px; }
 
-/* ════════════════════════════════════════
-   QUICK ACTIONS
-════════════════════════════════════════ */
-.actions-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+/* quick actions — command list */
+.cmd-list { display: flex; flex-direction: column; gap: 8px; }
+.cmd-item {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; cursor: pointer; transition: var(--tr);
 }
+.cmd-item:hover { border-color: var(--signal); }
+.cmd-prompt { font-family: var(--mono); color: var(--signal); font-weight: 700; }
+.cmd-icon { font-size: 1.3rem; }
+.cmd-title { font-weight: 800; font-size: 0.86rem; }
+.cmd-desc { font-size: 0.72rem; color: var(--ash); margin-top: 2px; }
 
-.action-card {
-    background: rgba(13,14,28,0.6);
-    border: 1px solid var(--border);
-    border-radius: 16px; padding: 18px;
-    cursor: pointer; transition: var(--tr);
-    display: flex; align-items: center; gap: 14px;
-    position: relative; overflow: hidden;
-    backdrop-filter: blur(8px);
+/* announcement */
+.ann-banner {
+    display: none; align-items: center; gap: 10px;
+    background: var(--panel); border: 1px solid var(--amber);
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 30px;
+    font-family: var(--mono); font-size: 0.78rem;
 }
+.ann-banner.show { display: flex; }
+.ann-text { flex: 1; }
+.ann-close { background: none; border: none; color: var(--ash); cursor: pointer; font-size: 1rem; }
 
-.action-card::after {
-    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
-    height: 1px; background: linear-gradient(90deg, transparent, var(--ac-color, rgba(139,92,246,0.3)), transparent);
-}
-
-.action-card:hover {
-    border-color: var(--ac-color, rgba(139,92,246,0.3));
-    transform: translateY(-4px);
-    box-shadow: 0 14px 36px rgba(0,0,0,0.4);
-}
-
-.ac-icon { font-size: 1.9rem; flex-shrink: 0; }
-.ac-title { font-size: 0.88rem; font-weight: 800; color: var(--hi); margin-bottom: 3px; }
-.ac-desc  { font-size: 0.7rem; color: var(--lo); line-height: 1.5; }
-
-/* ════════════════════════════════════════
-   FOOTER
-════════════════════════════════════════ */
+/* footer */
 .site-footer {
-    position: relative; z-index: 1;
-    text-align: center; padding: 36px 20px;
-    border-top: 1px solid var(--border);
-    margin-top: 60px;
+    position: relative; z-index: 1; max-width: 1080px; margin: 0 auto;
+    padding: 26px 20px; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 0.74rem; color: var(--ash-dim);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
 }
+.footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+.footer-links a { color: var(--ash); text-decoration: none; }
+.footer-links a:hover { color: var(--signal); }
 
-.footer-links {
-    display: flex; justify-content: center; gap: 20px;
-    margin-bottom: 14px; flex-wrap: wrap;
-}
-
-.footer-links a {
-    color: var(--lo); text-decoration: none;
-    font-size: 0.76rem; font-weight: 700;
-    transition: color 0.2s;
-}
-
-.footer-links a:hover { color: var(--violet); }
-
-.footer-copy {
-    font-size: 0.72rem; color: var(--lo);
-    font-weight: 700; letter-spacing: 0.5px;
-}
+/* ════════════════════════════════════════
+   LTR (English) adjustments
+════════════════════════════════════════ */
+[dir="ltr"] .term-title { margin-inline-start: 8px; }
 
 /* ════════════════════════════════════════
    RESPONSIVE
 ════════════════════════════════════════ */
-@media (max-width: 640px) {
-    .nav-grid { grid-template-columns: repeat(3, 1fr); gap: 7px; }
-    .nav-btn  { padding: 13px 6px; font-size: 0.73rem; border-radius: 14px; }
-    .nb-icon  { font-size: 1.3rem; }
-    .nav-btn.wide-2, .nav-btn.c-special { grid-column: span 2; }
-    .stats-bar { flex-wrap: wrap; border-radius: 16px; }
-    .sb-item + .sb-item::before { display: none; }
-    .sb-item { padding: 8px 12px; }
-    .scripts-grid { grid-template-columns: 1fr; }
-    .actions-grid { grid-template-columns: 1fr; }
-    .site-logo { width: 110px; height: 110px; }
-    .hero { padding: 30px 14px 20px; }
+@media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .main-wrap { grid-template-columns: 1fr; }
+    .tree { position: static; }
 }
-
+@media (max-width: 480px) {
+    .hero-ctas { flex-direction: column; align-items: stretch; }
+}
 </style>
 </head>
 <body>
 
-<!-- Background -->
 <div class="bg-canvas"></div>
-<div class="stars" id="stars"></div>
-<div class="orb" style="width:500px;height:500px;top:-100px;right:-100px;background:radial-gradient(circle,rgba(139,92,246,0.08),transparent 70%);--dt:10s;--tx:50px;--ty:40px;--sc:1.1"></div>
-<div class="orb" style="width:400px;height:400px;bottom:-80px;left:-80px;background:radial-gradient(circle,rgba(0,242,254,0.06),transparent 70%);--dt:14s;--tx:-40px;--ty:-30px;--sc:1.08"></div>
 
-<header></header>
+<!-- ════ TOP BAR ════ -->
+<div class="topbar">
+    <div class="tb-brand">
+        <img src="cCraft.jpg" alt="CCRAFT SPACE" class="tb-logo">
+        <div class="tb-name">CCRAFT<span>_</span>SPACE</div>
+    </div>
+    <div class="tb-controls">
+        <div class="lang-switch">
+            <button id="btnAr" class="active" onclick="setLang('ar')">AR</button>
+            <button id="btnEn" onclick="setLang('en')">EN</button>
+        </div>
+        <a class="tb-icon-btn" href="profile.html" title="بروفايلي">👤</a>
+    </div>
+</div>
 
 <!-- ════ HERO ════ -->
 <section class="hero">
-
-    <div class="logo-wrap">
-        <div class="logo-glow-ring"></div>
-        <div class="logo-ring"></div>
-        <img src="cCraft.jpg" alt="CCRAFT SPACE" class="site-logo">
+    <div class="hero-copy">
+        <div class="eyebrow"><span class="dot"></span><span data-ar="منصة سكربتات Roblox العربية" data-en="The Arabic Roblox Scripts Platform">منصة سكربتات Roblox العربية</span></div>
+        <h1><span data-ar="كل سكربتات" data-en="Every">كل سكربتات</span> <span class="accent">Roblox</span> <span data-ar="في مكان واحد" data-en="in one place">في مكان واحد</span></h1>
+        <p class="hero-desc" data-ar="انسخ سكربتك، الصقه، وشغّله. مجتمع عربي كامل للسكربتات، البادجات، وأدوات الذكاء الاصطناعي." data-en="Copy a script, paste it, run it. A full Arabic community for scripts, badges, and AI tools.">انسخ سكربتك، الصقه، وشغّله. مجتمع عربي كامل للسكربتات، البادجات، وأدوات الذكاء الاصطناعي.</p>
+        <div class="hero-ctas">
+            <button class="btn-primary" onclick="location.href='scripts.html'">📜 <span data-ar="تصفح السكربتات" data-en="Browse Scripts">تصفح السكربتات</span></button>
+            <button class="btn-ghost" onclick="location.href='publish.html'"><span data-ar="انشر سكربتك" data-en="Publish yours">انشر سكربتك</span></button>
+        </div>
+        <div class="stat-row">
+            <div class="stat-item"><span class="stat-num" id="ls-scripts">—</span><span class="stat-lbl" data-ar="سكربت" data-en="scripts">سكربت</span></div>
+            <div class="stat-item"><span class="stat-num" id="ls-users">—</span><span class="stat-lbl" data-ar="مستخدم" data-en="users">مستخدم</span></div>
+            <div class="stat-item"><span class="stat-num" id="ls-likes">—</span><span class="stat-lbl" data-ar="لايك" data-en="likes">لايك</span></div>
+            <div class="stat-item"><span class="stat-num" id="ls-online">—</span><span class="stat-lbl" data-ar="أونلاين الآن" data-en="online now">أونلاين الآن</span></div>
+        </div>
     </div>
 
-    <div class="hero-badge">
-        <span class="live-dot"></span>
-        منصة سكربتات Roblox العربية
+    <div class="term-wrap">
+        <div class="term">
+            <div class="term-head">
+                <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+                <div class="term-title">welcome.lua</div>
+            </div>
+            <div class="term-body" id="termBody"></div>
+        </div>
     </div>
-
-    <h1 class="hero-title">
-        <span class="title-cc">CCRAFT</span><span class="title-raft"> SPACE</span>
-    </h1>
-
-    ⚡
-
-    
-    <!-- Live Stats -->
-    <div class="stats-bar">
-        <div class="sb-item"><div class="live-dot"></div> مباشر</div>
-        <div class="sb-item">📜 <span class="sb-val" id="ls-scripts">—</span> سكربت</div>
-        <div class="sb-item">👥 <span class="sb-val" id="ls-users">—</span> مستخدم</div>
-        <div class="sb-item">👍 <span class="sb-val" id="ls-likes">—</span> لايك</div>
-        <div class="sb-item">🟢 <span class="sb-val" id="ls-online">—</span> أونلاين</div>
-    </div>
-
-    <!-- Nav Grid -->
-    <nav class="nav-grid">
-        <div class="nav-group-label">🎯 الأساسيات</div>
-        <button class="nav-btn c-indigo"  onclick="location.href='scripts.html'">   <span class="nb-icon">📜</span><span class="nb-label">السكربتات</span></button>
-        <button class="nav-btn c-orange"  onclick="location.href='publish.html'">   <span class="nb-icon">📤</span><span class="nb-label">نشر سكربت</span></button>
-        <button class="nav-btn c-apk"     onclick="location.href='apks.html'">      <span class="nav-btn-badge">جديد</span><span class="nb-icon">📱</span><span class="nb-label">APK موديفايد</span></button>
-        
-        <button class="nav-btn c-purple"  onclick="location.href='hacks.html'">     <span class="nb-icon">⚡</span><span class="nb-label">هاكات</span></button>
-
-        <div class="nav-group-label">💰 التبادل</div>
-        <button class="nav-btn c-market"  onclick="location.href='market.html'">   <span class="nav-btn-badge">جديد</span><span class="nb-icon">🛒</span><span class="nb-label">سوق التبادل</span></button>
-        <button class="nav-btn c-partner" onclick="location.href='partners.html'"> <span class="nav-btn-badge">جديد</span><span class="nb-icon">🤝</span><span class="nb-label">شركاء التبادل</span></button>
-
-        <div class="nav-group-label">👥 المجتمع</div>
-        <button class="nav-btn c-pink"    onclick="location.href='community.html'"><span class="nb-icon">🗣️</span><span class="nb-label">المجتمع</span></button>
-        <button class="nav-btn c-gold"    onclick="location.href='leaderboard.html'"><span class="nb-icon">🏆</span><span class="nb-label">ليدربورد</span></button>
-        <button class="nav-btn c-green"   onclick="location.href='top-badges.html'"><span class="nb-icon">🏅</span><span class="nb-label">بادجات</span></button>
-
-        <div class="nav-group-label">🛠️ أدوات</div>
-        <button class="nav-btn c-cyan"    onclick="location.href='nova.html'">      <span class="nb-icon">🤖</span><span class="nb-label">NOVA AI</span></button>
-        <button class="nav-btn c-safety"  onclick="location.href='script-safety-check.html'"><span class="nb-icon">🛡️</span><span class="nb-label">فحص أمان سكربتات</span></button>
-
-        <div class="nav-group-label">👤 حسابك</div>
-        <button class="nav-btn c-violet"  onclick="location.href='profile.html'">   <span class="nb-icon">👤</span><span class="nb-label">بروفايلي</span></button>
-        <button class="nav-btn c-emerald" onclick="location.href='login.html'">     <span class="nb-icon">🔐</span><span class="nb-label">تسجيل الدخول</span></button>
-
-        <div class="nav-group-label">ℹ️ معلومات ودعم</div>
-        <button class="nav-btn c-red"     onclick="location.href='stats.html'">     <span class="nb-icon">📊</span><span class="nb-label">إحصائيات</span></button>
-        <button class="nav-btn c-blue"    onclick="location.href='help.html'">      <span class="nb-icon">🛠️</span><span class="nb-label">الدعم</span></button>
-        <button class="nav-btn c-rose"    onclick="window.open('https://t.me/cCraftspace','_blank')"><span class="nb-icon">📢</span><span class="nb-label">تلجرام</span></button>
-        <button class="nav-btn c-teal wide-2" onclick="location.href='api.html'">   <span class="nb-icon">🗝️</span><span class="nb-label">واجهة API للمطورين</span></button>
-        <button class="nav-btn c-special" onclick="location.href='page-builder.html'"><span class="nb-icon">🌐</span><span class="nb-label">أنشئ صفحتك!</span></button>
-    </nav>
-
-    <div class="scroll-hint">▼ اكتشف المزيد</div>
 </section>
 
-<!-- ════ CONTENT ════ -->
-<div class="content-wrap">
+<!-- ════ MAIN ════ -->
+<div class="main-wrap">
 
-    <!-- Announcement -->
-    <div class="ann-banner" id="annBanner">
-        <span class="ann-icon">📢</span>
-        <div class="ann-text" id="annText">—</div>
-        <button class="ann-close" onclick="this.closest('.ann-banner').classList.remove('show')">✕</button>
-    </div>
+    <!-- Sidebar file-tree nav -->
+    <nav class="tree">
+        <div class="tree-group">
+            <div class="tree-group-label" data-ar="الأساسيات" data-en="Basics">الأساسيات</div>
+            <a class="tree-item" href="scripts.html"><span class="ti-icon">📜</span><span data-ar="السكربتات" data-en="Scripts">السكربتات</span></a>
+            <a class="tree-item" href="publish.html"><span class="ti-icon">📤</span><span data-ar="نشر سكربت" data-en="Publish Script">نشر سكربت</span></a>
+            <a class="tree-item" href="apks.html"><span class="ti-icon">📱</span><span data-ar="APK موديفايد" data-en="Modded APKs">APK موديفايد</span><span class="ti-new">NEW</span></a>
+            <a class="tree-item" href="hacks.html"><span class="ti-icon">⚡</span><span data-ar="هاكات" data-en="Hacks">هاكات</span></a>
+        </div>
+        <div class="tree-group">
+            <div class="tree-group-label" data-ar="التبادل" data-en="Exchange">التبادل</div>
+            <a class="tree-item" href="market.html"><span class="ti-icon">🛒</span><span data-ar="سوق التبادل" data-en="Marketplace">سوق التبادل</span><span class="ti-new">NEW</span></a>
+            <a class="tree-item" href="partners.html"><span class="ti-icon">🤝</span><span data-ar="شركاء التبادل" data-en="Exchange Partners">شركاء التبادل</span><span class="ti-new">NEW</span></a>
+        </div>
+        <div class="tree-group">
+            <div class="tree-group-label" data-ar="المجتمع" data-en="Community">المجتمع</div>
+            <a class="tree-item" href="community.html"><span class="ti-icon">🗣️</span><span data-ar="المجتمع" data-en="Community">المجتمع</span></a>
+            <a class="tree-item" href="leaderboard.html"><span class="ti-icon">🏆</span><span data-ar="ليدربورد" data-en="Leaderboard">ليدربورد</span></a>
+            <a class="tree-item" href="top-badges.html"><span class="ti-icon">🏅</span><span data-ar="بادجات" data-en="Badges">بادجات</span></a>
+        </div>
+        <div class="tree-group">
+            <div class="tree-group-label" data-ar="أدوات" data-en="Tools">أدوات</div>
+            <a class="tree-item" href="nova.html"><span class="ti-icon">🤖</span><span data-ar="NOVA AI" data-en="NOVA AI">NOVA AI</span></a>
+            <a class="tree-item" href="script-safety-check.html"><span class="ti-icon">🛡️</span><span data-ar="فحص أمان سكربتات" data-en="Script Safety Check">فحص أمان سكربتات</span></a>
+        </div>
+        <div class="tree-group">
+            <div class="tree-group-label" data-ar="حسابك" data-en="Account">حسابك</div>
+            <a class="tree-item" href="profile.html"><span class="ti-icon">👤</span><span data-ar="بروفايلي" data-en="My Profile">بروفايلي</span></a>
+            <a class="tree-item" href="login.html"><span class="ti-icon">🔐</span><span data-ar="تسجيل الدخول" data-en="Login">تسجيل الدخول</span></a>
+        </div>
+        <div class="tree-group">
+            <div class="tree-group-label" data-ar="معلومات ودعم" data-en="Info & Support">معلومات ودعم</div>
+            <a class="tree-item" href="stats.html"><span class="ti-icon">📊</span><span data-ar="إحصائيات" data-en="Stats">إحصائيات</span></a>
+            <a class="tree-item" href="help.html"><span class="ti-icon">🛠️</span><span data-ar="الدعم" data-en="Support">الدعم</span></a>
+            <a class="tree-item" href="https://t.me/cCraftspace" target="_blank"><span class="ti-icon">📢</span><span data-ar="تلجرام" data-en="Telegram">تلجرام</span></a>
+            <a class="tree-item" href="api.html"><span class="ti-icon">🗝️</span><span data-ar="واجهة API" data-en="Developer API">واجهة API</span></a>
+            <a class="tree-item" href="page-builder.html"><span class="ti-icon">🌐</span><span data-ar="أنشئ صفحتك!" data-en="Create Your Page!">أنشئ صفحتك!</span></a>
+        </div>
+    </nav>
 
-    <!-- Latest Scripts -->
-    <div class="sec-head">
-        <h3>🔥 أحدث السكربتات</h3>
-        <button class="sec-all" onclick="location.href='scripts.html'">عرض الكل ←</button>
-    </div>
-    <div class="scripts-grid" id="featScripts">
-        <div style="color:var(--lo);text-align:center;padding:28px;grid-column:1/-1;font-size:0.82rem">⏳ جارٍ التحميل...</div>
-    </div>
+    <!-- Content column -->
+    <div>
+        <div class="ann-banner" id="annBanner">
+            <span>📢</span>
+            <div class="ann-text" id="annText">—</div>
+            <button class="ann-close" onclick="this.closest('.ann-banner').classList.remove('show')">✕</button>
+        </div>
 
-    <!-- User Pages -->
-    <div class="sec-head">
-        <h3>🌐 صفحات المستخدمين</h3>
-        <button class="sec-all" onclick="location.href='page-builder.html'">أنشئ صفحتك ←</button>
-    </div>
-    <div class="pages-grid" id="userPagesGallery">
-        <div style="color:var(--lo);text-align:center;padding:24px;grid-column:1/-1;font-size:0.8rem">⏳ جارٍ التحميل...</div>
-    </div>
+        <div class="content-section">
+            <div class="sec-head">
+                <h3 data-ar="أحدث السكربتات" data-en="Latest Scripts">أحدث السكربتات</h3>
+                <button class="sec-all" onclick="location.href='scripts.html'"><span data-ar="عرض الكل" data-en="View all">عرض الكل</span></button>
+            </div>
+            <div class="scripts-grid" id="featScripts">
+                <div style="color:var(--ash-dim);text-align:center;padding:24px;grid-column:1/-1;font-family:var(--mono);font-size:0.8rem" data-ar="جارٍ التحميل..." data-en="Loading...">جارٍ التحميل...</div>
+            </div>
+        </div>
 
-    <!-- Quick Actions -->
-    <div class="sec-head"><h3>⚡ إجراءات سريعة</h3></div>
-    <div class="actions-grid">
-        <div class="action-card" onclick="location.href='publish.html'" style="--ac-color:rgba(139,92,246,0.3)">
-            <span class="ac-icon">📤</span>
-            <div><div class="ac-title">انشر سكربت الآن</div><div class="ac-desc">شارك سكربتك واكسب لايكات وبادجات</div></div>
+        <div class="content-section">
+            <div class="sec-head">
+                <h3 data-ar="صفحات المستخدمين" data-en="User Pages">صفحات المستخدمين</h3>
+                <button class="sec-all" onclick="location.href='page-builder.html'"><span data-ar="أنشئ صفحتك" data-en="Create yours">أنشئ صفحتك</span></button>
+            </div>
+            <div class="pages-grid" id="userPagesGallery">
+                <div style="color:var(--ash-dim);text-align:center;padding:20px;grid-column:1/-1;font-family:var(--mono);font-size:0.78rem" data-ar="جارٍ التحميل..." data-en="Loading...">جارٍ التحميل...</div>
+            </div>
         </div>
-        <div class="action-card" onclick="location.href='apks.html'" style="--ac-color:rgba(74,222,128,0.35)">
-            <span class="ac-icon">📱</span>
-            <div><div class="ac-title">تصفح تطبيقات APK</div><div class="ac-desc">ألعاب وتطبيقات أندرويد معدلة — تحديث جديد</div></div>
-        </div>
-        <div class="action-card" onclick="location.href='profile.html'" style="--ac-color:rgba(244,114,182,0.3)">
-            <span class="ac-icon">🖼️</span>
-            <div><div class="ac-title">غيّر صورة البروفايل</div><div class="ac-desc">ارفع صورتك الشخصية وتظهر في الشات والسكربتات</div></div>
-        </div>
-        <div class="action-card" onclick="location.href='nova.html'" style="--ac-color:rgba(0,242,254,0.25)">
-            <span class="ac-icon">🤖</span>
-            <div><div class="ac-title">اسأل NOVA AI</div><div class="ac-desc">مساعدة فورية في الكود والسكربتات</div></div>
-        </div>
-        <div class="action-card" onclick="location.href='donate.html'" style="--ac-color:rgba(251,191,36,0.35)">
-            <span class="ac-icon">💛</span>
-            <div><div class="ac-title">تبرع للموقع بمشاهدة إعلان</div><div class="ac-desc">دعم مجاني بدون أي مقابل مادي منك</div></div>
+
+        <div class="content-section">
+            <div class="sec-head"><h3 data-ar="إجراءات سريعة" data-en="Quick Actions">إجراءات سريعة</h3></div>
+            <div class="cmd-list">
+                <div class="cmd-item" onclick="location.href='publish.html'">
+                    <span class="cmd-prompt">$</span><span class="cmd-icon">📤</span>
+                    <div><div class="cmd-title" data-ar="انشر سكربت الآن" data-en="Publish a script now">انشر سكربت الآن</div><div class="cmd-desc" data-ar="شارك سكربتك واكسب لايكات وبادجات" data-en="Share your script and earn likes and badges">شارك سكربتك واكسب لايكات وبادجات</div></div>
+                </div>
+                <div class="cmd-item" onclick="location.href='apks.html'">
+                    <span class="cmd-prompt">$</span><span class="cmd-icon">📱</span>
+                    <div><div class="cmd-title" data-ar="تصفح تطبيقات APK" data-en="Browse APK mods">تصفح تطبيقات APK</div><div class="cmd-desc" data-ar="ألعاب وتطبيقات أندرويد معدلة" data-en="Modded Android games and apps">ألعاب وتطبيقات أندرويد معدلة</div></div>
+                </div>
+                <div class="cmd-item" onclick="location.href='profile.html'">
+                    <span class="cmd-prompt">$</span><span class="cmd-icon">🖼️</span>
+                    <div><div class="cmd-title" data-ar="غيّر صورة البروفايل" data-en="Update your profile photo">غيّر صورة البروفايل</div><div class="cmd-desc" data-ar="ارفع صورتك الشخصية" data-en="Upload your own photo">ارفع صورتك الشخصية</div></div>
+                </div>
+                <div class="cmd-item" onclick="location.href='nova.html'">
+                    <span class="cmd-prompt">$</span><span class="cmd-icon">🤖</span>
+                    <div><div class="cmd-title" data-ar="اسأل NOVA AI" data-en="Ask NOVA AI">اسأل NOVA AI</div><div class="cmd-desc" data-ar="مساعدة فورية في الكود والسكربتات" data-en="Instant help with code and scripts">مساعدة فورية في الكود والسكربتات</div></div>
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
 
 <!-- Footer -->
 <footer class="site-footer">
     <div class="footer-links">
-        <a href="scripts.html">السكربتات</a>
+        <a href="scripts.html" data-ar="السكربتات" data-en="Scripts">السكربتات</a>
         <a href="apks.html">APK Mods</a>
-        <a href="leaderboard.html">الليدربورد</a>
-        <a href="stats.html">الإحصائيات</a>
+        <a href="leaderboard.html" data-ar="الليدربورد" data-en="Leaderboard">الليدربورد</a>
+        <a href="stats.html" data-ar="الإحصائيات" data-en="Stats">الإحصائيات</a>
         <a href="api.html">API</a>
-        <a href="help.html">الدعم</a>
-        <a href="privacy.html">الخصوصية</a>
-        <a href="https://t.me/cCraftspace" target="_blank">تلجرام</a>
+        <a href="help.html" data-ar="الدعم" data-en="Support">الدعم</a>
+        <a href="privacy.html" data-ar="الخصوصية" data-en="Privacy">الخصوصية</a>
+        <a href="https://t.me/cCraftspace" target="_blank" data-ar="تلجرام" data-en="Telegram">تلجرام</a>
     </div>
-    <div class="footer-copy">© CCRAFT SPACE 2026 — جميع الحقوق محفوظة</div>
+    <div data-ar="© CCRAFT SPACE 2026 — جميع الحقوق محفوظة" data-en="© CCRAFT SPACE 2026 — All rights reserved">© CCRAFT SPACE 2026 — جميع الحقوق محفوظة</div>
 </footer>
 
 <script type="module">
@@ -806,29 +486,16 @@ const fc = {
 };
 const app = getApps().length ? getApp() : initializeApp(fc), db = getDatabase(app);
 
-/* ── Stars ── */
-(function(){
-    const c = document.getElementById('stars');
-    for(let i = 0; i < 80; i++){
-        const s = document.createElement('div'); s.className = 'star';
-        const size = Math.random() * 2.5 + 0.5;
-        s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;--d:${2+Math.random()*5}s;--del:${Math.random()*6}s;--op:${0.3+Math.random()*0.5}`;
-        c.appendChild(s);
-    }
-})();
-
-/* ── Counter animation ── */
 function animCount(id, target){
     const el = document.getElementById(id); if(!el) return;
     let cur = 0; const step = Math.max(1, Math.ceil(target/40));
     const t = setInterval(()=>{
         cur = Math.min(cur+step, target);
-        el.innerText = cur.toLocaleString('ar-EG');
+        el.innerText = cur.toLocaleString('en-US');
         if(cur >= target) clearInterval(t);
     }, 35);
 }
 
-/* ── Load Stats ── */
 async function loadStats(){
     const [ss,us] = await Promise.all([get(ref(db,'scripts')), get(ref(db,'users'))]);
     const scripts = ss.exists() ? ss.val() : {};
@@ -840,35 +507,28 @@ async function loadStats(){
     loadFeaturedScripts(scripts);
 }
 
-/* ── Online Presence (حقيقي — مبني على presence.js) ── */
 let _lastOnline = -1;
-
 onValue(ref(db,'presence'), snap => {
     const realOnline = snap.exists()
         ? Object.values(snap.val()).filter(p => p.online && Date.now() - p.ts < 60000).length
         : 0;
-    // إحنا نفسنا بنتحسب أونلاين لحظة ما presence.js يشتغل، فأقل عدد منطقي هو 1
     const total = Math.max(realOnline, 1);
-    if (total !== _lastOnline) {
-        _lastOnline = total;
-        animCount('ls-online', total);
-    }
+    if (total !== _lastOnline) { _lastOnline = total; animCount('ls-online', total); }
 });
 
-/* ── Featured Scripts ── */
 function loadFeaturedScripts(scripts){
     const c = document.getElementById('featScripts'); c.innerHTML='';
     const latest = Object.entries(scripts).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0)).slice(0,6);
-    if(!latest.length){ c.innerHTML='<div style="color:var(--lo);text-align:center;padding:28px;grid-column:1/-1">لا توجد سكربتات بعد</div>'; return; }
+    if(!latest.length){ c.innerHTML='<div style="color:var(--ash-dim);text-align:center;padding:24px;grid-column:1/-1;font-family:var(--mono)">لا توجد سكربتات بعد</div>'; return; }
     latest.forEach(([id,s])=>{
         const card = document.createElement('div'); card.className='feat-card';
         card.onclick = () => location.href = `script.html?id=${id}`;
-        card.innerHTML = `<div class="fc-title">${s.title||'بدون عنوان'}</div><div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>${s.map?`<span class="fc-map">🗺️ ${s.map}</span>`:''}<span class="fc-stat">👍 ${s.likes||0}</span><span class="fc-stat">⭐ ${s.votes?(s.rating/s.votes).toFixed(1):'—'}</span></div>`;
+        card.innerHTML = `<div class="feat-head"><div class="fdot r"></div><div class="fdot y"></div><div class="fdot g"></div></div>
+        <div class="feat-body"><div class="fc-title">${s.title||'بدون عنوان'}</div><div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>${s.map?`<span class="fc-map">🗺️ ${s.map}</span>`:''}<span class="fc-stat">👍 ${s.likes||0}</span></div></div>`;
         c.appendChild(card);
     });
 }
 
-/* ── Announcements ── */
 async function loadAnnouncement(){
     const snap = await get(ref(db,'announcements')); if(!snap.exists()) return;
     const entries = Object.entries(snap.val()).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0));
@@ -880,27 +540,22 @@ async function loadAnnouncement(){
     }
 }
 
-/* ── User Pages ── */
 async function loadUserPages(){
     const snap = await get(ref(db,'userPages'));
     const c = document.getElementById('userPagesGallery');
     if(!snap.exists()){
-        c.innerHTML='<div style="color:var(--lo);text-align:center;padding:22px;grid-column:1/-1;font-size:0.78rem">لا توجد صفحات — <a href="page-builder.html" style="color:var(--violet)">كن أول من ينشئ!</a></div>';
+        c.innerHTML='<div style="color:var(--ash-dim);text-align:center;padding:20px;grid-column:1/-1;font-family:var(--mono);font-size:0.78rem">لا توجد صفحات — <a href="page-builder.html" style="color:var(--signal)">كن أول من ينشئ!</a></div>';
         return;
     }
     const pages = Object.entries(snap.val()).sort((a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0,8);
     c.innerHTML='';
     const TC={dark:'#8b5cf6',space:'#818cf8',ocean:'#00bcd4',sunset:'#f97316',forest:'#4ade80',neon:'#a78bfa'};
     pages.forEach(([uid,p])=>{
-        const accent = p.accent||TC[p.theme]||'#8b5cf6';
+        const accent = p.accent||TC[p.theme]||'#baff39';
         const name = (p.name||p.displayName||'مستخدم').replace(/[<>&"]/g,'');
         const card = document.createElement('div'); card.className='page-card';
-        card.style.setProperty('--acc', accent);
-        card.style.borderColor = accent+'22';
-        card.onmouseenter = () => card.style.borderColor = accent+'55';
-        card.onmouseleave = () => card.style.borderColor = accent+'22';
         card.onclick = () => location.href=`user-page.html?uid=${uid}`;
-        card.innerHTML = `<div class="pc-banner" style="background:linear-gradient(135deg,${accent}20,${accent}08)">🌐</div><div class="pc-body"><div class="pc-name">${name}</div><div class="pc-meta">صفحة شخصية</div></div>`;
+        card.innerHTML = `<div class="pc-banner" style="background:linear-gradient(135deg,${accent}22,${accent}08)">🌐</div><div class="pc-body"><div class="pc-name">${name}</div><div class="pc-meta">صفحة شخصية</div></div>`;
         c.appendChild(card);
     });
 }
@@ -908,8 +563,57 @@ async function loadUserPages(){
 loadStats();
 loadAnnouncement();
 loadUserPages();
+</script>
 
+<script>
+/* ── Terminal typing animation ── */
+const termLines = [
+    { text: '-- CCRAFT SPACE', cls: 'tk-c' },
+    { text: 'local Players = ', cls: '', tail: [{t:'game', cls:'tk-fn'},{t:':GetService(', cls:''},{t:'"Players"', cls:'tk-str'},{t:')', cls:''}] },
+    { text: 'local player = ', cls: '', tail: [{t:'Players.LocalPlayer', cls:'tk-fn'}] },
+    { text: '', tail: [{t:'print', cls:'tk-fn'},{t:'(', cls:''},{t:'"Welcome to CCRAFT SPACE"', cls:'tk-str'},{t:')', cls:''}] },
+];
 
+function buildLineHTML(line){
+    let html = line.text ? `<span class="${line.cls||''}">${line.text}</span>` : '';
+    if (line.tail) line.tail.forEach(seg => html += `<span class="${seg.cls||''}">${seg.t}</span>`);
+    return html;
+}
+
+async function typeTerminal(){
+    const body = document.getElementById('termBody');
+    body.innerHTML = '';
+    for (const line of termLines){
+        const div = document.createElement('div'); div.className = 'term-line';
+        body.appendChild(div);
+        const full = buildLineHTML(line);
+        const tmp = document.createElement('div'); tmp.innerHTML = full;
+        const plain = tmp.textContent;
+        for (let i = 1; i <= plain.length; i++){
+            div.textContent = plain.slice(0, i);
+            await new Promise(r => setTimeout(r, 16));
+        }
+        div.innerHTML = full;
+        await new Promise(r => setTimeout(r, 120));
+    }
+    const cursor = document.createElement('span'); cursor.className = 'term-cursor';
+    body.appendChild(cursor);
+    await new Promise(r => setTimeout(r, 2200));
+    typeTerminal();
+}
+typeTerminal();
+
+/* ── AR/EN toggle ── */
+function setLang(lang){
+    const html = document.getElementById('htmlRoot');
+    html.lang = lang;
+    html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+    document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+    document.querySelectorAll('[data-ar][data-en]').forEach(el => {
+        el.textContent = lang === 'ar' ? el.dataset.ar : el.dataset.en;
+    });
+}
 </script>
 
 <!-- تسجيل هذه الصفحة ضمن المتصلين الآن فعليًا -->
