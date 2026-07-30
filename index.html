@@ -14,50 +14,47 @@
 
     <link rel="icon" type="image/jpeg" href="cCraft.jpg">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
 /* ════════════════════════════════════════
-   TOKENS
+   TOKENS — obsidian & brass
 ════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    --void:    #0c0e13;
-    --panel:   #15181f;
-    --panel2:  #1b1f28;
-    --line:    rgba(255,255,255,0.08);
-    --signal:  #baff39;
-    --signal2: rgba(186,255,57,0.12);
-    --amber:   #ffb454;
-    --coral:   #ff6b6b;
-    --frost:   #eef1f6;
-    --ash:     #838a9a;
-    --ash-dim: #565c6b;
-    --mono:    'JetBrains Mono', monospace;
+    --ink:     #0b0c11;
+    --panel:   rgba(255,255,255,0.035);
+    --panel2:  rgba(255,255,255,0.06);
+    --line:    rgba(212,175,106,0.16);
+    --gold:    #d8b46b;
+    --gold-dim:#8a744a;
+    --gold-soft: rgba(216,180,107,0.1);
+    --emerald: #5b8770;
+    --frost:   #f3efe6;
+    --mid:     #9a97a3;
+    --mid-dim: #62606c;
+    --serif:   'Cormorant Garamond', serif;
     --sans:    'Tajawal', sans-serif;
-    --tr:      all 0.2s cubic-bezier(0.4,0,0.2,1);
+    --tr:      all 0.28s cubic-bezier(0.22,0.61,0.36,1);
 }
 
 html { scroll-behavior: smooth; }
 
 body {
     font-family: var(--sans);
-    background: var(--void);
+    background: var(--ink);
     color: var(--frost);
     overflow-x: hidden;
     min-height: 100vh;
 }
 
-/* subtle grid texture */
 .bg-canvas {
     position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-    background-size: 42px 42px;
-    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 70%);
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 70%);
+    background:
+        radial-gradient(ellipse 60% 45% at 50% -8%, rgba(216,180,107,0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 90% 100%, rgba(91,135,112,0.06) 0%, transparent 65%),
+        var(--ink);
 }
 
 /* ════════════════════════════════════════
@@ -66,249 +63,203 @@ body {
 .topbar {
     position: relative; z-index: 2;
     display: flex; align-items: center; justify-content: space-between;
-    max-width: 1080px; margin: 0 auto;
-    padding: 18px 20px;
+    max-width: 1040px; margin: 0 auto;
+    padding: 26px 20px 0;
 }
-
 .tb-brand { display: flex; align-items: center; gap: 10px; }
-.tb-logo { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; }
-.tb-name { font-family: var(--mono); font-weight: 700; font-size: 0.92rem; letter-spacing: 0.5px; }
-.tb-name span { color: var(--signal); }
+.tb-logo { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line); }
+.tb-name { font-weight: 800; font-size: 0.86rem; letter-spacing: 1.5px; color: var(--mid); }
+.tb-name b { color: var(--gold); font-weight: 800; }
 
-.tb-controls { display: flex; align-items: center; gap: 8px; }
-
+.tb-controls { display: flex; align-items: center; gap: 10px; }
 .lang-switch {
-    display: flex; align-items: center; font-family: var(--mono);
-    font-size: 0.72rem; font-weight: 700;
-    border: 1px solid var(--line); border-radius: 8px;
-    overflow: hidden; background: var(--panel);
+    display: flex; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.5px;
+    border: 1px solid var(--line); border-radius: 30px; overflow: hidden;
 }
 .lang-switch button {
-    padding: 7px 12px; background: transparent; border: none;
-    color: var(--ash); cursor: pointer; font-family: var(--mono); font-weight: 700; font-size: 0.72rem;
+    padding: 6px 13px; background: transparent; border: none;
+    color: var(--mid); cursor: pointer; font-family: var(--sans); font-weight: 800; font-size: 0.68rem;
     transition: var(--tr);
 }
-.lang-switch button.active { background: var(--signal); color: #0c0e13; }
-
+.lang-switch button.active { background: var(--gold); color: #0b0c11; }
 .tb-icon-btn {
-    width: 34px; height: 34px; border-radius: 8px;
+    width: 32px; height: 32px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    background: var(--panel); border: 1px solid var(--line);
-    color: var(--frost); cursor: pointer; font-size: 1rem; text-decoration: none;
-    transition: var(--tr);
+    border: 1px solid var(--line); color: var(--frost);
+    cursor: pointer; font-size: 0.9rem; text-decoration: none; transition: var(--tr);
 }
-.tb-icon-btn:hover { border-color: var(--signal); color: var(--signal); }
+.tb-icon-btn:hover { border-color: var(--gold); color: var(--gold); }
 
 /* ════════════════════════════════════════
-   HERO — split terminal
+   HERO
 ════════════════════════════════════════ */
 .hero {
     position: relative; z-index: 1;
-    max-width: 1080px; margin: 0 auto;
-    padding: 30px 20px 50px;
-    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 40px;
-    align-items: center;
+    max-width: 720px; margin: 0 auto;
+    padding: 50px 20px 60px;
+    text-align: center;
 }
 
-.hero-copy { position: relative; z-index: 1; }
+.crest { position: relative; width: 92px; height: 92px; margin: 0 auto 26px; }
+.crest-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 1px solid var(--line);
+}
+.crest-ring::before {
+    content:''; position: absolute; inset: -6px; border-radius: 50%;
+    border: 1px dashed rgba(216,180,107,0.3);
+    animation: spin 26s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.crest img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 1; }
 
 .eyebrow {
-    display: inline-flex; align-items: center; gap: 7px;
-    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
-    color: var(--signal); background: var(--signal2);
-    border: 1px solid rgba(186,255,57,0.3);
-    padding: 5px 12px; border-radius: 6px; margin-bottom: 18px;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 2.5px;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 18px;
 }
-.eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--signal); animation: blink 1.4s ease infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+.eyebrow::before, .eyebrow::after { content: '—'; margin: 0 10px; color: var(--gold-dim); }
 
-.hero h1 {
-    font-size: clamp(2.1rem, 5vw, 3.2rem);
-    font-weight: 900; line-height: 1.12; margin-bottom: 16px;
+h1.hero-title {
+    font-size: clamp(2.2rem, 6vw, 3.4rem); font-weight: 900; line-height: 1.2;
+    margin-bottom: 18px;
 }
-.hero h1 .accent { color: var(--signal); }
+h1.hero-title .accent { color: var(--gold); font-style: italic; font-family: var(--serif); font-weight: 700; }
 
 .hero-desc {
-    color: var(--ash); font-size: 1rem; line-height: 1.85;
-    max-width: 460px; margin-bottom: 26px;
+    color: var(--mid); font-size: 1rem; line-height: 1.95;
+    max-width: 460px; margin: 0 auto 32px;
 }
 
-.hero-ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 34px; }
+.rule {
+    width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 32px;
+}
 
+.hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
 .btn-primary, .btn-ghost {
-    font-family: var(--sans); font-weight: 800; font-size: 0.88rem;
-    padding: 12px 22px; border-radius: 10px; cursor: pointer; border: none;
+    font-weight: 800; font-size: 0.86rem;
+    padding: 13px 26px; border-radius: 6px; cursor: pointer; border: 1px solid var(--gold);
     display: inline-flex; align-items: center; gap: 8px; transition: var(--tr);
 }
-.btn-primary { background: var(--signal); color: #0c0e13; }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(186,255,57,0.25); }
-.btn-ghost { background: transparent; color: var(--frost); border: 1px solid var(--line); }
-.btn-ghost:hover { border-color: var(--ash); }
+.btn-primary { background: var(--gold); color: #0b0c11; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(216,180,107,0.18); }
+.btn-ghost { background: transparent; color: var(--gold); }
+.btn-ghost:hover { background: var(--gold-soft); }
 
-/* stat ticker */
-.stat-row { display: flex; gap: 22px; flex-wrap: wrap; }
-.stat-item { font-family: var(--mono); }
-.stat-num { font-size: 1.3rem; font-weight: 700; color: var(--frost); display: block; }
-.stat-lbl { font-size: 0.68rem; color: var(--ash-dim); text-transform: uppercase; letter-spacing: 0.5px; }
-
-/* terminal window */
-.term-wrap { position: relative; }
-.term {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: 14px; overflow: hidden;
-    box-shadow: 0 30px 70px rgba(0,0,0,0.5);
+.stat-strip {
+    display: inline-flex; align-items: center;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    padding: 18px 0;
 }
-.term-head {
-    display: flex; align-items: center; gap: 8px;
-    padding: 11px 14px; background: var(--panel2);
-    border-bottom: 1px solid var(--line);
-}
-.term-dot { width: 10px; height: 10px; border-radius: 50%; }
-.term-dot.r { background: #ff6159; } .term-dot.y { background: #ffbd2e; } .term-dot.g { background: #28ca42; }
-.term-title { font-family: var(--mono); font-size: 0.7rem; color: var(--ash); margin-inline-start: 8px; }
-
-.term-body {
-    padding: 18px 20px; font-family: var(--mono); font-size: 0.8rem;
-    line-height: 1.9; min-height: 210px; direction: ltr; text-align: left;
-}
-.term-line { white-space: pre; }
-.tk-c { color: var(--ash-dim); } /* comment */
-.tk-kw { color: var(--signal); } /* keyword */
-.tk-fn { color: #7dd3fc; }       /* function/property */
-.tk-str { color: var(--amber); } /* string */
-.term-cursor { display: inline-block; width: 7px; height: 14px; background: var(--signal); vertical-align: middle; animation: blink 0.9s step-end infinite; }
+.stat-item { padding: 0 28px; text-align: center; position: relative; }
+.stat-item + .stat-item::before { content:''; position: absolute; right: 100%; top: 15%; bottom: 15%; width: 1px; background: var(--line); }
+.stat-num { font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--frost); display: block; }
+.stat-lbl { font-size: 0.66rem; color: var(--mid-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block; }
 
 /* ════════════════════════════════════════
-   MAIN LAYOUT — sidebar tree + content
+   NAV — refined menu grid
 ════════════════════════════════════════ */
-.main-wrap {
-    position: relative; z-index: 1;
-    max-width: 1080px; margin: 0 auto;
-    padding: 0 20px 80px;
-    display: grid; grid-template-columns: 250px 1fr; gap: 22px;
-    align-items: start;
+.nav-wrap { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 10px 20px 10px; }
+.nav-groups { display: flex; flex-direction: column; gap: 30px; }
+.nav-group-label {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 0.68rem; font-weight: 800; letter-spacing: 2px; color: var(--gold-dim);
+    text-transform: uppercase; margin-bottom: 14px;
+}
+.nav-group-label::after { content:''; flex:1; height: 1px; background: var(--line); }
+
+.nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 9px;
+    padding: 20px 10px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--panel); cursor: pointer; text-decoration: none; color: var(--frost);
+    transition: var(--tr); position: relative; text-align: center;
+}
+.nav-item:hover { border-color: var(--gold); transform: translateY(-3px); background: var(--panel2); }
+.ni-icon-ring {
+    width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; font-size: 1.05rem;
+    transition: var(--tr);
+}
+.nav-item:hover .ni-icon-ring { border-color: var(--gold); background: var(--gold-soft); }
+.ni-label { font-size: 0.76rem; font-weight: 700; }
+.ni-new {
+    position: absolute; top: 8px; left: 8px; font-size: 0.55rem; font-weight: 800;
+    color: #0b0c11; background: var(--emerald); padding: 1px 6px; border-radius: 4px;
 }
 
-/* file-tree nav */
-.tree {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: 12px; padding: 14px 10px;
-    position: sticky; top: 18px;
-    font-family: var(--mono); font-size: 0.8rem;
-}
-.tree-group { margin-bottom: 4px; }
-.tree-group-label {
-    color: var(--ash-dim); font-size: 0.68rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.6px;
-    padding: 10px 10px 6px;
-}
-.tree-item {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 10px; border-radius: 7px; cursor: pointer;
-    color: var(--frost); text-decoration: none;
-    transition: var(--tr); position: relative;
-}
-.tree-item:hover { background: var(--panel2); color: var(--signal); }
-.tree-item .ti-icon { font-size: 0.85rem; width: 16px; text-align: center; }
-.tree-item .ti-new {
-    font-size: 0.58rem; font-weight: 700; color: #0c0e13; background: var(--amber);
-    padding: 1px 5px; border-radius: 4px; margin-inline-start: auto;
-}
-
-/* content column */
-.sec-head {
-    display: flex; align-items: center; justify-content: space-between;
-    margin: 0 0 14px;
-}
+/* ════════════════════════════════════════
+   CONTENT
+════════════════════════════════════════ */
+.content-wrap { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 20px 20px 80px; }
+.content-section { margin-bottom: 54px; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .sec-head h3 {
-    font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--frost);
-    display: flex; align-items: center; gap: 8px;
+    font-size: 0.72rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--mid);
+    display: flex; align-items: center; gap: 10px;
 }
-.sec-head h3::before { content: '›'; color: var(--signal); font-weight: 900; }
-.sec-all {
-    font-family: var(--mono); font-size: 0.72rem; font-weight: 700; color: var(--signal);
-    background: none; border: none; cursor: pointer; padding: 4px 8px;
-}
+.sec-head h3::before { content:''; width: 16px; height: 1px; background: var(--gold); }
+.sec-all { font-size: 0.74rem; font-weight: 700; color: var(--gold); background: none; border: none; cursor: pointer; }
 .sec-all:hover { text-decoration: underline; }
 
-.content-section { margin-bottom: 40px; }
-
-/* script cards as mini terminal files */
-.scripts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 12px; }
+.scripts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 14px; }
 .feat-card {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
-    overflow: hidden; cursor: pointer; transition: var(--tr);
-}
-.feat-card:hover { border-color: var(--signal); transform: translateY(-3px); }
-.feat-head { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--panel2); border-bottom: 1px solid var(--line); }
-.feat-head .fdot { width: 7px; height: 7px; border-radius: 50%; }
-.feat-head .fdot.r{background:#ff6159}.feat-head .fdot.y{background:#ffbd2e}.feat-head .fdot.g{background:#28ca42}
-.feat-body { padding: 14px; }
-.fc-title { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fc-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-family: var(--mono); }
-.fc-cat { background: var(--signal2); color: var(--signal); padding: 2px 8px; border-radius: 5px; font-size: 0.62rem; font-weight: 700; }
-.fc-map { background: rgba(125,211,252,0.1); color: #7dd3fc; padding: 2px 8px; border-radius: 5px; font-size: 0.62rem; font-weight: 700; }
-.fc-stat { font-size: 0.68rem; color: var(--ash); }
-
-/* user pages */
-.pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 10px; }
-.page-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; cursor: pointer; transition: var(--tr); }
-.page-card:hover { transform: translateY(-3px); border-color: var(--signal); }
-.pc-banner { height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.9rem; }
-.pc-body { padding: 10px 12px; }
-.pc-name { font-family: var(--mono); font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pc-meta { font-size: 0.65rem; color: var(--ash-dim); margin-top: 2px; }
-
-/* quick actions — command list */
-.cmd-list { display: flex; flex-direction: column; gap: 8px; }
-.cmd-item {
-    display: flex; align-items: center; gap: 12px;
     background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-    padding: 14px 16px; cursor: pointer; transition: var(--tr);
+    padding: 18px; cursor: pointer; transition: var(--tr);
 }
-.cmd-item:hover { border-color: var(--signal); }
-.cmd-prompt { font-family: var(--mono); color: var(--signal); font-weight: 700; }
-.cmd-icon { font-size: 1.3rem; }
-.cmd-title { font-weight: 800; font-size: 0.86rem; }
-.cmd-desc { font-size: 0.72rem; color: var(--ash); margin-top: 2px; }
+.feat-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+.fc-title { font-size: 0.92rem; font-weight: 700; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fc-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.fc-cat { color: var(--gold); border: 1px solid var(--line); padding: 2px 9px; border-radius: 4px; font-size: 0.62rem; font-weight: 700; }
+.fc-map { color: var(--emerald); border: 1px solid var(--line); padding: 2px 9px; border-radius: 4px; font-size: 0.62rem; font-weight: 700; }
+.fc-stat { font-size: 0.68rem; color: var(--mid-dim); }
 
-/* announcement */
+.pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 12px; }
+.page-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; cursor: pointer; transition: var(--tr); }
+.page-card:hover { transform: translateY(-3px); border-color: var(--gold); }
+.pc-banner { height: 58px; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; }
+.pc-body { padding: 11px 13px; }
+.pc-name { font-size: 0.8rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-meta { font-size: 0.65rem; color: var(--mid-dim); margin-top: 2px; }
+
+.cmd-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cmd-item {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px; cursor: pointer; transition: var(--tr);
+}
+.cmd-item:hover { border-color: var(--gold); }
+.cmd-icon { font-size: 1.5rem; color: var(--gold); }
+.cmd-title { font-weight: 800; font-size: 0.86rem; }
+.cmd-desc { font-size: 0.72rem; color: var(--mid); margin-top: 2px; }
+
 .ann-banner {
-    display: none; align-items: center; gap: 10px;
-    background: var(--panel); border: 1px solid var(--amber);
-    border-radius: 10px; padding: 12px 16px; margin-bottom: 30px;
-    font-family: var(--mono); font-size: 0.78rem;
+    display: none; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--gold);
+    border-radius: 10px; padding: 14px 18px; margin-bottom: 34px; font-size: 0.84rem;
 }
 .ann-banner.show { display: flex; }
 .ann-text { flex: 1; }
-.ann-close { background: none; border: none; color: var(--ash); cursor: pointer; font-size: 1rem; }
+.ann-close { background: none; border: none; color: var(--mid); cursor: pointer; font-size: 1rem; }
 
-/* footer */
 .site-footer {
-    position: relative; z-index: 1; max-width: 1080px; margin: 0 auto;
-    padding: 26px 20px; border-top: 1px solid var(--line);
-    font-family: var(--mono); font-size: 0.74rem; color: var(--ash-dim);
+    position: relative; z-index: 1; max-width: 1040px; margin: 0 auto;
+    padding: 28px 20px; border-top: 1px solid var(--line);
+    font-size: 0.76rem; color: var(--mid-dim);
     display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
 }
-.footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
-.footer-links a { color: var(--ash); text-decoration: none; }
-.footer-links a:hover { color: var(--signal); }
+.footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
+.footer-links a { color: var(--mid); text-decoration: none; }
+.footer-links a:hover { color: var(--gold); }
 
-/* ════════════════════════════════════════
-   LTR (English) adjustments
-════════════════════════════════════════ */
-[dir="ltr"] .term-title { margin-inline-start: 8px; }
-
-/* ════════════════════════════════════════
-   RESPONSIVE
-════════════════════════════════════════ */
-@media (max-width: 860px) {
-    .hero { grid-template-columns: 1fr; }
-    .main-wrap { grid-template-columns: 1fr; }
-    .tree { position: static; }
+@media (max-width: 720px) {
+    .nav-grid { grid-template-columns: repeat(3, 1fr); }
+    .cmd-list { grid-template-columns: 1fr; }
 }
-@media (max-width: 480px) {
-    .hero-ctas { flex-direction: column; align-items: stretch; }
+@media (max-width: 460px) {
+    .nav-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat-item { padding: 0 14px; }
+    .stat-num { font-size: 1.3rem; }
 }
 </style>
 </head>
@@ -316,11 +267,10 @@ body {
 
 <div class="bg-canvas"></div>
 
-<!-- ════ TOP BAR ════ -->
 <div class="topbar">
     <div class="tb-brand">
         <img src="cCraft.jpg" alt="CCRAFT SPACE" class="tb-logo">
-        <div class="tb-name">CCRAFT<span>_</span>SPACE</div>
+        <div class="tb-name">CCRAFT <b>SPACE</b></div>
     </div>
     <div class="tb-controls">
         <div class="lang-switch">
@@ -333,129 +283,126 @@ body {
 
 <!-- ════ HERO ════ -->
 <section class="hero">
-    <div class="hero-copy">
-        <div class="eyebrow"><span class="dot"></span><span data-ar="منصة سكربتات Roblox العربية" data-en="The Arabic Roblox Scripts Platform">منصة سكربتات Roblox العربية</span></div>
-        <h1><span data-ar="كل سكربتات" data-en="Every">كل سكربتات</span> <span class="accent">Roblox</span> <span data-ar="في مكان واحد" data-en="in one place">في مكان واحد</span></h1>
-        <p class="hero-desc" data-ar="انسخ سكربتك، الصقه، وشغّله. مجتمع عربي كامل للسكربتات، البادجات، وأدوات الذكاء الاصطناعي." data-en="Copy a script, paste it, run it. A full Arabic community for scripts, badges, and AI tools.">انسخ سكربتك، الصقه، وشغّله. مجتمع عربي كامل للسكربتات، البادجات، وأدوات الذكاء الاصطناعي.</p>
-        <div class="hero-ctas">
-            <button class="btn-primary" onclick="location.href='scripts.html'">📜 <span data-ar="تصفح السكربتات" data-en="Browse Scripts">تصفح السكربتات</span></button>
-            <button class="btn-ghost" onclick="location.href='publish.html'"><span data-ar="انشر سكربتك" data-en="Publish yours">انشر سكربتك</span></button>
-        </div>
-        <div class="stat-row">
-            <div class="stat-item"><span class="stat-num" id="ls-scripts">—</span><span class="stat-lbl" data-ar="سكربت" data-en="scripts">سكربت</span></div>
-            <div class="stat-item"><span class="stat-num" id="ls-users">—</span><span class="stat-lbl" data-ar="مستخدم" data-en="users">مستخدم</span></div>
-            <div class="stat-item"><span class="stat-num" id="ls-likes">—</span><span class="stat-lbl" data-ar="لايك" data-en="likes">لايك</span></div>
-            <div class="stat-item"><span class="stat-num" id="ls-online">—</span><span class="stat-lbl" data-ar="أونلاين الآن" data-en="online now">أونلاين الآن</span></div>
-        </div>
+    <div class="crest">
+        <div class="crest-ring"></div>
+        <img src="cCraft.jpg" alt="CCRAFT SPACE">
     </div>
 
-    <div class="term-wrap">
-        <div class="term">
-            <div class="term-head">
-                <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
-                <div class="term-title">welcome.lua</div>
-            </div>
-            <div class="term-body" id="termBody"></div>
-        </div>
+    <div class="eyebrow" data-ar="مجتمع سكربتات Roblox" data-en="Roblox Scripts Community">مجتمع سكربتات Roblox</div>
+
+    <h1 class="hero-title"><span data-ar="بيت" data-en="The home of">بيت</span> <span class="accent">Roblox</span> <span data-ar="سكربتات العرب" data-en="Arabic scripting">سكربتات العرب</span></h1>
+
+    <p class="hero-desc" data-ar="مساحة أنيقة لمشاركة السكربتات، بناء سمعتك، والتواصل مع مجتمع كامل من صنّاع Roblox." data-en="An elegant space to share scripts, build your reputation, and connect with a full community of Roblox creators.">مساحة أنيقة لمشاركة السكربتات، بناء سمعتك، والتواصل مع مجتمع كامل من صنّاع Roblox.</p>
+
+    <div class="rule"></div>
+
+    <div class="hero-ctas">
+        <button class="btn-primary" onclick="location.href='scripts.html'"><span data-ar="تصفح السكربتات" data-en="Browse Scripts">تصفح السكربتات</span></button>
+        <button class="btn-ghost" onclick="location.href='publish.html'"><span data-ar="انشر سكربتك" data-en="Publish yours">انشر سكربتك</span></button>
+    </div>
+
+    <div class="stat-strip">
+        <div class="stat-item"><span class="stat-num" id="ls-scripts">—</span><span class="stat-lbl" data-ar="سكربت" data-en="Scripts">سكربت</span></div>
+        <div class="stat-item"><span class="stat-num" id="ls-users">—</span><span class="stat-lbl" data-ar="مستخدم" data-en="Members">مستخدم</span></div>
+        <div class="stat-item"><span class="stat-num" id="ls-likes">—</span><span class="stat-lbl" data-ar="لايك" data-en="Likes">لايك</span></div>
+        <div class="stat-item"><span class="stat-num" id="ls-online">—</span><span class="stat-lbl" data-ar="أونلاين" data-en="Online">أونلاين</span></div>
     </div>
 </section>
 
-<!-- ════ MAIN ════ -->
-<div class="main-wrap">
-
-    <!-- Sidebar file-tree nav -->
-    <nav class="tree">
-        <div class="tree-group">
-            <div class="tree-group-label" data-ar="الأساسيات" data-en="Basics">الأساسيات</div>
-            <a class="tree-item" href="scripts.html"><span class="ti-icon">📜</span><span data-ar="السكربتات" data-en="Scripts">السكربتات</span></a>
-            <a class="tree-item" href="publish.html"><span class="ti-icon">📤</span><span data-ar="نشر سكربت" data-en="Publish Script">نشر سكربت</span></a>
-            <a class="tree-item" href="apks.html"><span class="ti-icon">📱</span><span data-ar="APK موديفايد" data-en="Modded APKs">APK موديفايد</span><span class="ti-new">NEW</span></a>
-            <a class="tree-item" href="hacks.html"><span class="ti-icon">⚡</span><span data-ar="هاكات" data-en="Hacks">هاكات</span></a>
-        </div>
-        <div class="tree-group">
-            <div class="tree-group-label" data-ar="التبادل" data-en="Exchange">التبادل</div>
-            <a class="tree-item" href="market.html"><span class="ti-icon">🛒</span><span data-ar="سوق التبادل" data-en="Marketplace">سوق التبادل</span><span class="ti-new">NEW</span></a>
-            <a class="tree-item" href="partners.html"><span class="ti-icon">🤝</span><span data-ar="شركاء التبادل" data-en="Exchange Partners">شركاء التبادل</span><span class="ti-new">NEW</span></a>
-        </div>
-        <div class="tree-group">
-            <div class="tree-group-label" data-ar="المجتمع" data-en="Community">المجتمع</div>
-            <a class="tree-item" href="community.html"><span class="ti-icon">🗣️</span><span data-ar="المجتمع" data-en="Community">المجتمع</span></a>
-            <a class="tree-item" href="leaderboard.html"><span class="ti-icon">🏆</span><span data-ar="ليدربورد" data-en="Leaderboard">ليدربورد</span></a>
-            <a class="tree-item" href="top-badges.html"><span class="ti-icon">🏅</span><span data-ar="بادجات" data-en="Badges">بادجات</span></a>
-        </div>
-        <div class="tree-group">
-            <div class="tree-group-label" data-ar="أدوات" data-en="Tools">أدوات</div>
-            <a class="tree-item" href="nova.html"><span class="ti-icon">🤖</span><span data-ar="NOVA AI" data-en="NOVA AI">NOVA AI</span></a>
-            <a class="tree-item" href="script-safety-check.html"><span class="ti-icon">🛡️</span><span data-ar="فحص أمان سكربتات" data-en="Script Safety Check">فحص أمان سكربتات</span></a>
-        </div>
-        <div class="tree-group">
-            <div class="tree-group-label" data-ar="حسابك" data-en="Account">حسابك</div>
-            <a class="tree-item" href="profile.html"><span class="ti-icon">👤</span><span data-ar="بروفايلي" data-en="My Profile">بروفايلي</span></a>
-            <a class="tree-item" href="login.html"><span class="ti-icon">🔐</span><span data-ar="تسجيل الدخول" data-en="Login">تسجيل الدخول</span></a>
-        </div>
-        <div class="tree-group">
-            <div class="tree-group-label" data-ar="معلومات ودعم" data-en="Info & Support">معلومات ودعم</div>
-            <a class="tree-item" href="stats.html"><span class="ti-icon">📊</span><span data-ar="إحصائيات" data-en="Stats">إحصائيات</span></a>
-            <a class="tree-item" href="help.html"><span class="ti-icon">🛠️</span><span data-ar="الدعم" data-en="Support">الدعم</span></a>
-            <a class="tree-item" href="https://t.me/cCraftspace" target="_blank"><span class="ti-icon">📢</span><span data-ar="تلجرام" data-en="Telegram">تلجرام</span></a>
-            <a class="tree-item" href="api.html"><span class="ti-icon">🗝️</span><span data-ar="واجهة API" data-en="Developer API">واجهة API</span></a>
-            <a class="tree-item" href="page-builder.html"><span class="ti-icon">🌐</span><span data-ar="أنشئ صفحتك!" data-en="Create Your Page!">أنشئ صفحتك!</span></a>
-        </div>
-    </nav>
-
-    <!-- Content column -->
-    <div>
-        <div class="ann-banner" id="annBanner">
-            <span>📢</span>
-            <div class="ann-text" id="annText">—</div>
-            <button class="ann-close" onclick="this.closest('.ann-banner').classList.remove('show')">✕</button>
-        </div>
-
-        <div class="content-section">
-            <div class="sec-head">
-                <h3 data-ar="أحدث السكربتات" data-en="Latest Scripts">أحدث السكربتات</h3>
-                <button class="sec-all" onclick="location.href='scripts.html'"><span data-ar="عرض الكل" data-en="View all">عرض الكل</span></button>
-            </div>
-            <div class="scripts-grid" id="featScripts">
-                <div style="color:var(--ash-dim);text-align:center;padding:24px;grid-column:1/-1;font-family:var(--mono);font-size:0.8rem" data-ar="جارٍ التحميل..." data-en="Loading...">جارٍ التحميل...</div>
+<!-- ════ NAV ════ -->
+<div class="nav-wrap">
+    <div class="nav-groups">
+        <div>
+            <div class="nav-group-label" data-ar="الأساسيات" data-en="Basics">الأساسيات</div>
+            <div class="nav-grid">
+                <a class="nav-item" href="scripts.html"><div class="ni-icon-ring">📜</div><div class="ni-label" data-ar="السكربتات" data-en="Scripts">السكربتات</div></a>
+                <a class="nav-item" href="publish.html"><div class="ni-icon-ring">📤</div><div class="ni-label" data-ar="نشر سكربت" data-en="Publish">نشر سكربت</div></a>
+                <a class="nav-item" href="apks.html"><span class="ni-new">NEW</span><div class="ni-icon-ring">📱</div><div class="ni-label" data-ar="APK موديفايد" data-en="Modded APKs">APK موديفايد</div></a>
+                <a class="nav-item" href="hacks.html"><div class="ni-icon-ring">⚡</div><div class="ni-label" data-ar="هاكات" data-en="Hacks">هاكات</div></a>
             </div>
         </div>
-
-        <div class="content-section">
-            <div class="sec-head">
-                <h3 data-ar="صفحات المستخدمين" data-en="User Pages">صفحات المستخدمين</h3>
-                <button class="sec-all" onclick="location.href='page-builder.html'"><span data-ar="أنشئ صفحتك" data-en="Create yours">أنشئ صفحتك</span></button>
-            </div>
-            <div class="pages-grid" id="userPagesGallery">
-                <div style="color:var(--ash-dim);text-align:center;padding:20px;grid-column:1/-1;font-family:var(--mono);font-size:0.78rem" data-ar="جارٍ التحميل..." data-en="Loading...">جارٍ التحميل...</div>
+        <div>
+            <div class="nav-group-label" data-ar="التبادل" data-en="Exchange">التبادل</div>
+            <div class="nav-grid">
+                <a class="nav-item" href="market.html"><span class="ni-new">NEW</span><div class="ni-icon-ring">🛒</div><div class="ni-label" data-ar="سوق التبادل" data-en="Marketplace">سوق التبادل</div></a>
+                <a class="nav-item" href="partners.html"><span class="ni-new">NEW</span><div class="ni-icon-ring">🤝</div><div class="ni-label" data-ar="شركاء التبادل" data-en="Partners">شركاء التبادل</div></a>
+                <a class="nav-item" href="community.html"><div class="ni-icon-ring">🗣️</div><div class="ni-label" data-ar="المجتمع" data-en="Community">المجتمع</div></a>
+                <a class="nav-item" href="leaderboard.html"><div class="ni-icon-ring">🏆</div><div class="ni-label" data-ar="ليدربورد" data-en="Leaderboard">ليدربورد</div></a>
             </div>
         </div>
-
-        <div class="content-section">
-            <div class="sec-head"><h3 data-ar="إجراءات سريعة" data-en="Quick Actions">إجراءات سريعة</h3></div>
-            <div class="cmd-list">
-                <div class="cmd-item" onclick="location.href='publish.html'">
-                    <span class="cmd-prompt">$</span><span class="cmd-icon">📤</span>
-                    <div><div class="cmd-title" data-ar="انشر سكربت الآن" data-en="Publish a script now">انشر سكربت الآن</div><div class="cmd-desc" data-ar="شارك سكربتك واكسب لايكات وبادجات" data-en="Share your script and earn likes and badges">شارك سكربتك واكسب لايكات وبادجات</div></div>
-                </div>
-                <div class="cmd-item" onclick="location.href='apks.html'">
-                    <span class="cmd-prompt">$</span><span class="cmd-icon">📱</span>
-                    <div><div class="cmd-title" data-ar="تصفح تطبيقات APK" data-en="Browse APK mods">تصفح تطبيقات APK</div><div class="cmd-desc" data-ar="ألعاب وتطبيقات أندرويد معدلة" data-en="Modded Android games and apps">ألعاب وتطبيقات أندرويد معدلة</div></div>
-                </div>
-                <div class="cmd-item" onclick="location.href='profile.html'">
-                    <span class="cmd-prompt">$</span><span class="cmd-icon">🖼️</span>
-                    <div><div class="cmd-title" data-ar="غيّر صورة البروفايل" data-en="Update your profile photo">غيّر صورة البروفايل</div><div class="cmd-desc" data-ar="ارفع صورتك الشخصية" data-en="Upload your own photo">ارفع صورتك الشخصية</div></div>
-                </div>
-                <div class="cmd-item" onclick="location.href='nova.html'">
-                    <span class="cmd-prompt">$</span><span class="cmd-icon">🤖</span>
-                    <div><div class="cmd-title" data-ar="اسأل NOVA AI" data-en="Ask NOVA AI">اسأل NOVA AI</div><div class="cmd-desc" data-ar="مساعدة فورية في الكود والسكربتات" data-en="Instant help with code and scripts">مساعدة فورية في الكود والسكربتات</div></div>
-                </div>
+        <div>
+            <div class="nav-group-label" data-ar="المجتمع وأدوات" data-en="Community & Tools">المجتمع وأدوات</div>
+            <div class="nav-grid">
+                <a class="nav-item" href="top-badges.html"><div class="ni-icon-ring">🏅</div><div class="ni-label" data-ar="بادجات" data-en="Badges">بادجات</div></a>
+                <a class="nav-item" href="nova.html"><div class="ni-icon-ring">🤖</div><div class="ni-label" data-ar="NOVA AI" data-en="NOVA AI">NOVA AI</div></a>
+                <a class="nav-item" href="script-safety-check.html"><div class="ni-icon-ring">🛡️</div><div class="ni-label" data-ar="فحص أمان" data-en="Safety Check">فحص أمان</div></a>
+                <a class="nav-item" href="profile.html"><div class="ni-icon-ring">👤</div><div class="ni-label" data-ar="بروفايلي" data-en="My Profile">بروفايلي</div></a>
+            </div>
+        </div>
+        <div>
+            <div class="nav-group-label" data-ar="معلومات ودعم" data-en="Info & Support">معلومات ودعم</div>
+            <div class="nav-grid">
+                <a class="nav-item" href="login.html"><div class="ni-icon-ring">🔐</div><div class="ni-label" data-ar="تسجيل الدخول" data-en="Login">تسجيل الدخول</div></a>
+                <a class="nav-item" href="stats.html"><div class="ni-icon-ring">📊</div><div class="ni-label" data-ar="إحصائيات" data-en="Stats">إحصائيات</div></a>
+                <a class="nav-item" href="help.html"><div class="ni-icon-ring">🛠️</div><div class="ni-label" data-ar="الدعم" data-en="Support">الدعم</div></a>
+                <a class="nav-item" href="api.html"><div class="ni-icon-ring">🗝️</div><div class="ni-label" data-ar="واجهة API" data-en="Developer API">واجهة API</div></a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Footer -->
+<!-- ════ CONTENT ════ -->
+<div class="content-wrap">
+
+    <div class="ann-banner" id="annBanner">
+        <span>📢</span>
+        <div class="ann-text" id="annText">—</div>
+        <button class="ann-close" onclick="this.closest('.ann-banner').classList.remove('show')">✕</button>
+    </div>
+
+    <div class="content-section">
+        <div class="sec-head">
+            <h3 data-ar="أحدث السكربتات" data-en="Latest Scripts">أحدث السكربتات</h3>
+            <button class="sec-all" onclick="location.href='scripts.html'"><span data-ar="عرض الكل ←" data-en="View all →">عرض الكل ←</span></button>
+        </div>
+        <div class="scripts-grid" id="featScripts">
+            <div style="color:var(--mid-dim);text-align:center;padding:24px;grid-column:1/-1" data-ar="جارٍ التحميل..." data-en="Loading...">جارٍ التحميل...</div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="sec-head">
+            <h3 data-ar="صفحات المستخدمين" data-en="User Pages">صفحات المستخدمين</h3>
+            <button class="sec-all" onclick="location.href='page-builder.html'"><span data-ar="أنشئ صفحتك ←" data-en="Create yours →">أنشئ صفحتك ←</span></button>
+        </div>
+        <div class="pages-grid" id="userPagesGallery">
+            <div style="color:var(--mid-dim);text-align:center;padding:20px;grid-column:1/-1" data-ar="جارٍ التحميل..." data-en="Loading...">جارٍ التحميل...</div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="sec-head"><h3 data-ar="إجراءات سريعة" data-en="Quick Actions">إجراءات سريعة</h3></div>
+        <div class="cmd-list">
+            <div class="cmd-item" onclick="location.href='publish.html'">
+                <span class="cmd-icon">📤</span>
+                <div><div class="cmd-title" data-ar="انشر سكربت الآن" data-en="Publish a script now">انشر سكربت الآن</div><div class="cmd-desc" data-ar="شارك سكربتك واكسب لايكات وبادجات" data-en="Share your script and earn likes and badges">شارك سكربتك واكسب لايكات وبادجات</div></div>
+            </div>
+            <div class="cmd-item" onclick="location.href='apks.html'">
+                <span class="cmd-icon">📱</span>
+                <div><div class="cmd-title" data-ar="تصفح تطبيقات APK" data-en="Browse APK mods">تصفح تطبيقات APK</div><div class="cmd-desc" data-ar="ألعاب وتطبيقات أندرويد معدلة" data-en="Modded Android games and apps">ألعاب وتطبيقات أندرويد معدلة</div></div>
+            </div>
+            <div class="cmd-item" onclick="location.href='profile.html'">
+                <span class="cmd-icon">🖼️</span>
+                <div><div class="cmd-title" data-ar="غيّر صورة البروفايل" data-en="Update your profile photo">غيّر صورة البروفايل</div><div class="cmd-desc" data-ar="ارفع صورتك الشخصية" data-en="Upload your own photo">ارفع صورتك الشخصية</div></div>
+            </div>
+            <div class="cmd-item" onclick="location.href='nova.html'">
+                <span class="cmd-icon">🤖</span>
+                <div><div class="cmd-title" data-ar="اسأل NOVA AI" data-en="Ask NOVA AI">اسأل NOVA AI</div><div class="cmd-desc" data-ar="مساعدة فورية في الكود والسكربتات" data-en="Instant help with code and scripts">مساعدة فورية في الكود والسكربتات</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <footer class="site-footer">
     <div class="footer-links">
         <a href="scripts.html" data-ar="السكربتات" data-en="Scripts">السكربتات</a>
@@ -519,12 +466,11 @@ onValue(ref(db,'presence'), snap => {
 function loadFeaturedScripts(scripts){
     const c = document.getElementById('featScripts'); c.innerHTML='';
     const latest = Object.entries(scripts).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0)).slice(0,6);
-    if(!latest.length){ c.innerHTML='<div style="color:var(--ash-dim);text-align:center;padding:24px;grid-column:1/-1;font-family:var(--mono)">لا توجد سكربتات بعد</div>'; return; }
+    if(!latest.length){ c.innerHTML='<div style="color:var(--mid-dim);text-align:center;padding:24px;grid-column:1/-1">لا توجد سكربتات بعد</div>'; return; }
     latest.forEach(([id,s])=>{
         const card = document.createElement('div'); card.className='feat-card';
         card.onclick = () => location.href = `script.html?id=${id}`;
-        card.innerHTML = `<div class="feat-head"><div class="fdot r"></div><div class="fdot y"></div><div class="fdot g"></div></div>
-        <div class="feat-body"><div class="fc-title">${s.title||'بدون عنوان'}</div><div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>${s.map?`<span class="fc-map">🗺️ ${s.map}</span>`:''}<span class="fc-stat">👍 ${s.likes||0}</span></div></div>`;
+        card.innerHTML = `<div class="fc-title">${s.title||'بدون عنوان'}</div><div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>${s.map?`<span class="fc-map">🗺️ ${s.map}</span>`:''}<span class="fc-stat">👍 ${s.likes||0}</span></div>`;
         c.appendChild(card);
     });
 }
@@ -544,14 +490,14 @@ async function loadUserPages(){
     const snap = await get(ref(db,'userPages'));
     const c = document.getElementById('userPagesGallery');
     if(!snap.exists()){
-        c.innerHTML='<div style="color:var(--ash-dim);text-align:center;padding:20px;grid-column:1/-1;font-family:var(--mono);font-size:0.78rem">لا توجد صفحات — <a href="page-builder.html" style="color:var(--signal)">كن أول من ينشئ!</a></div>';
+        c.innerHTML='<div style="color:var(--mid-dim);text-align:center;padding:20px;grid-column:1/-1">لا توجد صفحات — <a href="page-builder.html" style="color:var(--gold)">كن أول من ينشئ!</a></div>';
         return;
     }
     const pages = Object.entries(snap.val()).sort((a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0,8);
     c.innerHTML='';
     const TC={dark:'#8b5cf6',space:'#818cf8',ocean:'#00bcd4',sunset:'#f97316',forest:'#4ade80',neon:'#a78bfa'};
     pages.forEach(([uid,p])=>{
-        const accent = p.accent||TC[p.theme]||'#baff39';
+        const accent = p.accent||TC[p.theme]||'#d8b46b';
         const name = (p.name||p.displayName||'مستخدم').replace(/[<>&"]/g,'');
         const card = document.createElement('div'); card.className='page-card';
         card.onclick = () => location.href=`user-page.html?uid=${uid}`;
@@ -566,44 +512,6 @@ loadUserPages();
 </script>
 
 <script>
-/* ── Terminal typing animation ── */
-const termLines = [
-    { text: '-- CCRAFT SPACE', cls: 'tk-c' },
-    { text: 'local Players = ', cls: '', tail: [{t:'game', cls:'tk-fn'},{t:':GetService(', cls:''},{t:'"Players"', cls:'tk-str'},{t:')', cls:''}] },
-    { text: 'local player = ', cls: '', tail: [{t:'Players.LocalPlayer', cls:'tk-fn'}] },
-    { text: '', tail: [{t:'print', cls:'tk-fn'},{t:'(', cls:''},{t:'"Welcome to CCRAFT SPACE"', cls:'tk-str'},{t:')', cls:''}] },
-];
-
-function buildLineHTML(line){
-    let html = line.text ? `<span class="${line.cls||''}">${line.text}</span>` : '';
-    if (line.tail) line.tail.forEach(seg => html += `<span class="${seg.cls||''}">${seg.t}</span>`);
-    return html;
-}
-
-async function typeTerminal(){
-    const body = document.getElementById('termBody');
-    body.innerHTML = '';
-    for (const line of termLines){
-        const div = document.createElement('div'); div.className = 'term-line';
-        body.appendChild(div);
-        const full = buildLineHTML(line);
-        const tmp = document.createElement('div'); tmp.innerHTML = full;
-        const plain = tmp.textContent;
-        for (let i = 1; i <= plain.length; i++){
-            div.textContent = plain.slice(0, i);
-            await new Promise(r => setTimeout(r, 16));
-        }
-        div.innerHTML = full;
-        await new Promise(r => setTimeout(r, 120));
-    }
-    const cursor = document.createElement('span'); cursor.className = 'term-cursor';
-    body.appendChild(cursor);
-    await new Promise(r => setTimeout(r, 2200));
-    typeTerminal();
-}
-typeTerminal();
-
-/* ── AR/EN toggle ── */
 function setLang(lang){
     const html = document.getElementById('htmlRoot');
     html.lang = lang;
