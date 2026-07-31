@@ -7,23 +7,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-   
+
 <style>
 
 /* ============================================================
-   CSS Variables — توسيع متغيرات الصفحة
+   CSS Variables
    ============================================================ */
 :root {
     --glow-purple: rgba(139, 92, 246, 0.35);
     --glow-cyan:   rgba(0, 242, 254, 0.25);
     --code-bg:     #050810;
     --card-depth:  rgba(6, 8, 20, 0.6);
-    --shimmer:     linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
 }
 
-/* ============================================================
-   Page Background — طبقات متعددة
-   ============================================================ */
 body {
     background:
         radial-gradient(ellipse 80% 50% at 10% 10%, rgba(139,92,246,0.06) 0%, transparent 60%),
@@ -32,57 +28,60 @@ body {
     min-height: 100svh;
 }
 
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes riseUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@keyframes slideDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes commentSlide { from { opacity:0; transform:translateX(10px); } to { opacity:1; transform:translateX(0); } }
+@keyframes scaleIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+
 /* ============================================================
-   Layout
+   Layout — عمودين: المحتوى الرئيسي + شريط جانبي واحد مدمج
    ============================================================ */
 .script-layout {
-    max-width: 940px;
+    max-width: 960px;
     margin: 0 auto;
-    padding: 0 20px 80px;
+    padding: 18px 20px 80px;
     display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 22px;
+    grid-template-columns: 1fr 280px;
+    gap: 24px;
     align-items: start;
 }
 
 .script-main { min-width: 0; }
 
+/* Breadcrumb صغير أعلى الصفحة */
+.script-crumb {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.78rem; color: #45455f;
+    margin-bottom: 14px; font-weight: 700;
+}
+.script-crumb a { color: #7c6fff; text-decoration: none; }
+.script-crumb a:hover { color: #a78bfa; }
+
 /* ============================================================
-   Script Hero Image — صورة واسعة مع overlay جميل
+   Hero Image
    ============================================================ */
 .script-image-wrap {
     display: none;
-    margin-bottom: 22px;
-    border-radius: 22px;
+    margin-bottom: 18px;
+    border-radius: 20px;
     overflow: hidden;
     border: 1px solid rgba(139,92,246,0.2);
     position: relative;
-    animation: slideDown 0.6s cubic-bezier(0.22,1,0.36,1) both;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,92,246,0.1);
+    animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    box-shadow: 0 16px 44px rgba(0,0,0,0.5);
 }
-
-@keyframes slideDown {
-    from { opacity:0; transform:translateY(-16px); }
-    to   { opacity:1; transform:translateY(0); }
-}
-
 .script-image-wrap.show { display: block; }
-
 .script-image-wrap img {
-    width: 100%; max-height: 320px;
-    object-fit: cover; display: block;
+    width: 100%; max-height: 280px; object-fit: cover; display: block;
     transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
 }
-
 .script-image-wrap:hover img { transform: scale(1.03); }
-
 .script-image-wrap::after {
-    content: '';
-    position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
     background: linear-gradient(to top, rgba(9,9,15,0.85) 0%, transparent 100%);
     pointer-events: none;
 }
-
 .img-expand-btn {
     position: absolute; bottom: 12px; left: 16px; z-index: 2;
     background: rgba(9,9,15,0.7); color: rgba(255,255,255,0.85);
@@ -91,241 +90,168 @@ body {
     font-size: 0.7rem; font-weight: 800;
     font-family: 'Tajawal', sans-serif; margin: 0;
     cursor: pointer; backdrop-filter: blur(10px);
-    transition: all 0.2s ease; letter-spacing: 0.3px;
+    transition: all 0.2s ease;
 }
+.img-expand-btn:hover { background: rgba(139,92,246,0.7); border-color: rgba(139,92,246,0.5); color: white; transform: none; filter: none; }
 
-.img-expand-btn:hover {
-    background: rgba(139,92,246,0.7);
-    border-color: rgba(139,92,246,0.5);
-    color: white; transform: none; filter: none;
-}
-
-/* ============================================================
-   Lightbox
-   ============================================================ */
+/* Lightbox */
 .lightbox {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.94);
-    backdrop-filter: blur(20px);
-    z-index: 900;
-    align-items: center; justify-content: center;
-    padding: 24px;
-    animation: fadeIn 0.25s ease;
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94);
+    backdrop-filter: blur(20px); z-index: 900;
+    align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.25s ease;
 }
-
 .lightbox.open { display: flex; }
-
 .lightbox img {
-    max-width: min(100%, 900px); max-height: 88vh;
-    border-radius: 16px;
+    max-width: min(100%, 900px); max-height: 88vh; border-radius: 16px;
     box-shadow: 0 0 0 1px rgba(139,92,246,0.3), 0 40px 80px rgba(0,0,0,0.9);
     animation: scaleIn 0.3s cubic-bezier(0.22,1,0.36,1);
 }
-
-@keyframes scaleIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
-
 .lightbox-close {
     position: absolute; top: 18px; right: 18px;
     background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
     border-radius: 50%; width: 38px; height: 38px;
     display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 1rem; cursor: pointer; margin: 0;
-    transition: all 0.2s;
+    color: white; font-size: 1rem; cursor: pointer; margin: 0; transition: all 0.2s;
 }
-
 .lightbox-close:hover { background: rgba(248,113,113,0.25); border-color: rgba(248,113,113,0.4); transform: none; filter: none; }
 
 /* ============================================================
-   Script Hero — بطاقة العنوان والمعلومات
+   Hero — عنوان + مؤلف + معلومات سريعة
    ============================================================ */
 .script-hero {
     background: linear-gradient(145deg, rgba(16,18,32,0.95) 0%, rgba(12,12,24,0.9) 100%);
     border: 1px solid rgba(139,92,246,0.18);
-    border-radius: 22px;
-    padding: 28px 26px 22px;
-    margin-bottom: 18px;
+    border-radius: 20px;
+    padding: 24px 24px 20px;
+    margin-bottom: 14px;
     position: relative; overflow: hidden;
-    animation: riseUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+    animation: riseUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.3);
 }
-
-@keyframes riseUp {
-    from { opacity:0; transform:translateY(12px); }
-    to   { opacity:1; transform:translateY(0); }
-}
-
 .script-hero::before {
-    content: '';
-    position: absolute; top: 0; right: 0;
-    width: 4px; height: 100%;
+    content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%;
     background: linear-gradient(to bottom, #8b5cf6, #00f2fe);
-    border-radius: 0 22px 22px 0;
     box-shadow: 0 0 20px rgba(139,92,246,0.5);
 }
 
-.script-hero::after {
-    content: '';
-    position: absolute; inset: 0;
-    background-image:
-        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.06) 0%, transparent 100%),
-        radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.04) 0%, transparent 100%),
-        radial-gradient(1px 1px at 50% 70%, rgba(139,92,246,0.08) 0%, transparent 100%);
-    pointer-events: none;
+.hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.68rem; font-weight: 900; color: #a78bfa;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    margin-bottom: 10px; position: relative; z-index: 1;
 }
 
 .script-title {
-    font-size: clamp(1.35rem, 3.5vw, 1.95rem);
-    font-weight: 900;
-    color: #f0f0ff;
-    margin-bottom: 18px;
-    line-height: 1.28;
-    padding-left: 14px;
-    letter-spacing: -0.02em;
+    font-size: clamp(1.3rem, 3.2vw, 1.85rem);
+    font-weight: 900; color: #f0f0ff;
+    margin-bottom: 16px; line-height: 1.3; letter-spacing: -0.01em;
     position: relative; z-index: 1;
 }
 
 .author-row {
     display: flex; align-items: center; gap: 11px;
-    margin-bottom: 18px;
-    cursor: pointer; width: fit-content;
+    margin-bottom: 16px; cursor: pointer; width: fit-content;
     position: relative; z-index: 1;
-    padding: 6px 12px 6px 6px;
-    border-radius: 50px;
-    transition: background 0.2s;
+    padding: 5px 12px 5px 6px; border-radius: 50px; transition: background 0.2s;
 }
-
 .author-row:hover { background: rgba(139,92,246,0.08); }
 .author-row:hover .author-name { color: #a78bfa; }
-
 .author-avatar {
-    width: 38px; height: 38px; border-radius: 50%;
+    width: 36px; height: 36px; border-radius: 50%;
     border: 2px solid rgba(139,92,246,0.3);
     overflow: hidden; flex-shrink: 0; background: #0a0a14;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.25s;
+    display: flex; align-items: center; justify-content: center; transition: all 0.25s;
 }
+.author-row:hover .author-avatar { border-color: #8b5cf6; box-shadow: 0 0 16px rgba(139,92,246,0.4); }
+.author-name { font-size: 0.87rem; font-weight: 800; color: #d4d4f0; transition: color 0.2s; }
+.author-date { font-size: 0.68rem; color: #5a5a78; margin-top: 1px; }
 
-.author-row:hover .author-avatar {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 16px rgba(139,92,246,0.4);
-}
-
-.author-name { font-size: 0.9rem; font-weight: 800; color: #d4d4f0; transition: color 0.2s; }
-.author-date { font-size: 0.7rem; color: #5a5a78; margin-top: 1px; }
-
-.tags-row {
-    display: flex; gap: 7px; flex-wrap: wrap;
-    position: relative; z-index: 1;
-}
-
+.tags-row { display: flex; gap: 6px; flex-wrap: wrap; position: relative; z-index: 1; }
 .tag {
     display: inline-flex; align-items: center; gap: 5px;
-    padding: 5px 13px; border-radius: 50px;
-    font-size: 0.7rem; font-weight: 800;
-    letter-spacing: 0.2px;
-    transition: all 0.2s;
+    padding: 5px 12px; border-radius: 50px;
+    font-size: 0.68rem; font-weight: 800; letter-spacing: 0.2px; transition: all 0.2s;
 }
-
-.tag-cat {
-    background: rgba(139,92,246,0.12);
-    color: #a78bfa;
-    border: 1px solid rgba(139,92,246,0.25);
-}
-
-.tag-cat:hover { background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.45); }
-
-.tag-map {
-    background: rgba(0,242,254,0.07);
-    color: #00d9e8;
-    border: 1px solid rgba(0,242,254,0.2);
-}
-
+.tag-cat { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); }
+.tag-cat:hover { background: rgba(139,92,246,0.2); }
+.tag-map { background: rgba(0,242,254,0.07); color: #00d9e8; border: 1px solid rgba(0,242,254,0.2); }
 .tag-map:hover { background: rgba(0,242,254,0.14); }
+.tag-nomap { background: rgba(255,255,255,0.04); color: #55556a; border: 1px solid rgba(255,255,255,0.07); }
 
-.tag-nomap {
-    background: rgba(255,255,255,0.04);
-    color: #55556a;
-    border: 1px solid rgba(255,255,255,0.07);
+/* ============================================================
+   Key Banner — بارز فوق الكود عشان الزائر يشوفه الأول
+   ============================================================ */
+.key-banner {
+    display: none;
+    background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.04));
+    border: 1px solid rgba(251,191,36,0.35);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    align-items: center; gap: 12px; flex-wrap: wrap;
+    animation: riseUp 0.45s 0.05s cubic-bezier(0.22,1,0.36,1) both;
+}
+.key-banner.show { display: flex; }
+/* الـ JS الأصلي بيحط style.display='block' مباشرة — نضمن إنه يفضل flex */
+#keyCard[style] { display: flex !important; align-items: center; gap: 12px; flex-wrap: wrap; }
+.kb-icon { font-size: 1.4rem; flex-shrink: 0; }
+.kb-text { flex: 1; min-width: 160px; }
+.kb-title { font-size: 0.82rem; font-weight: 900; color: #fbbf24; margin-bottom: 2px; }
+.kb-sub { font-size: 0.72rem; color: #b5a06a; }
+.kb-value {
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 10px; padding: 8px 14px;
+    font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #8be9fd;
+    direction: ltr;
 }
 
 /* ============================================================
-   Code Block — محرر الكود
+   Code Card
    ============================================================ */
 .code-card {
     background: var(--code-bg);
     border: 1px solid rgba(139,92,246,0.15);
-    border-radius: 20px;
-    overflow: hidden;
-    margin-bottom: 18px;
-    animation: riseUp 0.5s 0.08s cubic-bezier(0.22,1,0.36,1) both;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.06);
-    position: relative;
+    border-radius: 20px; overflow: hidden; margin-bottom: 14px;
+    animation: riseUp 0.45s 0.08s cubic-bezier(0.22,1,0.36,1) both;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
-
-.code-card::before {
-    content: '';
-    position: absolute; top: 0; left: 20%; right: 20%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(139,92,246,0.5), transparent);
-}
-
 .code-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 11px 18px;
-    background: rgba(0,0,0,0.4);
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    backdrop-filter: blur(4px);
+    display: flex; align-items: center; gap: 12px; padding: 11px 18px;
+    background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.04);
 }
-
 .ch-dots { display: flex; gap: 7px; align-items: center; }
-.ch-dot {
-    width: 11px; height: 11px; border-radius: 50%;
-    transition: transform 0.2s;
-}
-.ch-dot:hover { transform: scale(1.2); }
-.ch-dot:nth-child(1) { background: #ff5f57; box-shadow: 0 0 6px rgba(255,95,87,0.4); }
-.ch-dot:nth-child(2) { background: #febc2e; box-shadow: 0 0 6px rgba(254,188,46,0.4); }
-.ch-dot:nth-child(3) { background: #28c840; box-shadow: 0 0 6px rgba(40,200,64,0.4); }
-
-.ch-label {
-    font-size: 0.72rem; color: #3a3a55;
-    font-family: 'Fira Code', monospace;
-    letter-spacing: 0.3px;
-    margin: 0 auto;
-}
-
+.ch-dot { width: 11px; height: 11px; border-radius: 50%; }
+.ch-dot:nth-child(1) { background: #ff5f57; }
+.ch-dot:nth-child(2) { background: #febc2e; }
+.ch-dot:nth-child(3) { background: #28c840; }
+.ch-label { font-size: 0.72rem; color: #3a3a55; font-family: 'Fira Code', monospace; margin: 0 auto; display: flex; align-items: center; gap: 8px; }
+.ch-lines { color: #2a2a40; }
 .copy-inline {
-    background: rgba(139,92,246,0.1);
-    color: #7c6fff;
-    border: 1px solid rgba(139,92,246,0.22);
-    border-radius: 7px;
-    padding: 4px 12px;
-    font-size: 0.7rem; font-weight: 800;
-    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
-    transition: all 0.2s; letter-spacing: 0.2px;
+    background: rgba(139,92,246,0.1); color: #7c6fff; border: 1px solid rgba(139,92,246,0.22);
+    border-radius: 7px; padding: 4px 12px; font-size: 0.7rem; font-weight: 800;
+    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0; transition: all 0.2s;
 }
-
 .copy-inline:hover { background: rgba(139,92,246,0.25); color: #a78bfa; transform: none; filter: none; }
 .copy-inline.copied { background: rgba(34,197,94,0.12); color: #4ade80; border-color: rgba(34,197,94,0.3); }
-
 #code {
-    background: transparent !important;
-    margin: 0; border: none; border-radius: 0;
-    padding: 20px 22px;
-    color: #8be9fd;
-    font-family: 'Fira Code', monospace;
-    font-size: 0.83rem; line-height: 1.85;
-    direction: ltr; text-align: left;
-    overflow-x: auto; white-space: pre-wrap;
-    max-height: 420px; overflow-y: auto;
-    tab-size: 4;
+    background: transparent !important; margin: 0; border: none; padding: 20px 22px;
+    color: #8be9fd; font-family: 'Fira Code', monospace; font-size: 0.83rem; line-height: 1.85;
+    direction: ltr; text-align: left; overflow-x: auto; white-space: pre-wrap;
+    max-height: 420px; overflow-y: auto; tab-size: 4;
 }
-
 #code::-webkit-scrollbar { width: 5px; height: 5px; }
 #code::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
 #code::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
-#code::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.5); }
+
+/* إعلان صغير — مندمج بهدوء بدون ما يكسر الستايل */
+.ad-slot {
+    display: block; text-align: center;
+    font-size: 0.7rem; font-weight: 700; color: #45455f;
+    background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.06);
+    border-radius: 12px; padding: 8px; margin-bottom: 14px; text-decoration: none;
+    transition: all 0.2s;
+}
+.ad-slot:hover { color: #7c6fff; border-color: rgba(139,92,246,0.25); }
 
 /* ============================================================
    Description Card
@@ -333,424 +259,190 @@ body {
 .desc-card {
     background: linear-gradient(145deg, rgba(14,16,30,0.9), rgba(10,12,22,0.8));
     border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 18px;
-    padding: 20px 22px;
-    margin-bottom: 18px;
-    animation: riseUp 0.5s 0.14s cubic-bezier(0.22,1,0.36,1) both;
+    border-radius: 16px; padding: 18px 20px; margin-bottom: 14px;
+    animation: riseUp 0.45s 0.12s cubic-bezier(0.22,1,0.36,1) both;
 }
-
 .section-label {
-    font-size: 0.68rem; font-weight: 800; color: #3d3d56;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    margin-bottom: 12px;
+    font-size: 0.65rem; font-weight: 800; color: #3d3d56;
+    text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 10px;
     display: flex; align-items: center; gap: 8px;
 }
-
 .section-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.05); }
-
-#description {
-    color: #b0b0cc;
-    font-size: 0.92rem;
-    line-height: 1.85;
-    margin: 0;
-}
+#description { color: #b0b0cc; font-size: 0.9rem; line-height: 1.8; margin: 0; }
 
 /* ============================================================
-   Action Buttons — أزرار الإجراءات
+   Action Buttons
    ============================================================ */
 .action-row {
-    display: flex; gap: 9px; flex-wrap: wrap;
-    margin-bottom: 22px;
-    animation: riseUp 0.5s 0.18s cubic-bezier(0.22,1,0.36,1) both;
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px;
+    animation: riseUp 0.45s 0.16s cubic-bezier(0.22,1,0.36,1) both;
 }
-
 .action-row button {
-    border-radius: 13px;
-    padding: 11px 20px;
-    font-size: 0.85rem; font-weight: 800;
-    margin: 0; cursor: pointer;
-    font-family: 'Tajawal', sans-serif;
-    transition: all 0.22s cubic-bezier(0.22,1,0.36,1);
-    letter-spacing: 0.2px;
+    border-radius: 13px; padding: 12px 20px; font-size: 0.85rem; font-weight: 800;
+    margin: 0; cursor: pointer; font-family: 'Tajawal', sans-serif;
+    transition: all 0.2s cubic-bezier(0.22,1,0.36,1);
 }
-
 #copyBtn {
-    background: linear-gradient(135deg, #7c3aed, #5b21b6);
-    color: white; border: none;
-    box-shadow: 0 4px 18px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+    order: 1; flex: 2; min-width: 180px;
+    background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none;
+    box-shadow: 0 4px 18px rgba(124,58,237,0.35);
 }
-
-#copyBtn:hover {
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    box-shadow: 0 6px 24px rgba(124,58,237,0.5);
-    transform: translateY(-2px);
-}
-
-#copyBtn:active { transform: scale(0.97); }
-
+#copyBtn:hover { background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 6px 24px rgba(124,58,237,0.5); transform: translateY(-2px); }
+#copyBtn:active { transform: scale(0.98); }
 #rawBtn {
-    background: rgba(0,242,254,0.06);
-    color: #00d9e8;
-    border: 1px solid rgba(0,242,254,0.18);
+    order: 2;
+    background: rgba(0,242,254,0.06); color: #00d9e8; border: 1px solid rgba(0,242,254,0.18);
 }
-
-#rawBtn:hover {
-    background: rgba(0,242,254,0.12);
-    border-color: rgba(0,242,254,0.35);
-    transform: translateY(-2px);
-    filter: none;
-}
-
+#rawBtn:hover { background: rgba(0,242,254,0.12); border-color: rgba(0,242,254,0.35); transform: translateY(-2px); filter: none; }
 #reportBtn {
-    background: rgba(248,113,113,0.06);
-    color: #f87171;
-    border: 1px solid rgba(248,113,113,0.15);
+    order: 3;
+    background: rgba(248,113,113,0.06); color: #f87171; border: 1px solid rgba(248,113,113,0.15);
 }
-
-#reportBtn:hover {
-    background: rgba(248,113,113,0.14);
-    border-color: rgba(248,113,113,0.35);
-    transform: translateY(-2px);
-    filter: none;
-}
+#reportBtn:hover { background: rgba(248,113,113,0.14); border-color: rgba(248,113,113,0.35); transform: translateY(-2px); filter: none; }
 
 /* ============================================================
-   Comments — قسم التعليقات المطوّر
+   Comments
    ============================================================ */
 .comments-card {
     background: linear-gradient(160deg, rgba(14,16,30,0.95) 0%, rgba(10,12,24,0.9) 100%);
     border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 22px;
-    padding: 22px;
-    animation: riseUp 0.5s 0.22s cubic-bezier(0.22,1,0.36,1) both;
-    position: relative; overflow: hidden;
+    border-radius: 20px; padding: 20px;
+    animation: riseUp 0.45s 0.2s cubic-bezier(0.22,1,0.36,1) both;
 }
-
-.comments-card::before {
-    content: '';
-    position: absolute; top: 0; left: 40px; right: 40px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+.comments-card h3 {
+    font-size: 0.65rem; font-weight: 800; color: #35355a;
+    text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
 }
-
-#comments {
-    display: flex; flex-direction: column; gap: 8px;
-    margin-bottom: 18px;
-    min-height: 0;
-}
-
+.comments-card h3::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.04); }
+#comments { display: flex; flex-direction: column; margin-bottom: 16px; }
 .comment-item {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 14px;
-    transition: all 0.2s;
-    animation: commentSlide 0.35s cubic-bezier(0.22,1,0.36,1) both;
-    position: relative; overflow: hidden;
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 2px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    animation: commentSlide 0.3s cubic-bezier(0.22,1,0.36,1) both;
 }
-
-@keyframes commentSlide {
-    from { opacity:0; transform:translateX(10px); }
-    to   { opacity:1; transform:translateX(0); }
-}
-
-.comment-item:hover {
-    border-color: rgba(139,92,246,0.2);
-    background: rgba(139,92,246,0.04);
-}
-
-.comment-item::before {
-    content: '';
-    position: absolute; right: 0; top: 25%; bottom: 25%;
-    width: 2px;
-    background: rgba(139,92,246,0.15);
-    border-radius: 2px;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.comment-item:hover::before { opacity: 1; }
-
+.comment-item:last-child { border-bottom: none; }
 .comment-avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    overflow: hidden; flex-shrink: 0;
-    background: #0a0a14;
-    border: 1.5px solid rgba(139,92,246,0.2);
-    cursor: pointer;
+    width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    background: linear-gradient(135deg,#8b5cf6,#00bcd4);
+    border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
 }
-
-.comment-avatar:hover {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 12px rgba(139,92,246,0.35);
-    transform: scale(1.08);
-}
-
 .comment-body { flex: 1; min-width: 0; }
-
-.comment-meta {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 5px;
-}
-
-.comment-name {
-    font-size: 0.8rem; font-weight: 800;
-    color: #9f87ff;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.comment-name:hover { color: #c4b5fd; text-decoration: none; }
-
-.comment-time {
-    font-size: 0.65rem; color: #38384a;
-    font-family: 'Fira Code', monospace;
-}
-
+.comment-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+.comment-name { font-size: 0.83rem; font-weight: 800; color: #e5e5f5; cursor: pointer; transition: color 0.2s; }
+.comment-name:hover { color: #a78bfa; }
+.comment-time { font-size: 0.68rem; color: #5a5a78; }
 .comment-del {
-    margin-right: auto;
-    background: none; border: none;
-    color: #f87171; cursor: pointer;
-    font-size: 0.68rem; font-weight: 700;
-    font-family: 'Tajawal', sans-serif;
-    padding: 2px 6px; opacity: 0.75;
-    transition: opacity 0.2s;
+    margin-right: auto; background: none; border: none; color: #f87171; cursor: pointer;
+    font-size: 0.66rem; font-weight: 700; font-family: 'Tajawal', sans-serif;
+    padding: 2px 6px; opacity: 0.75; transition: opacity 0.2s;
 }
 .comment-del:hover { opacity: 1; transform: none; filter: none; }
-
-.comment-text {
-    font-size: 0.88rem; color: #aaaacc;
-    line-height: 1.65; word-break: break-word;
-}
-
-.no-comments {
-    text-align: center; padding: 28px 20px;
-    color: #383854; font-size: 0.85rem;
-}
-
-.no-comments .nc-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
-
+.comment-text { font-size: 0.87rem; color: #c8c8dc; line-height: 1.65; word-break: break-word; }
+.no-comments { text-align: center; padding: 26px 20px; color: #383854; font-size: 0.84rem; }
+.no-comments .nc-icon { font-size: 1.9rem; display: block; margin-bottom: 8px; }
 .comment-input-wrap {
-    display: flex; gap: 8px; align-items: center;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px;
-    padding: 6px 6px 6px 14px;
+    display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 6px 6px 6px 14px;
     transition: border-color 0.2s;
 }
-
-.comment-input-wrap:focus-within {
-    border-color: rgba(139,92,246,0.35);
-    box-shadow: 0 0 0 3px rgba(139,92,246,0.08);
-}
-
-#commentInput {
-    flex: 1; background: transparent; border: none;
-    padding: 9px 0; outline: none;
-    color: #d0d0ee; font-family: 'Tajawal', sans-serif;
-    font-size: 0.9rem; margin: 0; direction: rtl;
-}
-
+.comment-input-wrap:focus-within { border-color: rgba(139,92,246,0.35); box-shadow: 0 0 0 3px rgba(139,92,246,0.08); }
+#commentInput { flex: 1; background: transparent; border: none; padding: 9px 0; outline: none; color: #d0d0ee; font-family: 'Tajawal', sans-serif; font-size: 0.89rem; margin: 0; direction: rtl; }
 #commentInput::placeholder { color: #38384a; }
-
-.comment-count-hint {
-    font-size: 0.68rem; color: #38384a;
-    margin: 4px 2px 0; text-align: left;
-    font-family: 'Fira Code', monospace;
-}
-
+.comment-count-hint { font-size: 0.66rem; color: #38384a; margin: 4px 2px 0; text-align: left; font-family: 'Fira Code', monospace; }
 #submitComment {
-    background: linear-gradient(135deg, #7c3aed, #5b21b6);
-    color: white; border: none;
-    border-radius: 10px;
-    padding: 9px 18px;
-    font-size: 0.82rem; font-weight: 800;
-    font-family: 'Tajawal', sans-serif;
-    cursor: pointer; margin: 0;
-    white-space: nowrap;
-    transition: all 0.2s;
-    box-shadow: 0 3px 12px rgba(124,58,237,0.3);
+    background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none;
+    border-radius: 10px; padding: 9px 18px; font-size: 0.81rem; font-weight: 800;
+    font-family: 'Tajawal', sans-serif; cursor: pointer; margin: 0; white-space: nowrap; transition: all 0.2s;
 }
-
-#submitComment:hover {
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    box-shadow: 0 4px 16px rgba(124,58,237,0.45);
-    transform: none; filter: none;
-}
-
+#submitComment:hover { background: linear-gradient(135deg, #8b5cf6, #6d28d9); transform: none; filter: none; }
 #submitComment:disabled { opacity: 0.5; cursor: not-allowed; }
-
 .comment-count-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(139,92,246,0.1);
-    border: 1px solid rgba(139,92,246,0.2);
-    border-radius: 50px; padding: 2px 10px;
-    font-size: 0.68rem; font-weight: 800; color: #7c6fff;
+    display: inline-flex; align-items: center; gap: 5px; background: rgba(139,92,246,0.1);
+    border: 1px solid rgba(139,92,246,0.2); border-radius: 50px; padding: 2px 10px;
+    font-size: 0.66rem; font-weight: 800; color: #7c6fff;
 }
 
 /* ============================================================
-   Sidebar — الشريط الجانبي
+   Sidebar — بطاقة واحدة مدمجة بدل ما كانت متفرّقة
    ============================================================ */
-.script-sidebar {
-    display: flex; flex-direction: column; gap: 14px;
-    position: sticky; top: 90px;
-}
+.script-sidebar { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 90px; }
 
 .sidebar-thumb {
-    display: none;
-    border-radius: 16px; overflow: hidden;
-    border: 1px solid rgba(139,92,246,0.18);
-    cursor: pointer;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.3);
-    transition: all 0.25s;
+    display: none; border-radius: 16px; overflow: hidden; border: 1px solid rgba(139,92,246,0.18);
+    cursor: pointer; box-shadow: 0 6px 24px rgba(0,0,0,0.3); transition: all 0.25s;
 }
-
-.sidebar-thumb.show { display: block; animation: riseUp 0.5s ease both; }
-.sidebar-thumb img { width: 100%; display: block; max-height: 150px; object-fit: cover; transition: transform 0.3s; }
-.sidebar-thumb:hover { border-color: rgba(139,92,246,0.4); box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(139,92,246,0.1); }
+.sidebar-thumb.show { display: block; animation: riseUp 0.45s ease both; }
+.sidebar-thumb img { width: 100%; display: block; max-height: 140px; object-fit: cover; transition: transform 0.3s; }
+.sidebar-thumb:hover { border-color: rgba(139,92,246,0.4); }
 .sidebar-thumb:hover img { transform: scale(1.06); }
 
 .side-card {
     background: linear-gradient(145deg, rgba(14,16,30,0.95), rgba(10,12,24,0.9));
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 18px;
-    padding: 18px;
-    transition: border-color 0.2s, transform 0.2s;
-    animation: riseUp 0.5s ease both;
+    border: 1px solid rgba(255,255,255,0.06); border-radius: 18px;
+    transition: border-color 0.2s; animation: riseUp 0.45s ease both;
+    overflow: hidden;
 }
-
 .side-card:hover { border-color: rgba(139,92,246,0.18); }
 
-.map-card-side {
-    text-align: center;
-    cursor: default;
-}
+/* قسم الماب داخل البطاقة المدمجة */
+.side-section { padding: 18px; text-align: center; }
+.side-section + .side-section { border-top: 1px solid rgba(255,255,255,0.05); }
+.mcs-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+.mcs-label { font-size: 0.6rem; font-weight: 800; color: #35355a; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 4px; }
+.mcs-name { font-size: 0.95rem; font-weight: 900; color: #00d9e8; }
+.mcs-name.muted { color: #3d3d5a; font-size: 0.82rem; font-weight: 700; }
 
-.mcs-icon  { font-size: 2.2rem; display: block; margin-bottom: 8px; }
-.mcs-label { font-size: 0.62rem; font-weight: 800; color: #35355a; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px; }
-.mcs-name  { font-size: 0.98rem; font-weight: 900; color: #00d9e8; }
-.mcs-name.muted { color: #3d3d5a; font-size: 0.85rem; font-weight: 700; }
-
-.stats-side-label {
-    font-size: 0.62rem; font-weight: 800; color: #35355a;
-    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
-}
-
-.stat-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: 0.83rem;
-}
-
+/* إحصائيات */
+.stats-side-label { font-size: 0.6rem; font-weight: 800; color: #35355a; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 10px; text-align: right; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.82rem; }
 .stat-row:last-child { border-bottom: none; }
 .sr-label { color: #44445a; }
-
-.sr-val {
-    font-weight: 800; color: #d0d0ee;
-    font-variant-numeric: tabular-nums;
-}
-
+.sr-val { font-weight: 800; color: #d0d0ee; font-variant-numeric: tabular-nums; }
 .like-btn-inline {
-    display: flex; align-items: center; gap: 6px;
-    background: rgba(248,113,113,0.07);
-    border: 1px solid rgba(248,113,113,0.15);
-    border-radius: 8px; padding: 5px 12px;
-    color: #f87171; font-size: 0.78rem; font-weight: 800;
-    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
-    width: 100%; justify-content: center;
+    display: flex; align-items: center; gap: 6px; background: rgba(248,113,113,0.07);
+    border: 1px solid rgba(248,113,113,0.15); border-radius: 8px; padding: 5px 12px;
+    color: #f87171; font-size: 0.77rem; font-weight: 800; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; margin: 0; width: 100%; justify-content: center;
     margin-top: 10px; transition: all 0.2s;
 }
-
 .like-btn-inline:hover { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.3); transform: none; filter: none; }
 .like-btn-inline.liked { background: rgba(248,113,113,0.2); color: #fca5a5; cursor: default; }
 
-.author-card-side {
-    text-align: center; cursor: pointer;
-}
-
-.author-card-side:hover { border-color: rgba(139,92,246,0.3); transform: translateY(-2px); }
-
+/* المؤلف */
+.author-card-side { text-align: center; cursor: pointer; }
+.author-card-side:hover { background: rgba(139,92,246,0.03); }
 .acs-avatar {
-    width: 66px; height: 66px; border-radius: 50%;
-    border: 2px solid rgba(139,92,246,0.25);
-    overflow: hidden; margin: 0 auto 10px;
-    background: #0a0a14;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.25s;
-    box-shadow: 0 0 0 4px rgba(139,92,246,0.05);
+    width: 62px; height: 62px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.25);
+    overflow: hidden; margin: 0 auto 10px; background: #0a0a14;
+    display: flex; align-items: center; justify-content: center; transition: all 0.25s;
 }
-
-.author-card-side:hover .acs-avatar {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 24px rgba(139,92,246,0.3), 0 0 0 4px rgba(139,92,246,0.1);
-}
-
-.acs-name  { font-size: 0.95rem; font-weight: 900; color: #d0d0ee; margin-bottom: 3px; }
-.acs-label { font-size: 0.68rem; color: #35355a; text-transform: uppercase; letter-spacing: 1px; }
-
+.author-card-side:hover .acs-avatar { border-color: #8b5cf6; box-shadow: 0 0 20px rgba(139,92,246,0.3); }
+.acs-name { font-size: 0.92rem; font-weight: 900; color: #d0d0ee; margin-bottom: 3px; }
+.acs-label { font-size: 0.65rem; color: #35355a; text-transform: uppercase; letter-spacing: 1px; }
 .acs-btn {
-    background: rgba(139,92,246,0.1);
-    color: #8b7fff;
-    border: 1px solid rgba(139,92,246,0.22);
-    border-radius: 50px;
-    padding: 6px 16px;
-    font-size: 0.75rem; font-weight: 800;
-    font-family: 'Tajawal', sans-serif;
-    cursor: pointer; margin-top: 10px;
-    transition: all 0.2s; display: inline-block;
+    background: rgba(139,92,246,0.1); color: #8b7fff; border: 1px solid rgba(139,92,246,0.22);
+    border-radius: 50px; padding: 6px 16px; font-size: 0.73rem; font-weight: 800;
+    font-family: 'Tajawal', sans-serif; cursor: pointer; margin-top: 10px; transition: all 0.2s; display: inline-block;
 }
-
 .acs-btn:hover { background: rgba(139,92,246,0.22); color: #c4b5fd; transform: none; filter: none; }
-
-/* ============================================================
-   Section Headers
-   ============================================================ */
-.comments-card h3, .desc-card h3 {
-    font-size: 0.68rem; font-weight: 800; color: #35355a;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 10px;
-}
-
-.comments-card h3::after, .desc-card h3::after {
-    content: ''; flex: 1; height: 1px;
-    background: rgba(255,255,255,0.04);
-}
 
 /* ============================================================
    Responsive
    ============================================================ */
 @media (max-width: 740px) {
-    .script-layout {
-        grid-template-columns: 1fr;
-        padding: 0 14px 60px;
-    }
-
-    .script-sidebar {
-        position: static;
-        order: -1;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
+    .script-layout { grid-template-columns: 1fr; padding: 14px 14px 60px; }
+    .script-sidebar { position: static; order: -1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .sidebar-thumb { grid-column: 1 / -1; }
     .author-card-side { grid-column: 1 / -1; }
-
     .comment-input-wrap { flex-direction: column; padding: 10px; }
     #commentInput { width: 100%; }
     #submitComment { width: 100%; padding: 10px; }
-
     .action-row { gap: 7px; }
-    .action-row button { flex: 1; padding: 10px 14px; font-size: 0.8rem; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    .action-row button { flex: 1 1 100%; padding: 12px 14px; font-size: 0.82rem; }
+    #copyBtn { flex: 1 1 100%; }
 }
 
 </style>
@@ -773,6 +465,10 @@ body {
     <!-- ==================== Main Column ==================== -->
     <div class="script-main">
 
+        <div class="script-crumb">
+            <a href="scripts.html">📜 السكربتات</a> ← عرض سكربت
+        </div>
+
         <!-- صورة السكربت -->
         <div class="script-image-wrap" id="scriptImageWrap">
             <img id="scriptImage" src="" alt="صورة السكربت">
@@ -781,6 +477,7 @@ body {
 
         <!-- Hero المعلومات الرئيسية -->
         <div class="script-hero">
+            <div class="hero-eyebrow">📜 سكربت Roblox</div>
             <h1 class="script-title" id="title">⏳ جارٍ التحميل...</h1>
             <div class="author-row" id="authorRow">
                 <div class="author-avatar" id="authorAvatarInline"></div>
@@ -792,6 +489,17 @@ body {
             <div class="tags-row" id="tagsRow"></div>
         </div>
 
+        <!-- بانر المفتاح — بيظهر بس لو محتاج مفتاح، فوق الكود عشان الزائر ياخد باله الأول -->
+        <div class="key-banner" id="keyCard">
+            <span class="kb-icon">🔑</span>
+            <div class="kb-text">
+                <div class="kb-title">السكربت ده يحتاج مفتاح تشغيل</div>
+                <div class="kb-sub">انسخ المفتاح تحت وحطّه في نافذة السكربت قبل ما يشتغل</div>
+            </div>
+            <code class="kb-value" id="keyValue">—</code>
+            <button id="copyKeyBtn" class="copy-inline">📋 نسخ المفتاح</button>
+        </div>
+
         <!-- الكود -->
         <div class="code-card">
             <div class="code-header">
@@ -800,34 +508,25 @@ body {
                     <div class="ch-dot"></div>
                     <div class="ch-dot"></div>
                 </div>
-                <span class="ch-label">script.lua</span>
+                <span class="ch-label">script.lua <span class="ch-lines">· <span id="codeLineCount">0</span> سطر</span></span>
                 <button class="copy-inline" id="copyInline">📋 نسخ</button>
             </div>
             <pre id="code">-- جارٍ التحميل...</pre>
         </div>
-<a href="https://omg10.com/4/11458024">Roblox script ad</a>
-       
-        <!-- المفتاح (يظهر بس لو السكربت عنده مفتاح) -->
-        <div class="desc-card" id="keyCard" style="display:none">
-            <h3>🔑 المفتاح</h3>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                <code id="keyValue" style="background:rgba(0,0,0,0.3);border:1px solid rgba(139,92,246,0.25);border-radius:10px;padding:8px 14px;font-family:'Fira Code',monospace;font-size:0.85rem;color:#8be9fd;direction:ltr">—</code>
-                <button id="copyKeyBtn" class="copy-inline">📋 نسخ المفتاح</button>
-            </div>
-        </div>
+
+        <a class="ad-slot" href="https://omg10.com/4/11458024" target="_blank" rel="noopener">إعلان</a>
 
         <!-- الوصف -->
         <div class="desc-card">
-            <h3>📝 الوصف</h3>
+            <h3 class="section-label">📝 الوصف</h3>
             <p id="description" style="color:#6a6a88;font-style:italic">جارٍ التحميل...</p>
         </div>
 
         <!-- أزرار الإجراءات -->
         <div class="action-row">
-            <button id="reportBtn">🚩 إبلاغ</button>
             <button id="copyBtn">📋 نسخ السكربت</button>
             <button id="rawBtn">📄 Raw</button>
-          
+            <button id="reportBtn">🚩 إبلاغ</button>
         </div>
 
         <!-- التعليقات -->
@@ -861,41 +560,44 @@ body {
             <img id="sideThumbImg" src="" alt="صورة السكربت">
         </div>
 
-        <!-- الماب -->
-        <div class="side-card map-card-side" id="mapCardSide">
-            <span class="mcs-icon">⏳</span>
-            <div class="mcs-label">الماب</div>
-            <div class="mcs-name muted">جارٍ التحميل...</div>
-        </div>
-
-        <!-- الإحصائيات + لايك -->
-        <div class="side-card stats-side">
-            <div class="stats-side-label">📊 إحصائيات</div>
-            <div class="stat-row">
-                <span class="sr-label">👍 اللايكات</span>
-                <span class="sr-val" id="st-likes">—</span>
+        <!-- بطاقة مدمجة: الماب + الإحصائيات -->
+        <div class="side-card">
+            <div class="side-section" id="mapCardSide">
+                <span class="mcs-icon">⏳</span>
+                <div class="mcs-label">الماب</div>
+                <div class="mcs-name muted">جارٍ التحميل...</div>
             </div>
-            <div class="stat-row">
-                <span class="sr-label">⭐ التقييم</span>
-                <span class="sr-val" id="st-rating">—</span>
+            <div class="side-section" style="text-align:right">
+                <div class="stats-side-label">📊 إحصائيات</div>
+                <div class="stat-row">
+                    <span class="sr-label">👍 اللايكات</span>
+                    <span class="sr-val" id="st-likes">—</span>
+                </div>
+                <div class="stat-row">
+                    <span class="sr-label">⭐ التقييم</span>
+                    <span class="sr-val" id="st-rating">—</span>
+                </div>
+                <div class="stat-row">
+                    <span class="sr-label">💬 التعليقات</span>
+                    <span class="sr-val" id="st-comments">0</span>
+                </div>
+                <button class="like-btn-inline" id="likeBtn">❤️ إضافة لايك</button>
             </div>
-            <div class="stat-row">
-                <span class="sr-label">💬 التعليقات</span>
-                <span class="sr-val" id="st-comments">0</span>
-            </div>
-            <button class="like-btn-inline" id="likeBtn">❤️ إضافة لايك</button>
         </div>
 
         <!-- المؤلف -->
         <div class="side-card author-card-side" id="authorCardSide">
-            <div class="acs-avatar" id="authorAvatarSide"></div>
-            <div class="acs-name"  id="acName">—</div>
-            <div class="acs-label">المؤلف</div>
-            <button class="acs-btn" id="viewProfileBtn">👤 عرض البروفايل</button>
+            <div class="side-section">
+                <div class="acs-avatar" id="authorAvatarSide"></div>
+                <div class="acs-name"  id="acName">—</div>
+                <div class="acs-label">المؤلف</div>
+                <button class="acs-btn" id="viewProfileBtn">👤 عرض البروفايل</button>
+            </div>
         </div>
 
     </aside>
 </div>
+
 
 
 <!-- بيانات ثابتة مولّدة تلقائيًا (كل السكربتات) — بتتحمّل فورًا قبل Firebase -->
@@ -917,6 +619,8 @@ body {
 
         const codeEl = document.getElementById('code');
         if (codeEl) codeEl.innerText = data.code || '-- لا يوجد كود';
+        const lcEl = document.getElementById('codeLineCount');
+        if (lcEl) lcEl.innerText = data.code ? data.code.split('\n').length : 0;
 
         const descEl = document.getElementById('description');
         if (descEl) {
@@ -1053,7 +757,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
    Helpers
    ============================================================ */
 // ✅ صورة البروفايل الحقيقية (نفس نظام profile.html: users/{uid}/photo)
-// لو المستخدم رافع صورة حقيقية بتظهر، ولو لأ بيظهر أول حرف من اسمه بدل الوجه الكرتوني
+// بيرسم الحرف الأول دايمًا كخلفية، وفوقه الصورة الحقيقية لو موجودة —
+// لو الصورة اتعطلت أو الرابط باظ، onerror بيشيلها وبيفضل الحرف ظاهر بدل ما يبقى فاضي
 async function getAvatar(uid, size, fallbackName) {
     let photo = null;
     if (uid) {
@@ -1067,12 +772,11 @@ async function getAvatar(uid, size, fallbackName) {
             avatarCache[uid] = photo;
         }
     }
-    if (photo) {
-        return `<img src="${photo}" alt="صورة البروفايل" style="width:100%;height:100%;object-fit:cover;display:block">`;
-    }
     const initials = (fallbackName || '؟').charAt(0).toUpperCase();
     const fontSize = Math.max(12, Math.round(size * 0.42));
-    return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#8b5cf6,#00bcd4);color:white;font-weight:900;font-size:${fontSize}px">${initials}</div>`;
+    const fallback = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#8b5cf6,#00bcd4);color:white;font-weight:900;font-size:${fontSize}px">${initials}</div>`;
+    if (!photo) return fallback;
+    return `<div style="position:relative;width:100%;height:100%">${fallback}<img src="${photo}" alt="صورة البروفايل" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block" onerror="this.remove()"></div>`;
 }
 
 function escHTML(s) {
@@ -1120,6 +824,7 @@ async function loadScript() {
     document.getElementById('title').innerText       = data.title;
     document.title = `${data.title} | CCRAFT SPACE`;
     document.getElementById('code').innerText        = data.code;
+    document.getElementById('codeLineCount').innerText = data.code ? data.code.split('\n').length : 0;
     document.getElementById('description').innerText = data.description || "لا يوجد وصف";
     document.getElementById('description').style.color = data.description ? '#b0b0cc' : '#44445a';
     document.getElementById('description').style.fontStyle = data.description ? 'normal' : 'italic';
