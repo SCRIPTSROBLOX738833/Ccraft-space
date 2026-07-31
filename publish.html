@@ -158,6 +158,16 @@
     #scriptKey { margin: 0; border-radius: 14px; padding: 12px 18px; font-size: 0.9rem; }
     .key-hint { font-size: 0.72rem; color: var(--text-muted); opacity: 0.75; }
 
+    /* ---- Tag chips ---- */
+    .tag-chip {
+        display:inline-flex;align-items:center;gap:6px;
+        background:rgba(139,92,246,0.12);color:#a78bfa;
+        border:1px solid rgba(139,92,246,0.25);
+        padding:5px 12px;border-radius:50px;
+        font-size:0.78rem;font-weight:800;cursor:pointer;margin:0;
+    }
+    .tag-chip:hover { background:rgba(139,92,246,0.22); transform:none; filter:none; }
+
   </style>
 </head>
 <body>
@@ -209,15 +219,28 @@
     </select>
 
     <!-- ============================================================
-         🔑 المفتاح (اختياري)
+         🔑 المفتاح
          ============================================================ -->
     <div class="key-section">
-        <label class="key-label" for="scriptKey">
-            🔑 مفتاح السكربت
-            <span class="key-optional-tag">اختياري</span>
-        </label>
-        <input type="text" id="scriptKey" placeholder="اكتب المفتاح هنا لو السكربت يحتاج مفتاح للتشغيل...">
-        <div class="key-hint">لو السكربت محتاج مفتاح (Key) عشان يشتغل، اكتبه هنا وهيظهر للزوار في صفحة السكربت. سيبه فاضي لو مش محتاج.</div>
+        <label class="key-label">🔑 هل السكربت يحتاج مفتاح (Key)؟</label>
+        <div class="map-toggle-row">
+            <button type="button" class="no-map-btn active" id="noKeyBtn">🔓 لا، بدون مفتاح</button>
+            <button type="button" class="no-map-btn" id="yesKeyBtn">🔒 نعم، يحتاج مفتاح</button>
+        </div>
+        <input type="text" id="scriptKey" placeholder="اكتب المفتاح هنا (اختياري)..." style="display:none">
+        <div class="key-hint">لو فعّلت "نعم" هيظهر بادج 🔒 على السكربت في كل مكان، وتقدر كمان تكتب المفتاح نفسه لو حابب.</div>
+    </div>
+
+    <!-- ============================================================
+         🏷️ تاجات السكربت
+         ============================================================ -->
+    <div class="key-section">
+        <label class="key-label">🏷️ تاجات السكربت <span class="key-optional-tag">اختياري</span></label>
+        <div class="custom-map-row">
+            <input type="text" id="tagInput" placeholder="اكتب تاج واضغط Enter (مثال: ESP، سرعة، مجاني)...">
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px" id="tagsPreview"></div>
+        <div class="key-hint">التاجات بتساعد الزوار يلاقوا سكربتك بسهولة بالبحث والفلترة.</div>
     </div>
 
     <!-- ============================================================
@@ -313,6 +336,8 @@
   let currentUser  = null;
   let selectedMap  = null;
   let imageBase64  = null;   // الصورة المضغوطة جاهزة للحفظ
+  let hasKey       = false;  // ✅ هل السكربت يحتاج مفتاح
+  let scriptTags   = [];     // ✅ تاجات السكربت
 
   const MAX_SIZE_MB   = 12;
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
@@ -347,6 +372,58 @@
         document.getElementById('authNotice').style.display  = 'block';
         document.getElementById('publishMain').style.display = 'none';
         document.getElementById('userInfo').style.display    = 'none';
+    }
+  });
+
+  /* ============================================================
+     🔑 هل يحتاج مفتاح؟ (Toggle)
+     ============================================================ */
+  const noKeyBtn  = document.getElementById('noKeyBtn');
+  const yesKeyBtn = document.getElementById('yesKeyBtn');
+  const scriptKeyInput = document.getElementById('scriptKey');
+
+  function escP(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  noKeyBtn.addEventListener('click', () => {
+    hasKey = false;
+    noKeyBtn.classList.add('active');
+    yesKeyBtn.classList.remove('active');
+    scriptKeyInput.style.display = 'none';
+  });
+
+  yesKeyBtn.addEventListener('click', () => {
+    hasKey = true;
+    yesKeyBtn.classList.add('active');
+    noKeyBtn.classList.remove('active');
+    scriptKeyInput.style.display = 'block';
+  });
+
+  /* ============================================================
+     🏷️ التاجات
+     ============================================================ */
+  const tagInput   = document.getElementById('tagInput');
+  const tagsPreview = document.getElementById('tagsPreview');
+
+  function renderTags() {
+    tagsPreview.innerHTML = scriptTags.map((t,i) =>
+        `<span class="tag-chip" data-i="${i}">#${escP(t)} ✕</span>`).join('');
+    tagsPreview.querySelectorAll('.tag-chip').forEach(el => {
+        el.addEventListener('click', () => {
+            scriptTags.splice(parseInt(el.dataset.i), 1);
+            renderTags();
+        });
+    });
+  }
+
+  tagInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = tagInput.value.trim().replace(/^#/, '');
+        if (val && !scriptTags.includes(val) && scriptTags.length < 8) {
+            scriptTags.push(val);
+            renderTags();
+        }
+        tagInput.value = '';
     }
   });
 
@@ -556,10 +633,14 @@
         rating:      0,
         votes:       0,
         likes:       0,
+        hasKey,                                        // ✅ فلاج واضح للمفتاح
     };
 
     // ✅ ضيف المفتاح لو المستخدم كتب حاجة (اختياري تمامًا)
     if (key) scriptData.key = key;
+
+    // ✅ ضيف التاجات لو موجودة
+    if (scriptTags.length) scriptData.tags = [...scriptTags];
 
     // ضيف الصورة لو موجودة
     if (imageBase64) scriptData.image = imageBase64;
@@ -572,6 +653,12 @@
     document.getElementById('publishForm').reset();
     setMap(null);
     removeImage({ stopPropagation: () => {} });
+
+    // ✅ Reset حقول المفتاح والتاجات
+    hasKey = false;
+    scriptTags = [];
+    noKeyBtn.click();
+    renderTags();
   });
 
   /* ============================================================
