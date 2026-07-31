@@ -509,6 +509,17 @@ body {
     font-family: 'Fira Code', monospace;
 }
 
+.comment-del {
+    margin-right: auto;
+    background: none; border: none;
+    color: #f87171; cursor: pointer;
+    font-size: 0.68rem; font-weight: 700;
+    font-family: 'Tajawal', sans-serif;
+    padding: 2px 6px; opacity: 0.75;
+    transition: opacity 0.2s;
+}
+.comment-del:hover { opacity: 1; transform: none; filter: none; }
+
 .comment-text {
     font-size: 0.88rem; color: #aaaacc;
     line-height: 1.65; word-break: break-word;
@@ -543,6 +554,12 @@ body {
 }
 
 #commentInput::placeholder { color: #38384a; }
+
+.comment-count-hint {
+    font-size: 0.68rem; color: #38384a;
+    margin: 4px 2px 0; text-align: left;
+    font-family: 'Fira Code', monospace;
+}
 
 #submitComment {
     background: linear-gradient(135deg, #7c3aed, #5b21b6);
@@ -828,9 +845,10 @@ body {
             </div>
 
             <div class="comment-input-wrap">
-                <input type="text" id="commentInput" placeholder="شاركنا رأيك في هذا السكربت...">
+                <input type="text" id="commentInput" maxlength="300" placeholder="شاركنا رأيك في هذا السكربت...">
                 <button id="submitComment">إرسال ↵</button>
             </div>
+            <div class="comment-count-hint"><span id="commentCharCount">0</span>/300</div>
         </div>
 
     </div>
@@ -933,6 +951,14 @@ body {
             tagsRow.innerHTML += data.map
                 ? `<span class="tag tag-map">🗺️ ${esc(data.map)}</span>`
                 : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
+            // ✅ حالة المفتاح
+            tagsRow.innerHTML += (data.hasKey || data.key)
+                ? `<span class="tag" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">🔒 يتطلب مفتاح</span>`
+                : `<span class="tag" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>`;
+            // ✅ التاجات
+            if (Array.isArray(data.tags)) {
+                tagsRow.innerHTML += data.tags.map(t => `<span class="tag tag-map">#${esc(t)}</span>`).join('');
+            }
         }
 
         const authorNameEl = document.getElementById('authorName');
@@ -984,9 +1010,8 @@ body {
 
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, set, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, set, push, remove, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { buildAvatar, DEFAULT_CHAR } from './avatar.js';
 
 const firebaseConfig = {
     apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -1027,15 +1052,27 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 /* ============================================================
    Helpers
    ============================================================ */
-async function getAvatar(uid, size) {
-    if (!uid) return buildAvatar(DEFAULT_CHAR, size);
-    if (avatarCache[uid]) return buildAvatar(avatarCache[uid], size);
-    try {
-        const snap = await get(ref(db, `users/${uid}/avatar`));
-        const char = snap.exists() ? { ...DEFAULT_CHAR, ...snap.val() } : DEFAULT_CHAR;
-        avatarCache[uid] = char;
-        return buildAvatar(char, size);
-    } catch { return buildAvatar(DEFAULT_CHAR, size); }
+// ✅ صورة البروفايل الحقيقية (نفس نظام profile.html: users/{uid}/photo)
+// لو المستخدم رافع صورة حقيقية بتظهر، ولو لأ بيظهر أول حرف من اسمه بدل الوجه الكرتوني
+async function getAvatar(uid, size, fallbackName) {
+    let photo = null;
+    if (uid) {
+        if (uid in avatarCache) {
+            photo = avatarCache[uid];
+        } else {
+            try {
+                const snap = await get(ref(db, `users/${uid}/photo`));
+                photo = snap.exists() ? snap.val() : null;
+            } catch { photo = null; }
+            avatarCache[uid] = photo;
+        }
+    }
+    if (photo) {
+        return `<img src="${photo}" alt="صورة البروفايل" style="width:100%;height:100%;object-fit:cover;display:block">`;
+    }
+    const initials = (fallbackName || '؟').charAt(0).toUpperCase();
+    const fontSize = Math.max(12, Math.round(size * 0.42));
+    return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#8b5cf6,#00bcd4);color:white;font-weight:900;font-size:${fontSize}px">${initials}</div>`;
 }
 
 function escHTML(s) {
@@ -1124,8 +1161,8 @@ async function loadScript() {
 
     // --- الأفاتار ---
     const [avatarSm, avatarLg] = await Promise.all([
-        getAvatar(data.authorUid, 38),
-        getAvatar(data.authorUid, 66),
+        getAvatar(data.authorUid, 38, authorName),
+        getAvatar(data.authorUid, 66, authorName),
     ]);
     document.getElementById('authorAvatarInline').innerHTML = avatarSm;
     document.getElementById('authorAvatarSide').innerHTML   = avatarLg;
@@ -1142,6 +1179,14 @@ async function loadScript() {
     tagsRow.innerHTML += data.map
         ? `<span class="tag tag-map">🗺️ ${escHTML(data.map)}</span>`
         : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
+    // ✅ حالة المفتاح
+    tagsRow.innerHTML += (data.hasKey || data.key)
+        ? `<span class="tag" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">🔒 يتطلب مفتاح</span>`
+        : `<span class="tag" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>`;
+    // ✅ التاجات
+    if (Array.isArray(data.tags)) {
+        tagsRow.innerHTML += data.tags.map(t => `<span class="tag tag-map">#${escHTML(t)}</span>`).join('');
+    }
 
     // --- بطاقة الماب ---
     const mapCard = document.getElementById('mapCardSide');
@@ -1206,7 +1251,7 @@ async function loadComments() {
         document.getElementById('noComments')?.remove();
 
         const c = snapshot.val();
-        const avatarSVG = await getAvatar(c.uid, 34);
+        const avatarSVG = await getAvatar(c.uid, 34, c.name);
 
         const item = document.createElement('div');
         item.className = 'comment-item';
@@ -1219,12 +1264,15 @@ async function loadComments() {
               })
             : '';
 
+        const canDelete = currentUser && c.uid === currentUser.uid;
+
         item.innerHTML = `
             <div class="comment-avatar">${avatarSVG}</div>
             <div class="comment-body">
                 <div class="comment-meta">
                     <span class="comment-name">${escHTML(c.name || 'مجهول')}</span>
                     <span class="comment-time">${time}</span>
+                    ${canDelete ? `<button class="comment-del">🗑️ حذف</button>` : ''}
                 </div>
                 <div class="comment-text">${escHTML(c.text)}</div>
             </div>
@@ -1233,6 +1281,26 @@ async function loadComments() {
         const goP = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
         item.querySelector('.comment-avatar').onclick = goP;
         item.querySelector('.comment-name').onclick   = goP;
+
+        if (canDelete) {
+            item.querySelector('.comment-del').onclick = async e => {
+                e.stopPropagation();
+                if (!confirm('متأكد إنك عايز تحذف تعليقك؟')) return;
+                await remove(ref(db, `scripts/${scriptId}/comments/${snapshot.key}`));
+                item.remove();
+                const count = document.querySelectorAll('.comment-item').length;
+                document.getElementById('commentBadge').innerText = count;
+                document.getElementById('st-comments').innerText  = count;
+                if (!count) {
+                    commentsDiv.innerHTML = `
+                        <div class="no-comments" id="noComments">
+                            <span class="nc-icon">💬</span>
+                            كن أول من يعلّق على هذا السكربت!
+                        </div>`;
+                }
+            };
+        }
+
         commentsDiv.appendChild(item);
 
         const count = document.querySelectorAll('.comment-item').length;
@@ -1246,12 +1314,20 @@ async function loadComments() {
 /* ============================================================
    إرسال تعليق جديد — يحتاج تسجيل دخول
    ============================================================ */
+const commentInputEl = document.getElementById('commentInput');
+const commentCharCountEl = document.getElementById('commentCharCount');
+
+commentInputEl.addEventListener('input', () => {
+    commentCharCountEl.innerText = commentInputEl.value.length;
+});
+
 document.getElementById('submitComment').addEventListener('click', async () => {
     if (!currentUser) { alert("يجب تسجيل الدخول للتعليق"); location.href = "login.html"; return; }
 
-    const inp  = document.getElementById('commentInput');
+    const inp  = commentInputEl;
     const text = inp.value.trim();
     if (!text) return;
+    if (text.length > 300) { alert('التعليق طويل جدًا (الحد الأقصى 300 حرف)'); return; }
 
     const btn = document.getElementById('submitComment');
     btn.disabled = true;
@@ -1265,11 +1341,12 @@ document.getElementById('submitComment').addEventListener('click', async () => {
     });
 
     inp.value    = '';
+    commentCharCountEl.innerText = '0';
     btn.disabled = false;
     btn.innerText = 'إرسال ↵';
 });
 
-document.getElementById('commentInput').addEventListener('keypress', e => {
+commentInputEl.addEventListener('keypress', e => {
     if (e.key === 'Enter') document.getElementById('submitComment').click();
 });
 
