@@ -159,7 +159,9 @@ body {
 .author-avatar {
     width: 36px; height: 36px; border-radius: 50%;
     border: 2px solid rgba(139,92,246,0.3);
-    overflow: hidden; flex-shrink: 0; background: #0a0a14;
+    flex-shrink: 0; background-color: #0a0a14;
+    background-size: cover; background-position: center;
+    color: #ffffff; font-weight: 900; font-size: 0.9rem;
     display: flex; align-items: center; justify-content: center; transition: all 0.25s;
 }
 .author-row:hover .author-avatar { border-color: #8b5cf6; box-shadow: 0 0 16px rgba(139,92,246,0.4); }
@@ -301,7 +303,7 @@ body {
 #reportBtn:hover { background: rgba(248,113,113,0.14); border-color: rgba(248,113,113,0.35); transform: translateY(-2px); filter: none; }
 
 /* ============================================================
-   Comments
+   Comments — إعادة كتابة كاملة من الصفر
    ============================================================ */
 .comments-card {
     background: linear-gradient(160deg, rgba(14,16,30,0.95) 0%, rgba(10,12,24,0.9) 100%);
@@ -315,39 +317,50 @@ body {
     display: flex; align-items: center; gap: 10px;
 }
 .comments-card h3::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.04); }
-#comments { display: flex; flex-direction: column; margin-bottom: 16px; }
-.comment-item {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 14px 2px;
+
+#comments { display: block; margin-bottom: 16px; }
+
+.cmt-row {
+    display: flex;
+    gap: 10px;
+    padding: 14px 0;
     border-bottom: 1px solid rgba(255,255,255,0.06);
-    animation: commentSlide 0.3s cubic-bezier(0.22,1,0.36,1) both;
 }
-.comment-item:last-child { border-bottom: none; }
-.comment-avatar {
-    width: 38px; height: 38px; min-width: 38px; min-height: 38px;
-    border-radius: 50%; overflow: hidden; flex-shrink: 0;
-    background: linear-gradient(135deg,#8b5cf6,#00bcd4);
-    border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+.cmt-row:last-child { border-bottom: none; }
+
+/* عنصر واحد بس — مفيش img ومفيش div تاني جواه */
+.cmt-pic {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex: 0 0 36px;
+    background-color: #8b5cf6;
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
-.comment-avatar img { width: 100% !important; height: 100% !important; object-fit: cover; display: block; }
-.comment-body { flex: 1; min-width: 0; }
-.comment-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
-.comment-name { font-size: 0.83rem; font-weight: 800; color: #e5e5f5; cursor: pointer; transition: color 0.2s; }
-.comment-name:hover { color: #a78bfa; }
-.comment-time { font-size: 0.68rem; color: #5a5a78; }
-.comment-del {
+
+.cmt-main { flex: 1; min-width: 0; }
+.cmt-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 3px; }
+.cmt-user { font-size: 0.84rem; font-weight: 800; color: #e5e5f5; cursor: pointer; }
+.cmt-user:hover { color: #a78bfa; }
+.cmt-when { font-size: 0.68rem; color: #5a5a78; }
+.cmt-del {
     margin-right: auto; background: none; border: none; color: #f87171; cursor: pointer;
-    font-size: 0.66rem; font-weight: 700; font-family: 'Tajawal', sans-serif;
-    padding: 2px 6px; opacity: 0.75; transition: opacity 0.2s;
+    font-size: 0.66rem; font-weight: 700; font-family: 'Tajawal', sans-serif; padding: 2px 4px; opacity: 0.7;
 }
-.comment-del:hover { opacity: 1; transform: none; filter: none; }
-.comment-text {
-    font-size: 0.88rem; color: #d4d4e6; line-height: 1.7; word-break: break-word;
-    margin-top: 2px; padding-top: 6px;
-}
+.cmt-del:hover { opacity: 1; }
+.cmt-msg { font-size: 0.88rem; color: #d4d4e6; line-height: 1.65; word-break: break-word; margin: 0; }
+
 .no-comments { text-align: center; padding: 26px 20px; color: #383854; font-size: 0.84rem; }
 .no-comments .nc-icon { font-size: 1.9rem; display: block; margin-bottom: 8px; }
+
 .comment-input-wrap {
     display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.3);
     border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 6px 6px 6px 14px;
@@ -369,6 +382,14 @@ body {
     border: 1px solid rgba(139,92,246,0.2); border-radius: 50px; padding: 2px 10px;
     font-size: 0.66rem; font-weight: 800; color: #7c6fff;
 }
+
+@media (max-width: 740px) {
+    .cmt-pic { width: 32px; height: 32px; flex-basis: 32px; font-size: 0.8rem; }
+    .cmt-user { font-size: 0.86rem; }
+    .cmt-when { font-size: 0.7rem; }
+    .cmt-msg { font-size: 0.9rem; line-height: 1.75; }
+}
+
 
 /* ============================================================
    Sidebar — بطاقة واحدة مدمجة بدل ما كانت متفرّقة
@@ -421,7 +442,9 @@ body {
 .author-card-side:hover { background: rgba(139,92,246,0.03); }
 .acs-avatar {
     width: 62px; height: 62px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.25);
-    overflow: hidden; margin: 0 auto 10px; background: #0a0a14;
+    margin: 0 auto 10px; background-color: #0a0a14;
+    background-size: cover; background-position: center;
+    color: #ffffff; font-weight: 900; font-size: 1.5rem;
     display: flex; align-items: center; justify-content: center; transition: all 0.25s;
 }
 .author-card-side:hover .acs-avatar { border-color: #8b5cf6; box-shadow: 0 0 20px rgba(139,92,246,0.3); }
@@ -448,11 +471,6 @@ body {
     .action-row { gap: 7px; }
     .action-row button { flex: 1 1 100%; padding: 12px 14px; font-size: 0.82rem; }
     #copyBtn { flex: 1 1 100%; }
-    .comment-item { gap: 10px; padding: 14px 0; }
-    .comment-avatar { width: 34px; height: 34px; min-width: 34px; min-height: 34px; }
-    .comment-name { font-size: 0.85rem; }
-    .comment-time { font-size: 0.7rem; }
-    .comment-text { font-size: 0.9rem; line-height: 1.75; }
 }
 
 </style>
@@ -766,17 +784,10 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 /* ============================================================
    Helpers
    ============================================================ */
-// ✅ صورة البروفايل الحقيقية (نفس نظام profile.html: users/{uid}/photo)
-// بيرسم الحرف الأول دايمًا كخلفية، وفوقه الصورة الحقيقية لو موجودة —
-// لو الصورة اتعطلت أو الرابط باظ، onerror بيشيلها وبيفضل الحرف ظاهر بدل ما يبقى فاضي
-function avatarPlaceholderURI(name, size) {
-    const initial = (name || '؟').charAt(0).toUpperCase();
-    const fontSize = Math.round(size * 0.46);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><rect width="100%" height="100%" fill="#8b5cf6"/><text x="50%" y="53%" font-family="Tajawal, Arial, sans-serif" font-size="${fontSize}" font-weight="900" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">${initial}</text></svg>`;
-    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
-
-async function getAvatar(uid, size, fallbackName) {
+// ✅ صورة البروفايل — بتتحط مباشرة على الـ element نفسه (background-image) مفيش أي عنصر
+// جواه خالص. لو مفيش صورة بيظهر أول حرف من الاسم كنص عادي جوه نفس العنصر.
+async function applyAvatar(el, uid, fallbackName) {
+    if (!el) return;
     let photo = null;
     if (uid) {
         if (uid in avatarCache) {
@@ -789,10 +800,13 @@ async function getAvatar(uid, size, fallbackName) {
             avatarCache[uid] = photo;
         }
     }
-    // ✅ عنصر <img> واحد بس دايمًا — مفيش div ورا div. لو مفيش صورة أو باظت، السورس بيبقى صورة حرف بسيطة (SVG) بدل الفراغ
-    const placeholder = avatarPlaceholderURI(fallbackName, size);
-    const src = photo || placeholder;
-    return `<img src="${src}" alt="صورة البروفايل" onerror="this.onerror=null;this.src='${placeholder}'" style="width:100%;height:100%;object-fit:cover;display:block">`;
+    if (photo) {
+        el.style.backgroundImage = `url("${photo}")`;
+        el.textContent = '';
+    } else {
+        el.style.backgroundImage = 'none';
+        el.textContent = (fallbackName || '؟').charAt(0).toUpperCase();
+    }
 }
 
 function escHTML(s) {
@@ -881,12 +895,10 @@ async function loadScript() {
     document.getElementById('acName').innerText     = authorName;
 
     // --- الأفاتار ---
-    const [avatarSm, avatarLg] = await Promise.all([
-        getAvatar(data.authorUid, 38, authorName),
-        getAvatar(data.authorUid, 66, authorName),
+    await Promise.all([
+        applyAvatar(document.getElementById('authorAvatarInline'), data.authorUid, authorName),
+        applyAvatar(document.getElementById('authorAvatarSide'), data.authorUid, authorName),
     ]);
-    document.getElementById('authorAvatarInline').innerHTML = avatarSm;
-    document.getElementById('authorAvatarSide').innerHTML   = avatarLg;
 
     // --- روابط البروفايل ---
     const goProfile = () => { if (data.authorUid) location.href = `profile.html?uid=${data.authorUid}`; };
@@ -972,11 +984,6 @@ async function loadComments() {
         document.getElementById('noComments')?.remove();
 
         const c = snapshot.val();
-        const avatarSVG = await getAvatar(c.uid, 34, c.name);
-
-        const item = document.createElement('div');
-        item.className = 'comment-item';
-        if (!firstLoad) item.style.animationDelay = '0s';
 
         const time = c.timestamp
             ? new Date(c.timestamp).toLocaleString('ar-EG', {
@@ -987,29 +994,41 @@ async function loadComments() {
 
         const canDelete = currentUser && c.uid === currentUser.uid;
 
-        item.innerHTML = `
-            <div class="comment-avatar">${avatarSVG}</div>
-            <div class="comment-body">
-                <div class="comment-meta">
-                    <span class="comment-name">${escHTML(c.name || 'مجهول')}</span>
-                    <span class="comment-time">${time}</span>
-                    ${canDelete ? `<button class="comment-del">🗑️ حذف</button>` : ''}
-                </div>
-                <div class="comment-text">${escHTML(c.text)}</div>
-            </div>
-        `;
+        // بناء العناصر مباشرة (createElement) — مفيش أي HTML string للأفاتار خالص
+        const row = document.createElement('div');
+        row.className = 'cmt-row';
+        if (!firstLoad) row.style.animationDelay = '0s';
 
-        const goP = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
-        item.querySelector('.comment-avatar').onclick = goP;
-        item.querySelector('.comment-name').onclick   = goP;
+        const pic = document.createElement('div');
+        pic.className = 'cmt-pic';
+
+        const main = document.createElement('div');
+        main.className = 'cmt-main';
+
+        const head = document.createElement('div');
+        head.className = 'cmt-head';
+
+        const userEl = document.createElement('span');
+        userEl.className = 'cmt-user';
+        userEl.textContent = c.name || 'مجهول';
+
+        const whenEl = document.createElement('span');
+        whenEl.className = 'cmt-when';
+        whenEl.textContent = time;
+
+        head.appendChild(userEl);
+        head.appendChild(whenEl);
 
         if (canDelete) {
-            item.querySelector('.comment-del').onclick = async e => {
+            const delBtn = document.createElement('button');
+            delBtn.className = 'cmt-del';
+            delBtn.textContent = '🗑️ حذف';
+            delBtn.onclick = async e => {
                 e.stopPropagation();
                 if (!confirm('متأكد إنك عايز تحذف تعليقك؟')) return;
                 await remove(ref(db, `scripts/${scriptId}/comments/${snapshot.key}`));
-                item.remove();
-                const count = document.querySelectorAll('.comment-item').length;
+                row.remove();
+                const count = document.querySelectorAll('.cmt-row').length;
                 document.getElementById('commentBadge').innerText = count;
                 document.getElementById('st-comments').innerText  = count;
                 if (!count) {
@@ -1020,11 +1039,26 @@ async function loadComments() {
                         </div>`;
                 }
             };
+            head.appendChild(delBtn);
         }
 
-        commentsDiv.appendChild(item);
+        const msgEl = document.createElement('p');
+        msgEl.className = 'cmt-msg';
+        msgEl.textContent = c.text;
 
-        const count = document.querySelectorAll('.comment-item').length;
+        main.appendChild(head);
+        main.appendChild(msgEl);
+        row.appendChild(pic);
+        row.appendChild(main);
+
+        const goP = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
+        pic.onclick = goP;
+        userEl.onclick = goP;
+
+        commentsDiv.appendChild(row);
+        applyAvatar(pic, c.uid, c.name);
+
+        const count = document.querySelectorAll('.cmt-row').length;
         document.getElementById('commentBadge').innerText = count;
         document.getElementById('st-comments').innerText  = count;
 
