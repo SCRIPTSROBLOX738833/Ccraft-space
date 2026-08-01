@@ -159,8 +159,7 @@ body {
 .author-avatar {
     width: 36px; height: 36px; border-radius: 50%;
     border: 2px solid rgba(139,92,246,0.3);
-    flex-shrink: 0; background-color: #0a0a14;
-    background-size: cover; background-position: center;
+    flex-shrink: 0; background-color: #0a0a14; overflow: hidden;
     color: #ffffff; font-weight: 900; font-size: 0.9rem;
     display: flex; align-items: center; justify-content: center; transition: all 0.25s;
 }
@@ -334,9 +333,8 @@ body {
     height: 36px;
     border-radius: 50%;
     flex: 0 0 36px;
+    overflow: hidden;
     background-color: #8b5cf6;
-    background-size: cover;
-    background-position: center;
     color: #ffffff;
     font-weight: 900;
     font-size: 0.9rem;
@@ -442,8 +440,7 @@ body {
 .author-card-side:hover { background: rgba(139,92,246,0.03); }
 .acs-avatar {
     width: 62px; height: 62px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.25);
-    margin: 0 auto 10px; background-color: #0a0a14;
-    background-size: cover; background-position: center;
+    margin: 0 auto 10px; background-color: #0a0a14; overflow: hidden;
     color: #ffffff; font-weight: 900; font-size: 1.5rem;
     display: flex; align-items: center; justify-content: center; transition: all 0.25s;
 }
@@ -784,10 +781,14 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 /* ============================================================
    Helpers
    ============================================================ */
-// ✅ صورة البروفايل — بتتحط مباشرة على الـ element نفسه (background-image) مفيش أي عنصر
-// جواه خالص. لو مفيش صورة بيظهر أول حرف من الاسم كنص عادي جوه نفس العنصر.
+// ✅ صورة حقيقية (عنصر <img> عادي وتقليدي) جوه حاوية دايرية بتقصّها.
+// كل خصائص الحجم متحطة بـ !important عشان أي CSS تاني في الموقع ميكسرهاش
+// (يعني الصورة تتقص وتملى الدايرة بالكامل، مش تبين جزء صغير منها بس)
 async function applyAvatar(el, uid, fallbackName) {
     if (!el) return;
+    el.innerHTML = '';
+    el.textContent = '';
+
     let photo = null;
     if (uid) {
         if (uid in avatarCache) {
@@ -800,13 +801,26 @@ async function applyAvatar(el, uid, fallbackName) {
             avatarCache[uid] = photo;
         }
     }
-    if (photo) {
-        el.style.backgroundImage = `url("${photo}")`;
-        el.textContent = '';
-    } else {
-        el.style.backgroundImage = 'none';
+
+    if (!photo) {
         el.textContent = (fallbackName || '؟').charAt(0).toUpperCase();
+        return;
     }
+
+    const img = document.createElement('img');
+    img.src = photo;
+    img.alt = '';
+    img.style.setProperty('width', '100%', 'important');
+    img.style.setProperty('height', '100%', 'important');
+    img.style.setProperty('max-width', 'none', 'important');
+    img.style.setProperty('object-fit', 'cover', 'important');
+    img.style.setProperty('object-position', 'center', 'important');
+    img.style.setProperty('display', 'block', 'important');
+    img.onerror = () => {
+        img.remove();
+        el.textContent = (fallbackName || '؟').charAt(0).toUpperCase();
+    };
+    el.appendChild(img);
 }
 
 function escHTML(s) {
