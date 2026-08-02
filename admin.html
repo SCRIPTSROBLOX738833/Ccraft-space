@@ -55,6 +55,16 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
 #loginBtn:hover{box-shadow:0 12px 30px rgba(124,58,237,0.55);transform:translateY(-1px);}
 #loginError{color:var(--red);font-size:0.8rem;margin-top:10px;min-height:18px;}
 
+.login-divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--lo);font-size:0.72rem;}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+#googleLoginBtn{width:100%;background:rgba(255,255,255,0.04);color:var(--hi);
+  border:1px solid var(--border);border-radius:12px;padding:12px;font-size:0.88rem;font-weight:700;
+  font-family:'Tajawal',sans-serif;cursor:pointer;transition:var(--tr);
+  display:flex;align-items:center;justify-content:center;gap:10px;}
+#googleLoginBtn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.16);transform:translateY(-1px);}
+#googleLoginBtn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
 /* ═══ LAYOUT ═══ */
 #adminPanel{display:none;}
 .admin-layout{display:flex;min-height:100vh;}
@@ -404,6 +414,16 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
         <input type="email"    id="email"    placeholder="البريد الإلكتروني">
         <input type="password" id="password" placeholder="كلمة المرور">
         <button id="loginBtn">⚡ دخول</button>
+        <div class="login-divider"><span>أو</span></div>
+        <button id="googleLoginBtn" type="button">
+            <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0">
+                <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
+                <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.5 0-14 4.1-17.7 10.7z"/>
+                <path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.6C29.6 35 26.9 36 24 36c-5.2 0-9.6-3.4-11.2-8.1l-6.6 5.1C9.9 39.8 16.4 44 24 44z"/>
+                <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.6 5.6C39.9 37.3 44 31.4 44 24c0-1.3-.1-2.7-.4-3.5z"/>
+            </svg>
+            تسجيل الدخول بجوجل
+        </button>
         <p id="loginError"></p>
     </div>
 </div>
@@ -805,7 +825,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
 <script type="module">
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, push, set, remove, update, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 const fc = { apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1" };
 const app=getApps().length?getApp():initializeApp(fc), db=getDatabase(app), auth=getAuth(app);
@@ -825,6 +845,19 @@ function withTimeout(promise, ms, label){
   ]);
 }
 
+async function checkAdminAndEnter(user, err){
+  try{
+    const s=await withTimeout(get(ref(db,`admins/${user.uid}`)), 12000, 'التحقق من صلاحيات الأدمن');
+    const v=s.val();
+    const isAdmin=s.exists()&&(v===true||v==='true'||v===1);
+    if(isAdmin)showAdmin(user);
+    else{err.textContent='ليس لديك صلاحيات أدمن';await signOut(auth);}
+  }catch(dbErr){
+    err.textContent='خطأ في قراءة صلاحيات الأدمن: '+dbErr.message;
+    console.error('Admin check error:',dbErr);
+  }
+}
+
 document.getElementById('loginBtn').onclick=async()=>{
   const e=document.getElementById('email').value.trim(), p=document.getElementById('password').value.trim(), err=document.getElementById('loginError');
   if(!e||!p){err.textContent='ادخل البريد وكلمة المرور';return;}
@@ -840,15 +873,23 @@ document.getElementById('loginBtn').onclick=async()=>{
     btn.disabled=false;
     return;
   }
+  await checkAdminAndEnter(user, err);
+  btn.disabled=false;
+};
+
+document.getElementById('googleLoginBtn').onclick=async()=>{
+  const err=document.getElementById('loginError');
+  const btn=document.getElementById('googleLoginBtn'); btn.disabled=true;
+  err.textContent='⏳ جارٍ تسجيل الدخول...';
   try{
-    const s=await withTimeout(get(ref(db,`admins/${user.uid}`)), 12000, 'التحقق من صلاحيات الأدمن');
-    const v=s.val();
-    const isAdmin=s.exists()&&(v===true||v==='true'||v===1);
-    if(isAdmin)showAdmin(user);
-    else{err.textContent='ليس لديك صلاحيات أدمن';await signOut(auth);}
-  }catch(dbErr){
-    err.textContent='خطأ في قراءة صلاحيات الأدمن: '+dbErr.message;
-    console.error('Admin check error:',dbErr);
+    const provider=new GoogleAuthProvider();
+    const c=await withTimeout(signInWithPopup(auth,provider), 30000, 'تسجيل الدخول بجوجل');
+    await checkAdminAndEnter(c.user, err);
+  }catch(gErr){
+    err.textContent = gErr.message.includes('طويل')
+      ? gErr.message
+      : (gErr.code==='auth/popup-closed-by-user' ? 'اتقفلت نافذة جوجل قبل ما تكمل الدخول' : 'حصل خطأ أثناء تسجيل الدخول بجوجل: '+gErr.message);
+    console.error('Google login error:',gErr);
   }finally{
     btn.disabled=false;
   }
@@ -1540,52 +1581,4 @@ async function logActivity(icon,text){
 }
 
 async function loadActivityLog(){
-  const s=await get(ref(db,'adminLog'));const c=document.getElementById('activityLog');c.innerHTML='';
-  if(!s.exists()){c.innerHTML='<div style="text-align:center;padding:22px;color:var(--lo)">لا توجد أنشطة بعد</div>';return;}
-  Object.entries(s.val()).sort((a,x)=>x[0]-a[0]).slice(0,30).forEach(([ts,log])=>{
-    const div=document.createElement('div');div.className='log-entry';
-    const d=new Date(parseInt(ts)).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    div.innerHTML=`<span class="le-icon">${log.icon}</span><span class="le-text">${log.text}</span><span class="le-time">${d}</span>`;
-    c.appendChild(div);
-  });
-}
-
-/* ─── Verify Scripts ─── */
-async function loadVerifyRequests(){
-  const[vs,ss]=await Promise.all([get(ref(db,'verifyRequests')),get(ref(db,'scripts'))]);
-  const allS=ss.exists()?ss.val():{};
-
-  // Badge count
-  const pending=vs.exists()?Object.values(vs.val()).filter(r=>r.status==='pending').length:0;
-  const badge=document.getElementById('verifyBadge');
-  if(pending>0){badge.innerText=pending;badge.style.display='inline-block';}else badge.style.display='none';
-
-  // Pending table
-  const pb=document.getElementById('verifyBody'); pb.innerHTML='';
-  if(!vs.exists()||!Object.values(vs.val()).some(r=>r.status==='pending')){
-    pb.innerHTML='<tr class="empty-row"><td colspan="5">لا توجد طلبات تحقق بعد</td></tr>';
-  }else{
-    Object.entries(vs.val()).filter(([,r])=>r.status==='pending').forEach(([rid,r])=>{
-      const s=allS[r.scriptId]||{};
-      const date=new Date(r.timestamp||0).toLocaleDateString('ar-EG');
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td class="t-title">${s.title||r.scriptId||'—'}</td>
-        <td style="color:var(--mid)">${r.userEmail||'—'}</td>
-        <td style="font-size:0.78rem;color:var(--lo);max-width:160px">${r.reason||'—'}</td>
-        <td style="font-size:0.72rem;color:var(--lo)">${date}</td>
-        <td><div class="t-actions">
-          <button class="t-btn unban" onclick="approveVerify('${rid}','${r.scriptId}')">✅ موثوق</button>
-          <button class="t-btn del"   onclick="rejectVerify('${rid}')">❌ رفض</button>
-        </div></td>`;
-      pb.appendChild(tr);
-    });
-  }
-
-  // Verified table
-  const vb=document.getElementById('verifiedBody'); vb.innerHTML='';
-  const verified=Object.entries(allS).filter(([,s])=>s.verified===true);
-  if(!verified.length){
-    vb.innerHTML='<tr class="empty-row"><td colspan="4">لا توجد سكربتات موثوقة بعد</td></tr>';
-  }else{
-    verified.forEa
+  con
