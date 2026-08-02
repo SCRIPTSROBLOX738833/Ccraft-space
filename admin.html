@@ -818,27 +818,39 @@ const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكر�
 function toast(msg,dur=2500){ const t=document.getElementById('adminToast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),dur); }
 
 /* ─── Auth ─── */
+function withTimeout(promise, ms, label){
+  return Promise.race([
+    promise,
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error(`${label} استغرق وقت طويل جدًا (تحقق من الإنترنت أو أدوات حظر الإعلانات اللي ممكن تمنع طلبات Firebase)`)), ms))
+  ]);
+}
+
 document.getElementById('loginBtn').onclick=async()=>{
   const e=document.getElementById('email').value.trim(), p=document.getElementById('password').value.trim(), err=document.getElementById('loginError');
   if(!e||!p){err.textContent='ادخل البريد وكلمة المرور';return;}
+  err.textContent='⏳ جارٍ تسجيل الدخول...';
+  const btn=document.getElementById('loginBtn'); btn.disabled=true;
   let user;
   try{
-    const c=await signInWithEmailAndPassword(auth,e,p);
+    const c=await withTimeout(signInWithEmailAndPassword(auth,e,p), 12000, 'تسجيل الدخول');
     user=c.user;
   }catch(loginErr){
-    err.textContent='بريد أو كلمة مرور خاطئة';
+    err.textContent = loginErr.message.includes('طويل') ? loginErr.message : 'بريد أو كلمة مرور خاطئة';
     console.error('Login error:',loginErr);
+    btn.disabled=false;
     return;
   }
   try{
-    const s=await get(ref(db,`admins/${user.uid}`));
+    const s=await withTimeout(get(ref(db,`admins/${user.uid}`)), 12000, 'التحقق من صلاحيات الأدمن');
     const v=s.val();
     const isAdmin=s.exists()&&(v===true||v==='true'||v===1);
     if(isAdmin)showAdmin(user);
     else{err.textContent='ليس لديك صلاحيات أدمن';await signOut(auth);}
   }catch(dbErr){
-    err.textContent='خطأ في قراءة صلاحيات الأدمن — افتح Console وابعتلي الخطأ: '+dbErr.message;
+    err.textContent='خطأ في قراءة صلاحيات الأدمن: '+dbErr.message;
     console.error('Admin check error:',dbErr);
+  }finally{
+    btn.disabled=false;
   }
 };
 
@@ -1576,18 +1588,4 @@ async function loadVerifyRequests(){
   if(!verified.length){
     vb.innerHTML='<tr class="empty-row"><td colspan="4">لا توجد سكربتات موثوقة بعد</td></tr>';
   }else{
-    verified.forEach(([id,s])=>{
-      const date=new Date(s.verifiedAt||0).toLocaleDateString('ar-EG');
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td class="t-title">${s.title||'—'}</td>
-        <td style="color:var(--mid)">${s.author||'—'}</td>
-        <td style="font-size:0.72rem;color:var(--lo)">${date}</td>
-        <td><button class="t-btn del" onclick="removeVerify('${id}')">❌ إزالة التوثيق</button></td>`;
-      vb.appendChild(tr);
-    });
-  }
-}
-
-window.approveVerify=async(rid,scriptId)=>{
-  if(!confirm('تأكيد توثيق هذ
+    verified.forEa
