@@ -717,13 +717,17 @@ header { display: none; }
       🔗 اربط حسابك في روبلوكس
     </button>
 
-    <div id="rlLinkedBadge" onclick="location.href='profile.html'" style="display:none;cursor:pointer;
+    <div id="rlLinkedBadge" style="display:none;
       align-items:center;gap:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);
-      border-radius:50px;padding:6px 18px 6px 6px;margin:0 auto 22px;position:relative;z-index:1;
+      border-radius:50px;padding:6px 8px 6px 6px;margin:0 auto 22px;position:relative;z-index:1;
       animation:fadeUp 0.4s ease both;">
-      <img id="rlLinkedAvatar" src="" alt="" style="width:34px;height:34px;border-radius:50%;
-        object-fit:cover;border:2px solid rgba(139,92,246,0.4);">
-      <span style="font-weight:800;font-size:0.85rem;color:var(--hi)">✅ <span id="rlLinkedName"></span></span>
+      <img id="rlLinkedAvatar" src="" alt="" onclick="location.href='profile.html'" style="width:34px;height:34px;border-radius:50%;
+        object-fit:cover;border:2px solid rgba(139,92,246,0.4);cursor:pointer;">
+      <span onclick="location.href='profile.html'" style="font-weight:800;font-size:0.85rem;color:var(--hi);cursor:pointer;">✅ <span id="rlLinkedName"></span></span>
+      <button onclick="unlinkRoblox(event)" title="حذف الربط" style="background:rgba(248,113,113,0.12);
+        border:1px solid rgba(248,113,113,0.3);border-radius:50%;width:24px;height:24px;
+        color:#f87171;font-size:0.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+        margin:0;padding:0;">✕</button>
     </div>
 
     <div class="stats-bar">
@@ -1073,6 +1077,14 @@ function showLinkedRoblox(linked){
   nameEl.innerText = linked.username;
   badge.style.display = 'inline-flex';
   if(linkBtn) linkBtn.style.display = 'none';
+}
+
+function unlinkRoblox(e){
+  if(e) e.stopPropagation();
+  localStorage.removeItem(RL_STORAGE_KEY);
+  document.getElementById('rlLinkedBadge').style.display = 'none';
+  const linkBtn = document.getElementById('linkRobloxBtn');
+  if(linkBtn) linkBtn.style.display = 'inline-flex';
 }
 
 // تحميل حالة الربط المحفوظة عند فتح الصفحة
