@@ -837,7 +837,12 @@ header { display: none; }
     <h3>اربط حساب روبلوكس</h3>
     <p style="text-align:right">
       1. انسخ الكود ده: <br>
-      <strong id="rlCode" style="color:#67e8f9;font-family:monospace;font-size:1rem;display:block;margin:8px 0;">—</strong>
+      <span style="display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;">
+        <strong id="rlCode" style="color:#67e8f9;font-family:monospace;font-size:1rem;">—</strong>
+        <button onclick="copyRlCode()" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);
+          border-radius:8px;padding:4px 10px;color:var(--hi);font-size:0.75rem;cursor:pointer;
+          font-family:'Tajawal',sans-serif;">📋 نسخ</button>
+      </span>
       2. حطه في <b>وصف البروفايل (About)</b> بتاعك على روبلوكس<br>
       3. اكتب اليوزرنيم بتاعك تحت واضغط تحقق
     </p>
@@ -1009,6 +1014,7 @@ loadUserPages();
 <!-- Roblox account link logic -->
 <script>
 let rlCurrentCode = '';
+const RL_STORAGE_KEY = 'ccraftspace_roblox_link';
 
 function openRobloxLinkModal(){
   rlCurrentCode = 'ccraftspace-' + Math.random().toString(36).substring(2, 8);
@@ -1019,6 +1025,13 @@ function openRobloxLinkModal(){
 }
 function closeRobloxLinkModal(){
   document.getElementById('robloxLinkModal').classList.remove('open');
+}
+
+function copyRlCode(){
+  navigator.clipboard.writeText(rlCurrentCode).then(()=>{
+    const r = document.getElementById('rlResult');
+    r.innerText = '📋 تم نسخ الكود';
+  });
 }
 
 async function verifyRobloxLink(){
@@ -1038,7 +1051,9 @@ async function verifyRobloxLink(){
 
     if(data.success){
       resultDiv.innerHTML = '✅ ' + data.message;
-      showLinkedRoblox(data.userId, data.username);
+      const linkedData = { userId: data.userId, username: data.username, avatarUrl: data.avatarUrl };
+      localStorage.setItem(RL_STORAGE_KEY, JSON.stringify(linkedData));
+      showLinkedRoblox(linkedData);
       setTimeout(closeRobloxLinkModal, 1200);
     } else {
       resultDiv.innerHTML = '❌ ' + data.message;
@@ -1048,17 +1063,25 @@ async function verifyRobloxLink(){
   }
 }
 
-function showLinkedRoblox(userId, username){
+function showLinkedRoblox(linked){
   const badge = document.getElementById('rlLinkedBadge');
   const avatar = document.getElementById('rlLinkedAvatar');
   const nameEl = document.getElementById('rlLinkedName');
   const linkBtn = document.getElementById('linkRobloxBtn');
 
-  avatar.src = `https://www.roblox.com/headshot-thumbnail/image?userId=${userId}&width=150&height=150&format=png`;
-  nameEl.innerText = username;
+  if(linked.avatarUrl) avatar.src = linked.avatarUrl;
+  nameEl.innerText = linked.username;
   badge.style.display = 'inline-flex';
   if(linkBtn) linkBtn.style.display = 'none';
 }
+
+// تحميل حالة الربط المحفوظة عند فتح الصفحة
+(function(){
+  const saved = localStorage.getItem(RL_STORAGE_KEY);
+  if(saved){
+    try { showLinkedRoblox(JSON.parse(saved)); } catch(e){}
+  }
+})();
 </script>
 
 <!-- تسجيل هذه الصفحة ضمن المتصلين الآن فعليًا -->
