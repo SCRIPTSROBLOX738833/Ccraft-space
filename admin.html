@@ -429,6 +429,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
         <div class="nav-sec">المجتمع</div>
         <button class="nav-item" data-section="users"><span class="nav-icon">👥</span> المستخدمون <span class="nav-badge" id="usersBadge">0</span></button>
         <button class="nav-item" data-section="points-ctrl"><span class="nav-icon">⭐</span> النقاط</button>
+        <button class="nav-item" data-section="codes"><span class="nav-icon">🎟️</span> أكواد النقاط <span class="nav-badge" id="codesBadge">0</span></button>
         <button class="nav-item" data-section="badges-ctrl"><span class="nav-icon">🏅</span> البادجات</button>
         <button class="nav-item" data-section="chat"><span class="nav-icon">💬</span> الشات</button>
 
@@ -606,6 +607,21 @@ body{font-family:'Tajawal',sans-serif;background:var(--s0);color:var(--hi);min-h
         <div class="panel-card">
             <div class="pc-head"><div class="pc-title">⭐ أكثر المستخدمين نقاطاً</div></div>
             <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>المستخدم</th><th>النقاط</th><th>الدعوات</th></tr></thead><tbody id="topPointsBody"></tbody></table></div>
+        </div>
+    </div>
+
+    <!-- ─── REDEEM CODES ─── -->
+    <div class="section" id="sec-codes">
+        <div class="control-grid">
+            <div class="control-card">
+                <h4>🎟️ إنشاء كود جديد</h4>
+                <div class="ctrl-row"><input type="text" id="code-new-text" placeholder="الكود (مثال: WELCOME2026)" style="direction:ltr;text-align:left"></div>
+                <div class="ctrl-row"><input type="number" id="code-new-points" placeholder="عدد النقاط" min="1"><button class="ctrl-btn gold" onclick="createRedeemCode()">إنشاء</button></div>
+                <div style="font-size:0.65rem;color:var(--lo);margin-top:4px">كل مستخدم يقدر يستخدم الكود مرة واحدة بس، لكن نفس الكود ممكن يستخدمه أي عدد من المستخدمين.</div>
+            </div>
+        </div>
+        <div class="panel-card" style="padding:0;overflow:hidden">
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>الكود</th><th>النقاط</th><th>عدد الاستخدامات</th><th>تاريخ الإنشاء</th><th>إجراءات</th></tr></thead><tbody id="codesBody"></tbody></table></div>
         </div>
     </div>
 
@@ -794,9 +810,9 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from
 const fc = { apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1" };
 const app=getApps().length?getApp():initializeApp(fc), db=getDatabase(app), auth=getAuth(app);
 
-let allScripts={}, allUsers={}, allApks={}, allUnsafe={}, chatLoaded=false, adminUid=null, allReports={}, currentFilter='all';
+let allScripts={}, allUsers={}, allApks={}, allUnsafe={}, allCodes={}, chatLoaded=false, adminUid=null, allReports={}, currentFilter='all';
 
-const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكربتات',apks:'📱 تطبيقات APK',publish:'📤 نشر سكربت',users:'👥 المستخدمون','points-ctrl':'⭐ النقاط','badges-ctrl':'🏅 البادجات',chat:'💬 الشات',safety:'🛡️ فحص الأمان',announce:'📢 الإعلانات',settings:'⚙️ الإعدادات',reports:'🚩 البلاغات',log:'📋 سجل الأنشطة','verify-scripts':'✅ التحقق من السكربتات'};
+const sectionTitles={overview:'📊 نظرة عامة',scripts:'📜 السكربتات',apks:'📱 تطبيقات APK',publish:'📤 نشر سكربت',users:'👥 المستخدمون','points-ctrl':'⭐ النقاط',codes:'🎟️ أكواد النقاط','badges-ctrl':'🏅 البادجات',chat:'💬 الشات',safety:'🛡️ فحص الأمان',announce:'📢 الإعلانات',settings:'⚙️ الإعدادات',reports:'🚩 البلاغات',log:'📋 سجل الأنشطة','verify-scripts':'✅ التحقق من السكربتات'};
 
 /* ─── Toast ─── */
 function toast(msg,dur=2500){ const t=document.getElementById('adminToast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),dur); }
@@ -836,6 +852,7 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
     document.getElementById('pageTitle').innerText=sectionTitles[sec]||sec;
     if(sec==='chat'&&!chatLoaded){loadChat();chatLoaded=true;}
     if(sec==='points-ctrl')renderTopPoints();
+    if(sec==='codes')renderCodes();
     if(sec==='badges-ctrl')renderTopBadges();
     if(sec==='log')loadActivityLog();
     if(sec==='reports')loadReports();
@@ -847,11 +864,12 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
 
 /* ─── Load All ─── */
 async function loadAll(){
-  const[ss,us,cs,as,aps,uns]=await Promise.all([get(ref(db,'scripts')),get(ref(db,'users')),get(ref(db,'chat')),get(ref(db,'announcements')),get(ref(db,'apks')),get(ref(db,'unsafeScripts'))]);
+  const[ss,us,cs,as,aps,uns,cds]=await Promise.all([get(ref(db,'scripts')),get(ref(db,'users')),get(ref(db,'chat')),get(ref(db,'announcements')),get(ref(db,'apks')),get(ref(db,'unsafeScripts')),get(ref(db,'redeemCodes'))]);
   allScripts=ss.exists()?ss.val():{};
   allUsers=us.exists()?us.val():{};
   allApks=aps.exists()?aps.val():{};
   allUnsafe=uns.exists()?uns.val():{};
+  allCodes=cds.exists()?cds.val():{};
   const cm=cs.exists()?Object.keys(cs.val()).length:0;
   let tl=0,tp=0,tb=0;
   Object.values(allScripts).forEach(s=>tl+=s.likes||0);
@@ -868,6 +886,7 @@ async function loadAll(){
   document.getElementById('usersBadge').innerText=Object.keys(allUsers).length;
   document.getElementById('apksBadge').innerText=Object.keys(allApks).length;
   document.getElementById('safetyBadge').innerText=Object.keys(allUnsafe).length;
+  document.getElementById('codesBadge').innerText=Object.keys(allCodes).length;
   renderRecentScripts();renderRecentUsers();renderFullScripts();renderUsers();
   renderRecentApks();renderFullApks();
   if(as.exists())renderAnnouncements(as.val());
@@ -1191,6 +1210,49 @@ function renderTopPoints(){
   const s=Object.entries(allUsers).filter(([,u])=>(u.points||0)>0).sort((a,x)=>(x[1].points||0)-(a[1].points||0)).slice(0,10);
   if(!s.length){b.innerHTML='<tr class="empty-row"><td colspan="4">لا توجد نقاط</td></tr>';return;}
   s.forEach(([,u],i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${(u.email||'').split('@')[0]}</td><td>⭐ ${u.points||0}</td><td>—</td>`;b.appendChild(tr);});
+}
+
+/* ─── Redeem Codes ─── */
+function renderCodes(){
+  const b=document.getElementById('codesBody'); if(!b)return; b.innerHTML='';
+  const e=Object.entries(allCodes).sort((a,x)=>(x[1].createdAt||0)-(a[1].createdAt||0));
+  if(!e.length){b.innerHTML='<tr class="empty-row"><td colspan="5">لا توجد أكواد بعد</td></tr>';return;}
+  e.forEach(([code,c])=>{
+    const usesCount=c.uses?Object.keys(c.uses).length:0;
+    const date=c.createdAt?new Date(c.createdAt).toLocaleDateString('ar-EG'):'—';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="t-title" style="direction:ltr;text-align:left;font-family:'Fira Code',monospace">${code}</td><td>⭐ ${c.points||0}</td><td>👥 ${usesCount}</td><td style="font-size:0.72rem;color:var(--lo)">${date}</td><td><div class="t-actions"><button class="t-btn del">🗑️</button></div></td>`;
+    tr.querySelector('.del').onclick=()=>deleteRedeemCode(code,tr);
+    b.appendChild(tr);
+  });
+}
+
+window.createRedeemCode=async()=>{
+  const textInput=document.getElementById('code-new-text');
+  const ptsInput=document.getElementById('code-new-points');
+  const code=textInput.value.trim().toUpperCase().replace(/\s+/g,'');
+  const pts=parseInt(ptsInput.value);
+  if(!code||!pts||pts<=0)return toast('❌ مطلوب كود صحيح وعدد نقاط أكبر من صفر');
+  const exists=await get(ref(db,`redeemCodes/${code}`));
+  if(exists.exists())return toast('❌ الكود ده موجود بالفعل');
+  const data={points:pts,createdAt:Date.now()};
+  await set(ref(db,`redeemCodes/${code}`),data);
+  allCodes[code]=data;
+  textInput.value='';ptsInput.value='';
+  renderCodes();
+  document.getElementById('codesBadge').innerText=Object.keys(allCodes).length;
+  logActivity('🎟️',`إنشاء كود نقاط: ${code} (${pts} نقطة)`);
+  toast('✅ تم إنشاء الكود');
+};
+
+async function deleteRedeemCode(code,row){
+  if(!confirm(`حذف الكود "${code}"؟ (لن يقدر أي حد يستخدمه بعد كده)`))return;
+  await remove(ref(db,`redeemCodes/${code}`));
+  delete allCodes[code];
+  row.style.cssText+='opacity:0;transition:0.3s';
+  setTimeout(()=>{row.remove();document.getElementById('codesBadge').innerText=Object.keys(allCodes).length;},300);
+  logActivity('🗑️',`حذف كود نقاط: ${code}`);
+  toast('🗑️ تم الحذف');
 }
 
 /* ─── Badges ─── */
@@ -1521,20 +1583,4 @@ window.approveVerify=async(rid,scriptId)=>{
 };
 
 window.rejectVerify=async(rid)=>{
-  if(!confirm('رفض طلب التحقق؟'))return;
-  await update(ref(db,`verifyRequests/${rid}`),{status:'rejected'});
-  toast('❌ تم رفض الطلب');
-  logActivity('❌',`رفض طلب تحقق`);
-  loadVerifyRequests();
-};
-
-window.removeVerify=async(scriptId)=>{
-  if(!confirm('إزالة توثيق هذا السكربت؟'))return;
-  await update(ref(db,`scripts/${scriptId}`),{verified:false});
-  toast('🗑️ تم إزالة التوثيق');
-  logActivity('🗑️',`إزالة توثيق: ${scriptId}`);
-  loadVerifyRequests();
-};
-</script>
-</body>
-</html>
+  if(!confirm('رفض طلب التحقق؟')
