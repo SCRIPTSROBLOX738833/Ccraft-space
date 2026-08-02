@@ -821,12 +821,28 @@ function toast(msg,dur=2500){ const t=document.getElementById('adminToast'); t.t
 document.getElementById('loginBtn').onclick=async()=>{
   const e=document.getElementById('email').value.trim(), p=document.getElementById('password').value.trim(), err=document.getElementById('loginError');
   if(!e||!p){err.textContent='ادخل البريد وكلمة المرور';return;}
-  try{const c=await signInWithEmailAndPassword(auth,e,p),s=await get(ref(db,`admins/${c.user.uid}`));
-    if(s.exists()&&s.val()===true)showAdmin(c.user);else{err.textContent='ليس لديك صلاحيات أدمن';await signOut(auth);}}
-  catch{document.getElementById('loginError').textContent='بريد أو كلمة مرور خاطئة';}
+  let user;
+  try{
+    const c=await signInWithEmailAndPassword(auth,e,p);
+    user=c.user;
+  }catch(loginErr){
+    err.textContent='بريد أو كلمة مرور خاطئة';
+    console.error('Login error:',loginErr);
+    return;
+  }
+  try{
+    const s=await get(ref(db,`admins/${user.uid}`));
+    const v=s.val();
+    const isAdmin=s.exists()&&(v===true||v==='true'||v===1);
+    if(isAdmin)showAdmin(user);
+    else{err.textContent='ليس لديك صلاحيات أدمن';await signOut(auth);}
+  }catch(dbErr){
+    err.textContent='خطأ في قراءة صلاحيات الأدمن — افتح Console وابعتلي الخطأ: '+dbErr.message;
+    console.error('Admin check error:',dbErr);
+  }
 };
 
-onAuthStateChanged(auth,async u=>{if(!u)return;const s=await get(ref(db,`admins/${u.uid}`));if(s.exists()&&s.val()===true)showAdmin(u);});
+onAuthStateChanged(auth,async u=>{if(!u)return;const s=await get(ref(db,`admins/${u.uid}`));const v=s.val();if(s.exists()&&(v===true||v==='true'||v===1))showAdmin(u);});
 
 function showAdmin(user){
   adminUid=user.uid;
@@ -1574,13 +1590,4 @@ async function loadVerifyRequests(){
 }
 
 window.approveVerify=async(rid,scriptId)=>{
-  if(!confirm('تأكيد توثيق هذا السكربت؟'))return;
-  await update(ref(db,`scripts/${scriptId}`),{verified:true,verifiedAt:Date.now()});
-  await update(ref(db,`verifyRequests/${rid}`),{status:'approved'});
-  toast('✅ تم توثيق السكربت!');
-  logActivity('✅',`تم توثيق سكربت: ${scriptId}`);
-  loadVerifyRequests();
-};
-
-window.rejectVerify=async(rid)=>{
-  if(!confirm('رفض طلب التحقق؟')
+  if(!confirm('تأكيد توثيق هذ
