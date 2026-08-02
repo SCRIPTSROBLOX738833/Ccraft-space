@@ -717,6 +717,15 @@ header { display: none; }
       🔗 اربط حسابك في روبلوكس
     </button>
 
+    <div id="rlLinkedBadge" onclick="location.href='profile.html'" style="display:none;cursor:pointer;
+      align-items:center;gap:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);
+      border-radius:50px;padding:6px 18px 6px 6px;margin:0 auto 22px;position:relative;z-index:1;
+      animation:fadeUp 0.4s ease both;">
+      <img id="rlLinkedAvatar" src="" alt="" style="width:34px;height:34px;border-radius:50%;
+        object-fit:cover;border:2px solid rgba(139,92,246,0.4);">
+      <span style="font-weight:800;font-size:0.85rem;color:var(--hi)">✅ <span id="rlLinkedName"></span></span>
+    </div>
+
     <div class="stats-bar">
         <div class="sb-item"><div class="live-dot"></div> مباشر</div>
         <div class="sb-item">📜 <span class="sb-val" id="ls-scripts">—</span> سكربت</div>
@@ -1029,12 +1038,26 @@ async function verifyRobloxLink(){
 
     if(data.success){
       resultDiv.innerHTML = '✅ ' + data.message;
+      showLinkedRoblox(data.userId, data.username);
+      setTimeout(closeRobloxLinkModal, 1200);
     } else {
       resultDiv.innerHTML = '❌ ' + data.message;
     }
   } catch(err){
     resultDiv.innerHTML = '⚠️ حصل خطأ في الاتصال بالسيرفر';
   }
+}
+
+function showLinkedRoblox(userId, username){
+  const badge = document.getElementById('rlLinkedBadge');
+  const avatar = document.getElementById('rlLinkedAvatar');
+  const nameEl = document.getElementById('rlLinkedName');
+  const linkBtn = document.getElementById('linkRobloxBtn');
+
+  avatar.src = `https://www.roblox.com/headshot-thumbnail/image?userId=${userId}&width=150&height=150&format=png`;
+  nameEl.innerText = username;
+  badge.style.display = 'inline-flex';
+  if(linkBtn) linkBtn.style.display = 'none';
 }
 </script>
 
