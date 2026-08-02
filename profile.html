@@ -33,6 +33,21 @@
     .tiktok-input-wrap input:focus{border-color:var(--primary);}
     .tiktok-prefix{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:0.9rem;color:var(--text-muted);font-weight:800;pointer-events:none;}
 
+    /* ---- Roblox ---- */
+    .roblox-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(0,242,254,0.06);border:1px solid rgba(0,242,254,0.25);border-radius:50px;padding:5px 14px;font-size:0.8rem;font-weight:700;color:var(--text-main);}
+    .roblox-link-btn{background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(0,242,254,0.1));border:1px solid rgba(0,242,254,0.3);border-radius:50px;padding:6px 16px;font-size:0.8rem;font-weight:800;color:#67e8f9;cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);}
+    .roblox-link-btn:hover{background:rgba(0,242,254,0.15);transform:none;filter:none;}
+    .roblox-use-avatar-btn{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:4px 10px;font-size:0.7rem;font-weight:800;color:var(--primary);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);}
+    .roblox-use-avatar-btn:hover{background:var(--primary-dim);transform:none;filter:none;}
+    .roblox-unlink-btn{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:8px;padding:4px 8px;font-size:0.7rem;font-weight:800;color:var(--danger);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;}
+    .roblox-unlink-btn:hover{background:var(--danger);color:white;transform:none;filter:none;}
+    #robloxLinkModal .vmodal-sub{text-align:right;}
+    #rlCode{color:#67e8f9;font-family:monospace;font-size:1rem;}
+    .rl-code-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0;}
+    .rl-copy-btn{background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:8px;padding:4px 10px;color:var(--text-main);font-size:0.75rem;cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;}
+    #robloxLinkModal input{width:100%;background:var(--bg-surface);border:2px solid var(--border-color);border-radius:14px;padding:13px 16px;color:var(--text-main);font-family:'Tajawal',sans-serif;font-size:1rem;font-weight:700;outline:none;transition:border-color 0.2s;margin-bottom:12px;box-sizing:border-box;}
+    #robloxLinkModal input:focus{border-color:var(--primary);}
+
     /* ---- Avatar Upload ---- */
     .avatar-upload-wrap{position:relative;width:90px;height:90px;flex-shrink:0;}
     .avatar-circle{width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid rgba(139,92,246,0.35);background:linear-gradient(135deg,#8b5cf6,#00bcd4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,0.3);position:relative;}
@@ -205,6 +220,28 @@
     </div>
 </div>
 
+<!-- Roblox Link Modal -->
+<div class="modal-overlay" id="robloxLinkModal">
+    <div class="modal-box">
+        <div class="modal-title">🎮 ربط حساب روبلوكس</div>
+        <div class="modal-sub" style="text-align:right">
+            1. انسخ الكود ده:
+            <div class="rl-code-row">
+                <strong id="rlCode">—</strong>
+                <button class="rl-copy-btn" onclick="copyRlCode()">📋 نسخ</button>
+            </div>
+            2. حطه في <b>وصف البروفايل (About)</b> بتاعك على روبلوكس<br>
+            3. اكتب اليوزرنيم بتاعك تحت واضغط تحقق
+        </div>
+        <input type="text" id="rlUsername" placeholder="اسم المستخدم على روبلوكس">
+        <div id="rlResult" style="font-size:0.82rem;margin-bottom:14px;min-height:18px;"></div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeRobloxLinkModal()">إلغاء</button>
+            <button class="btn-save" id="rlVerifyBtn" onclick="verifyRobloxLink()">🔍 تحقق الآن</button>
+        </div>
+    </div>
+</div>
+
 <!-- Verify Request Modal -->
 <div class="vmodal-overlay" id="verifyModal">
     <div class="vmodal-box">
@@ -247,6 +284,7 @@
             <div class="join-date" id="joinDate"></div>
             <div class="join-date" id="lastNameChange" style="margin-top:2px;color:rgba(139,92,246,0.7)"></div>
             <div class="social-row" id="socialRow"></div>
+            <div class="social-row" id="robloxRow"></div>
         </div>
         <div class="profile-actions" id="profileActions"></div>
     </div>
@@ -321,12 +359,8 @@ const urlParams=new URLSearchParams(window.location.search);
 const targetUid=urlParams.get('uid');
 let currentUser=null;
 
-/* ============================================================
-   📷 Avatar Upload — صورة بروفايل حقيقية بدل شخصية avatar.js
-   الصورة بتتضغط في المتصفح (Canvas) قبل ما تتحفظ في Firebase
-   ============================================================ */
-const AVATAR_MAX_DIM = 320;      // أقصى بعد بالبكسل
-const AVATAR_QUALITY  = 0.75;    // جودة الضغط
+const AVATAR_MAX_DIM = 320;
+const AVATAR_QUALITY  = 0.75;
 
 function avatarGradientFor(seed){
     const grads=[
@@ -359,7 +393,6 @@ function compressAvatarImage(file){
             const img=new Image();
             img.onload=()=>{
                 let {width,height}=img;
-                // نقص لمربع مركزي عشان الصورة تظهر مضبوطة جوه الدائرة
                 const side=Math.min(width,height);
                 const sx=(width-side)/2, sy=(height-side)/2;
                 const dim=Math.min(AVATAR_MAX_DIM, side);
@@ -406,7 +439,6 @@ function enableAvatarEditing(uid,name){
     };
 }
 
-/* ── Username Modal ── */
 const COOLDOWN_DAYS=7, USERNAME_REGEX=/^[a-zA-Z0-9_]{3,20}$/;
 let checkTimeout=null, nameIsValid=false;
 
@@ -483,7 +515,6 @@ function updateLastChangeLabel(ts){
     }
 }
 
-/* ── Verify Modal ── */
 window.openVerifyModal=function(){document.getElementById('verifyModal').classList.add('open');};
 window.closeVerifyModal=function(){document.getElementById('verifyModal').classList.remove('open');};
 document.getElementById('verifyModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeVerifyModal();});
@@ -491,7 +522,6 @@ document.getElementById('verifyModal').addEventListener('click',e=>{if(e.target=
 window.submitVerifyRequest=async function(){
     if(!currentUser)return;
     const reason=document.getElementById('verifyReason').value.trim();
-    // تحقق لو عنده طلب سابق
     const vsSnap=await get(ref(db,'verifyRequests'));
     if(vsSnap.exists()){
         const myReq=Object.values(vsSnap.val()).find(r=>r.userUid===currentUser.uid&&r.status==='pending');
@@ -501,7 +531,6 @@ window.submitVerifyRequest=async function(){
     await set(newRef,{userUid:currentUser.uid,userEmail:currentUser.email,reason,status:'pending',timestamp:Date.now()});
     closeVerifyModal();
     showToast('📨 تم إرسال طلب التحقق — سيراجعه الأدمن قريباً');
-    // حدّث زر التحقق
     renderVerifyBtn(currentUser,'pending');
 };
 
@@ -524,7 +553,6 @@ async function renderVerifyBtn(user,status){
     actions.appendChild(btn);
 }
 
-/* ── Toast ── */
 function showToast(msg){
     let t=document.getElementById('profileToast');
     if(!t){t=document.createElement('div');t.id='profileToast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--bg-card);border:1px solid var(--primary);border-radius:50px;padding:10px 24px;font-size:0.85rem;font-weight:800;color:var(--text-main);z-index:600;transition:transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);box-shadow:0 8px 24px rgba(0,0,0,0.4);pointer-events:none;white-space:nowrap;';document.body.appendChild(t);}
@@ -532,7 +560,6 @@ function showToast(msg){
     setTimeout(()=>{t.style.transform='translateX(-50%) translateY(60px)';},2800);
 }
 
-/* ── Badges ── */
 const ALL_BADGES=[
     {id:'first_script',icon:'🚀',name:'الانطلاقة',desc:'نشر أول سكربت',check:s=>s.scripts>=1,rarity:'common'},
     {id:'five_scripts',icon:'📦',name:'مجموعة',desc:'نشر 5 سكربتات',check:s=>s.scripts>=5,rarity:'common'},
@@ -556,7 +583,6 @@ const ALL_BADGES=[
 
 const RARITY_STYLES={common:{border:'rgba(139,92,246,0.3)',glow:'rgba(139,92,246,0.15)',label:'عادي',color:'#a78bfa'},rare:{border:'rgba(59,130,246,0.4)',glow:'rgba(59,130,246,0.2)',label:'نادر',color:'#60a5fa'},epic:{border:'rgba(168,85,247,0.5)',glow:'rgba(168,85,247,0.25)',label:'ملحمي',color:'#c084fc'},legendary:{border:'rgba(251,191,36,0.5)',glow:'rgba(251,191,36,0.2)',label:'أسطوري',color:'#fbbf24'},admin:{border:'rgba(139,92,246,0.5)',glow:'rgba(139,92,246,0.2)',label:'أدمن',color:'#c084fc'}};
 
-/* ── TikTok ── */
 let tiktokIsOwner = false, tiktokUid = null;
 
 function renderTiktok(uid, handle, isOwner){
@@ -618,7 +644,117 @@ window.saveTiktok = async function(){
     }
 };
 
-/* ── Auth ── */
+let robloxUid = null, robloxIsOwner = false, rlCurrentCode = '';
+
+function renderRoblox(uid, robloxData, isOwner){
+    robloxUid = uid; robloxIsOwner = isOwner;
+    const row = document.getElementById('robloxRow');
+    row.innerHTML = '';
+
+    if (robloxData && robloxData.username) {
+        const pill = document.createElement('span');
+        pill.className = 'roblox-pill';
+        pill.innerHTML = `🎮 @${robloxData.username}`;
+        row.appendChild(pill);
+
+        if (isOwner) {
+            if (robloxData.avatarUrl) {
+                const useBtn = document.createElement('button');
+                useBtn.className = 'roblox-use-avatar-btn';
+                useBtn.innerHTML = '🖼️ استخدمها كصورة بروفايل';
+                useBtn.onclick = () => useRobloxAvatar(uid, robloxData.avatarUrl);
+                row.appendChild(useBtn);
+            }
+            const unlinkBtn = document.createElement('button');
+            unlinkBtn.className = 'roblox-unlink-btn';
+            unlinkBtn.innerHTML = '✕ إلغاء الربط';
+            unlinkBtn.onclick = () => unlinkRoblox(uid);
+            row.appendChild(unlinkBtn);
+        }
+    } else if (isOwner) {
+        const linkBtn = document.createElement('button');
+        linkBtn.className = 'roblox-link-btn';
+        linkBtn.innerHTML = '🔗 اربط حساب روبلوكس';
+        linkBtn.onclick = openRobloxLinkModal;
+        row.appendChild(linkBtn);
+    }
+}
+
+window.openRobloxLinkModal = function(){
+    rlCurrentCode = 'ccraftspace-' + Math.random().toString(36).substring(2, 8);
+    document.getElementById('rlCode').innerText = rlCurrentCode;
+    document.getElementById('rlResult').innerText = '';
+    document.getElementById('rlUsername').value = '';
+    document.getElementById('robloxLinkModal').classList.add('open');
+};
+window.closeRobloxLinkModal = function(){
+    document.getElementById('robloxLinkModal').classList.remove('open');
+};
+document.getElementById('robloxLinkModal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeRobloxLinkModal(); });
+
+window.copyRlCode = function(){
+    navigator.clipboard.writeText(rlCurrentCode).then(()=>{
+        document.getElementById('rlResult').innerText = '📋 تم نسخ الكود';
+    });
+};
+
+window.verifyRobloxLink = async function(){
+    if(!robloxIsOwner || !robloxUid) return;
+    const username = document.getElementById('rlUsername').value.trim();
+    const resultDiv = document.getElementById('rlResult');
+    if(!username){ resultDiv.innerText = '⚠️ اكتب اليوزرنيم الأول'; return; }
+
+    const btn = document.getElementById('rlVerifyBtn');
+    btn.disabled = true; btn.innerText = '⏳ جارٍ التحقق...';
+    resultDiv.innerText = '⏳ جاري التحقق...';
+
+    try {
+        const res = await fetch('https://Anas9vmhh.pythonanywhere.com/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: username, code: rlCurrentCode })
+        });
+        const data = await res.json();
+
+        if(data.success){
+            const robloxData = { userId: data.userId, username: data.username, avatarUrl: data.avatarUrl || null, linkedAt: Date.now() };
+            await set(ref(db, `users/${robloxUid}/roblox`), robloxData);
+            resultDiv.innerHTML = '✅ ' + data.message;
+            renderRoblox(robloxUid, robloxData, true);
+            setTimeout(closeRobloxLinkModal, 1000);
+            showToast('✅ تم ربط حساب روبلوكس!');
+        } else {
+            resultDiv.innerHTML = '❌ ' + data.message;
+        }
+    } catch(err){
+        resultDiv.innerHTML = '⚠️ حصل خطأ في الاتصال بالسيرفر';
+    } finally {
+        btn.disabled = false; btn.innerText = '🔍 تحقق الآن';
+    }
+};
+
+async function useRobloxAvatar(uid, avatarUrl){
+    try{
+        await set(ref(db, `users/${uid}/photo`), avatarUrl);
+        const nameSnap = await get(ref(db, `users/${uid}/username`));
+        renderAvatar(nameSnap.exists()?nameSnap.val():null, avatarUrl);
+        showToast('✅ اتحطت صورة روبلوكس كصورة بروفايلك');
+    }catch(e){
+        alert('❌ خطأ: '+e.message);
+    }
+}
+
+async function unlinkRoblox(uid){
+    if(!confirm('إلغاء ربط حساب روبلوكس؟')) return;
+    try{
+        await remove(ref(db, `users/${uid}/roblox`));
+        renderRoblox(uid, null, true);
+        showToast('تم إلغاء الربط');
+    }catch(e){
+        alert('❌ خطأ: '+e.message);
+    }
+}
+
 onAuthStateChanged(auth,async user=>{
     currentUser=user;
     if(targetUid&&targetUid!==user?.uid)await loadOtherProfile(targetUid);
@@ -626,7 +762,6 @@ onAuthStateChanged(auth,async user=>{
     else location.href='login.html';
 });
 
-/* ── My Profile ── */
 async function loadMyProfile(user){
     const[userDataSnap]=await Promise.all([get(ref(db,`users/${user.uid}`))]);
     const userData=userDataSnap.exists()?userDataSnap.val():{};
@@ -636,6 +771,7 @@ async function loadMyProfile(user){
     renderAvatar(savedUsername, userData.photo||null);
     enableAvatarEditing(user.uid, savedUsername);
     renderTiktok(user.uid, userData.tiktok||null, true);
+    renderRoblox(user.uid, userData.roblox||null, true);
 
     document.getElementById('username').innerText=savedUsername;
     document.getElementById('userEmail').innerText=user.email;
@@ -651,7 +787,6 @@ async function loadMyProfile(user){
     document.getElementById('scriptsTitle').innerText='📜 سكربتاتي';
     document.getElementById('pointsSection').style.display='block';
 
-    // زر التحقق — تحقق من حالة الطلب
     const vsSnap=await get(ref(db,'verifyRequests'));
     let verifyStatus=null;
     if(vsSnap.exists()){
@@ -666,7 +801,6 @@ async function loadMyProfile(user){
     await loadPoints(user.uid);
 }
 
-/* ── Other Profile ── */
 async function loadOtherProfile(uid){
     document.getElementById('viewingBadge').style.display='block';
     const userSnap=await get(ref(db,`users/${uid}`));
@@ -678,12 +812,12 @@ async function loadOtherProfile(uid){
     document.getElementById('userEmail').innerText=email;
     renderAvatar(name, userData.photo||null);
     renderTiktok(uid, userData.tiktok||null, false);
+    renderRoblox(uid, userData.roblox||null, false);
     document.getElementById('profileActions').innerHTML='';
     document.getElementById('scriptsTitle').innerText=`📜 سكربتات ${name}`;
     await loadData(uid,email,null,false,name);
 }
 
-/* ── Load Data ── */
 async function loadData(uid,email,createdAt,canDelete,username){
     const snap=await get(ref(db,'scripts'));
     let mine=[];
@@ -705,7 +839,6 @@ async function loadData(uid,email,createdAt,canDelete,username){
     renderScripts(uid,mine,canDelete);
 }
 
-/* ── Admin Badges ── */
 async function renderAdminBadges(uid){
     const savedSnap=await get(ref(db,`users/${uid}/badges`));
     if(!savedSnap.exists())return;
@@ -727,7 +860,6 @@ async function renderAdminBadges(uid){
     });
 }
 
-/* ── Normal Badges ── */
 async function renderBadges(uid,stats,canAward){
     const grid=document.getElementById('badgesGrid');grid.innerHTML='';
     const savedSnap=await get(ref(db,`users/${uid}/badges`));
@@ -750,7 +882,6 @@ async function renderBadges(uid,stats,canAward){
     document.getElementById('totalCount').innerText=ALL_BADGES.length;
 }
 
-/* ── Scripts ── */
 function renderScripts(uid,mine,canDelete){
     const container=document.getElementById('userScripts');container.innerHTML='';
     if(!mine.length){
@@ -787,7 +918,6 @@ function renderScripts(uid,mine,canDelete){
     });
 }
 
-/* ── Points ── */
 async function loadPoints(uid){
     const refLink=`${location.origin}/referral.html?ref=${uid}`;
     document.getElementById('refLinkInput').value=refLink;
@@ -825,7 +955,6 @@ async function awardReferralPoints(refUid,visitorUid){
     }catch(e){console.error(e);}
 }
 
-/* ── ✅ استبدال كود نقاط ── */
 document.getElementById('redeemBtn')?.addEventListener('click', async () => {
     if (!currentUser) { alert('يجب تسجيل الدخول عشان تستخدم كود'); return; }
     const input = document.getElementById('redeemInput');
