@@ -18,9 +18,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
-/* ════════════════════════════════════════
-   RESET & BASE
-════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -54,10 +51,6 @@ body {
 
 header { display: none; }
 
-
-/* ════════════════════════════════════════
-   BACKGROUND CANVAS
-════════════════════════════════════════ */
 .bg-canvas {
     position: fixed; inset: 0; z-index: 0; pointer-events: none;
     background:
@@ -67,7 +60,6 @@ header { display: none; }
         var(--ink);
 }
 
-/* Stars */
 .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .star {
     position: absolute; border-radius: 50%;
@@ -79,7 +71,6 @@ header { display: none; }
     50% { opacity: var(--op, 0.6); transform: scale(1); }
 }
 
-/* Floating orbs */
 .orb {
     position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
     filter: blur(80px); animation: drift var(--dt, 12s) ease infinite alternate;
@@ -89,9 +80,6 @@ header { display: none; }
     to   { transform: translate(var(--tx, 40px), var(--ty, 30px)) scale(var(--sc, 1.1)); }
 }
 
-/* ════════════════════════════════════════
-   HERO
-════════════════════════════════════════ */
 .hero {
     position: relative; z-index: 1;
     min-height: 100svh;
@@ -102,7 +90,6 @@ header { display: none; }
     transition: padding-top 0.3s ease;
 }
 
-/* Logo */
 .logo-wrap {
     position: relative; display: inline-block;
     margin-bottom: 30px;
@@ -146,7 +133,6 @@ header { display: none; }
     to   { opacity: 1; transform: scale(1) rotate(0); }
 }
 
-/* Title */
 .hero-title {
     font-size: clamp(2.4rem, 8vw, 4.2rem);
     font-weight: 900;
@@ -182,7 +168,6 @@ header { display: none; }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Live Stats Bar */
 .stats-bar {
     display: flex; align-items: center; gap: 0;
     background: rgba(13,14,28,0.8);
@@ -225,9 +210,6 @@ header { display: none; }
     50% { opacity: 0.3; box-shadow: none; }
 }
 
-/* ════════════════════════════════════════
-   NAV GRID
-════════════════════════════════════════ */
 .nav-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -264,7 +246,6 @@ header { display: none; }
 .nav-btn:hover::after { opacity: 1; }
 .nav-btn:active { transform: scale(0.96); }
 
-/* Shimmer on hover */
 .nav-btn::before {
     content: ''; position: absolute;
     top: 0; left: -100%; width: 100%; height: 100%;
@@ -276,7 +257,6 @@ header { display: none; }
 .nb-icon { font-size: 1.55rem; line-height: 1; position: relative; z-index: 1; }
 .nb-label { position: relative; z-index: 1; line-height: 1.2; }
 
-/* شارة "جديد" على أي زرار */
 .nav-btn-badge {
     position: absolute; top: 6px; left: 6px; z-index: 2;
     background: linear-gradient(135deg, #f87171, #fbbf24);
@@ -292,7 +272,6 @@ header { display: none; }
     50%      { transform: scale(1.12); opacity: 0.85; }
 }
 
-/* Bottom accent lines */
 .nav-btn.c-violet  { border-bottom: 2.5px solid #8b5cf6; --nb-color: rgba(139,92,246,0.1); --nb-glow: rgba(139,92,246,0.4); }
 .nav-btn.c-cyan    { border-bottom: 2.5px solid #00f2fe; --nb-color: rgba(0,242,254,0.08); --nb-glow: rgba(0,242,254,0.35); }
 .nav-btn.c-pink    { border-bottom: 2.5px solid #f472b6; --nb-color: rgba(244,114,182,0.08); --nb-glow: rgba(244,114,182,0.35); }
@@ -307,10 +286,8 @@ header { display: none; }
 .nav-btn.c-rose    { border-bottom: 2.5px solid #fb7185; --nb-color: rgba(251,113,133,0.08); --nb-glow: rgba(251,113,133,0.35); }
 .nav-btn.c-teal    { border-bottom: 2.5px solid #2dd4bf; --nb-color: rgba(45,212,191,0.08);  --nb-glow: rgba(45,212,191,0.35); }
 
-/* Wide API button */
 .nav-btn.wide-2 { grid-column: span 2; flex-direction: row; gap: 10px; padding: 14px 20px; justify-content: center; }
 
-/* Create page button — extra special */
 .nav-btn.c-special {
     grid-column: span 2;
     background: linear-gradient(135deg, rgba(244,114,182,0.08), rgba(139,92,246,0.06));
@@ -319,7 +296,6 @@ header { display: none; }
     --nb-glow: rgba(244,114,182,0.4);
 }
 
-/* APK Mods button — جديد */
 .nav-btn.c-apk {
     background: linear-gradient(135deg, rgba(74,222,128,0.1), rgba(0,242,254,0.06));
     border: 1px solid rgba(74,222,128,0.25);
@@ -327,7 +303,6 @@ header { display: none; }
     --nb-glow: rgba(74,222,128,0.4);
 }
 
-/* شركاء التبادل — جديد */
 .nav-btn.c-partner {
     background: linear-gradient(135deg, rgba(251,146,60,0.12), rgba(244,114,182,0.08));
     border: 1px solid rgba(251,146,60,0.3);
@@ -335,7 +310,6 @@ header { display: none; }
     --nb-glow: rgba(251,146,60,0.45);
 }
 
-/* سوق التبادل — جديد */
 .nav-btn.c-market {
     background: linear-gradient(135deg, rgba(251,191,36,0.14), rgba(245,158,11,0.08));
     border: 1px solid rgba(251,191,36,0.35);
@@ -343,7 +317,6 @@ header { display: none; }
     --nb-glow: rgba(251,191,36,0.5);
 }
 
-/* فحص أمان السكربتات */
 .nav-btn.c-safety {
     background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(139,92,246,0.06));
     border: 1px solid rgba(56,189,248,0.3);
@@ -356,7 +329,6 @@ header { display: none; }
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Stagger nav buttons */
 .nav-btn:nth-of-type(1)  { animation-delay: 0.56s }
 .nav-btn:nth-of-type(2)  { animation-delay: 0.60s }
 .nav-btn:nth-of-type(3)  { animation-delay: 0.64s }
@@ -376,7 +348,6 @@ header { display: none; }
 .nav-btn:nth-of-type(17) { animation-delay: 1.20s }
 .nav-btn:nth-of-type(18) { animation-delay: 1.24s }
 
-/* عناوين المجموعات — نص واضح فوق كل مجموعة أزرار */
 .nav-group-label {
     grid-column: 1 / -1;
     display: flex; align-items: center; gap: 8px;
@@ -387,9 +358,6 @@ header { display: none; }
 .nav-group-label:first-child { margin-top: 0; }
 .nav-group-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-/* ════════════════════════════════════════
-   SCROLL INDICATOR
-════════════════════════════════════════ */
 .scroll-hint {
     position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
     display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -402,16 +370,12 @@ header { display: none; }
     50% { transform: translateX(-50%) translateY(6px); }
 }
 
-/* ════════════════════════════════════════
-   CONTENT SECTIONS
-════════════════════════════════════════ */
 .content-wrap {
     position: relative; z-index: 1;
     max-width: 920px; margin: 0 auto;
     padding: 0 20px 80px;
 }
 
-/* Announcement banner */
 .ann-banner {
     display: none;
     background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.07));
@@ -434,7 +398,6 @@ header { display: none; }
 .ann-close { background: none; border: none; color: var(--lo); cursor: pointer; font-size: 1rem; margin: 0; padding: 0; transition: color 0.2s; }
 .ann-close:hover { color: var(--red); }
 
-/* Section header */
 .sec-head {
     display: flex; align-items: center; justify-content: space-between;
     margin: 52px 0 18px;
@@ -459,9 +422,6 @@ header { display: none; }
 }
 .sec-all:hover { background: rgba(139,92,246,0.12); color: var(--hi); transform: none; filter: none; }
 
-/* ════════════════════════════════════════
-   SCRIPT CARDS
-════════════════════════════════════════ */
 .scripts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
@@ -516,9 +476,6 @@ header { display: none; }
 
 .fc-stat { font-size: 0.7rem; color: var(--lo); }
 
-/* ════════════════════════════════════════
-   USER CARDS
-════════════════════════════════════════ */
 .users-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -561,9 +518,6 @@ header { display: none; }
 .uc-name { font-size: 0.82rem; font-weight: 800; color: var(--hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .uc-stat { font-size: 0.68rem; color: var(--lo); margin-top: 1px; }
 
-/* ════════════════════════════════════════
-   USER PAGES GALLERY
-════════════════════════════════════════ */
 .pages-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -590,9 +544,6 @@ header { display: none; }
 .pc-name  { font-size: 0.82rem; font-weight: 800; color: var(--hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pc-meta  { font-size: 0.65rem; color: var(--lo); margin-top: 1px; }
 
-/* ════════════════════════════════════════
-   QUICK ACTIONS
-════════════════════════════════════════ */
 .actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -624,9 +575,6 @@ header { display: none; }
 .ac-title { font-size: 0.88rem; font-weight: 800; color: var(--hi); margin-bottom: 3px; }
 .ac-desc  { font-size: 0.7rem; color: var(--lo); line-height: 1.5; }
 
-/* ════════════════════════════════════════
-   FOOTER
-════════════════════════════════════════ */
 .site-footer {
     position: relative; z-index: 1;
     text-align: center; padding: 36px 20px;
@@ -652,9 +600,6 @@ header { display: none; }
     font-weight: 700; letter-spacing: 0.5px;
 }
 
-/* ════════════════════════════════════════
-   RESPONSIVE
-════════════════════════════════════════ */
 @media (max-width: 640px) {
     .nav-grid { grid-template-columns: repeat(3, 1fr); gap: 7px; }
     .nav-btn  { padding: 13px 6px; font-size: 0.73rem; border-radius: 14px; }
@@ -670,9 +615,6 @@ header { display: none; }
     .hero { padding: 30px 14px 20px; }
 }
 
-/* ════════════════════════════════════════
-   DISCORD INVITE MODAL
-════════════════════════════════════════ */
 .discord-modal-overlay {
     position: fixed; inset: 0; z-index: 300;
     background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
@@ -732,14 +674,16 @@ header { display: none; }
 }
 .discord-later-btn:hover { color: var(--mid); filter: none; transform: none; }
 
+/* Roblox Link Modal — inputs */
+#robloxLinkModal input {
+    width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 10px;
+    border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--hi);
+    font-family: 'Tajawal', sans-serif; font-size: 0.9rem;
+}
 </style>
 </head>
 <body>
 
-
-
-
-<!-- Background -->
 <div class="bg-canvas"></div>
 <div class="stars" id="stars"></div>
 <div class="orb" style="width:500px;height:500px;top:-100px;right:-100px;background:radial-gradient(circle,rgba(139,92,246,0.08),transparent 70%);--dt:10s;--tx:50px;--ty:40px;--sc:1.1"></div>
@@ -747,7 +691,6 @@ header { display: none; }
 
 <header></header>
 
-<!-- ════ HERO ════ -->
 <section class="hero">
 
     <div class="logo-wrap">
@@ -765,9 +708,15 @@ header { display: none; }
         <span class="title-cc">CCRAFT</span><span class="title-raft"> SPACE</span>
     </h1>
 
-    <p class="hero-sub">⚡</p>
+    <button id="linkRobloxBtn" onclick="openRobloxLinkModal()"
+      style="background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(0,242,254,0.1));
+      border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:10px 22px;
+      color:var(--hi);font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.85rem;
+      cursor:pointer;display:inline-flex;align-items:center;gap:8px;margin:0 auto 28px;
+      position:relative;z-index:1;animation:fadeUp 0.7s 0.4s ease both;">
+      🔗 اربط حسابك في روبلوكس
+    </button>
 
-    <!-- Live Stats -->
     <div class="stats-bar">
         <div class="sb-item"><div class="live-dot"></div> مباشر</div>
         <div class="sb-item">📜 <span class="sb-val" id="ls-scripts">—</span> سكربت</div>
@@ -776,7 +725,6 @@ header { display: none; }
         <div class="sb-item">🟢 <span class="sb-val" id="ls-online">—</span> أونلاين</div>
     </div>
 
-    <!-- Nav Grid -->
     <nav class="nav-grid">
         <div class="nav-group-label">🎯 الأساسيات</div>
         <button class="nav-btn c-indigo"  onclick="location.href='scripts.html'">   <span class="nb-icon">📜</span><span class="nb-label">السكربتات</span></button>
@@ -812,17 +760,14 @@ header { display: none; }
     <div class="scroll-hint">▼ اكتشف المزيد</div>
 </section>
 
-<!-- ════ CONTENT ════ -->
 <div class="content-wrap">
 
-    <!-- Announcement -->
     <div class="ann-banner" id="annBanner">
         <span class="ann-icon">📢</span>
         <div class="ann-text" id="annText">—</div>
         <button class="ann-close" onclick="this.closest('.ann-banner').classList.remove('show')">✕</button>
     </div>
 
-    <!-- Latest Scripts -->
     <div class="sec-head">
         <h3>🔥 أحدث السكربتات</h3>
         <button class="sec-all" onclick="location.href='scripts.html'">عرض الكل ←</button>
@@ -831,9 +776,6 @@ header { display: none; }
         <div style="color:var(--lo);text-align:center;padding:28px;grid-column:1/-1;font-size:0.82rem">⏳ جارٍ التحميل...</div>
     </div>
 
-
-
-    <!-- User Pages -->
     <div class="sec-head">
         <h3>🌐 صفحات المستخدمين</h3>
         <button class="sec-all" onclick="location.href='page-builder.html'">أنشئ صفحتك ←</button>
@@ -842,7 +784,6 @@ header { display: none; }
         <div style="color:var(--lo);text-align:center;padding:24px;grid-column:1/-1;font-size:0.8rem">⏳ جارٍ التحميل...</div>
     </div>
 
-    <!-- Quick Actions -->
     <div class="sec-head"><h3>⚡ إجراءات سريعة</h3></div>
     <div class="actions-grid">
         <div class="action-card" onclick="location.href='publish.html'" style="--ac-color:rgba(139,92,246,0.3)">
@@ -865,7 +806,6 @@ header { display: none; }
 
 </div>
 
-<!-- Footer -->
 <footer class="site-footer">
     <div class="footer-links">
         <a href="scripts.html">السكربتات</a>
@@ -879,6 +819,24 @@ header { display: none; }
     </div>
     <div class="footer-copy">© CCRAFT SPACE 2026 — جميع الحقوق محفوظة</div>
 </footer>
+
+<!-- Roblox Account Link Modal -->
+<div class="discord-modal-overlay" id="robloxLinkModal">
+  <div class="discord-modal-box">
+    <button class="discord-close-btn" onclick="closeRobloxLinkModal()">✕</button>
+    <div class="discord-icon" style="background:linear-gradient(135deg,#8b5cf6,#00f2fe)">🎮</div>
+    <h3>اربط حساب روبلوكس</h3>
+    <p style="text-align:right">
+      1. انسخ الكود ده: <br>
+      <strong id="rlCode" style="color:#67e8f9;font-family:monospace;font-size:1rem;display:block;margin:8px 0;">—</strong>
+      2. حطه في <b>وصف البروفايل (About)</b> بتاعك على روبلوكس<br>
+      3. اكتب اليوزرنيم بتاعك تحت واضغط تحقق
+    </p>
+    <input type="text" id="rlUsername" placeholder="اسم المستخدم على روبلوكس">
+    <button class="discord-join-btn" onclick="verifyRobloxLink()">تحقق الآن</button>
+    <div id="rlResult" style="margin-top:14px;font-size:0.85rem;"></div>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
@@ -896,7 +854,6 @@ const fc = {
 };
 const app = getApps().length ? getApp() : initializeApp(fc), db = getDatabase(app);
 
-/* ── Stars ── */
 (function(){
     const c = document.getElementById('stars');
     for(let i = 0; i < 80; i++){
@@ -907,7 +864,6 @@ const app = getApps().length ? getApp() : initializeApp(fc), db = getDatabase(ap
     }
 })();
 
-/* ── Counter animation ── */
 function animCount(id, target){
     const el = document.getElementById(id); if(!el) return;
     let cur = 0; const step = Math.max(1, Math.ceil(target/40));
@@ -918,7 +874,6 @@ function animCount(id, target){
     }, 35);
 }
 
-/* ── Load Stats ── */
 async function loadStats(){
     const [ss,us] = await Promise.all([get(ref(db,'scripts')), get(ref(db,'users'))]);
     const scripts = ss.exists() ? ss.val() : {};
@@ -931,14 +886,12 @@ async function loadStats(){
     loadTopUsers(users, scripts);
 }
 
-/* ── Online Presence (حقيقي — مبني على presence.js) ── */
 let _lastOnline = -1;
 
 onValue(ref(db,'presence'), snap => {
     const realOnline = snap.exists()
         ? Object.values(snap.val()).filter(p => p.online && Date.now() - p.ts < 60000).length
         : 0;
-    // إحنا نفسنا بنتحسب أونلاين لحظة ما presence.js يشتغل، فأقل عدد منطقي هو 1
     const total = Math.max(realOnline, 1);
     if (total !== _lastOnline) {
         _lastOnline = total;
@@ -946,7 +899,6 @@ onValue(ref(db,'presence'), snap => {
     }
 });
 
-/* ── Featured Scripts ── */
 function loadFeaturedScripts(scripts){
     const c = document.getElementById('featScripts'); c.innerHTML='';
     const latest = Object.entries(scripts).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0)).slice(0,6);
@@ -959,9 +911,8 @@ function loadFeaturedScripts(scripts){
     });
 }
 
-/* ── Top Users ── */
 async function loadTopUsers(users, scripts){
-    const c = document.getElementById('topUsers'); c.innerHTML='';
+    const c = document.getElementById('topUsers'); if(!c) return; c.innerHTML='';
     const us = {};
     Object.entries(scripts).forEach(([,s])=>{
         const uid = s.authorUid||s.authorEmail||s.author; if(!uid) return;
@@ -989,7 +940,6 @@ async function loadTopUsers(users, scripts){
     }
 }
 
-/* ── Announcements ── */
 async function loadAnnouncement(){
     const snap = await get(ref(db,'announcements')); if(!snap.exists()) return;
     const entries = Object.entries(snap.val()).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0));
@@ -1001,7 +951,6 @@ async function loadAnnouncement(){
     }
 }
 
-/* ── User Pages ── */
 async function loadUserPages(){
     const snap = await get(ref(db,'userPages'));
     const c = document.getElementById('userPagesGallery');
@@ -1030,7 +979,6 @@ loadStats();
 loadAnnouncement();
 loadUserPages();
 
-/* ── Discord Invite Modal ── */
 (function(){
     const modal = document.getElementById('discordModal');
     if(!modal) return;
@@ -1047,7 +995,47 @@ loadUserPages();
     modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
 })();
 
+</script>
 
+<!-- Roblox account link logic -->
+<script>
+let rlCurrentCode = '';
+
+function openRobloxLinkModal(){
+  rlCurrentCode = 'ccraftspace-' + Math.random().toString(36).substring(2, 8);
+  document.getElementById('rlCode').innerText = rlCurrentCode;
+  document.getElementById('rlResult').innerText = '';
+  document.getElementById('rlUsername').value = '';
+  document.getElementById('robloxLinkModal').classList.add('open');
+}
+function closeRobloxLinkModal(){
+  document.getElementById('robloxLinkModal').classList.remove('open');
+}
+
+async function verifyRobloxLink(){
+  const username = document.getElementById('rlUsername').value.trim();
+  const resultDiv = document.getElementById('rlResult');
+  if(!username){ resultDiv.innerText = '⚠️ اكتب اليوزرنيم الأول'; return; }
+
+  resultDiv.innerText = '⏳ جاري التحقق...';
+
+  try {
+    const res = await fetch('https://Anas9vmhh.pythonanywhere.com/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username, code: rlCurrentCode })
+    });
+    const data = await res.json();
+
+    if(data.success){
+      resultDiv.innerHTML = '✅ ' + data.message;
+    } else {
+      resultDiv.innerHTML = '❌ ' + data.message;
+    }
+  } catch(err){
+    resultDiv.innerHTML = '⚠️ حصل خطأ في الاتصال بالسيرفر';
+  }
+}
 </script>
 
 <!-- تسجيل هذه الصفحة ضمن المتصلين الآن فعليًا -->
