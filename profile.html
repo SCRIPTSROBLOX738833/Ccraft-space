@@ -652,11 +652,11 @@ function renderRoblox(uid, robloxData, isOwner){
         row.appendChild(pill);
 
         if (isOwner) {
-            if (robloxData.avatarUrl) {
+            if (robloxData.userId) {
                 const useBtn = document.createElement('button');
                 useBtn.className = 'roblox-use-avatar-btn';
                 useBtn.innerHTML = '🖼️ استخدمها كصورة بروفايل';
-                useBtn.onclick = () => useRobloxAvatar(uid, robloxData.avatarUrl);
+                useBtn.onclick = () => useRobloxAvatar(uid, `https://Anas9vmhh.pythonanywhere.com/avatar/${robloxData.userId}`);
                 row.appendChild(useBtn);
             }
             const unlinkBtn = document.createElement('button');
