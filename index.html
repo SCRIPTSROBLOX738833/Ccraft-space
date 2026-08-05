@@ -1062,7 +1062,7 @@ function showLinkedRoblox(linked){
   const nameEl = document.getElementById('rlLinkedName');
   const linkBtn = document.getElementById('linkRobloxBtn');
 
-  if(linked.avatarUrl) avatar.src = linked.avatarUrl;
+  if(linked.userId) avatar.src = `https://Anas9vmhh.pythonanywhere.com/avatar/${linked.userId}`;
   nameEl.innerText = linked.username;
   badge.style.display = 'inline-flex';
   if(linkBtn) linkBtn.style.display = 'none';
