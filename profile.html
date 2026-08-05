@@ -225,19 +225,13 @@
     <div class="modal-box">
         <div class="modal-title">🎮 ربط حساب روبلوكس</div>
         <div class="modal-sub" style="text-align:right">
-            1. انسخ الكود ده:
-            <div class="rl-code-row">
-                <strong id="rlCode">—</strong>
-                <button class="rl-copy-btn" onclick="copyRlCode()">📋 نسخ</button>
-            </div>
-            2. حطه في <b>وصف البروفايل (About)</b> بتاعك على روبلوكس<br>
-            3. اكتب اليوزرنيم بتاعك تحت واضغط تحقق
+            اكتب اسم المستخدم بتاعك على روبلوكس واضغط ربط.
         </div>
         <input type="text" id="rlUsername" placeholder="اسم المستخدم على روبلوكس">
         <div id="rlResult" style="font-size:0.82rem;margin-bottom:14px;min-height:18px;"></div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeRobloxLinkModal()">إلغاء</button>
-            <button class="btn-save" id="rlVerifyBtn" onclick="verifyRobloxLink()">🔍 تحقق الآن</button>
+            <button class="btn-save" id="rlVerifyBtn" onclick="verifyRobloxLink()">🔗 ربط الحساب</button>
         </div>
     </div>
 </div>
@@ -681,8 +675,6 @@ function renderRoblox(uid, robloxData, isOwner){
 }
 
 window.openRobloxLinkModal = function(){
-    rlCurrentCode = 'ccraftspace-' + Math.random().toString(36).substring(2, 8);
-    document.getElementById('rlCode').innerText = rlCurrentCode;
     document.getElementById('rlResult').innerText = '';
     document.getElementById('rlUsername').value = '';
     document.getElementById('robloxLinkModal').classList.add('open');
@@ -692,12 +684,6 @@ window.closeRobloxLinkModal = function(){
 };
 document.getElementById('robloxLinkModal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeRobloxLinkModal(); });
 
-window.copyRlCode = function(){
-    navigator.clipboard.writeText(rlCurrentCode).then(()=>{
-        document.getElementById('rlResult').innerText = '📋 تم نسخ الكود';
-    });
-};
-
 window.verifyRobloxLink = async function(){
     if(!robloxIsOwner || !robloxUid) return;
     const username = document.getElementById('rlUsername').value.trim();
@@ -705,14 +691,14 @@ window.verifyRobloxLink = async function(){
     if(!username){ resultDiv.innerText = '⚠️ اكتب اليوزرنيم الأول'; return; }
 
     const btn = document.getElementById('rlVerifyBtn');
-    btn.disabled = true; btn.innerText = '⏳ جارٍ التحقق...';
-    resultDiv.innerText = '⏳ جاري التحقق...';
+    btn.disabled = true; btn.innerText = '⏳ جارٍ الربط...';
+    resultDiv.innerText = '⏳ جاري الربط...';
 
     try {
-        const res = await fetch('https://Anas9vmhh.pythonanywhere.com/verify', {
+        const res = await fetch('https://Anas9vmhh.pythonanywhere.com/lookup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: username, code: rlCurrentCode })
+            body: JSON.stringify({ username: username })
         });
         const data = await res.json();
 
@@ -729,7 +715,7 @@ window.verifyRobloxLink = async function(){
     } catch(err){
         resultDiv.innerHTML = '⚠️ حصل خطأ في الاتصال بالسيرفر';
     } finally {
-        btn.disabled = false; btn.innerText = '🔍 تحقق الآن';
+        btn.disabled = false; btn.innerText = '🔗 ربط الحساب';
     }
 };
 
