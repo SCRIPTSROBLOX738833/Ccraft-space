@@ -684,6 +684,31 @@ header { display: none; }
 </head>
 <body>
 
+<!-- Top-corner account widget -->
+<div id="topAccountWidget" style="position:fixed;top:14px;left:14px;z-index:250;">
+  <button id="linkRobloxBtn" onclick="openRobloxLinkModal()"
+    style="background:rgba(13,14,28,0.85);backdrop-filter:blur(10px);
+    border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:8px 16px;
+    color:#f0f0ff;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.78rem;
+    cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.35);">
+    🔗 اربط حسابك
+  </button>
+
+  <div id="rlLinkedBadge" onclick="location.href='profile.html'" style="display:none;cursor:pointer;
+    align-items:center;gap:8px;background:rgba(13,14,28,0.85);backdrop-filter:blur(10px);
+    border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:5px 6px 5px 12px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.35);">
+    <span style="font-weight:800;font-size:0.78rem;color:#f0f0ff;" id="rlLinkedName"></span>
+    <img id="rlLinkedAvatar" src="" alt="" style="width:30px;height:30px;border-radius:50%;
+      object-fit:cover;border:2px solid rgba(139,92,246,0.4);">
+    <button onclick="unlinkRoblox(event)" title="حذف الربط" style="background:rgba(248,113,113,0.15);
+      border:1px solid rgba(248,113,113,0.35);border-radius:50%;width:20px;height:20px;
+      color:#f87171;font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+      margin:0;padding:0;flex-shrink:0;">✕</button>
+  </div>
+</div>
+
 <div class="bg-canvas"></div>
 <div class="stars" id="stars"></div>
 <div class="orb" style="width:500px;height:500px;top:-100px;right:-100px;background:radial-gradient(circle,rgba(139,92,246,0.08),transparent 70%);--dt:10s;--tx:50px;--ty:40px;--sc:1.1"></div>
@@ -708,27 +733,7 @@ header { display: none; }
         <span class="title-cc">CCRAFT</span><span class="title-raft"> SPACE</span>
     </h1>
 
-    <button id="linkRobloxBtn" onclick="openRobloxLinkModal()"
-      style="background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(0,242,254,0.1));
-      border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:10px 22px;
-      color:var(--hi);font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.85rem;
-      cursor:pointer;display:inline-flex;align-items:center;gap:8px;margin:0 auto 28px;
-      position:relative;z-index:1;animation:fadeUp 0.7s 0.4s ease both;">
-      🔗 اربط حسابك في روبلوكس
-    </button>
-
-    <div id="rlLinkedBadge" style="display:none;
-      align-items:center;gap:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);
-      border-radius:50px;padding:6px 8px 6px 6px;margin:0 auto 22px;position:relative;z-index:1;
-      animation:fadeUp 0.4s ease both;">
-      <img id="rlLinkedAvatar" src="" alt="" onclick="location.href='profile.html'" style="width:34px;height:34px;border-radius:50%;
-        object-fit:cover;border:2px solid rgba(139,92,246,0.4);cursor:pointer;">
-      <span onclick="location.href='profile.html'" style="font-weight:800;font-size:0.85rem;color:var(--hi);cursor:pointer;">✅ <span id="rlLinkedName"></span></span>
-      <button onclick="unlinkRoblox(event)" title="حذف الربط" style="background:rgba(248,113,113,0.12);
-        border:1px solid rgba(248,113,113,0.3);border-radius:50%;width:24px;height:24px;
-        color:#f87171;font-size:0.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
-        margin:0;padding:0;">✕</button>
-    </div>
+    <p class="hero-sub">⚡</p>
 
     <div class="stats-bar">
         <div class="sb-item"><div class="live-dot"></div> مباشر</div>
@@ -839,19 +844,9 @@ header { display: none; }
     <button class="discord-close-btn" onclick="closeRobloxLinkModal()">✕</button>
     <div class="discord-icon" style="background:linear-gradient(135deg,#8b5cf6,#00f2fe)">🎮</div>
     <h3>اربط حساب روبلوكس</h3>
-    <p style="text-align:right">
-      1. انسخ الكود ده: <br>
-      <span style="display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;">
-        <strong id="rlCode" style="color:#67e8f9;font-family:monospace;font-size:1rem;">—</strong>
-        <button onclick="copyRlCode()" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);
-          border-radius:8px;padding:4px 10px;color:var(--hi);font-size:0.75rem;cursor:pointer;
-          font-family:'Tajawal',sans-serif;">📋 نسخ</button>
-      </span>
-      2. حطه في <b>وصف البروفايل (About)</b> بتاعك على روبلوكس<br>
-      3. اكتب اليوزرنيم بتاعك تحت واضغط تحقق
-    </p>
+    <p style="text-align:right">اكتب اسم المستخدم بتاعك على روبلوكس واضغط ربط.</p>
     <input type="text" id="rlUsername" placeholder="اسم المستخدم على روبلوكس">
-    <button class="discord-join-btn" onclick="verifyRobloxLink()">تحقق الآن</button>
+    <button class="discord-join-btn" id="rlVerifyBtn" onclick="verifyRobloxLink()">🔗 ربط الحساب</button>
     <div id="rlResult" style="margin-top:14px;font-size:0.85rem;"></div>
   </div>
 </div>
@@ -1017,12 +1012,9 @@ loadUserPages();
 
 <!-- Roblox account link logic -->
 <script>
-let rlCurrentCode = '';
 const RL_STORAGE_KEY = 'ccraftspace_roblox_link';
 
 function openRobloxLinkModal(){
-  rlCurrentCode = 'ccraftspace-' + Math.random().toString(36).substring(2, 8);
-  document.getElementById('rlCode').innerText = rlCurrentCode;
   document.getElementById('rlResult').innerText = '';
   document.getElementById('rlUsername').value = '';
   document.getElementById('robloxLinkModal').classList.add('open');
@@ -1031,25 +1023,20 @@ function closeRobloxLinkModal(){
   document.getElementById('robloxLinkModal').classList.remove('open');
 }
 
-function copyRlCode(){
-  navigator.clipboard.writeText(rlCurrentCode).then(()=>{
-    const r = document.getElementById('rlResult');
-    r.innerText = '📋 تم نسخ الكود';
-  });
-}
-
 async function verifyRobloxLink(){
   const username = document.getElementById('rlUsername').value.trim();
   const resultDiv = document.getElementById('rlResult');
   if(!username){ resultDiv.innerText = '⚠️ اكتب اليوزرنيم الأول'; return; }
 
-  resultDiv.innerText = '⏳ جاري التحقق...';
+  const btn = document.getElementById('rlVerifyBtn');
+  btn.disabled = true;
+  resultDiv.innerText = '⏳ جاري الربط...';
 
   try {
-    const res = await fetch('https://Anas9vmhh.pythonanywhere.com/verify', {
+    const res = await fetch('https://Anas9vmhh.pythonanywhere.com/lookup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username, code: rlCurrentCode })
+      body: JSON.stringify({ username: username })
     });
     const data = await res.json();
 
@@ -1058,12 +1045,14 @@ async function verifyRobloxLink(){
       const linkedData = { userId: data.userId, username: data.username, avatarUrl: data.avatarUrl };
       localStorage.setItem(RL_STORAGE_KEY, JSON.stringify(linkedData));
       showLinkedRoblox(linkedData);
-      setTimeout(closeRobloxLinkModal, 1200);
+      setTimeout(closeRobloxLinkModal, 1000);
     } else {
       resultDiv.innerHTML = '❌ ' + data.message;
     }
   } catch(err){
     resultDiv.innerHTML = '⚠️ حصل خطأ في الاتصال بالسيرفر';
+  } finally {
+    btn.disabled = false;
   }
 }
 
