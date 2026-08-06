@@ -699,7 +699,7 @@ html[dir="ltr"] #langToggleBtn { right: auto; left: 14px; }
 <body>
 
 <!-- Language toggle -->
-<button id="langToggleBtn" onclick="toggleLanguage()">🌐 EN</button>
+<button id="langToggleBtn">🌐 EN</button>
 
 <!-- Top-corner account widget -->
 <div id="topAccountWidget" style="position:fixed;top:14px;left:14px;z-index:250;">
@@ -1182,6 +1182,22 @@ function toggleLanguage(){
 }
 
 applyLanguage(currentLang);
+console.log('[lang] script loaded, current language:', currentLang);
+
+// ربط إضافي احتياطي (addEventListener) فوق الـ onclick العادي — لو حاجة منعت الـ onclick الأساسي
+const langBtnEl = document.getElementById('langToggleBtn');
+if (langBtnEl) {
+    langBtnEl.addEventListener('click', function(e){
+        console.log('[lang] button clicked, switching from', currentLang);
+        try {
+            toggleLanguage();
+        } catch (err) {
+            console.error('[lang] error while toggling language:', err);
+        }
+    });
+} else {
+    console.error('[lang] #langToggleBtn not found in the page!');
+}
 </script>
 
 <!-- تسجيل هذه الصفحة ضمن المتصلين الآن فعليًا -->
