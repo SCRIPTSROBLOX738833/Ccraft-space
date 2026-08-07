@@ -683,13 +683,14 @@ header { display: none; }
 
 /* Language Toggle Button */
 #langToggleBtn {
-    position: fixed; top: 14px; right: 14px; z-index: 250;
+    position: fixed; top: 14px; right: 14px; z-index: 999;
     background: rgba(13,14,28,0.85); backdrop-filter: blur(10px);
     border: 1px solid rgba(139,92,246,0.3); border-radius: 50px;
     padding: 8px 16px; color: #f0f0ff;
     font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 0.78rem;
     cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.35); transition: var(--tr);
+    pointer-events: auto;
 }
 #langToggleBtn:hover { border-color: rgba(139,92,246,0.55); transform: translateY(-1px); filter: none; }
 html[dir="ltr"] #topAccountWidget { left: auto; right: 14px; }
@@ -699,11 +700,11 @@ html[dir="ltr"] #langToggleBtn { right: auto; left: 14px; }
 <body>
 
 <!-- Language toggle -->
-<button id="langToggleBtn">🌐 EN</button>
+<button id="langToggleBtn" type="button" onclick="toggleLanguage()">🌐 EN</button>
 
 <!-- Top-corner account widget -->
 <div id="topAccountWidget" style="position:fixed;top:14px;left:14px;z-index:250;">
-  <button id="linkRobloxBtn" onclick="openRobloxLinkModal()" data-i18n="linkAccountBtn"
+  <button id="linkRobloxBtn" type="button" onclick="openRobloxLinkModal()" data-i18n="linkAccountBtn"
     style="background:rgba(13,14,28,0.85);backdrop-filter:blur(10px);
     border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:8px 16px;
     color:#f0f0ff;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.78rem;
@@ -719,7 +720,7 @@ html[dir="ltr"] #langToggleBtn { right: auto; left: 14px; }
     <span style="font-weight:800;font-size:0.78rem;color:#f0f0ff;" id="rlLinkedName"></span>
     <img id="rlLinkedAvatar" src="" alt="" style="width:30px;height:30px;border-radius:50%;
       object-fit:cover;border:2px solid rgba(139,92,246,0.4);">
-    <button onclick="unlinkRoblox(event)" title="حذف الربط" style="background:rgba(248,113,113,0.15);
+    <button type="button" onclick="unlinkRoblox(event)" title="حذف الربط" style="background:rgba(248,113,113,0.15);
       border:1px solid rgba(248,113,113,0.35);border-radius:50%;width:20px;height:20px;
       color:#f87171;font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
       margin:0;padding:0;flex-shrink:0;">✕</button>
@@ -1154,7 +1155,7 @@ const translations = {
     }
 };
 
-let currentLang = 'ar'; // كل ريفريش يرجّع الموقع عربي دايمًا، مفيش حفظ للاختيار
+let currentLang = localStorage.getItem('ccraft_lang') || 'ar';
 
 function applyLanguage(lang){
     currentLang = lang;
@@ -1173,6 +1174,8 @@ function applyLanguage(lang){
 
     const btn = document.getElementById('langToggleBtn');
     if (btn) btn.innerHTML = lang === 'ar' ? '🌐 EN' : '🌐 AR';
+
+    localStorage.setItem('ccraft_lang', lang);
 }
 
 function toggleLanguage(){
@@ -1180,22 +1183,6 @@ function toggleLanguage(){
 }
 
 applyLanguage(currentLang);
-console.log('[lang] script loaded, current language:', currentLang);
-
-// ربط إضافي احتياطي (addEventListener) فوق الـ onclick العادي — لو حاجة منعت الـ onclick الأساسي
-const langBtnEl = document.getElementById('langToggleBtn');
-if (langBtnEl) {
-    langBtnEl.addEventListener('click', function(e){
-        console.log('[lang] button clicked, switching from', currentLang);
-        try {
-            toggleLanguage();
-        } catch (err) {
-            console.error('[lang] error while toggling language:', err);
-        }
-    });
-} else {
-    console.error('[lang] #langToggleBtn not found in the page!');
-}
 </script>
 
 <!-- تسجيل هذه الصفحة ضمن المتصلين الآن فعليًا -->
