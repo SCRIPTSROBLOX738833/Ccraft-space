@@ -1154,7 +1154,7 @@ const translations = {
     }
 };
 
-let currentLang = localStorage.getItem('ccraft_lang') || 'ar';
+let currentLang = 'ar'; // كل ريفريش يرجّع الموقع عربي دايمًا، مفيش حفظ للاختيار
 
 function applyLanguage(lang){
     currentLang = lang;
@@ -1173,8 +1173,6 @@ function applyLanguage(lang){
 
     const btn = document.getElementById('langToggleBtn');
     if (btn) btn.innerHTML = lang === 'ar' ? '🌐 EN' : '🌐 AR';
-
-    localStorage.setItem('ccraft_lang', lang);
 }
 
 function toggleLanguage(){
