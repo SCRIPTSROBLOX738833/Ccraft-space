@@ -180,6 +180,8 @@ body {
 .tag-map { background: rgba(0,242,254,0.07); color: #00d9e8; border: 1px solid rgba(0,242,254,0.2); }
 .tag-map:hover { background: rgba(0,242,254,0.14); }
 .tag-nomap { background: rgba(255,255,255,0.04); color: #55556a; border: 1px solid rgba(255,255,255,0.07); }
+.tag-verified { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+.tag-unverified { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
 
 /* ============================================================
    Key Banner — بارز فوق الكود عشان الزائر يشوفه الأول
@@ -207,6 +209,20 @@ body {
     font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #8be9fd;
     direction: ltr;
 }
+
+/* بانر تحذير عدم التوثيق — يظهر فوق الكود لو السكربت غير موثوق */
+.unverified-banner {
+    display: none;
+    background: linear-gradient(135deg, rgba(248,113,113,0.1), rgba(239,68,68,0.04));
+    border: 1px solid rgba(248,113,113,0.3);
+    border-radius: 16px;
+    padding: 12px 18px;
+    margin-bottom: 14px;
+    align-items: center; gap: 10px; flex-wrap: wrap;
+    font-size: 0.78rem; color: #fca5a5;
+    animation: riseUp 0.45s 0.03s cubic-bezier(0.22,1,0.36,1) both;
+}
+.unverified-banner.show { display: flex; }
 
 /* ============================================================
    Code Card
@@ -516,6 +532,12 @@ body {
             <div class="tags-row" id="tagsRow"></div>
         </div>
 
+        <!-- بانر تحذير: السكربت غير موثّق -->
+        <div class="unverified-banner" id="unverifiedBanner">
+            <span>⚠️</span>
+            <span>هذا السكربت <strong>غير موثّق</strong> من إدارة CCRAFT SPACE — تعامل معه بحذر، وسيُضاف تحذير تلقائي أعلى الكود عند نسخه.</span>
+        </div>
+
         <!-- بانر المفتاح — بيظهر بس لو محتاج مفتاح، فوق الكود عشان الزائر ياخد باله الأول -->
         <div class="key-banner" id="keyCard">
             <span class="kb-icon">🔑</span>
@@ -675,10 +697,18 @@ body {
             }
         }
 
+        if (!data.verified) {
+            const ub = document.getElementById('unverifiedBanner');
+            if (ub) ub.classList.add('show');
+        }
+
         const tagsRow = document.getElementById('tagsRow');
         if (tagsRow) {
             const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            tagsRow.innerHTML = `<span class="tag tag-cat">📁 ${esc(data.category||'—')}</span>`;
+            tagsRow.innerHTML = data.verified
+                ? `<span class="tag tag-verified">✅ موثّق من الإدارة</span>`
+                : `<span class="tag tag-unverified">⚠️ غير موثّق</span>`;
+            tagsRow.innerHTML += `<span class="tag tag-cat">📁 ${esc(data.category||'—')}</span>`;
             tagsRow.innerHTML += data.map
                 ? `<span class="tag tag-map">🗺️ ${esc(data.map)}</span>`
                 : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
@@ -762,7 +792,15 @@ const auth = getAuth(app);
 const params    = new URLSearchParams(window.location.search);
 const scriptId  = document.body.dataset.scriptId || params.get('id');
 let currentUser = null;
+let scriptVerified = false;
 const avatarCache = {};
+
+const UNVERIFIED_WARNING = '--[[\n\tتحذير هذا السكربت ليس تم التحقق منه من قبل cCraft space يرجي الحظر منه\n]]\n\n';
+
+// يضيف تعليق Lua تحذيري أعلى الكود عند النسخ لو السكربت غير موثّق — تعليق فقط، لا يعطّل تشغيل السكربت
+function withCopyWarning(code) {
+    return scriptVerified ? code : (UNVERIFIED_WARNING + code);
+}
 
 /* ============================================================
    Lightbox
@@ -865,6 +903,7 @@ async function loadScript() {
         return;
     }
     const data = snap.val();
+    scriptVerified = !!data.verified;
 
     // --- العنوان والمحتوى ---
     document.getElementById('title').innerText       = data.title;
@@ -874,6 +913,9 @@ async function loadScript() {
     document.getElementById('description').innerText = data.description || "لا يوجد وصف";
     document.getElementById('description').style.color = data.description ? '#b0b0cc' : '#44445a';
     document.getElementById('description').style.fontStyle = data.description ? 'normal' : 'italic';
+
+    // --- بانر عدم التوثيق ---
+    document.getElementById('unverifiedBanner').classList.toggle('show', !scriptVerified);
 
     // --- المفتاح (اختياري) ---
     if (data.key) {
@@ -924,7 +966,10 @@ async function loadScript() {
 
     // --- التاجات ---
     const tagsRow = document.getElementById('tagsRow');
-    tagsRow.innerHTML = `<span class="tag tag-cat">📁 ${escHTML(data.category||'—')}</span>`;
+    tagsRow.innerHTML = scriptVerified
+        ? `<span class="tag tag-verified">✅ موثّق من الإدارة</span>`
+        : `<span class="tag tag-unverified">⚠️ غير موثّق</span>`;
+    tagsRow.innerHTML += `<span class="tag tag-cat">📁 ${escHTML(data.category||'—')}</span>`;
     tagsRow.innerHTML += data.map
         ? `<span class="tag tag-map">🗺️ ${escHTML(data.map)}</span>`
         : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
@@ -1125,7 +1170,7 @@ commentInputEl.addEventListener('keypress', e => {
    نسخ الكود
    ============================================================ */
 function copyCode() {
-    const code = document.getElementById('code').innerText;
+    const code = withCopyWarning(document.getElementById('code').innerText);
     navigator.clipboard.writeText(code).then(() => {
         ['copyInline','copyBtn'].forEach(id => {
             const btn = document.getElementById(id);
