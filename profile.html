@@ -64,6 +64,8 @@
     .verify-request-btn:hover{background:rgba(0,242,254,0.2);transform:translateY(-2px);filter:none;}
     .verify-request-btn.pending{background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.3);color:#fbbf24;cursor:default;}
     .verify-request-btn.verified{background:rgba(74,222,128,0.1);border-color:rgba(74,222,128,0.3);color:#4ade80;cursor:default;}
+    .reverify-btn{background:rgba(255,255,255,0.04);border:1px solid var(--border-color);border-radius:var(--radius-btn);padding:8px 14px;font-size:0.75rem;font-weight:800;color:var(--text-muted);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);display:inline-flex;align-items:center;gap:6px;}
+    .reverify-btn:hover{border-color:rgba(0,242,254,0.35);color:#67e8f9;transform:none;filter:none;}
 
     /* Verify Modal */
     .vmodal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
@@ -530,21 +532,28 @@ window.submitVerifyRequest=async function(){
 
 async function renderVerifyBtn(user,status){
     const actions=document.getElementById('profileActions');
-    const old=actions.querySelector('.verify-request-btn');
-    if(old)old.remove();
+    actions.querySelectorAll('.verify-request-btn, .reverify-btn').forEach(el=>el.remove());
     const btn=document.createElement('button');
     if(!status||status==='rejected'){
         btn.className='verify-request-btn';
         btn.innerHTML='🔍 طلب التحقق';
         btn.onclick=openVerifyModal;
+        actions.appendChild(btn);
     }else if(status==='pending'){
         btn.className='verify-request-btn pending';
         btn.innerHTML='⏳ طلب التحقق قيد المراجعة';
+        actions.appendChild(btn);
     }else if(status==='approved'){
         btn.className='verify-request-btn verified';
         btn.innerHTML='✅ موثّق من الأدمن';
+        actions.appendChild(btn);
+        const reBtn=document.createElement('button');
+        reBtn.className='reverify-btn';
+        reBtn.innerHTML='🔄 إعادة طلب التوثيق';
+        reBtn.title='لو سكربتاتك مش ظاهر عليها شارة التوثيق رغم إنك موثّق، ابعت طلب تاني';
+        reBtn.onclick=openVerifyModal;
+        actions.appendChild(reBtn);
     }
-    actions.appendChild(btn);
 }
 
 function showToast(msg){
