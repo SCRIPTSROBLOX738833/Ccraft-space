@@ -1,7 +1,3 @@
-
-//   <script type="module" src="presence.js"></script>
-
-
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, set, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
@@ -16,17 +12,14 @@ const firebaseConfig = {
     measurementId: "G-MHDM7YYYBN"
 };
 
-// إعادة استخدام نفس تطبيق Firebase لو الصفحة عندها استدعاء تاني لـ initializeApp
-// (عشان منوقعش في خطأ "Firebase App already exists" لو الصفحة فيها سكريبت تاني بيعمل نفس الحاجة)
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
-// جلسة فريدة لكل تاب مفتوح (مش لكل شخص) — بالظبط زي أي عداد أونلاين حقيقي،
-// لو نفس الشخص فاتح تابين هيتحسب مرتين، وده طبيعي وصحيح.
-let sessionId = sessionStorage.getItem('ccraft_presence_id');
+
+let sessionId = localStorage.getItem('ccraft_presence_id');
 if (!sessionId) {
     sessionId = 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
-    sessionStorage.setItem('ccraft_presence_id', sessionId);
+    localStorage.setItem('ccraft_presence_id', sessionId);
 }
 
 const myPresenceRef = ref(db, `presence/${sessionId}`);
@@ -36,21 +29,15 @@ function markOnline() {
     set(myPresenceRef, { online: true, ts: Date.now(), page: currentPage });
 }
 
-// .info/connected مسار خاص في Firebase بيتفعل تلقائيًا كل ما الاتصال بالسيرفر يترجع
-// (أول تحميل، أو بعد ما النت يتقطع ويرجع تاني)
 onValue(ref(db, '.info/connected'), (snap) => {
     if (snap.val() === true) {
-        // لو التاب اتقفل أو الاتصال اتقطع فجأة، Firebase نفسه هيمسح السطر ده من عنده تلقائيًا
         onDisconnect(myPresenceRef).remove();
         markOnline();
     }
 });
 
-// نبضة كل 25 ثانية عشان الـ timestamp يفضل حديث
-// (الصفحات اللي بتعرض العداد بتستبعد أي حد الـ ts بتاعه أقدم من 60 ثانية)
 setInterval(markOnline, 25000);
 
-// محاولة إضافية (best effort) لمسح الحضور فورًا لو المستخدم غيّر الصفحة بسرعة
 window.addEventListener('pagehide', () => {
     try { set(myPresenceRef, null); } catch (e) {}
 });
