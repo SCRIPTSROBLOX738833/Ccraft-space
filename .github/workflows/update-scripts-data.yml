@@ -1,1 +1,36 @@
+name: Update scripts-data.js
+
+# بيشتغل أوتوماتيك كل ساعة، وكمان تقدر تشغّله يدوي من تبويب Actions
+# في الريبو (زرار "Run workflow")
+on:
+  schedule:
+    - cron: '0 * * * *'   # كل ساعة، الساعة بتوقيت UTC
+  workflow_dispatch: {}
+
+# لازم صلاحية كتابة عشان يقدر يعمل commit للملف المُحدَّث
+permissions:
+  contents: write
+
+jobs:
+  update-scripts-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate scripts-data.js
+        run: node generate-scripts-data.js
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scripts-data.js
+          git diff --cached --quiet && echo "لا يوجد تغيير — تخطي" || git commit -m "🔄 تحديث scripts-data.js تلقائي"
+          git push
 
