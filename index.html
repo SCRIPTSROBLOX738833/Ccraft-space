@@ -681,30 +681,61 @@ header { display: none; }
     font-family: 'Tajawal', sans-serif; font-size: 0.9rem;
 }
 
-/* Language Toggle Button */
-#langToggleBtn {
-    position: fixed; top: 14px; right: 14px; z-index: 999;
+/* ---- Notifications widget (replaces the old language toggle) ---- */
+#notifWidget { position: fixed; top: 14px; right: 14px; z-index: 999; }
+#notifBellBtn {
+    position: relative;
     background: rgba(13,14,28,0.85); backdrop-filter: blur(10px);
-    border: 1px solid rgba(139,92,246,0.3); border-radius: 50px;
-    padding: 8px 16px; color: #f0f0ff;
-    font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 0.78rem;
-    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35); transition: var(--tr);
-    pointer-events: auto;
+    border: 1px solid rgba(139,92,246,0.3); border-radius: 50%;
+    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+    color: #f0f0ff; font-size: 1.15rem; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35); transition: var(--tr); margin: 0; padding: 0;
 }
-#langToggleBtn:hover { border-color: rgba(139,92,246,0.55); transform: translateY(-1px); filter: none; }
-html[dir="ltr"] #topAccountWidget { left: auto; right: 14px; }
-html[dir="ltr"] #langToggleBtn { right: auto; left: 14px; }
+#notifBellBtn:hover { border-color: rgba(139,92,246,0.55); transform: translateY(-1px); filter: none; }
+#notifBadge {
+    position: absolute; top: -3px; left: -3px;
+    min-width: 17px; height: 17px; border-radius: 50px;
+    background: linear-gradient(135deg, #f87171, #fbbf24);
+    color: #07080f; font-size: 0.62rem; font-weight: 900;
+    display: none; align-items: center; justify-content: center; padding: 0 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+#notifBadge.show { display: flex; }
+#notifPanel {
+    display: none; position: absolute; top: 48px; right: 0;
+    width: min(320px, 88vw); max-height: 380px; overflow-y: auto;
+    background: rgba(13,14,28,0.97); backdrop-filter: blur(16px);
+    border: 1px solid rgba(139,92,246,0.28); border-radius: 16px;
+    padding: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+}
+#notifPanel.open { display: block; }
+.notif-head { font-size: 0.78rem; font-weight: 900; color: var(--hi); padding: 6px 8px 10px; display: flex; align-items: center; gap: 8px; }
+.notif-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.notif-empty { text-align: center; color: var(--lo); font-size: 0.8rem; padding: 24px 10px; }
+.notif-item { padding: 10px 10px; border-radius: 10px; margin-bottom: 4px; transition: var(--tr); }
+.notif-item:hover { background: rgba(139,92,246,0.08); }
+.notif-item .ni-text { font-size: 0.82rem; color: var(--hi); line-height: 1.55; }
+.notif-item .ni-time { font-size: 0.68rem; color: var(--lo); margin-top: 4px; }
+.notif-item.unread { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.2); }
 </style>
 </head>
 <body>
 
-<!-- Language toggle -->
-<button id="langToggleBtn" type="button" onclick="toggleLanguage()">🌐 EN</button>
+<!-- Notifications -->
+<div id="notifWidget">
+  <button id="notifBellBtn" type="button" onclick="toggleNotifPanel()" aria-label="الإشعارات">
+    🔔
+    <span id="notifBadge">0</span>
+  </button>
+  <div id="notifPanel">
+    <div class="notif-head">🔔 الإشعارات</div>
+    <div id="notifList"><div class="notif-empty">جارٍ التحميل...</div></div>
+  </div>
+</div>
 
 <!-- Top-corner account widget -->
 <div id="topAccountWidget" style="position:fixed;top:14px;left:14px;z-index:250;">
-  <button id="linkRobloxBtn" type="button" onclick="openRobloxLinkModal()" data-i18n="linkAccountBtn"
+  <button id="linkRobloxBtn" type="button" onclick="openRobloxLinkModal()"
     style="background:rgba(13,14,28,0.85);backdrop-filter:blur(10px);
     border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:8px 16px;
     color:#f0f0ff;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.78rem;
@@ -744,7 +775,7 @@ html[dir="ltr"] #langToggleBtn { right: auto; left: 14px; }
 
     <div class="hero-badge">
         <span class="live-dot"></span>
-        <span data-i18n="heroBadge">منصة سكربتات Roblox العربية</span>
+        <span>منصة سكربتات Roblox العربية</span>
     </div>
 
     <h1 class="hero-title">
@@ -754,47 +785,47 @@ html[dir="ltr"] #langToggleBtn { right: auto; left: 14px; }
     <p class="hero-sub">⚡</p>
 
     <div class="stats-bar">
-        <div class="sb-item"><div class="live-dot"></div> <span data-i18n="statLive">مباشر</span></div>
-        <div class="sb-item">📜 <span class="sb-val" id="ls-scripts">—</span> <span data-i18n="statScripts">سكربت</span></div>
-        <div class="sb-item">👥 <span class="sb-val" id="ls-users">—</span> <span data-i18n="statUsers">مستخدم</span></div>
-        <div class="sb-item">👍 <span class="sb-val" id="ls-likes">—</span> <span data-i18n="statLikes">لايك</span></div>
-        <div class="sb-item">🟢 <span class="sb-val" id="ls-online">—</span> <span data-i18n="statOnline">أونلاين</span></div>
+        <div class="sb-item"><div class="live-dot"></div> <span>مباشر</span></div>
+        <div class="sb-item">📜 <span class="sb-val" id="ls-scripts">—</span> <span>سكربت</span></div>
+        <div class="sb-item">👥 <span class="sb-val" id="ls-users">—</span> <span>مستخدم</span></div>
+        <div class="sb-item">👍 <span class="sb-val" id="ls-likes">—</span> <span>لايك</span></div>
+        <div class="sb-item">🟢 <span class="sb-val" id="ls-online">—</span> <span>أونلاين</span></div>
     </div>
 
     <nav class="nav-grid">
-        <div class="nav-group-label"><span data-i18n="grpBasics">🎯 الأساسيات</span></div>
-        <button class="nav-btn c-indigo"  onclick="location.href='scripts.html'">   <span class="nb-icon">📜</span><span class="nb-label" data-i18n="navScripts">السكربتات</span></button>
-        <button class="nav-btn c-orange"  onclick="location.href='publish.html'">   <span class="nb-icon">📤</span><span class="nb-label" data-i18n="navPublish">نشر سكربت</span></button>
-        <button class="nav-btn c-pink"    onclick="location.href='community.html'"><span class="nb-icon">🗣️</span><span class="nb-label" data-i18n="navCommunity">المجتمع</span></button>
-        <button class="nav-btn c-rose"    onclick="window.open('https://t.me/cCraftspace','_blank')"><span class="nb-icon">📢</span><span class="nb-label" data-i18n="navTelegram">تلجرام</span></button>
-        <button class="nav-btn c-apk"     onclick="location.href='apks.html'">      <span class="nav-btn-badge" data-i18n="badgeNew">جديد</span><span class="nb-icon">📱</span><span class="nb-label" data-i18n="navApk">APK موديفايد</span></button>
-        <button class="nav-btn c-purple"  onclick="location.href='hacks.html'">     <span class="nb-icon">⚡</span><span class="nb-label" data-i18n="navHacks">هاكات</span></button>
+        <div class="nav-group-label"><span>🎯 الأساسيات</span></div>
+        <button class="nav-btn c-indigo"  onclick="location.href='scripts.html'">   <span class="nb-icon">📜</span><span class="nb-label">السكربتات</span></button>
+        <button class="nav-btn c-orange"  onclick="location.href='publish.html'">   <span class="nb-icon">📤</span><span class="nb-label">نشر سكربت</span></button>
+        <button class="nav-btn c-pink"    onclick="location.href='community.html'"><span class="nb-icon">🗣️</span><span class="nb-label">المجتمع</span></button>
+        <button class="nav-btn c-rose"    onclick="window.open('https://t.me/cCraftspace','_blank')"><span class="nb-icon">📢</span><span class="nb-label">تلجرام</span></button>
+        <button class="nav-btn c-apk"     onclick="location.href='apks.html'">      <span class="nav-btn-badge">جديد</span><span class="nb-icon">📱</span><span class="nb-label">APK موديفايد</span></button>
+        <button class="nav-btn c-purple"  onclick="location.href='hacks.html'">     <span class="nb-icon">⚡</span><span class="nb-label">هاكات</span></button>
 
-        <div class="nav-group-label"><span data-i18n="grpExchange">💰 التبادل</span></div>
-        <button class="nav-btn c-market"  onclick="location.href='market.html'">   <span class="nav-btn-badge" data-i18n="badgeNew">جديد</span><span class="nb-icon">🛒</span><span class="nb-label" data-i18n="navMarket">سوق التبادل</span></button>
-        <button class="nav-btn c-partner" onclick="location.href='partners.html'"> <span class="nav-btn-badge" data-i18n="badgeNew">جديد</span><span class="nb-icon">🤝</span><span class="nb-label" data-i18n="navPartners">شركاء التبادل</span></button>
+        <div class="nav-group-label"><span>💰 التبادل</span></div>
+        <button class="nav-btn c-market"  onclick="location.href='market.html'">   <span class="nav-btn-badge">جديد</span><span class="nb-icon">🛒</span><span class="nb-label">سوق التبادل</span></button>
+        <button class="nav-btn c-partner" onclick="location.href='partners.html'"> <span class="nav-btn-badge">جديد</span><span class="nb-icon">🤝</span><span class="nb-label">شركاء التبادل</span></button>
 
-        <div class="nav-group-label"><span data-i18n="grpCommunity">👥 المجتمع</span></div>
-        <button class="nav-btn c-gold"    onclick="location.href='leaderboard.html'"><span class="nb-icon">🏆</span><span class="nb-label" data-i18n="navLeaderboard">ليدربورد</span></button>
-        <button class="nav-btn c-green"   onclick="location.href='top-badges.html'"><span class="nb-icon">🏅</span><span class="nb-label" data-i18n="navBadges">بادجات</span></button>
+        <div class="nav-group-label"><span>👥 المجتمع</span></div>
+        <button class="nav-btn c-gold"    onclick="location.href='leaderboard.html'"><span class="nb-icon">🏆</span><span class="nb-label">ليدربورد</span></button>
+        <button class="nav-btn c-green"   onclick="location.href='top-badges.html'"><span class="nb-icon">🏅</span><span class="nb-label">بادجات</span></button>
 
-        <div class="nav-group-label"><span data-i18n="grpTools">🛠️ أدوات</span></div>
-        <button class="nav-btn c-cyan"    onclick="location.href='nova.html'">      <span class="nb-icon">🤖</span><span class="nb-label" data-i18n="navNova">NOVA AI</span></button>
-        <button class="nav-btn c-safety"  onclick="location.href='script-safety-check.html'"><span class="nb-icon">🛡️</span><span class="nb-label" data-i18n="navSafety">فحص أمان سكربتات</span></button>
+        <div class="nav-group-label"><span>🛠️ أدوات</span></div>
+        <button class="nav-btn c-cyan"    onclick="location.href='nova.html'">      <span class="nb-icon">🤖</span><span class="nb-label">NOVA AI</span></button>
+        <button class="nav-btn c-safety"  onclick="location.href='script-safety-check.html'"><span class="nb-icon">🛡️</span><span class="nb-label">فحص أمان سكربتات</span></button>
 
-        <div class="nav-group-label"><span data-i18n="grpAccount">👤 حسابك</span></div>
-        <button class="nav-btn c-violet"  onclick="location.href='profile.html'">   <span class="nb-icon">👤</span><span class="nb-label" data-i18n="navProfile">بروفايلي</span></button>
-        <button class="nav-btn c-emerald" onclick="location.href='login.html'">     <span class="nb-icon">🔐</span><span class="nb-label" data-i18n="navLogin">تسجيل الدخول</span></button>
+        <div class="nav-group-label"><span>👤 حسابك</span></div>
+        <button class="nav-btn c-violet"  onclick="location.href='profile.html'">   <span class="nb-icon">👤</span><span class="nb-label">بروفايلي</span></button>
+        <button class="nav-btn c-emerald" onclick="location.href='login.html'">     <span class="nb-icon">🔐</span><span class="nb-label">تسجيل الدخول</span></button>
 
-        <div class="nav-group-label"><span data-i18n="grpInfo">ℹ️ معلومات ودعم</span></div>
-        <button class="nav-btn c-red"     onclick="location.href='stats.html'">     <span class="nb-icon">📊</span><span class="nb-label" data-i18n="navStats">إحصائيات</span></button>
-        <button class="nav-btn c-blue"    onclick="location.href='help.html'">      <span class="nb-icon">🛠️</span><span class="nb-label" data-i18n="navHelp">الدعم</span></button>
-        <button class="nav-btn c-rose"    onclick="window.open('https://t.me/cCraftspace','_blank')"><span class="nb-icon">📢</span><span class="nb-label" data-i18n="navTelegram">تلجرام</span></button>
-        <button class="nav-btn c-teal wide-2" onclick="location.href='api.html'">   <span class="nb-icon">🗝️</span><span class="nb-label" data-i18n="navApi">واجهة API للمطورين</span></button>
-        <button class="nav-btn c-special" onclick="location.href='page-builder.html'"><span class="nb-icon">🌐</span><span class="nb-label" data-i18n="navPageBuilder">أنشئ صفحتك!</span></button>
+        <div class="nav-group-label"><span>ℹ️ معلومات ودعم</span></div>
+        <button class="nav-btn c-red"     onclick="location.href='stats.html'">     <span class="nb-icon">📊</span><span class="nb-label">إحصائيات</span></button>
+        <button class="nav-btn c-blue"    onclick="location.href='help.html'">      <span class="nb-icon">🛠️</span><span class="nb-label">الدعم</span></button>
+        <button class="nav-btn c-rose"    onclick="window.open('https://t.me/cCraftspace','_blank')"><span class="nb-icon">📢</span><span class="nb-label">تلجرام</span></button>
+        <button class="nav-btn c-teal wide-2" onclick="location.href='api.html'">   <span class="nb-icon">🗝️</span><span class="nb-label">واجهة API للمطورين</span></button>
+        <button class="nav-btn c-special" onclick="location.href='page-builder.html'"><span class="nb-icon">🌐</span><span class="nb-label">أنشئ صفحتك!</span></button>
     </nav>
 
-    <div class="scroll-hint" data-i18n="scrollHint">▼ اكتشف المزيد</div>
+    <div class="scroll-hint">▼ اكتشف المزيد</div>
 </section>
 
 <div class="content-wrap">
@@ -806,38 +837,38 @@ html[dir="ltr"] #langToggleBtn { right: auto; left: 14px; }
     </div>
 
     <div class="sec-head">
-        <h3><span data-i18n="secLatest">🔥 أحدث السكربتات</span></h3>
-        <button class="sec-all" onclick="location.href='scripts.html'" data-i18n="seeAll">عرض الكل ←</button>
+        <h3><span>🔥 أحدث السكربتات</span></h3>
+        <button class="sec-all" onclick="location.href='scripts.html'">عرض الكل ←</button>
     </div>
     <div class="scripts-grid" id="featScripts">
-        <div style="color:var(--lo);text-align:center;padding:28px;grid-column:1/-1;font-size:0.82rem" data-i18n="loading">⏳ جارٍ التحميل...</div>
+        <div style="color:var(--lo);text-align:center;padding:28px;grid-column:1/-1;font-size:0.82rem">⏳ جارٍ التحميل...</div>
     </div>
 
     <div class="sec-head">
-        <h3><span data-i18n="secPages">🌐 صفحات المستخدمين</span></h3>
-        <button class="sec-all" onclick="location.href='page-builder.html'" data-i18n="createPage">أنشئ صفحتك ←</button>
+        <h3><span>🌐 صفحات المستخدمين</span></h3>
+        <button class="sec-all" onclick="location.href='page-builder.html'">أنشئ صفحتك ←</button>
     </div>
     <div class="pages-grid" id="userPagesGallery">
-        <div style="color:var(--lo);text-align:center;padding:24px;grid-column:1/-1;font-size:0.8rem" data-i18n="loading">⏳ جارٍ التحميل...</div>
+        <div style="color:var(--lo);text-align:center;padding:24px;grid-column:1/-1;font-size:0.8rem">⏳ جارٍ التحميل...</div>
     </div>
 
-    <div class="sec-head"><h3><span data-i18n="secActions">⚡ إجراءات سريعة</span></h3></div>
+    <div class="sec-head"><h3><span>⚡ إجراءات سريعة</span></h3></div>
     <div class="actions-grid">
         <div class="action-card" onclick="location.href='publish.html'" style="--ac-color:rgba(139,92,246,0.3)">
             <span class="ac-icon">📤</span>
-            <div><div class="ac-title" data-i18n="act1Title">انشر سكربت الآن</div><div class="ac-desc" data-i18n="act1Desc">شارك سكربتك واكسب لايكات وبادجات</div></div>
+            <div><div class="ac-title">انشر سكربت الآن</div><div class="ac-desc">شارك سكربتك واكسب لايكات وبادجات</div></div>
         </div>
         <div class="action-card" onclick="location.href='apks.html'" style="--ac-color:rgba(74,222,128,0.35)">
             <span class="ac-icon">📱</span>
-            <div><div class="ac-title" data-i18n="act2Title">تصفح تطبيقات APK</div><div class="ac-desc" data-i18n="act2Desc">ألعاب وتطبيقات أندرويد معدلة — تحديث جديد</div></div>
+            <div><div class="ac-title">تصفح تطبيقات APK</div><div class="ac-desc">ألعاب وتطبيقات أندرويد معدلة — تحديث جديد</div></div>
         </div>
         <div class="action-card" onclick="location.href='profile.html'" style="--ac-color:rgba(244,114,182,0.3)">
             <span class="ac-icon">🖼️</span>
-            <div><div class="ac-title" data-i18n="act3Title">غيّر صورة البروفايل</div><div class="ac-desc" data-i18n="act3Desc">ارفع صورتك الشخصية وتظهر في الشات والسكربتات</div></div>
+            <div><div class="ac-title">غيّر صورة البروفايل</div><div class="ac-desc">ارفع صورتك الشخصية وتظهر في الشات والسكربتات</div></div>
         </div>
         <div class="action-card" onclick="location.href='nova.html'" style="--ac-color:rgba(0,242,254,0.25)">
             <span class="ac-icon">🤖</span>
-            <div><div class="ac-title" data-i18n="act4Title">اسأل NOVA AI</div><div class="ac-desc" data-i18n="act4Desc">مساعدة فورية في الكود والسكربتات</div></div>
+            <div><div class="ac-title">اسأل NOVA AI</div><div class="ac-desc">مساعدة فورية في الكود والسكربتات</div></div>
         </div>
     </div>
 
@@ -845,16 +876,16 @@ html[dir="ltr"] #langToggleBtn { right: auto; left: 14px; }
 
 <footer class="site-footer">
     <div class="footer-links">
-        <a href="scripts.html" data-i18n="navScripts">السكربتات</a>
+        <a href="scripts.html">السكربتات</a>
         <a href="apks.html">APK Mods</a>
-        <a href="leaderboard.html" data-i18n="navLeaderboard">الليدربورد</a>
-        <a href="stats.html" data-i18n="navStats">الإحصائيات</a>
+        <a href="leaderboard.html">الليدربورد</a>
+        <a href="stats.html">الإحصائيات</a>
         <a href="api.html">API</a>
-        <a href="help.html" data-i18n="navHelp">الدعم</a>
-        <a href="privacy.html" data-i18n="privacy">الخصوصية</a>
-        <a href="https://t.me/cCraftspace" target="_blank" data-i18n="navTelegram">تلجرام</a>
+        <a href="help.html">الدعم</a>
+        <a href="privacy.html">الخصوصية</a>
+        <a href="https://t.me/cCraftspace" target="_blank">تلجرام</a>
     </div>
-    <div class="footer-copy" data-i18n="footerCopy">© CCRAFT SPACE 2026 — جميع الحقوق محفوظة</div>
+    <div class="footer-copy">© CCRAFT SPACE 2026 — جميع الحقوق محفوظة</div>
 </footer>
 
 <!-- Roblox Account Link Modal -->
@@ -862,10 +893,10 @@ html[dir="ltr"] #langToggleBtn { right: auto; left: 14px; }
   <div class="discord-modal-box">
     <button class="discord-close-btn" onclick="closeRobloxLinkModal()">✕</button>
     <div class="discord-icon" style="background:linear-gradient(135deg,#8b5cf6,#00f2fe)">🎮</div>
-    <h3 data-i18n="rlTitle">اربط حساب روبلوكس</h3>
-    <p style="text-align:right" data-i18n="rlDesc">اكتب اسم المستخدم بتاعك على روبلوكس واضغط ربط.</p>
-    <input type="text" id="rlUsername" placeholder="اسم المستخدم على روبلوكس" data-i18n-placeholder="rlPlaceholder">
-    <button class="discord-join-btn" id="rlVerifyBtn" onclick="verifyRobloxLink()" data-i18n="rlButton">🔗 ربط الحساب</button>
+    <h3>اربط حساب روبلوكس</h3>
+    <p style="text-align:right">اكتب اسم المستخدم بتاعك على روبلوكس واضغط ربط.</p>
+    <input type="text" id="rlUsername" placeholder="اسم المستخدم على روبلوكس">
+    <button class="discord-join-btn" id="rlVerifyBtn" onclick="verifyRobloxLink()">🔗 ربط الحساب</button>
     <div id="rlResult" style="margin-top:14px;font-size:0.85rem;"></div>
   </div>
 </div>
@@ -1007,9 +1038,66 @@ async function loadUserPages(){
     });
 }
 
+/* ─── Notifications ─── */
+const NOTIF_SEEN_KEY = 'ccraft_notif_seen';
+
+function timeAgo(ts){
+    const diff = Date.now() - ts;
+    const m = Math.floor(diff/60000), h = Math.floor(diff/3600000), d = Math.floor(diff/86400000);
+    if (d > 0) return `منذ ${d} يوم`;
+    if (h > 0) return `منذ ${h} ساعة`;
+    if (m > 0) return `منذ ${m} دقيقة`;
+    return 'الآن';
+}
+
+async function loadNotifications(){
+    const listEl = document.getElementById('notifList');
+    const snap = await get(ref(db,'announcements'));
+    if(!snap.exists()){
+        listEl.innerHTML = '<div class="notif-empty">لا توجد إشعارات حالياً</div>';
+        return;
+    }
+    const lastSeen = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0');
+    const entries = Object.values(snap.val()).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)).slice(0,20);
+    const unreadCount = entries.filter(n => (n.timestamp||0) > lastSeen).length;
+
+    const badge = document.getElementById('notifBadge');
+    if(unreadCount > 0){
+        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+        badge.classList.add('show');
+    } else {
+        badge.classList.remove('show');
+    }
+
+    listEl.innerHTML = '';
+    entries.forEach(n => {
+        const isUnread = (n.timestamp||0) > lastSeen;
+        const item = document.createElement('div');
+        item.className = `notif-item${isUnread ? ' unread' : ''}`;
+        item.innerHTML = `<div class="ni-text">${n.text||''}</div><div class="ni-time">${timeAgo(n.timestamp||0)}</div>`;
+        listEl.appendChild(item);
+    });
+}
+
+window.toggleNotifPanel = function(){
+    const panel = document.getElementById('notifPanel');
+    const opening = !panel.classList.contains('open');
+    panel.classList.toggle('open');
+    if(opening){
+        localStorage.setItem(NOTIF_SEEN_KEY, Date.now().toString());
+        setTimeout(()=>{ document.getElementById('notifBadge').classList.remove('show'); }, 400);
+    }
+};
+
+document.addEventListener('click', e => {
+    const widget = document.getElementById('notifWidget');
+    if(widget && !widget.contains(e.target)) document.getElementById('notifPanel').classList.remove('open');
+});
+
 loadStats();
 loadAnnouncement();
 loadUserPages();
+loadNotifications();
 
 (function(){
     const modal = document.getElementById('discordModal');
@@ -1102,88 +1190,6 @@ function unlinkRoblox(e){
     try { showLinkedRoblox(JSON.parse(saved)); } catch(e){}
   }
 })();
-</script>
-
-<!-- ============================================================
-     🌐 نظام تبديل اللغة (عربي / إنجليزي)
-     بيترجم كل النصوص الثابتة في الصفحة، ويحفظ الاختيار في المتصفح
-     ============================================================ -->
-<script>
-const translations = {
-    ar: {
-        heroBadge: "منصة سكربتات Roblox العربية",
-        statLive: "مباشر", statScripts: "سكربت", statUsers: "مستخدم", statLikes: "لايك", statOnline: "أونلاين",
-        grpBasics: "🎯 الأساسيات", grpExchange: "💰 التبادل", grpCommunity: "👥 المجتمع",
-        grpTools: "🛠️ أدوات", grpAccount: "👤 حسابك", grpInfo: "ℹ️ معلومات ودعم",
-        navScripts: "السكربتات", navPublish: "نشر سكربت", navCommunity: "المجتمع",
-        navApk: "APK موديفايد", navHacks: "هاكات", navMarket: "سوق التبادل", navPartners: "شركاء التبادل",
-        navLeaderboard: "ليدربورد", navBadges: "بادجات", navNova: "NOVA AI", navSafety: "فحص أمان سكربتات",
-        navProfile: "بروفايلي", navLogin: "تسجيل الدخول", navStats: "إحصائيات", navHelp: "الدعم",
-        navTelegram: "تلجرام", navApi: "واجهة API للمطورين", navPageBuilder: "أنشئ صفحتك!",
-        badgeNew: "جديد", scrollHint: "▼ اكتشف المزيد",
-        secLatest: "🔥 أحدث السكربتات", secPages: "🌐 صفحات المستخدمين", secActions: "⚡ إجراءات سريعة",
-        seeAll: "عرض الكل ←", createPage: "أنشئ صفحتك ←", loading: "⏳ جارٍ التحميل...",
-        act1Title: "انشر سكربت الآن", act1Desc: "شارك سكربتك واكسب لايكات وبادجات",
-        act2Title: "تصفح تطبيقات APK", act2Desc: "ألعاب وتطبيقات أندرويد معدلة — تحديث جديد",
-        act3Title: "غيّر صورة البروفايل", act3Desc: "ارفع صورتك الشخصية وتظهر في الشات والسكربتات",
-        act4Title: "اسأل NOVA AI", act4Desc: "مساعدة فورية في الكود والسكربتات",
-        privacy: "الخصوصية", footerCopy: "© CCRAFT SPACE 2026 — جميع الحقوق محفوظة",
-        linkAccountBtn: "🔗 اربط حسابك",
-        rlTitle: "اربط حساب روبلوكس", rlDesc: "اكتب اسم المستخدم بتاعك على روبلوكس واضغط ربط.",
-        rlPlaceholder: "اسم المستخدم على روبلوكس", rlButton: "🔗 ربط الحساب"
-    },
-    en: {
-        heroBadge: "The Arabic Roblox Scripts Platform",
-        statLive: "Live", statScripts: "Scripts", statUsers: "Users", statLikes: "Likes", statOnline: "Online",
-        grpBasics: "🎯 Basics", grpExchange: "💰 Exchange", grpCommunity: "👥 Community",
-        grpTools: "🛠️ Tools", grpAccount: "👤 Your Account", grpInfo: "ℹ️ Info & Support",
-        navScripts: "Scripts", navPublish: "Publish Script", navCommunity: "Community",
-        navApk: "Modded APKs", navHacks: "Hacks", navMarket: "Trade Market", navPartners: "Trade Partners",
-        navLeaderboard: "Leaderboard", navBadges: "Badges", navNova: "NOVA AI", navSafety: "Script Safety Check",
-        navProfile: "My Profile", navLogin: "Log In", navStats: "Stats", navHelp: "Support",
-        navTelegram: "Telegram", navApi: "Developer API", navPageBuilder: "Build Your Page!",
-        badgeNew: "New", scrollHint: "▼ Discover More",
-        secLatest: "🔥 Latest Scripts", secPages: "🌐 User Pages", secActions: "⚡ Quick Actions",
-        seeAll: "See All →", createPage: "Build Yours →", loading: "⏳ Loading...",
-        act1Title: "Publish a Script Now", act1Desc: "Share your script and earn likes and badges",
-        act2Title: "Browse APK Apps", act2Desc: "Modded Android games and apps — new update",
-        act3Title: "Change Profile Picture", act3Desc: "Upload your photo, shown in chat and scripts",
-        act4Title: "Ask NOVA AI", act4Desc: "Instant help with code and scripts",
-        privacy: "Privacy", footerCopy: "© CCRAFT SPACE 2026 — All Rights Reserved",
-        linkAccountBtn: "🔗 Link Your Account",
-        rlTitle: "Link Your Roblox Account", rlDesc: "Enter your Roblox username and press Link.",
-        rlPlaceholder: "Your Roblox username", rlButton: "🔗 Link Account"
-    }
-};
-
-let currentLang = localStorage.getItem('ccraft_lang') || 'ar';
-
-function applyLanguage(lang){
-    currentLang = lang;
-    const dict = translations[lang];
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key] !== undefined) el.textContent = dict[key];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (dict[key] !== undefined) el.placeholder = dict[key];
-    });
-
-    const btn = document.getElementById('langToggleBtn');
-    if (btn) btn.innerHTML = lang === 'ar' ? '🌐 EN' : '🌐 AR';
-
-    localStorage.setItem('ccraft_lang', lang);
-}
-
-function toggleLanguage(){
-    applyLanguage(currentLang === 'ar' ? 'en' : 'ar');
-}
-
-applyLanguage(currentLang);
 </script>
 
 <!-- تسجيل هذه الصفحة ضمن المتصلين الآن فعليًا -->
