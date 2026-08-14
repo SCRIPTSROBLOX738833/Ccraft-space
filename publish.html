@@ -40,6 +40,7 @@
     .ub-name  { font-weight: 800; font-size: 0.9rem; }
     .ub-email { color: var(--text-muted); font-size: 0.78rem; }
     .ub-badge { margin-right: auto; background: var(--primary-dim); color: var(--primary); font-size: 0.72rem; font-weight: 800; padding: 4px 12px; border-radius: 50px; }
+    .ub-badge.auto-verify { background: rgba(0,242,254,0.1); color: #67e8f9; }
 
     /* ---- Image Upload ---- */
     .image-upload-section {
@@ -196,7 +197,7 @@
             <div class="ub-name"  id="ubName">—</div>
             <div class="ub-email" id="ubEmail">—</div>
         </div>
-        <span class="ub-badge">✅ مسجل دخول</span>
+        <span class="ub-badge" id="ubBadge">✅ مسجل دخول</span>
     </div>
 </div>
 
@@ -338,6 +339,7 @@
   let imageBase64  = null;   // الصورة المضغوطة جاهزة للحفظ
   let hasKey       = false;  // ✅ هل السكربت يحتاج مفتاح
   let scriptTags   = [];     // ✅ تاجات السكربت
+  let isAutoVerified = false; // 🎖️ هل صاحب الحساب موثّق دائم
 
   const MAX_SIZE_MB   = 12;
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
@@ -358,7 +360,7 @@
   ];
 
   /* ---- Auth ---- */
-  onAuthStateChanged(auth, user => {
+  onAuthStateChanged(auth, async user => {
     if (user) {
         currentUser = user;
         const name = user.email.split('@')[0];
@@ -368,6 +370,17 @@
         document.getElementById('userInfo').style.display    = 'block';
         document.getElementById('publishMain').style.display = 'block';
         document.getElementById('authNotice').style.display  = 'none';
+
+        // 🎖️ تحقق هل الحساب موثّق دائم عشان السكربتات الجديدة تتوثق أوتوماتيك
+        try {
+            const uSnap = await get(ref(db, `users/${user.uid}/verified`));
+            isAutoVerified = uSnap.exists() && uSnap.val() === true;
+            if (isAutoVerified) {
+                const b = document.getElementById('ubBadge');
+                b.textContent = '🎖️ موثّق دائم';
+                b.classList.add('auto-verify');
+            }
+        } catch (e) { /* تجاهل — مش حرج */ }
     } else {
         document.getElementById('authNotice').style.display  = 'block';
         document.getElementById('publishMain').style.display = 'none';
@@ -635,6 +648,12 @@
         likes:       0,
         hasKey,                                        // ✅ فلاج واضح للمفتاح
     };
+
+    // 🎖️ لو صاحب الحساب موثّق دائم من الأدمن — وثّق السكربت من ساعة النشر
+    if (isAutoVerified) {
+        scriptData.verified = true;
+        scriptData.verifiedAt = Date.now();
+    }
 
     // ✅ ضيف المفتاح لو المستخدم كتب حاجة (اختياري تمامًا)
     if (key) scriptData.key = key;
