@@ -904,6 +904,7 @@ header { display: none; }
 <script type="module">
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 const fc = {
     apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -915,7 +916,8 @@ const fc = {
     appId:"1:816078027492:web:6472cce474078fd4d90af1",
     measurementId:"G-MHDM7YYYBN"
 };
-const app = getApps().length ? getApp() : initializeApp(fc), db = getDatabase(app);
+const app = getApps().length ? getApp() : initializeApp(fc), db = getDatabase(app), auth = getAuth(app);
+let notifUid = null;
 
 (function(){
     const c = document.getElementById('stars');
@@ -1050,16 +1052,37 @@ function timeAgo(ts){
     return 'الآن';
 }
 
+const NOTIF_ICONS = { like:'👍', comment:'💬', announcement:'📢' };
+
 async function loadNotifications(){
     const listEl = document.getElementById('notifList');
-    const snap = await get(ref(db,'announcements'));
-    if(!snap.exists()){
+    const fetches = [get(ref(db,'announcements'))];
+    if(notifUid) fetches.push(get(ref(db,`notifications/${notifUid}`)));
+    const [annSnap, personalSnap] = await Promise.all(fetches);
+
+    let items = [];
+    if(annSnap.exists()){
+        items = items.concat(Object.values(annSnap.val()).map(n => ({
+            type: 'announcement', text: n.text||'', timestamp: n.timestamp||0
+        })));
+    }
+    if(personalSnap && personalSnap.exists()){
+        items = items.concat(Object.entries(personalSnap.val()).map(([id,n]) => ({
+            id, type: n.type||'like', text: n.text||'', timestamp: n.timestamp||0
+        })));
+    }
+
+    if(!items.length){
         listEl.innerHTML = '<div class="notif-empty">لا توجد إشعارات حالياً</div>';
+        document.getElementById('notifBadge').classList.remove('show');
         return;
     }
+
+    items.sort((a,b)=>b.timestamp-a.timestamp);
+    items = items.slice(0,25);
+
     const lastSeen = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0');
-    const entries = Object.values(snap.val()).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)).slice(0,20);
-    const unreadCount = entries.filter(n => (n.timestamp||0) > lastSeen).length;
+    const unreadCount = items.filter(n => n.timestamp > lastSeen).length;
 
     const badge = document.getElementById('notifBadge');
     if(unreadCount > 0){
@@ -1070,11 +1093,12 @@ async function loadNotifications(){
     }
 
     listEl.innerHTML = '';
-    entries.forEach(n => {
-        const isUnread = (n.timestamp||0) > lastSeen;
+    items.forEach(n => {
+        const isUnread = n.timestamp > lastSeen;
         const item = document.createElement('div');
         item.className = `notif-item${isUnread ? ' unread' : ''}`;
-        item.innerHTML = `<div class="ni-text">${n.text||''}</div><div class="ni-time">${timeAgo(n.timestamp||0)}</div>`;
+        item.innerHTML = `<div class="ni-text">${NOTIF_ICONS[n.type]||'🔔'} ${n.text}</div><div class="ni-time">${timeAgo(n.timestamp)}</div>`;
+        if(n.id) item.onclick = () => location.href='profile.html';
         listEl.appendChild(item);
     });
 }
@@ -1098,6 +1122,11 @@ loadStats();
 loadAnnouncement();
 loadUserPages();
 loadNotifications();
+
+onAuthStateChanged(auth, user => {
+    notifUid = user ? user.uid : null;
+    loadNotifications();
+});
 
 (function(){
     const modal = document.getElementById('discordModal');
