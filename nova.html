@@ -2,142 +2,319 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>CCRAFT SPACE | NOVA AI</title>
 <link rel="stylesheet" href="styles.css">
 <style>
 
-body { display:flex; flex-direction:column; min-height:100svh; overflow-x:hidden; }
-header { flex-shrink:0; }
+:root {
+    --nova-primary: #8b5cf6;
+    --nova-primary-dim: rgba(139,92,246,0.12);
+    --nova-gradient: linear-gradient(135deg, #8b5cf6, #6366f1);
+    --nova-bg: #0b0c10;
+    --nova-surface: #14151c;
+    --nova-card: #1a1c25;
+    --nova-border: rgba(255,255,255,0.08);
+    --nova-text: #e9e9ef;
+    --nova-text-dim: #9295a6;
+    --nova-success: #4ade80;
+    --nova-danger: #f87171;
+    --nova-code-bg: #0d0e13;
+    --nova-radius: 14px;
+}
 
+* { box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+    background: var(--nova-bg);
+    color: var(--nova-text);
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+header { flex-shrink: 0; }
+
+/* ================= App Shell ================= */
+.nova-app {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    position: relative;
+}
+
+/* ================= Sidebar ================= */
+.nova-sidebar {
+    width: 270px;
+    flex-shrink: 0;
+    background: var(--nova-surface);
+    border-left: 1px solid var(--nova-border);
+    display: flex;
+    flex-direction: column;
+    padding: 14px 10px;
+    gap: 10px;
+    transition: transform 0.28s ease;
+    z-index: 60;
+}
+
+.new-chat-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--nova-primary-dim);
+    border: 1px solid rgba(139,92,246,0.3);
+    color: var(--nova-primary);
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 800;
+    font-size: 0.88rem;
+    cursor: pointer;
+    margin: 0;
+    transition: background 0.2s;
+}
+.new-chat-btn:hover { background: rgba(139,92,246,0.22); transform: none; filter: none; }
+
+.conv-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-top: 4px;
+}
+
+.conv-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    color: var(--nova-text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+}
+.conv-item:hover { background: rgba(255,255,255,0.05); color: var(--nova-text); }
+.conv-item.active { background: var(--nova-primary-dim); color: var(--nova-text); }
+.conv-item .conv-title { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.conv-item .conv-del {
+    opacity: 0; font-size: 0.75rem; color: var(--nova-text-dim);
+    padding: 3px 6px; border-radius: 6px; flex-shrink: 0;
+}
+.conv-item:hover .conv-del { opacity: 1; }
+.conv-item .conv-del:hover { color: var(--nova-danger); background: rgba(248,113,113,0.12); }
+
+.sidebar-footer {
+    border-top: 1px solid var(--nova-border);
+    padding-top: 10px;
+    font-size: 0.7rem;
+    color: var(--nova-text-dim);
+    text-align: center;
+}
+
+/* Mobile sidebar toggle */
+.sidebar-overlay { display: none; }
+.sidebar-toggle {
+    display: none;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--nova-border);
+    border-radius: 10px;
+    width: 38px; height: 38px;
+    align-items: center; justify-content: center;
+    color: var(--nova-text);
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin: 0; flex-shrink: 0;
+}
+
+/* ================= Main chat column ================= */
 .nova-wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
-    max-width: 780px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 16px 20px;
+    min-width: 0;
+    padding: 0 16px 16px;
     min-height: 0;
 }
 
-/* ---- Nova Header ---- */
 .nova-header {
-    display: flex; align-items: center; gap: 14px;
-    padding: 16px 0 14px; flex-shrink: 0;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 0 12px; flex-shrink: 0;
+    border-bottom: 1px solid var(--nova-border);
+    margin-bottom: 12px;
 }
 
 .nova-avatar {
-    width: 46px; height: 46px; border-radius: 50%;
-    background: var(--accent-gradient);
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--nova-gradient);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem;
-    box-shadow: 0 0 20px rgba(139,92,246,0.5);
+    font-size: 1.2rem;
+    box-shadow: 0 0 18px rgba(139,92,246,0.45);
     flex-shrink: 0;
     animation: pulse-glow 3s ease infinite;
 }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 14px rgba(139,92,246,0.35)} 50%{box-shadow:0 0 28px rgba(139,92,246,0.65)} }
 
-@keyframes pulse-glow { 0%,100%{box-shadow:0 0 16px rgba(139,92,246,0.4)} 50%{box-shadow:0 0 32px rgba(139,92,246,0.7)} }
-
-.nova-info { flex: 1; }
+.nova-info { flex: 1; min-width: 0; }
 .nova-info h2 {
-    font-size: 1.1rem; font-weight: 900;
-    background: var(--accent-gradient);
+    font-size: 1.05rem; font-weight: 900;
+    background: var(--nova-gradient);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
 }
-
-.nova-status { display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--success); font-weight:700; }
-.nova-status::before { content:''; width:7px; height:7px; border-radius:50%; background:var(--success); animation:blink 1.5s ease infinite; flex-shrink:0; }
+.nova-status { display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--nova-success); font-weight:700; }
+.nova-status::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--nova-success); animation:blink 1.5s ease infinite; flex-shrink:0; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-.nova-actions { display:flex; gap:6px; }
-
+.nova-actions { display:flex; gap:6px; align-items:center; }
 .nav-action-btn {
-    background: rgba(255,255,255,0.04); border: 1px solid var(--border-color);
-    border-radius: 10px; padding: 7px 12px;
-    font-size: 0.72rem; font-weight: 800; color: var(--text-muted);
+    background: rgba(255,255,255,0.04); border: 1px solid var(--nova-border);
+    border-radius: 10px; padding: 7px 11px;
+    font-size: 0.7rem; font-weight: 800; color: var(--nova-text-dim);
     cursor: pointer; font-family: 'Tajawal', sans-serif;
-    margin: 0; transition: var(--transition);
+    margin: 0; white-space: nowrap;
 }
-.nav-action-btn:hover { border-color:var(--primary); color:var(--primary); transform:none; filter:none; }
+.nav-action-btn:hover { border-color:var(--nova-primary); color:var(--nova-primary); transform:none; filter:none; }
 
-/* ---- Quick Prompts ---- */
+/* Quick prompts */
 .quick-prompts {
     display: flex; gap: 7px; flex-wrap: wrap;
-    margin-bottom: 12px; flex-shrink: 0;
+    margin-bottom: 10px; flex-shrink: 0;
 }
-
 .qp-btn {
     background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2);
-    border-radius: 50px; padding: 6px 14px;
-    font-size: 0.75rem; font-weight: 800; color: var(--primary);
+    border-radius: 50px; padding: 6px 13px;
+    font-size: 0.73rem; font-weight: 800; color: var(--nova-primary);
     cursor: pointer; font-family: 'Tajawal', sans-serif;
-    margin: 0; transition: var(--transition); white-space: nowrap;
+    margin: 0; white-space: nowrap;
 }
-.qp-btn:hover { background:var(--primary-dim); transform:none; filter:none; }
+.qp-btn:hover { background: rgba(139,92,246,0.18); transform:none; filter:none; }
 
-/* ---- Chatbox ---- */
+/* Chatbox */
 #chatbox {
-    flex: 1; min-height: 300px; max-height: calc(100svh - 340px);
-    background: var(--bg-card); border: 1px solid var(--border-color);
-    border-radius: 20px; padding: 16px;
+    flex: 1; min-height: 0;
+    background: transparent;
+    padding: 4px 2px 12px;
     overflow-y: auto; display: flex; flex-direction: column;
-    gap: 10px; margin-bottom: 12px; scroll-behavior: smooth;
+    gap: 14px; scroll-behavior: smooth;
 }
 
 .message {
-    display: flex; gap: 8px; align-items: flex-end;
-    animation: msgIn 0.3s ease both; max-width: 88%;
+    display: flex; gap: 8px; align-items: flex-start;
+    animation: msgIn 0.25s ease both; max-width: 92%;
 }
-
-@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes msgIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
 .message.user  { align-self:flex-end;  flex-direction:row-reverse; }
-.message.nova  { align-self:flex-start; }
+.message.nova  { align-self:flex-start; max-width: 96%; }
 
 .msg-icon {
-    width: 30px; height: 30px; border-radius: 50%;
+    width: 28px; height: 28px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.85rem; flex-shrink: 0;
+    font-size: 0.8rem; flex-shrink: 0; margin-top: 2px;
 }
-
-.message.user .msg-icon { background:var(--accent-gradient); color:white; font-weight:900; }
+.message.user .msg-icon { background:var(--nova-gradient); color:white; font-weight:900; }
 .message.nova .msg-icon { background:rgba(139,92,246,0.15); border:1px solid rgba(139,92,246,0.3); }
 
 .msg-bubble {
-    padding: 11px 15px; border-radius: 18px;
-    font-size: 0.92rem; line-height: 1.65;
+    padding: 11px 15px; border-radius: 16px;
+    font-size: 0.93rem; line-height: 1.7;
     word-break: break-word; max-width: 100%;
+    overflow-wrap: anywhere;
 }
-
 .message.user .msg-bubble {
-    background: var(--accent-gradient); color: white;
-    border-bottom-left-radius: 5px;
-    box-shadow: 0 4px 14px rgba(139,92,246,0.3);
+    background: var(--nova-gradient); color: white;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 4px 14px rgba(139,92,246,0.28);
+}
+.message.nova .msg-bubble {
+    background: var(--nova-card); color: var(--nova-text);
+    border: 1px solid var(--nova-border);
+    border-bottom-right-radius: 4px;
+    direction: rtl; text-align: right;
+    width: 100%;
 }
 
-.message.nova .msg-bubble {
-    background: var(--bg-surface); color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-bottom-right-radius: 5px;
-    direction: rtl; text-align: right;
+/* ---- Code block ---- */
+.code-block {
+    direction: ltr; text-align: left;
+    background: var(--nova-code-bg);
+    border: 1px solid var(--nova-border);
+    border-radius: 12px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+.code-block-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--nova-border);
+    font-family: 'Consolas', 'Menlo', monospace;
+    font-size: 0.72rem;
+    color: var(--nova-text-dim);
+}
+.code-block-lang { text-transform: lowercase; letter-spacing: 0.03em; }
+.copy-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(139,92,246,0.12);
+    border: 1px solid rgba(139,92,246,0.25);
+    color: var(--nova-primary);
+    border-radius: 7px;
+    padding: 5px 10px;
+    font-size: 0.72rem; font-weight: 700;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+.copy-btn:active { transform: scale(0.95); }
+.copy-btn.copied { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.35); color: var(--nova-success); }
+
+.code-block pre {
+    margin: 0;
+    padding: 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.code-block code {
+    font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: #d4d4e0;
+    white-space: pre;
+}
+
+/* inline code */
+.inline-code {
+    background: rgba(139,92,246,0.15);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-family: 'Consolas', 'Menlo', monospace;
+    font-size: 0.86em;
+    direction: ltr;
+    display: inline-block;
 }
 
 /* Typing */
 .dots { display:flex; gap:5px; align-items:center; padding:2px 0; }
-.dots span { width:7px; height:7px; border-radius:50%; background:var(--primary); animation:db 1.2s ease infinite; }
+.dots span { width:6px; height:6px; border-radius:50%; background:var(--nova-primary); animation:db 1.2s ease infinite; }
 .dots span:nth-child(2){animation-delay:.2s} .dots span:nth-child(3){animation-delay:.4s}
 @keyframes db { 0%,60%,100%{transform:translateY(0);opacity:.5} 30%{transform:translateY(-6px);opacity:1} }
 
 /* Welcome */
-.welcome-msg { text-align:center; padding:20px 12px; color:var(--text-muted); }
-.welcome-msg .w-icon { font-size:2.2rem; margin-bottom:8px; display:block; }
-.welcome-msg p { font-size:0.88rem; line-height:1.7; }
+.welcome-msg { text-align:center; padding: 8vh 12px 20px; color:var(--nova-text-dim); margin: auto 0; }
+.welcome-msg .w-icon { font-size:2.4rem; margin-bottom:10px; display:block; }
+.welcome-msg h3 {
+    font-size: 1.3rem; font-weight: 900; margin-bottom: 6px;
+    background: var(--nova-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.welcome-msg p { font-size:0.88rem; line-height:1.7; max-width: 420px; margin: 0 auto; }
 
-/* ---- World/Game Modal ---- */
+/* World Modal */
 .world-modal {
     display: none;
     position: fixed; inset: 0;
@@ -146,87 +323,97 @@ header { flex-shrink:0; }
     z-index: 500;
     flex-direction: column;
 }
-
 .world-modal.open { display: flex; }
-
 .world-toolbar {
     display: flex; align-items: center; gap: 12px;
-    background: rgba(10,10,20,0.95); border-bottom: 1px solid var(--border-color);
+    background: rgba(10,10,20,0.95); border-bottom: 1px solid var(--nova-border);
     padding: 12px 20px; flex-shrink: 0;
 }
-
-.world-title { font-size: 0.9rem; font-weight: 800; color: var(--text-main); flex: 1; }
+.world-title { font-size: 0.9rem; font-weight: 800; color: var(--nova-text); flex: 1; }
 .world-close {
     background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25);
     border-radius: 10px; padding: 7px 14px;
-    font-size: 0.8rem; font-weight: 800; color: var(--danger);
+    font-size: 0.8rem; font-weight: 800; color: var(--nova-danger);
     cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
 }
-.world-close:hover { background:var(--danger); color:white; transform:none; filter:none; }
+.world-close:hover { background:var(--nova-danger); color:white; transform:none; filter:none; }
+#worldFrame { flex: 1; border: none; background: white; }
 
-#worldFrame {
-    flex: 1; border: none; background: white;
-}
-
-/* ---- Toast ---- */
+/* Toast */
 .nova-toast {
-    position: fixed; bottom: 80px; left: 50%;
+    position: fixed; bottom: 90px; left: 50%;
     transform: translateX(-50%) translateY(60px);
-    background: var(--bg-card); border: 1px solid var(--primary);
+    background: var(--nova-card); border: 1px solid var(--nova-primary);
     border-radius: 50px; padding: 10px 22px;
-    font-size: 0.85rem; font-weight: 800; color: var(--text-main);
+    font-size: 0.85rem; font-weight: 800; color: var(--nova-text);
     z-index: 400; transition: transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    pointer-events: none; white-space: nowrap;
+    pointer-events: none; white-space: nowrap; max-width: 90vw; overflow: hidden; text-overflow: ellipsis;
 }
-
 .nova-toast.show { transform: translateX(-50%) translateY(0); }
 
-/* ---- Input ---- */
-.input-area { display:flex; gap:8px; flex-shrink:0; }
-
+/* Input */
+.input-area { display:flex; gap:8px; flex-shrink:0; align-items: flex-end; }
 #userInput {
     flex: 1;
-    background: var(--bg-surface); border: 1px solid var(--border-color);
-    border-radius: var(--radius-btn); padding: 14px 18px;
-    color: var(--text-main); font-family: 'Tajawal', sans-serif;
-    font-size: 0.95rem; outline: none; transition: var(--transition);
+    background: var(--nova-surface); border: 1px solid var(--nova-border);
+    border-radius: 16px; padding: 13px 16px;
+    color: var(--nova-text); font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem; outline: none;
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.25);
     margin: 0; direction: rtl;
+    resize: none;
+    max-height: 120px;
+    line-height: 1.5;
 }
-
-#userInput::placeholder { color:var(--text-muted); opacity:0.7; }
-#userInput:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(139,92,246,0.15),inset 0 2px 6px rgba(0,0,0,0.3); }
+#userInput::placeholder { color:var(--nova-text-dim); opacity:0.7; }
+#userInput:focus { border-color:var(--nova-primary); box-shadow:0 0 0 3px rgba(139,92,246,0.15),inset 0 2px 6px rgba(0,0,0,0.3); }
 
 #sendBtn {
-    background: var(--accent-gradient); color: white; border: none;
-    border-radius: var(--radius-btn); padding: 14px 22px;
+    background: var(--nova-gradient); color: white; border: none;
+    border-radius: 14px; padding: 13px 20px;
     font-size: 0.95rem; cursor: pointer; font-family: 'Tajawal', sans-serif;
-    font-weight: 800; box-shadow: 0 6px 18px rgba(139,92,246,0.35);
-    transition: var(--transition); display:flex; align-items:center; gap:7px;
+    font-weight: 800; box-shadow: 0 6px 18px rgba(139,92,246,0.32);
+    display:flex; align-items:center; gap:7px;
     white-space: nowrap; margin: 0; flex-shrink: 0;
 }
-
-#sendBtn:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(139,92,246,0.5); filter:brightness(1.1); }
+#sendBtn:hover { filter:brightness(1.1); }
 #sendBtn:active { transform:scale(0.96); }
 #sendBtn:disabled { opacity:0.45; cursor:not-allowed; transform:none; filter:none; }
 
-/* DOM-modified indicator */
 .page-modified-badge {
     display: none;
     background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3);
-    border-radius: 50px; padding: 4px 12px;
-    font-size: 0.7rem; font-weight: 800; color: var(--success);
+    border-radius: 50px; padding: 4px 11px;
+    font-size: 0.68rem; font-weight: 800; color: var(--nova-success);
 }
-
 .page-modified-badge.show { display: inline-flex; align-items: center; gap: 5px; }
 
-/* Responsive */
-@media (max-width:580px) {
+/* ================= Responsive / Mobile ================= */
+@media (max-width: 860px) {
+    .sidebar-toggle { display: flex; }
+
+    .nova-sidebar {
+        position: fixed;
+        top: 0; right: 0; bottom: 0;
+        transform: translateX(100%);
+        box-shadow: -10px 0 30px rgba(0,0,0,0.4);
+    }
+    .nova-sidebar.open { transform: translateX(0); }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 55;
+    }
+    .sidebar-overlay.show { display: block; }
+
     #sendBtn span { display:none; }
-    #sendBtn { padding:14px 16px; }
-    .message { max-width:94%; }
+    #sendBtn { padding:13px 16px; }
+    .message { max-width:96%; }
     .quick-prompts { display:none; }
+    .nova-info h2 { font-size: 0.98rem; }
 }
 
 </style>
@@ -237,47 +424,55 @@ header { flex-shrink:0; }
     <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
-<div class="nova-wrapper">
+<div class="nova-app">
 
-    <div class="nova-header">
-        <div class="nova-avatar">🤖</div>
-        <div class="nova-info">
-            <h2>NOVA AI</h2>
-            <div class="nova-status" id="novaStatus">متصل — واعٍ بالسياق</div>
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+
+    <!-- Sidebar -->
+    <aside class="nova-sidebar" id="novaSidebar">
+        <button class="new-chat-btn" onclick="newConversation()">
+            <span>➕</span><span>محادثة جديدة</span>
+        </button>
+        <div class="conv-list" id="convList"></div>
+        <div class="sidebar-footer">Nova AI — بواسطة cCraft Space</div>
+    </aside>
+
+    <!-- Main -->
+    <div class="nova-wrapper">
+
+        <div class="nova-header">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+            <div class="nova-avatar">🤖</div>
+            <div class="nova-info">
+                <h2>NOVA AI</h2>
+                <div class="nova-status" id="novaStatus">متصل — واعٍ بالسياق</div>
+            </div>
+            <div class="nova-actions">
+                <span class="page-modified-badge" id="modBadge">🎨 تم تعديل الصفحة</span>
+                <button class="nav-action-btn" onclick="clearMemory()" title="مسح الذاكرة">🗑️ مسح</button>
+            </div>
         </div>
-        <div class="nova-actions">
-            <span class="page-modified-badge" id="modBadge">🎨 تم تعديل الصفحة</span>
-            <button class="nav-action-btn" onclick="clearMemory()" title="مسح الذاكرة">🗑️ مسح</button>
+
+        <!-- اقتراحات سريعة -->
+        <div class="quick-prompts" id="quickPrompts">
+            <button class="qp-btn" onclick="quickSend('اصنع لي لعبة تجنب العقبات')">🎮 لعبة تجنب عقبات</button>
+            <button class="qp-btn" onclick="quickSend('اصنع عالم فضائي تفاعلي')">🌌 عالم فضائي</button>
+            <button class="qp-btn" onclick="quickSend('غيّر خلفية الصفحة لأزرق داكن')">🎨 غيّر الخلفية</button>
+            <button class="qp-btn" onclick="quickSend('اكتب سكربت لوحة تسجيل نقاط بالجافاسكريبت')">💻 سكربت جافاسكريبت</button>
+            <button class="qp-btn" onclick="quickSend('ابعت رسالة تنبيه جميلة')">💬 رسالة تنبيه</button>
         </div>
-    </div>
 
-    <!-- اقتراحات سريعة -->
-    <div class="quick-prompts" id="quickPrompts">
-        <button class="qp-btn" onclick="quickSend('اصنع لي لعبة تجنب العقبات')">🎮 لعبة تجنب عقبات</button>
-        <button class="qp-btn" onclick="quickSend('اصنع عالم فضائي تفاعلي')">🌌 عالم فضائي</button>
-        <button class="qp-btn" onclick="quickSend('غيّر خلفية الصفحة لأزرق داكن')">🎨 غيّر الخلفية</button>
-        <button class="qp-btn" onclick="quickSend('اصنع لعبة Snake بالعربي')">🐍 لعبة Snake</button>
-        <button class="qp-btn" onclick="quickSend('ابعت رسالة تنبيه جميلة')">💬 رسالة تنبيه</button>
-    </div>
+        <!-- Chatbox -->
+        <div id="chatbox"></div>
 
-    <!-- Chatbox -->
-    <div id="chatbox">
-        <div class="welcome-msg">
-            <span class="w-icon">🤖</span>
-            <p>
-                أنا <strong>Nova</strong> — ذكاء CCRAFT SPACE.<br>
-                أتذكر المحادثة كلها، أقدر أتحكم في الصفحة،<br>
-                وأصنع لك ألعاب وعوالم كاملة! ✨
-            </p>
+        <!-- Input -->
+        <div class="input-area">
+            <textarea id="userInput" rows="1" placeholder="اكتب لـ Nova..."></textarea>
+            <button id="sendBtn"><span>إرسال</span> ➤</button>
         </div>
-    </div>
 
-    <!-- Input -->
-    <div class="input-area">
-        <input type="text" id="userInput" placeholder="اكتب لـ Nova...">
-        <button id="sendBtn"><span>إرسال</span> ➤</button>
     </div>
-
 </div>
 
 <!-- World Modal -->
@@ -295,45 +490,176 @@ header { flex-shrink:0; }
 
 
 <script>
-// --------------------------------------------------------------
-// دومين السيرفر بتاعك على PythonAnywhere
-// --------------------------------------------------------------
+/* ================================================================
+   إعدادات عامة
+   ================================================================ */
 const NOVA_URL   = "https://ghgh62131r.pythonanywhere.com";
 const chatbox    = document.getElementById('chatbox');
 const userInput  = document.getElementById('userInput');
 const sendBtn    = document.getElementById('sendBtn');
 
-// User ID من localStorage
+/* ================================================================
+   عزل الذاكرة بين المستخدمين
+   ----------------------------------------------------------------
+   كل متصفح/جهاز بياخد هوية عشوائية فريدة (novaUserId) بتتولد مرة
+   واحدة وتتخزن في localStorage الخاص بالمتصفح ده بس. المتصفحات التانية
+   عندها novaUserId مختلف تمامًا، فمفيش أي تداخل بين ذاكرة شخصين.
+   ================================================================ */
 let userId = localStorage.getItem('novaUserId');
 if (!userId) {
-    userId = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    userId = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
     localStorage.setItem('novaUserId', userId);
 }
 
 const userIcon = (localStorage.getItem('currentUser') || '').charAt(0).toUpperCase() || 'أ';
 
+/* ================================================================
+   إدارة المحادثات المتعددة (زي Gemini)
+   ----------------------------------------------------------------
+   كل محادثة ليها id فريد، وسيشن الباك إند بتتبني من
+   userId + '::' + conversationId — يعني حتى لو نفس الشخص فتح أكتر
+   من محادثة، كل واحدة بذاكرة منفصلة عن التانية.
+   ================================================================ */
+const CONV_KEY = 'novaConversations_' + userId;
+let conversations = loadConversations();
+let activeConvId = localStorage.getItem('novaActiveConv_' + userId);
 
-/* ============================================================
-   Messages
-   ============================================================ */
+function loadConversations() {
+    try {
+        const raw = localStorage.getItem(CONV_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+}
 
-function addMsg(text, sender) {
-    // أخفي الترحيب
+function saveConversations() {
+    localStorage.setItem(CONV_KEY, JSON.stringify(conversations));
+}
+
+function sessionKeyFor(convId) {
+    return userId + '::' + convId;
+}
+
+function createConversation() {
+    const conv = {
+        id: 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+        title: 'محادثة جديدة',
+        messages: []
+    };
+    conversations.unshift(conv);
+    saveConversations();
+    return conv;
+}
+
+function newConversation() {
+    const conv = createConversation();
+    setActiveConversation(conv.id);
+    toggleSidebar(false);
+}
+
+function setActiveConversation(id) {
+    activeConvId = id;
+    localStorage.setItem('novaActiveConv_' + userId, id);
+    renderSidebar();
+    renderActiveConversation();
+}
+
+function getActiveConversation() {
+    return conversations.find(c => c.id === activeConvId);
+}
+
+function deleteConversation(id, evt) {
+    evt.stopPropagation();
+    if (!confirm('حذف المحادثة دي نهائيًا؟')) return;
+    conversations = conversations.filter(c => c.id !== id);
+    saveConversations();
+
+    // امسح ذاكرتها من الباك إند كمان
+    fetch(`${NOVA_URL}/clear/${encodeURIComponent(sessionKeyFor(id))}`, { method: 'DELETE' }).catch(() => {});
+
+    if (activeConvId === id) {
+        if (conversations.length > 0) {
+            setActiveConversation(conversations[0].id);
+        } else {
+            newConversation();
+        }
+    } else {
+        renderSidebar();
+    }
+}
+
+function renderSidebar() {
+    const list = document.getElementById('convList');
+    list.innerHTML = '';
+    conversations.forEach(conv => {
+        const item = document.createElement('div');
+        item.className = 'conv-item' + (conv.id === activeConvId ? ' active' : '');
+        item.onclick = () => { setActiveConversation(conv.id); toggleSidebar(false); };
+
+        const title = document.createElement('span');
+        title.className = 'conv-title';
+        title.innerText = conv.title || 'محادثة جديدة';
+
+        const del = document.createElement('span');
+        del.className = 'conv-del';
+        del.innerText = '✕';
+        del.onclick = (e) => deleteConversation(conv.id, e);
+
+        item.appendChild(title);
+        item.appendChild(del);
+        list.appendChild(item);
+    });
+}
+
+function renderActiveConversation() {
+    chatbox.innerHTML = '';
+    const conv = getActiveConversation();
+
+    if (!conv || conv.messages.length === 0) {
+        chatbox.innerHTML = `
+            <div class="welcome-msg">
+                <span class="w-icon">🤖</span>
+                <h3>أهلاً، أنا Nova</h3>
+                <p>ذكاء CCRAFT SPACE. أتذكر المحادثة كلها، أقدر أتحكم في الصفحة،
+                وأكتبلك أكواد وسكربتات جاهزة بشكل مرتب ✨</p>
+            </div>`;
+        return;
+    }
+
+    conv.messages.forEach(m => renderMessage(m.text, m.sender, false));
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+/* ================================================================
+   Sidebar toggle (موبايل)
+   ================================================================ */
+function toggleSidebar(force) {
+    const sb = document.getElementById('novaSidebar');
+    const ov = document.getElementById('sidebarOverlay');
+    const open = force !== undefined ? force : !sb.classList.contains('open');
+    sb.classList.toggle('open', open);
+    ov.classList.toggle('show', open);
+}
+
+/* ================================================================
+   عرض الرسائل + تنسيق الأكواد
+   ================================================================ */
+
+function renderMessage(text, sender, animate = true) {
     chatbox.querySelector('.welcome-msg')?.remove();
 
-    const wrap   = document.createElement('div');
+    const wrap = document.createElement('div');
     wrap.className = `message ${sender}`;
+    if (!animate) wrap.style.animation = 'none';
 
-    const icon   = document.createElement('div');
+    const icon = document.createElement('div');
     icon.className = 'msg-icon';
     icon.innerText = sender === 'user' ? userIcon : '🤖';
 
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble';
 
-    // دعم markdown بسيط للـ Nova
     if (sender === 'nova') {
-        bubble.innerHTML = parseMarkdown(text);
+        bubble.innerHTML = renderRichText(text);
     } else {
         bubble.innerText = text;
     }
@@ -345,19 +671,102 @@ function addMsg(text, sender) {
     return wrap;
 }
 
-function parseMarkdown(text) {
-    return text
+let codeBlockCounter = 0;
+
+/**
+ * يحوّل نص Nova (Markdown مبسط) لـ HTML:
+ * - ```lang\ncode``` -> بلوك كود بزرار نسخ
+ * - `code` -> كود inline
+ * - **bold** / *italic*
+ * - أسطر جديدة
+ */
+function renderRichText(text) {
+    const codeBlocks = [];
+
+    // استخرج بلوكات الكود الأول عشان ماتتصدمش مع باقي التنسيق
+    let working = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (match, lang, code) => {
+        const idx = codeBlocks.length;
+        codeBlocks.push({ lang: (lang || 'code').trim(), code: code.replace(/\n$/, '') });
+        return `%%CODEBLOCK_${idx}%%`;
+    });
+
+    // Escape HTML الأساسي للنص العادي (مش الكود، هيتعالج لوحده)
+    working = escapeHtml(working);
+
+    working = working
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g,     '<em>$1</em>')
-        .replace(/`(.+?)`/g,       '<code style="background:rgba(139,92,246,0.15);padding:2px 6px;border-radius:5px;font-family:monospace;font-size:0.88em">$1</code>')
-        .replace(/\n/g,            '<br>');
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+?)`/g, '<span class="inline-code">$1</span>')
+        .replace(/\n/g, '<br>');
+
+    // رجّع بلوكات الكود كـ HTML حقيقي
+    working = working.replace(/%%CODEBLOCK_(\d+)%%/g, (match, idx) => {
+        return buildCodeBlockHtml(codeBlocks[parseInt(idx)]);
+    });
+
+    return working;
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.innerText = str;
+    return div.innerHTML;
+}
+
+function buildCodeBlockHtml(block) {
+    codeBlockCounter += 1;
+    const id = `nova-code-${codeBlockCounter}-${Math.random().toString(36).slice(2, 6)}`;
+    const escapedCode = escapeHtml(block.code);
+    // بنخزن الكود الخام في data-attribute عشان النسخ يبقى دقيق
+    const encoded = encodeURIComponent(block.code);
+    return `
+        <div class="code-block">
+            <div class="code-block-header">
+                <span class="code-block-lang">${escapeHtml(block.lang || 'code')}</span>
+                <button class="copy-btn" data-code="${encoded}" onclick="copyCode(this)">
+                    <span class="copy-icon">📋</span><span class="copy-text">نسخ</span>
+                </button>
+            </div>
+            <pre><code id="${id}">${escapedCode}</code></pre>
+        </div>`;
+}
+
+function copyCode(btn) {
+    const code = decodeURIComponent(btn.getAttribute('data-code'));
+    const finish = () => {
+        btn.classList.add('copied');
+        btn.querySelector('.copy-icon').innerText = '✅';
+        btn.querySelector('.copy-text').innerText = 'تم النسخ';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.querySelector('.copy-icon').innerText = '📋';
+            btn.querySelector('.copy-text').innerText = 'نسخ';
+        }, 1800);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(finish).catch(() => fallbackCopy(code, finish));
+    } else {
+        fallbackCopy(code, finish);
+    }
+}
+
+function fallbackCopy(text, cb) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { document.execCommand('copy'); cb(); } catch {}
+    document.body.removeChild(ta);
 }
 
 function showTyping() {
     chatbox.querySelector('.welcome-msg')?.remove();
-    const wrap   = document.createElement('div');
+    const wrap = document.createElement('div');
     wrap.className = 'message nova'; wrap.id = 'typing';
-    const icon   = document.createElement('div');
+    const icon = document.createElement('div');
     icon.className = 'msg-icon'; icon.innerText = '🤖';
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble';
@@ -366,106 +775,59 @@ function showTyping() {
     chatbox.appendChild(wrap);
     chatbox.scrollTop = chatbox.scrollHeight;
 }
-
 function removeTyping() { document.getElementById('typing')?.remove(); }
 
 
-/* ============================================================
+/* ================================================================
    DOM Control — تنفيذ أوامر Nova على الصفحة
-   ============================================================ */
-
+   ================================================================ */
 function executeDomCommand(cmd) {
     try {
-        // تغيير خلفية: DOM:bg:#color
         if (cmd.startsWith('bg:')) {
-            const color = cmd.slice(3).trim();
-            document.body.style.background = color;
-            showToast(`🎨 تم تغيير الخلفية`);
-            showModBadge();
-            return;
+            document.body.style.background = cmd.slice(3).trim();
+            showToast('🎨 تم تغيير الخلفية'); showModBadge(); return;
         }
-
-        // إضافة عنصر: DOM:add:<html>
         if (cmd.startsWith('add:')) {
-            const html = cmd.slice(4).trim();
-            const div  = document.createElement('div');
-            div.innerHTML = html;
-            div.style.cssText = 'position:fixed;top:80px;right:20px;z-index:300;animation:fadeIn 0.5s ease both';
+            const div = document.createElement('div');
+            div.innerHTML = cmd.slice(4).trim();
+            div.style.cssText = 'position:fixed;top:80px;right:20px;z-index:300;';
             document.body.appendChild(div);
-            showToast('✅ تم إضافة العنصر');
-            showModBadge();
-            return;
+            showToast('✅ تم إضافة العنصر'); showModBadge(); return;
         }
-
-        // تشغيل JS: DOM:js:code
         if (cmd.startsWith('js:')) {
-            const code = cmd.slice(3).trim();
-            // تنفيذ آمن — فقط تغييرات CSS وDOM
-            const safe_code = code
-                .replace(/fetch\(/g,      '')
-                .replace(/XMLHttpRequest/g,'')
-                .replace(/location\.href/g,'')
-                .replace(/window\.open/g,  '');
-            eval(safe_code);
-            showToast('⚡ تم تنفيذ الأمر');
-            showModBadge();
-            return;
+            const safe = cmd.slice(3).trim()
+                .replace(/fetch\(/g, '')
+                .replace(/XMLHttpRequest/g, '')
+                .replace(/location\.href/g, '')
+                .replace(/window\.open/g, '');
+            eval(safe);
+            showToast('⚡ تم تنفيذ الأمر'); showModBadge(); return;
         }
-
-        // تغيير نص: DOM:text:#id:النص
         if (cmd.startsWith('text:')) {
             const parts = cmd.slice(5).split(':');
-            const el    = document.querySelector(parts[0]);
-            if (el) {
-                el.innerText = parts.slice(1).join(':');
-                showToast('✏️ تم تغيير النص');
-                showModBadge();
-            }
+            const el = document.querySelector(parts[0]);
+            if (el) { el.innerText = parts.slice(1).join(':'); showToast('✏️ تم تغيير النص'); showModBadge(); }
             return;
         }
-
-        // إخفاء عنصر: DOM:hide:#id
         if (cmd.startsWith('hide:')) {
             const el = document.querySelector(cmd.slice(5));
             if (el) { el.style.display = 'none'; showToast('👁️ تم إخفاء العنصر'); showModBadge(); }
             return;
         }
-
-        // toast من Nova: DOM:toast:نص
-        if (cmd.startsWith('toast:')) {
-            showToast(cmd.slice(6));
-            return;
-        }
-
-    } catch(e) {
-        console.error('DOM command error:', e);
-    }
+        if (cmd.startsWith('toast:')) { showToast(cmd.slice(6)); return; }
+    } catch (e) { console.error('DOM command error:', e); }
 }
 
-
-/* ============================================================
-   World/Game
-   ============================================================ */
-
+/* World/Game */
 function openWorld(worldData) {
-    const modal = document.getElementById('worldModal');
-    const frame = document.getElementById('worldFrame');
-    const title = document.getElementById('worldTitle');
-
-    title.innerText = worldData.title || 'عالم Nova';
-    frame.srcdoc   = worldData.html   || '<p>فارغ</p>';
-    modal.classList.add('open');
+    document.getElementById('worldTitle').innerText = worldData.title || 'عالم Nova';
+    document.getElementById('worldFrame').srcdoc = worldData.html || '<p>فارغ</p>';
+    document.getElementById('worldModal').classList.add('open');
 }
-
 function closeWorld() {
     document.getElementById('worldModal').classList.remove('open');
     document.getElementById('worldFrame').srcdoc = '';
 }
-
-
-/* ============================================================
-   Toast & Badges
-   ============================================================ */
 
 function showToast(msg) {
     const t = document.getElementById('novaToast');
@@ -473,25 +835,33 @@ function showToast(msg) {
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
 }
-
-function showModBadge() {
-    document.getElementById('modBadge').classList.add('show');
-}
+function showModBadge() { document.getElementById('modBadge').classList.add('show'); }
 
 
-/* ============================================================
-   Send Message
-   ============================================================ */
-
+/* ================================================================
+   إرسال الرسائل
+   ================================================================ */
 async function sendMessage() {
     const msg = userInput.value.trim();
     if (!msg) return;
 
-    // سياق الصفحة للـ Nova
+    let conv = getActiveConversation();
+    if (!conv) { conv = createConversation(); activeConvId = conv.id; }
+
+    // لو أول رسالة في المحادثة، خليها عنوان المحادثة في القايمة الجانبية
+    if (conv.messages.length === 0) {
+        conv.title = msg.length > 32 ? msg.slice(0, 32) + '…' : msg;
+    }
+
+    conv.messages.push({ text: msg, sender: 'user' });
+    saveConversations();
+    renderSidebar();
+
     const pageCtx = `الصفحة: nova.html | عنوان الصفحة: ${document.title}`;
 
-    addMsg(msg, 'user');
+    renderMessage(msg, 'user');
     userInput.value = '';
+    autoResize();
     sendBtn.disabled = true;
     showTyping();
 
@@ -500,8 +870,8 @@ async function sendMessage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message:      msg,
-                user_id:      userId,
+                message: msg,
+                user_id: sessionKeyFor(conv.id), // عزل الذاكرة لكل محادثة/مستخدم
                 page_context: pageCtx
             })
         });
@@ -510,77 +880,98 @@ async function sendMessage() {
         const data = await res.json();
         removeTyping();
 
-        // رد نصي
-        if (data.reply) addMsg(data.reply, 'nova');
+        if (data.reply) {
+            renderMessage(data.reply, 'nova');
+            conv.messages.push({ text: data.reply, sender: 'nova' });
+            saveConversations();
+        }
 
-        // أمر DOM
         if (data.type === 'dom' && data.dom_command) {
             executeDomCommand(data.dom_command);
         }
 
-        // عالم/لعبة
         if (data.type === 'world' && data.world) {
             setTimeout(() => {
                 const btn = document.createElement('button');
                 btn.style.cssText = `
-                    background:var(--accent-gradient);color:white;border:none;
+                    background:var(--nova-gradient);color:white;border:none;
                     border-radius:50px;padding:9px 20px;font-size:0.82rem;font-weight:800;
                     cursor:pointer;font-family:Tajawal,sans-serif;margin-top:8px;
                     box-shadow:0 4px 14px rgba(139,92,246,0.3);
                 `;
                 btn.innerText = `🌍 افتح ${data.world.title || 'العالم'}`;
                 btn.onclick = () => openWorld(data.world);
-
                 const lastMsg = chatbox.querySelector('.message.nova:last-child .msg-bubble');
-                if (lastMsg) lastMsg.appendChild(document.createElement('br')), lastMsg.appendChild(btn);
+                if (lastMsg) { lastMsg.appendChild(document.createElement('br')); lastMsg.appendChild(btn); }
             }, 100);
         }
 
-    } catch(e) {
+    } catch (e) {
         removeTyping();
-        addMsg(`عذراً، حدث خطأ 😢 — ${e.message}`, 'nova');
+        const errText = `عذراً، حدث خطأ 😢 — ${e.message}`;
+        renderMessage(errText, 'nova');
     } finally {
         sendBtn.disabled = false;
         userInput.focus();
     }
 }
 
-
-/* ============================================================
-   Quick Prompts
-   ============================================================ */
-
 function quickSend(text) {
     userInput.value = text;
     sendMessage();
 }
 
-
-/* ============================================================
-   Clear Memory
-   ============================================================ */
-
 async function clearMemory() {
-    if (!confirm('مسح ذاكرة المحادثة؟')) return;
+    const conv = getActiveConversation();
+    if (!conv) return;
+    if (!confirm('مسح ذاكرة المحادثة الحالية؟')) return;
+
     try {
-        await fetch(`${NOVA_URL}/clear/${userId}`, { method: 'DELETE' });
+        await fetch(`${NOVA_URL}/clear/${encodeURIComponent(sessionKeyFor(conv.id))}`, { method: 'DELETE' });
     } catch {}
-    chatbox.innerHTML = `
-        <div class="welcome-msg">
-            <span class="w-icon">🤖</span>
-            <p>تم مسح الذاكرة — أنا Nova، جاهز للمحادثة من جديد! ✨</p>
-        </div>`;
+
+    conv.messages = [];
+    conv.title = 'محادثة جديدة';
+    saveConversations();
+    renderSidebar();
+    renderActiveConversation();
     document.getElementById('modBadge').classList.remove('show');
     showToast('🗑️ تم مسح الذاكرة');
 }
 
+/* ================================================================
+   Textarea auto-resize
+   ================================================================ */
+function autoResize() {
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
+}
 
-/* ============================================================
+/* ================================================================
    Events
-   ============================================================ */
-
+   ================================================================ */
 sendBtn.addEventListener('click', sendMessage);
-userInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+userInput.addEventListener('input', autoResize);
+userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+/* ================================================================
+   Init
+   ================================================================ */
+(function init() {
+    if (conversations.length === 0) {
+        const conv = createConversation();
+        activeConvId = conv.id;
+    } else if (!activeConvId || !conversations.find(c => c.id === activeConvId)) {
+        activeConvId = conversations[0].id;
+    }
+    renderSidebar();
+    renderActiveConversation();
+})();
 
 // اختبار الاتصال عند التحميل
 (async () => {
@@ -592,7 +983,7 @@ userInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage
             `متصل — موديل: ${data.model?.split('/').pop() || 'Gemini'}`;
     } catch {
         document.getElementById('novaStatus').innerText = '⚠️ تحقق من الاتصال';
-        document.getElementById('novaStatus').style.color = 'var(--danger)';
+        document.getElementById('novaStatus').style.color = 'var(--nova-danger)';
     }
 })();
 </script>
