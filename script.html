@@ -11,17 +11,12 @@
    <script>(function(s){s.dataset.zone='11487247',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 <style>
-
-/* ============================================================
-   CSS Variables
-   ============================================================ */
 :root {
     --glow-purple: rgba(139, 92, 246, 0.35);
     --glow-cyan:   rgba(0, 242, 254, 0.25);
     --code-bg:     #050810;
     --card-depth:  rgba(6, 8, 20, 0.6);
 }
-
 body {
     background:
         radial-gradient(ellipse 80% 50% at 10% 10%, rgba(139,92,246,0.06) 0%, transparent 60%),
@@ -29,152 +24,41 @@ body {
         var(--bg-base, #09090f);
     min-height: 100svh;
 }
-
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes riseUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 @keyframes slideDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
 @keyframes commentSlide { from { opacity:0; transform:translateX(10px); } to { opacity:1; transform:translateX(0); } }
 @keyframes scaleIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
-
-/* ============================================================
-   Layout — عمودين: المحتوى الرئيسي + شريط جانبي واحد مدمج
-   ============================================================ */
-.script-layout {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 18px 20px 80px;
-    display: grid;
-    grid-template-columns: 1fr 280px;
-    gap: 24px;
-    align-items: start;
-}
-
+.script-layout { max-width: 960px; margin: 0 auto; padding: 18px 20px 80px; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start; }
 .script-main { min-width: 0; }
-
-/* Breadcrumb صغير أعلى الصفحة */
-.script-crumb {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 0.78rem; color: #45455f;
-    margin-bottom: 14px; font-weight: 700;
-}
+.script-crumb { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #45455f; margin-bottom: 14px; font-weight: 700; }
 .script-crumb a { color: #7c6fff; text-decoration: none; }
 .script-crumb a:hover { color: #a78bfa; }
-
-/* ============================================================
-   Hero Image
-   ============================================================ */
-.script-image-wrap {
-    display: none;
-    margin-bottom: 18px;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid rgba(139,92,246,0.2);
-    position: relative;
-    animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) both;
-    box-shadow: 0 16px 44px rgba(0,0,0,0.5);
-}
+.script-image-wrap { display: none; margin-bottom: 18px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(139,92,246,0.2); position: relative; animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) both; box-shadow: 0 16px 44px rgba(0,0,0,0.5); }
 .script-image-wrap.show { display: block; }
-.script-image-wrap img {
-    width: 100%; max-height: 280px; object-fit: cover; display: block;
-    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
-}
+.script-image-wrap img { width: 100%; max-height: 280px; object-fit: cover; display: block; transition: transform 0.5s cubic-bezier(0.22,1,0.36,1); }
 .script-image-wrap:hover img { transform: scale(1.03); }
-.script-image-wrap::after {
-    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
-    background: linear-gradient(to top, rgba(9,9,15,0.85) 0%, transparent 100%);
-    pointer-events: none;
-}
-.img-expand-btn {
-    position: absolute; bottom: 12px; left: 16px; z-index: 2;
-    background: rgba(9,9,15,0.7); color: rgba(255,255,255,0.85);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 8px; padding: 5px 13px;
-    font-size: 0.7rem; font-weight: 800;
-    font-family: 'Tajawal', sans-serif; margin: 0;
-    cursor: pointer; backdrop-filter: blur(10px);
-    transition: all 0.2s ease;
-}
+.script-image-wrap::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to top, rgba(9,9,15,0.85) 0%, transparent 100%); pointer-events: none; }
+.img-expand-btn { position: absolute; bottom: 12px; left: 16px; z-index: 2; background: rgba(9,9,15,0.7); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 5px 13px; font-size: 0.7rem; font-weight: 800; font-family: 'Tajawal', sans-serif; margin: 0; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.2s ease; }
 .img-expand-btn:hover { background: rgba(139,92,246,0.7); border-color: rgba(139,92,246,0.5); color: white; transform: none; filter: none; }
-
-/* Lightbox */
-.lightbox {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94);
-    backdrop-filter: blur(20px); z-index: 900;
-    align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.25s ease;
-}
+.lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94); backdrop-filter: blur(20px); z-index: 900; align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.25s ease; }
 .lightbox.open { display: flex; }
-.lightbox img {
-    max-width: min(100%, 900px); max-height: 88vh; border-radius: 16px;
-    box-shadow: 0 0 0 1px rgba(139,92,246,0.3), 0 40px 80px rgba(0,0,0,0.9);
-    animation: scaleIn 0.3s cubic-bezier(0.22,1,0.36,1);
-}
-.lightbox-close {
-    position: absolute; top: 18px; right: 18px;
-    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 50%; width: 38px; height: 38px;
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 1rem; cursor: pointer; margin: 0; transition: all 0.2s;
-}
+.lightbox img { max-width: min(100%, 900px); max-height: 88vh; border-radius: 16px; box-shadow: 0 0 0 1px rgba(139,92,246,0.3), 0 40px 80px rgba(0,0,0,0.9); animation: scaleIn 0.3s cubic-bezier(0.22,1,0.36,1); }
+.lightbox-close { position: absolute; top: 18px; right: 18px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; cursor: pointer; margin: 0; transition: all 0.2s; }
 .lightbox-close:hover { background: rgba(248,113,113,0.25); border-color: rgba(248,113,113,0.4); transform: none; filter: none; }
-
-/* ============================================================
-   Hero — عنوان + مؤلف + معلومات سريعة
-   ============================================================ */
-.script-hero {
-    background: linear-gradient(145deg, rgba(16,18,32,0.95) 0%, rgba(12,12,24,0.9) 100%);
-    border: 1px solid rgba(139,92,246,0.18);
-    border-radius: 20px;
-    padding: 24px 24px 20px;
-    margin-bottom: 14px;
-    position: relative; overflow: hidden;
-    animation: riseUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.3);
-}
-.script-hero::before {
-    content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%;
-    background: linear-gradient(to bottom, #8b5cf6, #00f2fe);
-    box-shadow: 0 0 20px rgba(139,92,246,0.5);
-}
-
-.hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 0.68rem; font-weight: 900; color: #a78bfa;
-    text-transform: uppercase; letter-spacing: 1.2px;
-    margin-bottom: 10px; position: relative; z-index: 1;
-}
-
-.script-title {
-    font-size: clamp(1.3rem, 3.2vw, 1.85rem);
-    font-weight: 900; color: #f0f0ff;
-    margin-bottom: 16px; line-height: 1.3; letter-spacing: -0.01em;
-    position: relative; z-index: 1;
-}
-
-.author-row {
-    display: flex; align-items: center; gap: 11px;
-    margin-bottom: 16px; cursor: pointer; width: fit-content;
-    position: relative; z-index: 1;
-    padding: 5px 12px 5px 6px; border-radius: 50px; transition: background 0.2s;
-}
+.script-hero { background: linear-gradient(145deg, rgba(16,18,32,0.95) 0%, rgba(12,12,24,0.9) 100%); border: 1px solid rgba(139,92,246,0.18); border-radius: 20px; padding: 24px 24px 20px; margin-bottom: 14px; position: relative; overflow: hidden; animation: riseUp 0.45s cubic-bezier(0.22,1,0.36,1) both; box-shadow: 0 8px 28px rgba(0,0,0,0.3); }
+.script-hero::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: linear-gradient(to bottom, #8b5cf6, #00f2fe); box-shadow: 0 0 20px rgba(139,92,246,0.5); }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 0.68rem; font-weight: 900; color: #a78bfa; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; position: relative; z-index: 1; }
+.script-title { font-size: clamp(1.3rem, 3.2vw, 1.85rem); font-weight: 900; color: #f0f0ff; margin-bottom: 16px; line-height: 1.3; letter-spacing: -0.01em; position: relative; z-index: 1; }
+.author-row { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; cursor: pointer; width: fit-content; position: relative; z-index: 1; padding: 5px 12px 5px 6px; border-radius: 50px; transition: background 0.2s; }
 .author-row:hover { background: rgba(139,92,246,0.08); }
 .author-row:hover .author-name { color: #a78bfa; }
-.author-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    border: 2px solid rgba(139,92,246,0.3);
-    flex-shrink: 0; background-color: #0a0a14; overflow: hidden;
-    color: #ffffff; font-weight: 900; font-size: 0.9rem;
-    display: flex; align-items: center; justify-content: center; transition: all 0.25s;
-}
+.author-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.3); flex-shrink: 0; background-color: #0a0a14; overflow: hidden; color: #ffffff; font-weight: 900; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
 .author-row:hover .author-avatar { border-color: #8b5cf6; box-shadow: 0 0 16px rgba(139,92,246,0.4); }
 .author-name { font-size: 0.87rem; font-weight: 800; color: #d4d4f0; transition: color 0.2s; }
 .author-date { font-size: 0.68rem; color: #5a5a78; margin-top: 1px; }
-
 .tags-row { display: flex; gap: 6px; flex-wrap: wrap; position: relative; z-index: 1; }
-.tag {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 5px 12px; border-radius: 50px;
-    font-size: 0.68rem; font-weight: 800; letter-spacing: 0.2px; transition: all 0.2s;
-}
+.tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 50px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.2px; transition: all 0.2s; }
 .tag-cat { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); }
 .tag-cat:hover { background: rgba(139,92,246,0.2); }
 .tag-map { background: rgba(0,242,254,0.07); color: #00d9e8; border: 1px solid rgba(0,242,254,0.2); }
@@ -182,62 +66,18 @@ body {
 .tag-nomap { background: rgba(255,255,255,0.04); color: #55556a; border: 1px solid rgba(255,255,255,0.07); }
 .tag-verified { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
 .tag-unverified { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
-
-/* ============================================================
-   Key Banner — بارز فوق الكود عشان الزائر يشوفه الأول
-   ============================================================ */
-.key-banner {
-    display: none;
-    background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.04));
-    border: 1px solid rgba(251,191,36,0.35);
-    border-radius: 16px;
-    padding: 14px 18px;
-    margin-bottom: 14px;
-    align-items: center; gap: 12px; flex-wrap: wrap;
-    animation: riseUp 0.45s 0.05s cubic-bezier(0.22,1,0.36,1) both;
-}
+.key-banner { display: none; background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.04)); border: 1px solid rgba(251,191,36,0.35); border-radius: 16px; padding: 14px 18px; margin-bottom: 14px; align-items: center; gap: 12px; flex-wrap: wrap; animation: riseUp 0.45s 0.05s cubic-bezier(0.22,1,0.36,1) both; }
 .key-banner.show { display: flex; }
-/* الـ JS الأصلي بيحط style.display='block' مباشرة — نضمن إنه يفضل flex */
 #keyCard[style] { display: flex !important; align-items: center; gap: 12px; flex-wrap: wrap; }
 .kb-icon { font-size: 1.4rem; flex-shrink: 0; }
 .kb-text { flex: 1; min-width: 160px; }
 .kb-title { font-size: 0.82rem; font-weight: 900; color: #fbbf24; margin-bottom: 2px; }
 .kb-sub { font-size: 0.72rem; color: #b5a06a; }
-.kb-value {
-    background: rgba(0,0,0,0.3); border: 1px solid rgba(251,191,36,0.3);
-    border-radius: 10px; padding: 8px 14px;
-    font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #8be9fd;
-    direction: ltr;
-}
-
-/* بانر تحذير عدم التوثيق — يظهر فوق الكود لو السكربت غير موثوق */
-.unverified-banner {
-    display: none;
-    background: linear-gradient(135deg, rgba(248,113,113,0.1), rgba(239,68,68,0.04));
-    border: 1px solid rgba(248,113,113,0.3);
-    border-radius: 16px;
-    padding: 12px 18px;
-    margin-bottom: 14px;
-    align-items: center; gap: 10px; flex-wrap: wrap;
-    font-size: 0.78rem; color: #fca5a5;
-    animation: riseUp 0.45s 0.03s cubic-bezier(0.22,1,0.36,1) both;
-}
+.kb-value { background: rgba(0,0,0,0.3); border: 1px solid rgba(251,191,36,0.3); border-radius: 10px; padding: 8px 14px; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #8be9fd; direction: ltr; }
+.unverified-banner { display: none; background: linear-gradient(135deg, rgba(248,113,113,0.1), rgba(239,68,68,0.04)); border: 1px solid rgba(248,113,113,0.3); border-radius: 16px; padding: 12px 18px; margin-bottom: 14px; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.78rem; color: #fca5a5; animation: riseUp 0.45s 0.03s cubic-bezier(0.22,1,0.36,1) both; }
 .unverified-banner.show { display: flex; }
-
-/* ============================================================
-   Code Card
-   ============================================================ */
-.code-card {
-    background: var(--code-bg);
-    border: 1px solid rgba(139,92,246,0.15);
-    border-radius: 20px; overflow: hidden; margin-bottom: 14px;
-    animation: riseUp 0.45s 0.08s cubic-bezier(0.22,1,0.36,1) both;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-}
-.code-header {
-    display: flex; align-items: center; gap: 12px; padding: 11px 18px;
-    background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.04);
-}
+.code-card { background: var(--code-bg); border: 1px solid rgba(139,92,246,0.15); border-radius: 20px; overflow: hidden; margin-bottom: 14px; animation: riseUp 0.45s 0.08s cubic-bezier(0.22,1,0.36,1) both; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.code-header { display: flex; align-items: center; gap: 12px; padding: 11px 18px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.04); }
 .ch-dots { display: flex; gap: 7px; align-items: center; }
 .ch-dot { width: 11px; height: 11px; border-radius: 50%; }
 .ch-dot:nth-child(1) { background: #ff5f57; }
@@ -245,236 +85,90 @@ body {
 .ch-dot:nth-child(3) { background: #28c840; }
 .ch-label { font-size: 0.72rem; color: #3a3a55; font-family: 'Fira Code', monospace; margin: 0 auto; display: flex; align-items: center; gap: 8px; }
 .ch-lines { color: #2a2a40; }
-.copy-inline {
-    background: rgba(139,92,246,0.1); color: #7c6fff; border: 1px solid rgba(139,92,246,0.22);
-    border-radius: 7px; padding: 4px 12px; font-size: 0.7rem; font-weight: 800;
-    cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0; transition: all 0.2s;
-}
+.copy-inline { background: rgba(139,92,246,0.1); color: #7c6fff; border: 1px solid rgba(139,92,246,0.22); border-radius: 7px; padding: 4px 12px; font-size: 0.7rem; font-weight: 800; cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0; transition: all 0.2s; }
 .copy-inline:hover { background: rgba(139,92,246,0.25); color: #a78bfa; transform: none; filter: none; }
 .copy-inline.copied { background: rgba(34,197,94,0.12); color: #4ade80; border-color: rgba(34,197,94,0.3); }
-#code {
-    background: transparent !important; margin: 0; border: none; padding: 20px 22px;
-    color: #8be9fd; font-family: 'Fira Code', monospace; font-size: 0.83rem; line-height: 1.85;
-    direction: ltr; text-align: left; overflow-x: auto; white-space: pre-wrap;
-    max-height: 420px; overflow-y: auto; tab-size: 4;
-}
+#code { background: transparent !important; margin: 0; border: none; padding: 20px 22px; color: #8be9fd; font-family: 'Fira Code', monospace; font-size: 0.83rem; line-height: 1.85; direction: ltr; text-align: left; overflow-x: auto; white-space: pre-wrap; max-height: 420px; overflow-y: auto; tab-size: 4; }
 #code::-webkit-scrollbar { width: 5px; height: 5px; }
 #code::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
 #code::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
-
-/* إعلان صغير — مندمج بهدوء بدون ما يكسر الستايل */
-.ad-slot {
-    display: block; text-align: center;
-    font-size: 0.7rem; font-weight: 700; color: #45455f;
-    background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.06);
-    border-radius: 12px; padding: 8px; margin-bottom: 14px; text-decoration: none;
-    transition: all 0.2s;
-}
+.ad-slot { display: block; text-align: center; font-size: 0.7rem; font-weight: 700; color: #45455f; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.06); border-radius: 12px; padding: 8px; margin-bottom: 14px; text-decoration: none; transition: all 0.2s; }
 .ad-slot:hover { color: #7c6fff; border-color: rgba(139,92,246,0.25); }
-
-/* ============================================================
-   Description Card
-   ============================================================ */
-.desc-card {
-    background: linear-gradient(145deg, rgba(14,16,30,0.9), rgba(10,12,22,0.8));
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px; padding: 18px 20px; margin-bottom: 14px;
-    animation: riseUp 0.45s 0.12s cubic-bezier(0.22,1,0.36,1) both;
-}
-.section-label {
-    font-size: 0.65rem; font-weight: 800; color: #3d3d56;
-    text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 8px;
-}
+.desc-card { background: linear-gradient(145deg, rgba(14,16,30,0.9), rgba(10,12,22,0.8)); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; animation: riseUp 0.45s 0.12s cubic-bezier(0.22,1,0.36,1) both; }
+.section-label { font-size: 0.65rem; font-weight: 800; color: #3d3d56; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 .section-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.05); }
 #description { color: #b0b0cc; font-size: 0.9rem; line-height: 1.8; margin: 0; }
-
-/* ============================================================
-   Action Buttons
-   ============================================================ */
-.action-row {
-    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px;
-    animation: riseUp 0.45s 0.16s cubic-bezier(0.22,1,0.36,1) both;
-}
-.action-row button {
-    border-radius: 13px; padding: 12px 20px; font-size: 0.85rem; font-weight: 800;
-    margin: 0; cursor: pointer; font-family: 'Tajawal', sans-serif;
-    transition: all 0.2s cubic-bezier(0.22,1,0.36,1);
-}
-#copyBtn {
-    order: 1; flex: 2; min-width: 180px;
-    background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none;
-    box-shadow: 0 4px 18px rgba(124,58,237,0.35);
-}
+.action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; animation: riseUp 0.45s 0.16s cubic-bezier(0.22,1,0.36,1) both; }
+.action-row button { border-radius: 13px; padding: 12px 20px; font-size: 0.85rem; font-weight: 800; margin: 0; cursor: pointer; font-family: 'Tajawal', sans-serif; transition: all 0.2s cubic-bezier(0.22,1,0.36,1); }
+#copyBtn { order: 1; flex: 2; min-width: 180px; background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; box-shadow: 0 4px 18px rgba(124,58,237,0.35); }
 #copyBtn:hover { background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 6px 24px rgba(124,58,237,0.5); transform: translateY(-2px); }
 #copyBtn:active { transform: scale(0.98); }
-#rawBtn {
-    order: 2;
-    background: rgba(0,242,254,0.06); color: #00d9e8; border: 1px solid rgba(0,242,254,0.18);
-}
+#rawBtn { order: 2; background: rgba(0,242,254,0.06); color: #00d9e8; border: 1px solid rgba(0,242,254,0.18); }
 #rawBtn:hover { background: rgba(0,242,254,0.12); border-color: rgba(0,242,254,0.35); transform: translateY(-2px); filter: none; }
-#reportBtn {
-    order: 3;
-    background: rgba(248,113,113,0.06); color: #f87171; border: 1px solid rgba(248,113,113,0.15);
-}
+#reportBtn { order: 3; background: rgba(248,113,113,0.06); color: #f87171; border: 1px solid rgba(248,113,113,0.15); }
 #reportBtn:hover { background: rgba(248,113,113,0.14); border-color: rgba(248,113,113,0.35); transform: translateY(-2px); filter: none; }
-
-/* ============================================================
-   Comments — إعادة كتابة كاملة من الصفر
-   ============================================================ */
-.comments-card {
-    background: linear-gradient(160deg, rgba(14,16,30,0.95) 0%, rgba(10,12,24,0.9) 100%);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 20px; padding: 20px;
-    animation: riseUp 0.45s 0.2s cubic-bezier(0.22,1,0.36,1) both;
-}
-.comments-card h3 {
-    font-size: 0.65rem; font-weight: 800; color: #35355a;
-    text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 14px;
-    display: flex; align-items: center; gap: 10px;
-}
+.comments-card { background: linear-gradient(160deg, rgba(14,16,30,0.95) 0%, rgba(10,12,24,0.9) 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 20px; animation: riseUp 0.45s 0.2s cubic-bezier(0.22,1,0.36,1) both; }
+.comments-card h3 { font-size: 0.65rem; font-weight: 800; color: #35355a; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
 .comments-card h3::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.04); }
-
 #comments { display: block; margin-bottom: 16px; }
-
-.cmt-row {
-    display: flex;
-    gap: 10px;
-    padding: 14px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-}
+.cmt-row { display: flex; gap: 10px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
 .cmt-row:last-child { border-bottom: none; }
-
-/* عنصر واحد بس — مفيش img ومفيش div تاني جواه */
-.cmt-pic {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    flex: 0 0 36px;
-    overflow: hidden;
-    background-color: #8b5cf6;
-    color: #ffffff;
-    font-weight: 900;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
+.cmt-pic { width: 36px; height: 36px; border-radius: 50%; flex: 0 0 36px; overflow: hidden; background-color: #8b5cf6; color: #ffffff; font-weight: 900; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .cmt-main { flex: 1; min-width: 0; }
 .cmt-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 3px; }
 .cmt-user { font-size: 0.84rem; font-weight: 800; color: #e5e5f5; cursor: pointer; }
 .cmt-user:hover { color: #a78bfa; }
 .cmt-when { font-size: 0.68rem; color: #5a5a78; }
-.cmt-del {
-    margin-right: auto; background: none; border: none; color: #f87171; cursor: pointer;
-    font-size: 0.66rem; font-weight: 700; font-family: 'Tajawal', sans-serif; padding: 2px 4px; opacity: 0.7;
-}
+.cmt-del { margin-right: auto; background: none; border: none; color: #f87171; cursor: pointer; font-size: 0.66rem; font-weight: 700; font-family: 'Tajawal', sans-serif; padding: 2px 4px; opacity: 0.7; }
 .cmt-del:hover { opacity: 1; }
 .cmt-msg { font-size: 0.88rem; color: #d4d4e6; line-height: 1.65; word-break: break-word; margin: 0; }
-
 .no-comments { text-align: center; padding: 26px 20px; color: #383854; font-size: 0.84rem; }
 .no-comments .nc-icon { font-size: 1.9rem; display: block; margin-bottom: 8px; }
-
-.comment-input-wrap {
-    display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 6px 6px 6px 14px;
-    transition: border-color 0.2s;
-}
+.comment-input-wrap { display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 6px 6px 6px 14px; transition: border-color 0.2s; }
 .comment-input-wrap:focus-within { border-color: rgba(139,92,246,0.35); box-shadow: 0 0 0 3px rgba(139,92,246,0.08); }
 #commentInput { flex: 1; background: transparent; border: none; padding: 9px 0; outline: none; color: #d0d0ee; font-family: 'Tajawal', sans-serif; font-size: 0.89rem; margin: 0; direction: rtl; }
 #commentInput::placeholder { color: #38384a; }
 .comment-count-hint { font-size: 0.66rem; color: #38384a; margin: 4px 2px 0; text-align: left; font-family: 'Fira Code', monospace; }
-#submitComment {
-    background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none;
-    border-radius: 10px; padding: 9px 18px; font-size: 0.81rem; font-weight: 800;
-    font-family: 'Tajawal', sans-serif; cursor: pointer; margin: 0; white-space: nowrap; transition: all 0.2s;
-}
+#submitComment { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; border-radius: 10px; padding: 9px 18px; font-size: 0.81rem; font-weight: 800; font-family: 'Tajawal', sans-serif; cursor: pointer; margin: 0; white-space: nowrap; transition: all 0.2s; }
 #submitComment:hover { background: linear-gradient(135deg, #8b5cf6, #6d28d9); transform: none; filter: none; }
 #submitComment:disabled { opacity: 0.5; cursor: not-allowed; }
-.comment-count-badge {
-    display: inline-flex; align-items: center; gap: 5px; background: rgba(139,92,246,0.1);
-    border: 1px solid rgba(139,92,246,0.2); border-radius: 50px; padding: 2px 10px;
-    font-size: 0.66rem; font-weight: 800; color: #7c6fff;
-}
-
+.comment-count-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); border-radius: 50px; padding: 2px 10px; font-size: 0.66rem; font-weight: 800; color: #7c6fff; }
 @media (max-width: 740px) {
     .cmt-pic { width: 32px; height: 32px; flex-basis: 32px; font-size: 0.8rem; }
     .cmt-user { font-size: 0.86rem; }
     .cmt-when { font-size: 0.7rem; }
     .cmt-msg { font-size: 0.9rem; line-height: 1.75; }
 }
-
-
-/* ============================================================
-   Sidebar — بطاقة واحدة مدمجة بدل ما كانت متفرّقة
-   ============================================================ */
 .script-sidebar { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 90px; }
-
-.sidebar-thumb {
-    display: none; border-radius: 16px; overflow: hidden; border: 1px solid rgba(139,92,246,0.18);
-    cursor: pointer; box-shadow: 0 6px 24px rgba(0,0,0,0.3); transition: all 0.25s;
-}
+.sidebar-thumb { display: none; border-radius: 16px; overflow: hidden; border: 1px solid rgba(139,92,246,0.18); cursor: pointer; box-shadow: 0 6px 24px rgba(0,0,0,0.3); transition: all 0.25s; }
 .sidebar-thumb.show { display: block; animation: riseUp 0.45s ease both; }
 .sidebar-thumb img { width: 100%; display: block; max-height: 140px; object-fit: cover; transition: transform 0.3s; }
 .sidebar-thumb:hover { border-color: rgba(139,92,246,0.4); }
 .sidebar-thumb:hover img { transform: scale(1.06); }
-
-.side-card {
-    background: linear-gradient(145deg, rgba(14,16,30,0.95), rgba(10,12,24,0.9));
-    border: 1px solid rgba(255,255,255,0.06); border-radius: 18px;
-    transition: border-color 0.2s; animation: riseUp 0.45s ease both;
-    overflow: hidden;
-}
+.side-card { background: linear-gradient(145deg, rgba(14,16,30,0.95), rgba(10,12,24,0.9)); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; transition: border-color 0.2s; animation: riseUp 0.45s ease both; overflow: hidden; }
 .side-card:hover { border-color: rgba(139,92,246,0.18); }
-
-/* قسم الماب داخل البطاقة المدمجة */
 .side-section { padding: 18px; text-align: center; }
 .side-section + .side-section { border-top: 1px solid rgba(255,255,255,0.05); }
 .mcs-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
 .mcs-label { font-size: 0.6rem; font-weight: 800; color: #35355a; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 4px; }
 .mcs-name { font-size: 0.95rem; font-weight: 900; color: #00d9e8; }
 .mcs-name.muted { color: #3d3d5a; font-size: 0.82rem; font-weight: 700; }
-
-/* إحصائيات */
 .stats-side-label { font-size: 0.6rem; font-weight: 800; color: #35355a; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 10px; text-align: right; }
 .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.82rem; }
 .stat-row:last-child { border-bottom: none; }
 .sr-label { color: #44445a; }
 .sr-val { font-weight: 800; color: #d0d0ee; font-variant-numeric: tabular-nums; }
-.like-btn-inline {
-    display: flex; align-items: center; gap: 6px; background: rgba(248,113,113,0.07);
-    border: 1px solid rgba(248,113,113,0.15); border-radius: 8px; padding: 5px 12px;
-    color: #f87171; font-size: 0.77rem; font-weight: 800; cursor: pointer;
-    font-family: 'Tajawal', sans-serif; margin: 0; width: 100%; justify-content: center;
-    margin-top: 10px; transition: all 0.2s;
-}
+.like-btn-inline { display: flex; align-items: center; gap: 6px; background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.15); border-radius: 8px; padding: 5px 12px; color: #f87171; font-size: 0.77rem; font-weight: 800; cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0; width: 100%; justify-content: center; margin-top: 10px; transition: all 0.2s; }
 .like-btn-inline:hover { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.3); transform: none; filter: none; }
 .like-btn-inline.liked { background: rgba(248,113,113,0.2); color: #fca5a5; cursor: default; }
-
-/* المؤلف */
 .author-card-side { text-align: center; cursor: pointer; }
 .author-card-side:hover { background: rgba(139,92,246,0.03); }
-.acs-avatar {
-    width: 62px; height: 62px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.25);
-    margin: 0 auto 10px; background-color: #0a0a14; overflow: hidden;
-    color: #ffffff; font-weight: 900; font-size: 1.5rem;
-    display: flex; align-items: center; justify-content: center; transition: all 0.25s;
-}
+.acs-avatar { width: 62px; height: 62px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.25); margin: 0 auto 10px; background-color: #0a0a14; overflow: hidden; color: #ffffff; font-weight: 900; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
 .author-card-side:hover .acs-avatar { border-color: #8b5cf6; box-shadow: 0 0 20px rgba(139,92,246,0.3); }
 .acs-name { font-size: 0.92rem; font-weight: 900; color: #d0d0ee; margin-bottom: 3px; }
 .acs-label { font-size: 0.65rem; color: #35355a; text-transform: uppercase; letter-spacing: 1px; }
-.acs-btn {
-    background: rgba(139,92,246,0.1); color: #8b7fff; border: 1px solid rgba(139,92,246,0.22);
-    border-radius: 50px; padding: 6px 16px; font-size: 0.73rem; font-weight: 800;
-    font-family: 'Tajawal', sans-serif; cursor: pointer; margin-top: 10px; transition: all 0.2s; display: inline-block;
-}
+.acs-btn { background: rgba(139,92,246,0.1); color: #8b7fff; border: 1px solid rgba(139,92,246,0.22); border-radius: 50px; padding: 6px 16px; font-size: 0.73rem; font-weight: 800; font-family: 'Tajawal', sans-serif; cursor: pointer; margin-top: 10px; transition: all 0.2s; display: inline-block; }
 .acs-btn:hover { background: rgba(139,92,246,0.22); color: #c4b5fd; transform: none; filter: none; }
-
-/* ============================================================
-   Responsive
-   ============================================================ */
 @media (max-width: 740px) {
     .script-layout { grid-template-columns: 1fr; padding: 14px 14px 60px; }
     .script-sidebar { position: static; order: -1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -487,12 +181,10 @@ body {
     .action-row button { flex: 1 1 100%; padding: 12px 14px; font-size: 0.82rem; }
     #copyBtn { flex: 1 1 100%; }
 }
-
 </style>
 </head>
 <body data-script-id="">
 
-<!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <button class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">✕</button>
     <img id="lightboxImg" src="" alt="صورة السكربت" onclick="event.stopPropagation()">
@@ -504,21 +196,17 @@ body {
 </header>
 
 <div class="script-layout">
-
-    <!-- ==================== Main Column ==================== -->
     <div class="script-main">
 
         <div class="script-crumb">
             <a href="scripts.html">📜 السكربتات</a> ← عرض سكربت
         </div>
 
-        <!-- صورة السكربت -->
         <div class="script-image-wrap" id="scriptImageWrap">
             <img id="scriptImage" src="" alt="صورة السكربت">
             <button class="img-expand-btn" onclick="openLightbox()">🔍 تكبير</button>
         </div>
 
-        <!-- Hero المعلومات الرئيسية -->
         <div class="script-hero">
             <div class="hero-eyebrow">📜 سكربت Roblox</div>
             <h1 class="script-title" id="title">⏳ جارٍ التحميل...</h1>
@@ -532,13 +220,11 @@ body {
             <div class="tags-row" id="tagsRow"></div>
         </div>
 
-        <!-- بانر تحذير: السكربت غير موثّق -->
         <div class="unverified-banner" id="unverifiedBanner">
             <span>⚠️</span>
             <span>هذا السكربت <strong>غير موثّق</strong> من إدارة CCRAFT SPACE — تعامل معه بحذر، وسيُضاف تحذير تلقائي أعلى الكود عند نسخه.</span>
         </div>
 
-        <!-- بانر المفتاح — بيظهر بس لو محتاج مفتاح، فوق الكود عشان الزائر ياخد باله الأول -->
         <div class="key-banner" id="keyCard">
             <span class="kb-icon">🔑</span>
             <div class="kb-text">
@@ -549,7 +235,6 @@ body {
             <button id="copyKeyBtn" class="copy-inline">📋 نسخ المفتاح</button>
         </div>
 
-        <!-- الكود -->
         <div class="code-card">
             <div class="code-header">
                 <div class="ch-dots">
@@ -565,20 +250,17 @@ body {
 
         <a class="ad-slot" href="https://omg10.com/4/11458024" target="_blank" rel="noopener">إعلان</a>
 
-        <!-- الوصف -->
         <div class="desc-card">
             <h3 class="section-label">📝 الوصف</h3>
             <p id="description" style="color:#6a6a88;font-style:italic">جارٍ التحميل...</p>
         </div>
 
-        <!-- أزرار الإجراءات -->
         <div class="action-row">
             <button id="copyBtn">📋 نسخ السكربت</button>
             <button id="rawBtn">📄 Raw</button>
             <button id="reportBtn">🚩 إبلاغ</button>
         </div>
 
-        <!-- التعليقات -->
         <div class="comments-card">
             <h3>
                 💬 التعليقات
@@ -601,15 +283,12 @@ body {
 
     </div>
 
-    <!-- ==================== Sidebar ==================== -->
     <aside class="script-sidebar">
 
-        <!-- Thumbnail -->
         <div class="sidebar-thumb" id="sidebarThumb">
             <img id="sideThumbImg" src="" alt="صورة السكربت">
         </div>
 
-        <!-- بطاقة مدمجة: الماب + الإحصائيات -->
         <div class="side-card">
             <div class="side-section" id="mapCardSide">
                 <span class="mcs-icon">⏳</span>
@@ -634,7 +313,6 @@ body {
             </div>
         </div>
 
-        <!-- المؤلف -->
         <div class="side-card author-card-side" id="authorCardSide">
             <div class="side-section">
                 <div class="acs-avatar" id="authorAvatarSide"></div>
@@ -647,13 +325,8 @@ body {
     </aside>
 </div>
 
-
-
-<!-- بيانات ثابتة مولّدة تلقائيًا (كل السكربتات) — بتتحمّل فورًا قبل Firebase -->
 <script src="scripts-data.js"></script>
 <script>
-// ✅ حقن فوري للمحتوى من البيانات الثابتة، قبل ما Firebase يشتغل خالص
-// ده اللي بيضمن إن أي زائر (أو بوت زحف) يشوف محتوى حقيقي من أول لحظة
 (function () {
     try {
         const params   = new URLSearchParams(window.location.search);
@@ -712,11 +385,9 @@ body {
             tagsRow.innerHTML += data.map
                 ? `<span class="tag tag-map">🗺️ ${esc(data.map)}</span>`
                 : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
-            // ✅ حالة المفتاح
             tagsRow.innerHTML += (data.hasKey || data.key)
                 ? `<span class="tag" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">🔒 يتطلب مفتاح</span>`
                 : `<span class="tag" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>`;
-            // ✅ التاجات
             if (Array.isArray(data.tags)) {
                 tagsRow.innerHTML += data.tags.map(t => `<span class="tag tag-map">#${esc(t)}</span>`).join('');
             }
@@ -763,7 +434,6 @@ body {
             stRating.innerText = avg === '—' ? '—' : `${avg} ⭐`;
         }
     } catch (e) {
-        // أي خطأ هنا لا يوقف تحميل الصفحة — Firebase هيكمل تحميل المحتوى عادي بعد كده
         console.warn('static data injection skipped:', e);
     }
 })();
@@ -793,18 +463,26 @@ const params    = new URLSearchParams(window.location.search);
 const scriptId  = document.body.dataset.scriptId || params.get('id');
 let currentUser = null;
 let scriptVerified = false;
+let scriptAuthorUid = null;
+let scriptTitleForNotif = 'سكربت';
 const avatarCache = {};
 
 const UNVERIFIED_WARNING = '--[[\n\tتحذير هذا السكربت ليس تم التحقق منه من قبل cCraft space يرجي الحظر منه\n]]\n\n';
 
-// يضيف تعليق Lua تحذيري أعلى الكود عند النسخ لو السكربت غير موثّق — تعليق فقط، لا يعطّل تشغيل السكربت
 function withCopyWarning(code) {
     return scriptVerified ? code : (UNVERIFIED_WARNING + code);
 }
 
-/* ============================================================
-   Lightbox
-   ============================================================ */
+// 🔔 إرسال إشعار لصاحب السكربت (لايك أو تعليق) — ما بيبعتش لنفسه لو هو صاحب السكربت
+function notifyAuthor(type, text) {
+    if (!scriptAuthorUid || !currentUser || scriptAuthorUid === currentUser.uid) return;
+    push(ref(db, `notifications/${scriptAuthorUid}`), {
+        type,
+        text,
+        timestamp: Date.now(),
+    }).catch(() => { /* فشل الإشعار مش لازم يوقف باقي العملية */ });
+}
+
 window.openLightbox = function() {
     document.getElementById('lightboxImg').src = document.getElementById('scriptImage').src;
     document.getElementById('lightbox').classList.add('open');
@@ -818,12 +496,6 @@ window.closeLightbox = function() {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-/* ============================================================
-   Helpers
-   ============================================================ */
-// ✅ صورة حقيقية (عنصر <img> عادي وتقليدي) جوه حاوية دايرية بتقصّها.
-// كل خصائص الحجم متحطة بـ !important عشان أي CSS تاني في الموقع ميكسرهاش
-// (يعني الصورة تتقص وتملى الدايرة بالكامل، مش تبين جزء صغير منها بس)
 async function applyAvatar(el, uid, fallbackName) {
     if (!el) return;
     el.innerHTML = '';
@@ -874,25 +546,14 @@ const MAP_ICONS = {
     'Anime Fighting Sim':'⚔️','Tower of Hell':'🗼',
 };
 
-/* ============================================================
-   ✅ التعديل الأساسي: تحميل المحتوى فورًا للجميع
-   بدون انتظار تسجيل الدخول — auth بقى منفصل تمامًا
-   عن عرض المحتوى، وبيتحقق منه بس وقت التفاعل
-   (لايك / تعليق) مش وقت عرض الصفحة.
-   ============================================================ */
 onAuthStateChanged(auth, user => {
-    currentUser = user; // ممكن تكون null — وده طبيعي وعادي تمامًا
+    currentUser = user;
 });
 
-// المحتوى يتحمّل فورًا لأي زائر، مسجل دخول أو لأ، وأي بوت زحف
 loadScript();
 
-/* ============================================================
-   تحميل السكربت
-   ============================================================ */
 async function loadScript() {
     if (!scriptId) {
-        // مفيش id في الرابط — رجّع الزائر لصفحة القائمة بدل ما يفضل "جاري التحميل" للأبد
         location.href = 'scripts.html';
         return;
     }
@@ -904,8 +565,9 @@ async function loadScript() {
     }
     const data = snap.val();
     scriptVerified = !!data.verified;
+    scriptAuthorUid = data.authorUid || null;
+    scriptTitleForNotif = data.title || 'سكربت';
 
-    // --- العنوان والمحتوى ---
     document.getElementById('title').innerText       = data.title;
     document.title = `${data.title} | CCRAFT SPACE`;
     document.getElementById('code').innerText        = data.code;
@@ -914,10 +576,8 @@ async function loadScript() {
     document.getElementById('description').style.color = data.description ? '#b0b0cc' : '#44445a';
     document.getElementById('description').style.fontStyle = data.description ? 'normal' : 'italic';
 
-    // --- بانر عدم التوثيق ---
     document.getElementById('unverifiedBanner').classList.toggle('show', !scriptVerified);
 
-    // --- المفتاح (اختياري) ---
     if (data.key) {
         const keyCard  = document.getElementById('keyCard');
         const keyValue = document.getElementById('keyValue');
@@ -933,7 +593,6 @@ async function loadScript() {
         };
     }
 
-    // --- الصورة ---
     if (data.image) {
         document.getElementById('scriptImage').src     = data.image;
         document.getElementById('scriptImageWrap').classList.add('show');
@@ -942,7 +601,6 @@ async function loadScript() {
         document.getElementById('sidebarThumb').onclick = openLightbox;
     }
 
-    // --- التاريخ والمؤلف ---
     const date = data.timestamp
         ? new Date(data.timestamp).toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'})
         : '—';
@@ -952,19 +610,16 @@ async function loadScript() {
     document.getElementById('authorName').innerText = authorName;
     document.getElementById('acName').innerText     = authorName;
 
-    // --- الأفاتار ---
     await Promise.all([
         applyAvatar(document.getElementById('authorAvatarInline'), data.authorUid, authorName),
         applyAvatar(document.getElementById('authorAvatarSide'), data.authorUid, authorName),
     ]);
 
-    // --- روابط البروفايل ---
     const goProfile = () => { if (data.authorUid) location.href = `profile.html?uid=${data.authorUid}`; };
     document.getElementById('authorRow').onclick      = goProfile;
     document.getElementById('authorCardSide').onclick = goProfile;
     document.getElementById('viewProfileBtn').onclick = e => { e.stopPropagation(); goProfile(); };
 
-    // --- التاجات ---
     const tagsRow = document.getElementById('tagsRow');
     tagsRow.innerHTML = scriptVerified
         ? `<span class="tag tag-verified">✅ موثّق من الإدارة</span>`
@@ -973,16 +628,13 @@ async function loadScript() {
     tagsRow.innerHTML += data.map
         ? `<span class="tag tag-map">🗺️ ${escHTML(data.map)}</span>`
         : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
-    // ✅ حالة المفتاح
     tagsRow.innerHTML += (data.hasKey || data.key)
         ? `<span class="tag" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">🔒 يتطلب مفتاح</span>`
         : `<span class="tag" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>`;
-    // ✅ التاجات
     if (Array.isArray(data.tags)) {
         tagsRow.innerHTML += data.tags.map(t => `<span class="tag tag-map">#${escHTML(t)}</span>`).join('');
     }
 
-    // --- بطاقة الماب ---
     const mapCard = document.getElementById('mapCardSide');
     if (data.map) {
         const icon = MAP_ICONS[data.map] || '🗺️';
@@ -1001,12 +653,10 @@ async function loadScript() {
         `;
     }
 
-    // --- الإحصائيات ---
     document.getElementById('st-likes').innerText = data.likes || 0;
     const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
     document.getElementById('st-rating').innerText = avg === '—' ? '—' : `${avg} ⭐`;
 
-    // --- زر اللايك (يحتاج تسجيل دخول) ---
     const liked = !!localStorage.getItem(`liked_${scriptId}`);
     const likeBtn = document.getElementById('likeBtn');
 
@@ -1028,15 +678,15 @@ async function loadScript() {
         likeBtn.innerText = '❤️ أعجبك';
         likeBtn.disabled = true;
         document.getElementById('st-likes').innerText = newVal;
+
+        // 🔔 إشعار لصاحب السكربت باللايك
+        const likerName = currentUser.email.split('@')[0];
+        notifyAuthor('like', `👍 ${likerName} أعجب بسكربتك: ${scriptTitleForNotif}`);
     });
 
-    // --- تحميل التعليقات ---
     loadComments();
 }
 
-/* ============================================================
-   التعليقات (العرض عام، الإرسال يحتاج تسجيل دخول)
-   ============================================================ */
 async function loadComments() {
     const commentsDiv = document.getElementById('comments');
     let firstLoad = true;
@@ -1055,7 +705,6 @@ async function loadComments() {
 
         const canDelete = currentUser && c.uid === currentUser.uid;
 
-        // بناء العناصر مباشرة (createElement) — مفيش أي HTML string للأفاتار خالص
         const row = document.createElement('div');
         row.className = 'cmt-row';
         if (!firstLoad) row.style.animationDelay = '0s';
@@ -1127,9 +776,6 @@ async function loadComments() {
     });
 }
 
-/* ============================================================
-   إرسال تعليق جديد — يحتاج تسجيل دخول
-   ============================================================ */
 const commentInputEl = document.getElementById('commentInput');
 const commentCharCountEl = document.getElementById('commentCharCount');
 
@@ -1149,12 +795,17 @@ document.getElementById('submitComment').addEventListener('click', async () => {
     btn.disabled = true;
     btn.innerText = '⏳';
 
+    const commenterName = currentUser.email.split('@')[0];
+
     await push(ref(db, `scripts/${scriptId}/comments`), {
-        name:      currentUser.email.split('@')[0],
+        name:      commenterName,
         uid:       currentUser.uid,
         text,
         timestamp: Date.now(),
     });
+
+    // 🔔 إشعار لصاحب السكربت بالتعليق الجديد
+    notifyAuthor('comment', `💬 ${commenterName} علّق على سكربتك: ${scriptTitleForNotif}`);
 
     inp.value    = '';
     commentCharCountEl.innerText = '0';
@@ -1166,9 +817,6 @@ commentInputEl.addEventListener('keypress', e => {
     if (e.key === 'Enter') document.getElementById('submitComment').click();
 });
 
-/* ============================================================
-   نسخ الكود
-   ============================================================ */
 function copyCode() {
     const code = withCopyWarning(document.getElementById('code').innerText);
     navigator.clipboard.writeText(code).then(() => {
