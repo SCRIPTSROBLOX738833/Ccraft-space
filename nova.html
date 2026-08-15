@@ -128,6 +128,7 @@ header { flex-shrink: 0; }
     border: 1px solid var(--nova-border);
     border-radius: 10px;
     width: 38px; height: 38px;
+    min-width: 38px;
     align-items: center; justify-content: center;
     color: var(--nova-text);
     font-size: 1.1rem;
@@ -153,6 +154,7 @@ header { flex-shrink: 0; }
     padding: 14px 0 12px; flex-shrink: 0;
     border-bottom: 1px solid var(--nova-border);
     margin-bottom: 12px;
+    min-width: 0; width: 100%;
 }
 
 .nova-avatar {
@@ -361,9 +363,10 @@ header { flex-shrink: 0; }
 .nova-toast.show { transform: translateX(-50%) translateY(0); }
 
 /* Input */
-.input-area { display:flex; gap:8px; flex-shrink:0; align-items: flex-end; }
+.input-area { display:flex; gap:8px; flex-shrink:0; align-items: flex-end; min-width: 0; width: 100%; }
 #userInput {
     flex: 1;
+    min-width: 0;
     background: var(--nova-surface); border: 1px solid var(--nova-border);
     border-radius: 16px; padding: 13px 16px;
     color: var(--nova-text); font-family: 'Tajawal', sans-serif;
@@ -382,8 +385,9 @@ header { flex-shrink: 0; }
     border-radius: 14px; padding: 13px 20px;
     font-size: 0.95rem; cursor: pointer; font-family: 'Tajawal', sans-serif;
     font-weight: 800; box-shadow: 0 6px 18px rgba(139,92,246,0.32);
-    display:flex; align-items:center; gap:7px;
+    display:flex; align-items:center; justify-content:center; gap:7px;
     white-space: nowrap; margin: 0; flex-shrink: 0;
+    min-width: 48px;
 }
 #sendBtn:hover { filter:brightness(1.1); }
 #sendBtn:active { transform:scale(0.96); }
@@ -404,6 +408,7 @@ header { flex-shrink: 0; }
     .nova-sidebar {
         position: fixed;
         top: 0; right: 0; bottom: 0;
+        width: min(270px, 82vw);
         transform: translateX(100%);
         box-shadow: -10px 0 30px rgba(0,0,0,0.4);
     }
