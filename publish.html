@@ -170,6 +170,7 @@
     .tag-chip:hover { background:rgba(139,92,246,0.22); transform:none; filter:none; }
 
   </style>
+<script src="https://www.google.com/recaptcha/api.js?render=6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7"></script>
 </head>
 <body>
 
@@ -628,6 +629,31 @@
 
     const btn = document.getElementById('publishBtn');
     btn.disabled  = true;
+    btn.innerText = '⏳ جارٍ التحقق الأمني...';
+
+    // 🔐 reCAPTCHA v3 — لازم يتولد توكن بنجاح قبل ما نكمل النشر
+    let captchaToken = null;
+    try {
+        captchaToken = await new Promise((resolve, reject) => {
+            if (typeof grecaptcha === 'undefined') { reject(new Error('recaptcha not loaded')); return; }
+            grecaptcha.ready(() => {
+                grecaptcha.execute('6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7', { action: 'publish' })
+                    .then(resolve).catch(reject);
+            });
+        });
+    } catch (e) {
+        alert('❌ تعذّر التحقق الأمني (reCAPTCHA) — تأكد إن حظر الإعلانات أو الإضافات مش مانع تحميله وحاول تاني');
+        btn.disabled  = false;
+        btn.innerText = '📤 نشر السكربت';
+        return;
+    }
+    if (!captchaToken) {
+        alert('❌ فشل التحقق الأمني — حاول تاني');
+        btn.disabled  = false;
+        btn.innerText = '📤 نشر السكربت';
+        return;
+    }
+
     btn.innerText = '⏳ جارٍ النشر...';
 
     const username = currentUser.email.split('@')[0];
