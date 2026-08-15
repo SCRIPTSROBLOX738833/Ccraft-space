@@ -317,7 +317,7 @@
 
 <script type="module">
   import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+  import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -691,6 +691,8 @@
     if (imageBase64) scriptData.image = imageBase64;
 
     await set(newRef, scriptData);
+    // 🕒 سجّل وقت النشر ده عشان قاعدة الكولداون في الـ Database Rules تشتغل فعليًا
+    await update(ref(db, `users/${currentUser.uid}`), { lastPublished: Date.now() });
     await checkAndAwardBadges();
 
     btn.disabled  = false;
