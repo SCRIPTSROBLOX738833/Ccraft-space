@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="styles.css">
 <title>تسجيل الدخول أو إنشاء حساب</title>
-<script src="https://www.google.com/recaptcha/api.js?render=6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7"></script>
 <style>
     /* تحسين شكل زر جوجل */
     #googleLoginBtn {
@@ -26,29 +25,6 @@
     }
     #googleLoginBtn:hover {
         background-color: #f8f9fa;
-    }
-    .divider {
-        margin: 20px 0;
-        text-align: center;
-        position: relative;
-    }
-    .divider::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: #eee;
-        z-index: 1;
-    }
-    .divider span {
-        background: #fff;
-        padding: 0 15px;
-        position: relative;
-        z-index: 2;
-        color: #999;
-        font-size: 14px;
     }
     #msg {
         margin-top: 15px;
@@ -84,14 +60,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { 
     getAuth, 
-    signInWithEmailAndPassword, 
-    createUserWithEmailAndPassword, 
     GoogleAuthProvider, 
     signInWithPopup,
     signOut,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { getDatabase, ref, set, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -107,29 +81,7 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 const googleProvider = new GoogleAuthProvider();
 
-const RECAPTCHA_SITE_KEY = '6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7';
-
-// 🔐 reCAPTCHA v3 — بيولّد توكن قبل عمليات الدخول/التسجيل بالبريد. لو فشل التحميل أو التوليد، بيرجع null والفانكشن اللي بتناديه بترفض تكمل
-async function getCaptchaToken(action) {
-    try {
-        if (typeof grecaptcha === 'undefined') return null;
-        return await new Promise((resolve, reject) => {
-            grecaptcha.ready(() => {
-                grecaptcha.execute(RECAPTCHA_SITE_KEY, { action }).then(resolve).catch(reject);
-            });
-        });
-    } catch {
-        return null;
-    }
-}
-
-const loginEmail = document.getElementById("loginEmail");
-const loginPass = document.getElementById("loginPass");
-const loginBtn = document.getElementById("loginBtn");
 const googleLoginBtn = document.getElementById("googleLoginBtn");
-const regEmail = document.getElementById("regEmail");
-const regPass = document.getElementById("regPass");
-const regBtn = document.getElementById("regBtn");
 const msg = document.getElementById("msg");
 const authContainer = document.getElementById("authContainer");
 
@@ -166,34 +118,6 @@ function showLoggedInView(user){
     });
 }
 
-// تسجيل الدخول بالبريد
-loginBtn.addEventListener("click", async ()=>{
-    const email = loginEmail.value.trim();
-    const pass = loginPass.value.trim();
-    if(!email||!pass){ showMessage("ادخل البريد وكلمة المرور"); return; }
-
-    loginBtn.disabled = true;
-    const origText = loginBtn.innerText;
-    loginBtn.innerText = "⏳ جارٍ التحقق...";
-    const token = await getCaptchaToken('login');
-    if (!token) {
-        showMessage("تعذّر التحقق الأمني (reCAPTCHA) — حاول تاني");
-        loginBtn.disabled = false;
-        loginBtn.innerText = origText;
-        return;
-    }
-    loginBtn.innerText = "⏳ جارٍ الدخول...";
-
-    try{
-        await signInWithEmailAndPassword(auth,email,pass);
-    }catch(e){
-        showMessage("خطأ في البريد أو كلمة المرور");
-    }finally{
-        loginBtn.disabled = false;
-        loginBtn.innerText = origText;
-    }
-});
-
 // تسجيل الدخول عبر جوجل
 googleLoginBtn.addEventListener("click", async () => {
     try {
@@ -214,35 +138,6 @@ googleLoginBtn.addEventListener("click", async () => {
         } else {
             showMessage("فشل تسجيل الدخول عبر جوجل: " + error.message);
         }
-    }
-});
-
-// إنشاء حساب جديد
-regBtn.addEventListener("click", async ()=>{
-    const email = regEmail.value.trim();
-    const pass = regPass.value.trim();
-    if(!email||!pass){ showMessage("ادخل البريد وكلمة المرور"); return; }
-
-    regBtn.disabled = true;
-    const origText = regBtn.innerText;
-    regBtn.innerText = "⏳ جارٍ التحقق...";
-    const token = await getCaptchaToken('register');
-    if (!token) {
-        showMessage("تعذّر التحقق الأمني (reCAPTCHA) — حاول تاني");
-        regBtn.disabled = false;
-        regBtn.innerText = origText;
-        return;
-    }
-    regBtn.innerText = "⏳ جارٍ إنشاء الحساب...";
-
-    try{
-        const userCred = await createUserWithEmailAndPassword(auth,email,pass);
-        await set(ref(db, `users/${userCred.user.uid}`), { email });
-    }catch(e){
-        showMessage("حدث خطأ، حاول مرة أخرى");
-    }finally{
-        regBtn.disabled = false;
-        regBtn.innerText = origText;
     }
 });
 </script>
