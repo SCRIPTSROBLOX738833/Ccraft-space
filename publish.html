@@ -690,22 +690,31 @@
     // ضيف الصورة لو موجودة
     if (imageBase64) scriptData.image = imageBase64;
 
-    await set(newRef, scriptData);
-    // 🕒 سجّل وقت النشر ده عشان قاعدة الكولداون في الـ Database Rules تشتغل فعليًا
-    await update(ref(db, `users/${currentUser.uid}`), { lastPublished: Date.now() });
-    await checkAndAwardBadges();
+    try {
+        await set(newRef, scriptData);
+        // 🕒 سجّل وقت النشر ده عشان قاعدة الكولداون في الـ Database Rules تشتغل فعليًا
+        await update(ref(db, `users/${currentUser.uid}`), { lastPublished: Date.now() });
+        await checkAndAwardBadges();
 
-    btn.disabled  = false;
-    btn.innerText = '📤 نشر السكربت';
-    document.getElementById('publishForm').reset();
-    setMap(null);
-    removeImage({ stopPropagation: () => {} });
+        document.getElementById('publishForm').reset();
+        setMap(null);
+        removeImage({ stopPropagation: () => {} });
 
-    // ✅ Reset حقول المفتاح والتاجات
-    hasKey = false;
-    scriptTags = [];
-    noKeyBtn.click();
-    renderTags();
+        // ✅ Reset حقول المفتاح والتاجات
+        hasKey = false;
+        scriptTags = [];
+        noKeyBtn.click();
+        renderTags();
+    } catch (err) {
+        if (err && err.code === 'PERMISSION_DENIED') {
+            alert('⏳ لازم تستنى دقيقة على الأقل بين كل نشر سكربت والتاني. حاول تاني بعد شوية.');
+        } else {
+            alert('❌ حصل خطأ أثناء النشر، حاول تاني.');
+        }
+    } finally {
+        btn.disabled  = false;
+        btn.innerText = '📤 نشر السكربت';
+    }
   });
 
   /* ============================================================
