@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="styles.css">
 <title>تسجيل الدخول أو إنشاء حساب</title>
+<script src="https://www.google.com/recaptcha/api.js?render=6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7"></script>
 <style>
     /* تحسين شكل زر جوجل */
     #googleLoginBtn {
@@ -66,24 +67,13 @@
 <body>
 
 <div id="authContainer">
-    <h2>تسجيل الدخول</h2>
     <h1>تسجيل الدخول إلى CCRAFT SPACE</h1>
     <p>هذه الصفحة خاصة بحسابات موقع CCRAFT SPACE فقط</p>
-    <input type="email" id="loginEmail" placeholder="البريد الإلكتروني">
-    <input type="password" id="loginPass" placeholder="كلمة المرور">
-    <button id="loginBtn">دخول</button>
 
-    <div class="divider"><span>أو</span></div>
-    
     <button id="googleLoginBtn">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" width="18">
         تسجيل الدخول عبر جوجل
     </button>
-
-    <h2>أو إنشاء حساب جديد</h2>
-    <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
-    <input type="password" id="regPass" placeholder="كلمة المرور">
-    <button id="regBtn">إنشاء حساب</button>
 
     <p id="msg"></p>
     <button id="privacy" class="nav-button" onclick="location.href='privacy.html'">سياسة الخصوصية</button>
@@ -110,13 +100,28 @@ const firebaseConfig = {
     projectId: "ccraft-space-scripts",
     storageBucket: "ccraft-space-scripts.firebasestorage.app",
     messagingSenderId: "816078027492",
-    appId: "1:816078027492:web:6472cce474078fd4d90af1",
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 const googleProvider = new GoogleAuthProvider();
+
+const RECAPTCHA_SITE_KEY = '6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7';
+
+// 🔐 reCAPTCHA v3 — بيولّد توكن قبل عمليات الدخول/التسجيل بالبريد. لو فشل التحميل أو التوليد، بيرجع null والفانكشن اللي بتناديه بترفض تكمل
+async function getCaptchaToken(action) {
+    try {
+        if (typeof grecaptcha === 'undefined') return null;
+        return await new Promise((resolve, reject) => {
+            grecaptcha.ready(() => {
+                grecaptcha.execute(RECAPTCHA_SITE_KEY, { action }).then(resolve).catch(reject);
+            });
+        });
+    } catch {
+        return null;
+    }
+}
 
 const loginEmail = document.getElementById("loginEmail");
 const loginPass = document.getElementById("loginPass");
@@ -166,10 +171,26 @@ loginBtn.addEventListener("click", async ()=>{
     const email = loginEmail.value.trim();
     const pass = loginPass.value.trim();
     if(!email||!pass){ showMessage("ادخل البريد وكلمة المرور"); return; }
+
+    loginBtn.disabled = true;
+    const origText = loginBtn.innerText;
+    loginBtn.innerText = "⏳ جارٍ التحقق...";
+    const token = await getCaptchaToken('login');
+    if (!token) {
+        showMessage("تعذّر التحقق الأمني (reCAPTCHA) — حاول تاني");
+        loginBtn.disabled = false;
+        loginBtn.innerText = origText;
+        return;
+    }
+    loginBtn.innerText = "⏳ جارٍ الدخول...";
+
     try{
         await signInWithEmailAndPassword(auth,email,pass);
     }catch(e){
         showMessage("خطأ في البريد أو كلمة المرور");
+    }finally{
+        loginBtn.disabled = false;
+        loginBtn.innerText = origText;
     }
 });
 
@@ -201,11 +222,27 @@ regBtn.addEventListener("click", async ()=>{
     const email = regEmail.value.trim();
     const pass = regPass.value.trim();
     if(!email||!pass){ showMessage("ادخل البريد وكلمة المرور"); return; }
+
+    regBtn.disabled = true;
+    const origText = regBtn.innerText;
+    regBtn.innerText = "⏳ جارٍ التحقق...";
+    const token = await getCaptchaToken('register');
+    if (!token) {
+        showMessage("تعذّر التحقق الأمني (reCAPTCHA) — حاول تاني");
+        regBtn.disabled = false;
+        regBtn.innerText = origText;
+        return;
+    }
+    regBtn.innerText = "⏳ جارٍ إنشاء الحساب...";
+
     try{
         const userCred = await createUserWithEmailAndPassword(auth,email,pass);
         await set(ref(db, `users/${userCred.user.uid}`), { email });
     }catch(e){
         showMessage("حدث خطأ، حاول مرة أخرى");
+    }finally{
+        regBtn.disabled = false;
+        regBtn.innerText = origText;
     }
 });
 </script>
