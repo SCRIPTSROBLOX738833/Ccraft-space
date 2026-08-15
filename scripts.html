@@ -540,10 +540,12 @@ function toggleCodePreview(btn) {
 
 </div>
 
-
+<!-- بيانات ثابتة مولّدة تلقائيًا (كل السكربتات) — بتتحمّل فورًا قبل Firebase، لصالح السيو والزوار من غير جافاسكريبت كامل -->
+<script src="scripts-data.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -558,6 +560,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
+const auth = getAuth(app);
+let currentUser = null;
+onAuthStateChanged(auth, user => { currentUser = user; });
+
+// 🔔 إرسال إشعار لصاحب السكربت (لايك) — ما بيبعتش لنفسه، ومحتاج المستخدم يكون مسجل دخول عشان نعرف اسمه
+function notifyAuthor(authorUid, text) {
+    if (!authorUid || !currentUser || authorUid === currentUser.uid) return;
+    push(ref(db, `notifications/${authorUid}`), {
+        type: 'like',
+        text,
+        timestamp: Date.now(),
+    }).catch(() => {});
+}
 
 let allScripts   = [];
 let filteredIds  = null;
@@ -821,6 +836,12 @@ function renderScripts(query = '') {
             likeBtn.innerHTML = `❤️ <span class="lc">${newLikes}</span>`;
             likeBtn.disabled = true;
             localStorage.setItem(`liked_${s.id}`, 'true');
+
+            // 🔔 إشعار لصاحب السكربت باللايك (لو المستخدم مسجل دخول)
+            if (currentUser) {
+                const likerName = currentUser.email.split('@')[0];
+                notifyAuthor(s.authorUid, `👍 ${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
+            }
         };
 
         card.querySelector('.sc-btn.report').onclick = e => {
@@ -1065,9 +1086,23 @@ function updateURL(q) {
     history.replaceState(null,'',url);
 }
 
+// ✅ رسم أولي فوري من البيانات الثابتة (لو موجودة) قبل ما Firebase يرد — بيضمن إن الزائر وبوتات الزحف يشوفوا محتوى حقيقي من أول لحظة
+function renderStaticFallback() {
+    try {
+        const data = window.__SCRIPTS_DATA__;
+        if (!data) return;
+        allScripts = Object.entries(data)
+            .map(([id,s]) => ({id,...s}))
+            .filter(s => s.id && s.title && s.title.trim());
+        document.getElementById('scriptCount').innerText = allScripts.length;
+        renderScripts(getQuery());
+    } catch (e) { /* أي خطأ هنا لا يوقف تحميل الصفحة — Firebase هيكمل عادي بعد كده */ }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const q = new URLSearchParams(location.search).get('search') || '';
     if (q) document.getElementById('searchScripts').value = q;
+    renderStaticFallback();
     loadScripts();
 });
 
