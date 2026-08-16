@@ -308,6 +308,35 @@ header { flex: none; }
 .message-row.user .msg-avatar { background: var(--nova-gradient); color: white; font-weight: 900; }
 .message-row.nova .msg-avatar { background: rgba(139,92,246,0.18); border: 1px solid rgba(139,92,246,0.3); }
 
+.msg-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+.message-row.user .msg-col { align-items: flex-end; }
+.message-row.nova .msg-col { align-items: flex-start; }
+
+.msg-copy-btn {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: var(--nova-text-dim);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 6px;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    margin: 0;
+    opacity: 0.75;
+}
+.msg-copy-btn:active { opacity: 1; transform: scale(0.96); }
+.msg-copy-btn.copied { color: var(--nova-success); opacity: 1; }
+
 .msg-bubble {
     min-width: 0;
     padding: 11px 14px;
@@ -761,14 +790,48 @@ function appendMessage(text, sender) {
     avatar.className = 'msg-avatar';
     avatar.innerText = sender === 'user' ? userIcon : '🤖';
 
+    const col = document.createElement('div');
+    col.className = 'msg-col';
+
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble';
     bubble.innerHTML = sender === 'nova' ? renderRichText(text) : escapeHtml(text);
 
+    const msgCopyBtn = document.createElement('button');
+    msgCopyBtn.className = 'msg-copy-btn';
+    msgCopyBtn.innerHTML = '<span class="mc-icon">📋</span><span class="mc-text">نسخ الرسالة</span>';
+    msgCopyBtn.onclick = () => copyToClipboard(text, msgCopyBtn, '.mc-icon', '.mc-text', 'نسخ الرسالة');
+
+    col.appendChild(bubble);
+    col.appendChild(msgCopyBtn);
+
     row.appendChild(avatar);
-    row.appendChild(bubble);
+    row.appendChild(col);
     chatScroll.appendChild(row);
     return row;
+}
+
+/**
+ * دالة نسخ عامة تستخدم للرسالة كاملة وبلوكات الكود مع بعض
+ */
+function copyToClipboard(text, btn, iconSel, textSel, resetLabel) {
+    const icon = btn.querySelector(iconSel);
+    const label = btn.querySelector(textSel);
+    const done = () => {
+        btn.classList.add('copied');
+        icon.innerText = '✅';
+        label.innerText = 'تم النسخ';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            icon.innerText = '📋';
+            label.innerText = resetLabel;
+        }, 1600);
+    };
+    if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else {
+        fallbackCopy(text, done);
+    }
 }
 
 /* ================================================================
