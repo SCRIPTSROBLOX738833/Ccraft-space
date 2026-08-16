@@ -536,6 +536,9 @@ function toggleCodePreview(btn) {
     <!-- Scripts Grid -->
 <div class="scripts-grid" id="scriptsList">
 </div>
+<div style="text-align:center;margin-top:18px">
+    <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s">⬇️ عرض المزيد</button>
+</div>
 
 </div>
 
@@ -681,6 +684,10 @@ document.querySelectorAll('[data-key]').forEach(btn => {
     });
 });
 
+const PAGE_SIZE = 8;
+let visibleCount = PAGE_SIZE;
+let currentResults = [];
+
 function renderScripts(query = '') {
     const list = document.getElementById('scriptsList');
     list.innerHTML = '';
@@ -710,6 +717,10 @@ function renderScripts(query = '') {
     results = sortScripts(results);
     document.getElementById('resultsCount').innerText = results.length;
 
+    // 🔄 أي تغيير في البحث أو الفلاتر بيرجّع العدد الظاهر لأول 8 من جديد
+    currentResults = results;
+    visibleCount = PAGE_SIZE;
+
     if (!results.length) {
         list.innerHTML = `
             <div class="empty-state">
@@ -717,13 +728,22 @@ function renderScripts(query = '') {
                 <h3>لا توجد نتائج</h3>
                 <p>جرّب كلمات مختلفة أو استخدم البحث الذكي 🤖</p>
             </div>`;
+        document.getElementById('loadMoreBtn').style.display = 'none';
         return;
     }
 
+    renderVisibleCards();
+}
+
+function renderVisibleCards() {
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = '';
+
     const now = Date.now();
     const isAiSearch = !!filteredIds;
+    const slice = currentResults.slice(0, visibleCount);
 
-    results.forEach((s, i) => {
+    slice.forEach((s, i) => {
         const isNew      = (now - (s.timestamp||0)) < 3 * 24 * 3600 * 1000;
         const isAiMatch  = isAiSearch;
         const avg    = s.votes ? (s.rating / s.votes) : 0;
@@ -876,7 +896,20 @@ function renderScripts(query = '') {
 
         list.appendChild(card);
     });
+
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (visibleCount < currentResults.length) {
+        loadMoreBtn.style.display = 'inline-block';
+        loadMoreBtn.innerText = `⬇️ عرض المزيد (${currentResults.length - visibleCount} متبقي)`;
+    } else {
+        loadMoreBtn.style.display = 'none';
+    }
 }
+
+document.getElementById('loadMoreBtn').addEventListener('click', () => {
+    visibleCount += PAGE_SIZE;
+    renderVisibleCards();
+});
 
 function escHTML(s) {
     return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
