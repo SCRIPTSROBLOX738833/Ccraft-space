@@ -378,7 +378,7 @@ body {
         if (tagsRow) {
             const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             tagsRow.innerHTML = data.verified
-                ? `<span class="tag tag-verified">✅ موثّق من الإدارة</span>`
+                ? `<span class="tag tag-verified"><svg width="13" height="13" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:-2px;margin-left:4px"><defs><linearGradient id="vgSingle" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vgSingle)"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>موثّق من الإدارة</span>`
                 : `<span class="tag tag-unverified">⚠️ غير موثّق</span>`;
             tagsRow.innerHTML += `<span class="tag tag-cat">📁 ${esc(data.category||'—')}</span>`;
             tagsRow.innerHTML += data.map
@@ -442,6 +442,7 @@ body {
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, set, push, remove, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { guardAgainstBanned } from "./auth-guard.js";
 
 const firebaseConfig = {
     apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -455,6 +456,7 @@ const firebaseConfig = {
 };
 
 const app  = initializeApp(firebaseConfig);
+guardAgainstBanned(app);
 const db   = getDatabase(app);
 const auth = getAuth(app);
 
@@ -621,7 +623,7 @@ async function loadScript() {
 
     const tagsRow = document.getElementById('tagsRow');
     tagsRow.innerHTML = scriptVerified
-        ? `<span class="tag tag-verified">✅ موثّق من الإدارة</span>`
+        ? `<span class="tag tag-verified"><svg width="13" height="13" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:-2px;margin-left:4px"><defs><linearGradient id="vgSingle" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vgSingle)"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>موثّق من الإدارة</span>`
         : `<span class="tag tag-unverified">⚠️ غير موثّق</span>`;
     tagsRow.innerHTML += `<span class="tag tag-cat">📁 ${escHTML(data.category||'—')}</span>`;
     tagsRow.innerHTML += data.map
