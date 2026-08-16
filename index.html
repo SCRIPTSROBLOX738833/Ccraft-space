@@ -798,7 +798,7 @@ header { display: none; }
         <button class="nav-btn c-orange"  onclick="location.href='publish.html'">   <span class="nb-icon">📤</span><span class="nb-label">نشر سكربت</span></button>
         <button class="nav-btn c-pink"    onclick="location.href='community.html'"><span class="nb-icon">🗣️</span><span class="nb-label">المجتمع</span></button>
         <button class="nav-btn c-rose"    onclick="window.open('https://t.me/cCraftspace','_blank')"><span class="nb-icon">📢</span><span class="nb-label">تلجرام</span></button>
-        <button class="nav-btn c-apk"     onclick="location.href='chat.html'">      <span class="nav-btn-badge">جديد</span><span class="nb-icon">💬</span><span class="nb-label">شات</span></button>
+        <button class="nav-btn c-apk"     onclick="location.href='apks.html'">      <span class="nav-btn-badge">جديد</span><span class="nb-icon">📱</span><span class="nb-label">APK موديفايد</span></button>
         <button class="nav-btn c-purple"  onclick="location.href='hacks.html'">     <span class="nb-icon">⚡</span><span class="nb-label">هاكات</span></button>
 
         <div class="nav-group-label"><span>💰 التبادل</span></div>
@@ -812,7 +812,6 @@ header { display: none; }
         <div class="nav-group-label"><span>🛠️ أدوات</span></div>
         <button class="nav-btn c-cyan"    onclick="location.href='nova.html'">      <span class="nb-icon">🤖</span><span class="nb-label">NOVA AI</span></button>
         <button class="nav-btn c-safety"  onclick="location.href='script-safety-check.html'"><span class="nb-icon">🛡️</span><span class="nb-label">فحص أمان سكربتات</span></button>
-        <button class="nav-btn c-apk"     onclick="location.href='apks.html'">      <span class="nav-btn-badge">جديد</span><span class="nb-icon">📱</span><span class="nb-label">APK موديفايد</span></button>
 
         <div class="nav-group-label"><span>👤 حسابك</span></div>
         <button class="nav-btn c-violet"  onclick="location.href='profile.html'">   <span class="nb-icon">👤</span><span class="nb-label">بروفايلي</span></button>
@@ -906,6 +905,7 @@ header { display: none; }
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { guardAgainstBanned } from "./auth-guard.js";
 
 const fc = {
     apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -918,6 +918,7 @@ const fc = {
     measurementId:"G-MHDM7YYYBN"
 };
 const app = getApps().length ? getApp() : initializeApp(fc), db = getDatabase(app), auth = getAuth(app);
+guardAgainstBanned(app);
 let notifUid = null;
 
 (function(){
