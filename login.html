@@ -65,7 +65,7 @@ import {
     signOut,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -92,8 +92,19 @@ function showMessage(text, isError = true) {
 }
 
 // مراقبة حالة المصادقة
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
+        // 🚫 تحقق إن الحساب مش محظور — لو محظور، خروج فوري ومنعه من استخدام أي حاجة
+        try {
+            const banSnap = await get(ref(db, `users/${user.uid}/banned`));
+            if (banSnap.exists() && banSnap.val() === true) {
+                await signOut(auth);
+                localStorage.removeItem("currentUser");
+                showMessage("🚫 حسابك محظور من CCRAFT SPACE. لو ده خطأ، تواصل مع الإدارة.");
+                return;
+            }
+        } catch (e) { /* لو التحقق فشل لأي سبب، منكملش تسجيل دخول بأمان */ }
+
         localStorage.setItem("currentUser", user.uid);
         showLoggedInView(user);
     } else {
