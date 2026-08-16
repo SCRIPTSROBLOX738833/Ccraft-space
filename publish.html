@@ -319,6 +319,7 @@
   import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
   import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+  import { guardAgainstBanned } from "./auth-guard.js";
 
   const firebaseConfig = {
     apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -332,6 +333,7 @@
   };
 
   const app  = initializeApp(firebaseConfig);
+  guardAgainstBanned(app);
   const db   = getDatabase(app);
   const auth = getAuth(app);
 
