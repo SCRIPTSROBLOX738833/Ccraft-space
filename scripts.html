@@ -490,7 +490,7 @@ function toggleCodePreview(btn) {
         <div class="search-wrap">
             <span class="search-icon">🔍</span>
             <input type="text" id="searchScripts" placeholder="ابحث عن اسم سكربت، قسم، ماب، أو تاج...">
-            <button class="ai-search-btn" id="aiSearchBtn" title="بحث ذكي بالذكاء الاصطناعي">
+            <button class="ai-search-btn" id="aiSearchBtn" title="بحث ذكي بواسطة Nova AI">
                 🤖 <span>بحث ذكي</span>
             </button>
         </div>
@@ -569,6 +569,9 @@ const db  = getDatabase(app);
 const auth = getAuth(app);
 let currentUser = null;
 onAuthStateChanged(auth, user => { currentUser = user; });
+
+// عنوان الباك إند بتاع Nova AI — نفس السيرفر المستخدم في nova.html
+const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
 
 // 🔔 إرسال إشعار لصاحب السكربت (لايك) — ما بيبعتش لنفسه، ومحتاج المستخدم يكون مسجل دخول عشان نعرف اسمه
 function notifyAuthor(authorUid, text) {
@@ -981,7 +984,11 @@ function parseIntent(query) {
     return intent;
 }
 
-function smartSearch(query) {
+/* ============================================================
+   🔍 البحث المحلي (Fallback) — بيشتغل من غير إنترنت/سيرفر،
+   وبيستخدم لو Nova مش متاح أو حصل rate limit
+   ============================================================ */
+function smartSearchLocal(query) {
     if (!query || !allScripts.length) return [];
 
     const qNorm   = normalizeAr(query);
@@ -1020,6 +1027,44 @@ function smartSearch(query) {
     return results.sort((a, b) => b._score - a._score);
 }
 
+/* ============================================================
+   🤖 البحث الذكي المدعوم من Nova AI
+   ----------------------------------------------------------------
+   بيبعت طلب البحث + قائمة مختصرة من السكربتات (من غير الكود) لباك
+   إند Nova، والموديل بيرجع الـ IDs المطابقة بأي ترتيب كلمات كتبها
+   المستخدم (مثلاً "سكربت كيبورد" و"كيبورد سكربت" بيدوا نفس النتيجة).
+   لو فشل الاتصال أو حصل rate limit، بيرجع تلقائيًا للبحث المحلي.
+   ============================================================ */
+async function novaSearch(query) {
+    const compactList = allScripts.map(s => ({
+        id: s.id,
+        title: s.title || '',
+        category: s.category || '',
+        map: s.map || '',
+        tags: s.tags || []
+    }));
+
+    const res = await fetch(`${NOVA_URL}/ai-search-scripts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, scripts: compactList })
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (data.error === 'rate_limited') {
+        throw new Error('rate_limited');
+    }
+
+    const ids = Array.isArray(data.ids) ? data.ids : [];
+    // نحول الـ ids المرتبة لنفس شكل نتائج البحث المحلي (id + _score) عشان الترتيب يتحافظ عليه
+    return ids
+        .map(id => allScripts.find(s => s.id === id))
+        .filter(Boolean)
+        .map((s, idx) => ({ ...s, _score: ids.length - idx }));
+}
+
 function highlightMatch(text, query) {
     if (!query || !text) return escHTML(text);
     const safe = escHTML(text);
@@ -1038,12 +1083,19 @@ async function aiSearch() {
     const list = document.getElementById('scriptsList');
     list.innerHTML = `<div class="ai-thinking">
         <div class="ai-dots"><span></span><span></span><span></span></div>
-        <span>يحلل البحث...</span>
+        <span>Nova بتحلل البحث...</span>
     </div>`;
 
-    await new Promise(r => setTimeout(r, 350));
+    let results = [];
+    let usedFallback = false;
 
-    const results = smartSearch(query);
+    try {
+        results = await novaSearch(query);
+    } catch (e) {
+        // فشل الاتصال بـ Nova (رفض، rate limit، أو مفيش إنترنت) -> نرجع للبحث المحلي
+        usedFallback = true;
+        results = smartSearchLocal(query);
+    }
 
     if (results.length > 0) {
         filteredIds = results.map(s => s.id);
@@ -1054,7 +1106,9 @@ async function aiSearch() {
         window.__aiScoreMap = scoreMap;
 
         const intent = parseIntent(query);
-        let bannerMsg = `🤖 ${results.length} نتيجة`;
+        let bannerMsg = usedFallback
+            ? `🔍 ${results.length} نتيجة (بحث محلي — Nova مش متاح دلوقتي)`
+            : `🤖 ${results.length} نتيجة من Nova AI`;
         if (intent.map)      bannerMsg += ` · ماب: ${intent.map}`;
         if (intent.category) bannerMsg += ` · قسم: ${intent.category}`;
 
