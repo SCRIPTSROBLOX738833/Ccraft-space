@@ -117,7 +117,7 @@ body {
 .cw-avatar { width: 38px; height: 38px; border-radius: 50%; flex: 0 0 38px; overflow: hidden; background: linear-gradient(135deg,#8b5cf6,#00bcd4); color: #fff; font-weight: 900; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; }
 .cw-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cw-body { flex: 1; min-width: 0; }
-#commentInput { width: 100%; background: transparent; border: none; outline: none; color: #e5e5f5; font-family: 'Tajawal', sans-serif; font-size: 0.92rem; margin: 0; direction: rtl; resize: none; line-height: 1.6; padding: 6px 2px; }
+#commentInput { width: 100%; background: transparent; border: none; outline: none; color: #e5e5f5; font-family: 'Tajawal', sans-serif; font-size: 0.92rem; margin: 0; direction: rtl; padding: 8px 2px; }
 #commentInput::placeholder { color: #45455f; }
 .cw-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
 .comment-count-hint { font-size: 0.68rem; color: #45455f; font-family: 'Fira Code', monospace; }
@@ -125,26 +125,25 @@ body {
 #submitComment:hover { background: linear-gradient(135deg, #8b5cf6, #6d28d9); transform: translateY(-1px); filter: none; }
 #submitComment:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-#comments { display: flex; flex-direction: column; gap: 4px; }
-.cmt-row { display: flex; gap: 12px; padding: 16px 8px; border-radius: 14px; transition: background 0.15s; animation: commentSlide 0.35s ease both; }
-.cmt-row:hover { background: rgba(255,255,255,0.025); }
-.cmt-pic { width: 40px; height: 40px; border-radius: 50%; flex: 0 0 40px; overflow: hidden; background: linear-gradient(135deg,#8b5cf6,#00bcd4); color: #ffffff; font-weight: 900; font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid rgba(255,255,255,0.06); transition: border-color 0.2s; }
-.cmt-pic:hover { border-color: rgba(139,92,246,0.4); }
+#comments { display: flex; flex-direction: column; gap: 10px; }
+.cmt-row { position: relative; display: flex; gap: 12px; padding: 14px 16px 14px 14px; border-radius: 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); transition: border-color 0.2s, transform 0.2s; animation: commentSlide 0.3s ease both; overflow: hidden; }
+.cmt-row::before { content: ''; position: absolute; top: 0; right: 0; width: 3px; height: 100%; background: linear-gradient(to bottom, #8b5cf6, #00f2fe); opacity: 0.6; }
+.cmt-row:hover { border-color: rgba(139,92,246,0.25); transform: translateX(-2px); }
+.cmt-pic { width: 42px; height: 42px; border-radius: 12px; flex: 0 0 42px; overflow: hidden; background: linear-gradient(135deg,#8b5cf6,#00bcd4); color: #ffffff; font-weight: 900; font-size: 1.05rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .cmt-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cmt-main { flex: 1; min-width: 0; }
-.cmt-bubble { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px 14px 14px 4px; padding: 10px 14px; }
-.cmt-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
-.cmt-user { font-size: 0.85rem; font-weight: 800; color: #e5e5f5; cursor: pointer; }
+.cmt-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 5px; }
+.cmt-user { font-size: 0.86rem; font-weight: 900; color: #e5e5f5; cursor: pointer; }
 .cmt-user:hover { color: #a78bfa; }
-.cmt-del { margin-right: auto; background: none; border: none; color: #f87171; cursor: pointer; font-size: 0.68rem; font-weight: 700; font-family: 'Tajawal', sans-serif; padding: 2px 4px; opacity: 0.55; transition: opacity 0.15s; }
+.cmt-when { font-size: 0.68rem; color: #45455f; }
+.cmt-del { margin-right: auto; background: none; border: none; color: #f87171; cursor: pointer; font-size: 0.68rem; font-weight: 700; font-family: 'Tajawal', sans-serif; padding: 2px 6px; opacity: 0.5; transition: opacity 0.15s; flex-shrink: 0; }
 .cmt-del:hover { opacity: 1; }
-.cmt-msg { font-size: 0.88rem; color: #d4d4e6; line-height: 1.65; word-break: break-word; margin: 0; }
-.cmt-when { font-size: 0.66rem; color: #45455f; margin-top: 5px; margin-right: 4px; }
+.cmt-msg { font-size: 0.89rem; color: #c4c4dc; line-height: 1.7; word-break: break-word; margin: 0; }
 
 .no-comments { text-align: center; padding: 34px 20px; color: #383854; font-size: 0.85rem; }
 .no-comments .nc-icon { font-size: 2.2rem; display: block; margin-bottom: 10px; }
 
-.cmt-load-more { display: block; margin: 8px auto 2px; background: rgba(139,92,246,0.08); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); border-radius: 50px; padding: 8px 22px; font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
+.cmt-load-more { display: block; margin: 10px auto 2px; background: rgba(139,92,246,0.08); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); border-radius: 50px; padding: 8px 22px; font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
 .cmt-load-more:hover { background: rgba(139,92,246,0.16); transform: none; filter: none; }
 
 @media (max-width: 740px) {
@@ -283,7 +282,7 @@ body {
             <div class="comment-input-wrap">
                 <div class="cw-avatar" id="cwAvatar">؟</div>
                 <div class="cw-body">
-                    <textarea id="commentInput" rows="1" maxlength="300" placeholder="شاركنا رأيك في هذا السكربت..."></textarea>
+                    <input type="text" id="commentInput" maxlength="300" placeholder="شاركنا رأيك في هذا السكربت...">
                     <div class="cw-footer">
                         <span class="comment-count-hint"><span id="commentCharCount">0</span>/300</span>
                         <button id="submitComment">إرسال ↵</button>
@@ -780,9 +779,6 @@ function renderComments() {
         const main = document.createElement('div');
         main.className = 'cmt-main';
 
-        const bubble = document.createElement('div');
-        bubble.className = 'cmt-bubble';
-
         const head = document.createElement('div');
         head.className = 'cmt-head';
 
@@ -791,6 +787,11 @@ function renderComments() {
         userEl.textContent = c.name || 'مجهول';
         userEl.onclick = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
         head.appendChild(userEl);
+
+        const whenEl = document.createElement('span');
+        whenEl.className = 'cmt-when';
+        whenEl.textContent = c.timestamp ? timeAgoAr(c.timestamp) : '';
+        head.appendChild(whenEl);
 
         if (canDelete) {
             const delBtn = document.createElement('button');
@@ -810,15 +811,8 @@ function renderComments() {
         msgEl.className = 'cmt-msg';
         msgEl.textContent = c.text;
 
-        bubble.appendChild(head);
-        bubble.appendChild(msgEl);
-
-        const whenEl = document.createElement('div');
-        whenEl.className = 'cmt-when';
-        whenEl.textContent = c.timestamp ? timeAgoAr(c.timestamp) : '';
-
-        main.appendChild(bubble);
-        main.appendChild(whenEl);
+        main.appendChild(head);
+        main.appendChild(msgEl);
         row.appendChild(pic);
         row.appendChild(main);
         commentsDiv.appendChild(row);
@@ -843,8 +837,6 @@ const cwAvatarEl = document.getElementById('cwAvatar');
 
 commentInputEl.addEventListener('input', () => {
     commentCharCountEl.innerText = commentInputEl.value.length;
-    commentInputEl.style.height = 'auto';
-    commentInputEl.style.height = commentInputEl.scrollHeight + 'px';
 });
 
 // 🖼️ صورة المستخدم في صندوق كتابة التعليق نفسه
@@ -895,7 +887,6 @@ document.getElementById('submitComment').addEventListener('click', async () => {
         // 🔔 إشعار لصاحب السكربت بالتعليق الجديد
         notifyAuthor('comment', `💬 ${commenterName} علّق على سكربتك: ${scriptTitleForNotif}`);
         inp.value = '';
-        inp.style.height = 'auto';
         commentCharCountEl.innerText = '0';
     } catch (e) {
         alert('❌ تعذّر إرسال التعليق، حاول تاني');
@@ -906,7 +897,7 @@ document.getElementById('submitComment').addEventListener('click', async () => {
 });
 
 commentInputEl.addEventListener('keypress', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('submitComment').click(); }
+    if (e.key === 'Enter') document.getElementById('submitComment').click();
 });
 
 function copyCode() {
