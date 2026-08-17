@@ -25,4 +25,4 @@ Disallow: /community.html
 Disallow: /partners.html
 Disallow: /search.html
 
-Sitemap: https://ccraftspace.ddnsking.com/mysites.xml
+Sitemap: https://ccraftspace.ddnsking.com/sitemap.xml
