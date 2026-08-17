@@ -1041,7 +1041,8 @@ async function novaSearch(query) {
         title: s.title || '',
         category: s.category || '',
         map: s.map || '',
-        tags: s.tags || []
+        tags: s.tags || [],
+        description: s.description || ''
     }));
 
     const res = await fetch(`${NOVA_URL}/ai-search-scripts`, {
