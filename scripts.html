@@ -1053,6 +1053,8 @@ async function novaSearch(query) {
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
+    console.log('%c[Nova Search] الرد الخام:', 'color:#8b5cf6;font-weight:bold', data);
+    console.log('%c[Nova Search] عدد السكربتات المرسلة:', 'color:#8b5cf6;font-weight:bold', compactList.length);
 
     if (data.error === 'rate_limited') {
         throw new Error('rate_limited');
@@ -1094,6 +1096,7 @@ async function aiSearch() {
         results = await novaSearch(query);
     } catch (e) {
         // فشل الاتصال بـ Nova (رفض، rate limit، أو مفيش إنترنت) -> نرجع للبحث المحلي
+        console.error('%c[Nova Search] فشل الاتصال:', 'color:#f87171;font-weight:bold', e);
         usedFallback = true;
         results = smartSearchLocal(query);
     }
@@ -1121,7 +1124,8 @@ async function aiSearch() {
 
     } else {
         filteredIds = null;
-        showAiBanner(`⚠️ لا نتائج دقيقة لـ "${escHTML(query)}" — عارض الكل`);
+        const source = usedFallback ? '(بحث محلي — Nova مش متاح دلوقتي)' : '(بحث Nova AI)';
+        showAiBanner(`⚠️ لا نتائج دقيقة لـ "${escHTML(query)}" ${source} — عارض الكل`);
         renderScripts('');
     }
 
