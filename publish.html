@@ -169,6 +169,9 @@
     }
     .tag-chip:hover { background:rgba(139,92,246,0.22); transform:none; filter:none; }
 
+    /* ---- Add tag button ---- */
+    #addTagBtn { white-space: nowrap; padding: 10px 18px; }
+
   </style>
 <script src="https://www.google.com/recaptcha/api.js?render=6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7"></script>
 </head>
@@ -239,7 +242,8 @@
     <div class="key-section">
         <label class="key-label">🏷️ تاجات السكربت <span class="key-optional-tag">اختياري</span></label>
         <div class="custom-map-row">
-            <input type="text" id="tagInput" placeholder="اكتب تاج واضغط Enter (مثال: ESP، سرعة، مجاني)...">
+            <input type="text" id="tagInput" placeholder="اكتب تاج واضغط Enter أو دوس إضافة (مثال: ESP، سرعة، مجاني)...">
+            <button type="button" class="no-map-btn" id="addTagBtn">➕ إضافة</button>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:8px" id="tagsPreview"></div>
         <div class="key-hint">التاجات بتساعد الزوار يلاقوا سكربتك بسهولة بالبحث والفلترة.</div>
@@ -419,6 +423,7 @@
      ============================================================ */
   const tagInput   = document.getElementById('tagInput');
   const tagsPreview = document.getElementById('tagsPreview');
+  const addTagBtn   = document.getElementById('addTagBtn');
 
   function renderTags() {
     tagsPreview.innerHTML = scriptTags.map((t,i) =>
@@ -431,17 +436,24 @@
     });
   }
 
+  function addTag() {
+    const val = tagInput.value.trim().replace(/^#/, '');
+    if (val && !scriptTags.includes(val) && scriptTags.length < 8) {
+        scriptTags.push(val);
+        renderTags();
+    }
+    tagInput.value = '';
+    tagInput.focus();
+  }
+
   tagInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        const val = tagInput.value.trim().replace(/^#/, '');
-        if (val && !scriptTags.includes(val) && scriptTags.length < 8) {
-            scriptTags.push(val);
-            renderTags();
-        }
-        tagInput.value = '';
+        addTag();
     }
   });
+
+  addTagBtn.addEventListener('click', addTag);
 
   /* ============================================================
      Image Upload System
