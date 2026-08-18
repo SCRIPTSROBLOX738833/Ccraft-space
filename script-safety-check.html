@@ -61,23 +61,47 @@
 .match-item .mi-name { font-size: 0.84rem; font-weight: 800; color: var(--text-main); }
 .match-item .mi-reason { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; }
 
-/* ---- Recent flagged list ---- */
-.sec-title {
-    font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;
-    letter-spacing: 1px; display: flex; align-items: center; gap: 10px; margin: 30px 0 14px;
+/* ---- Request add script ---- */
+.request-card {
+    background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 22px;
+    padding: 22px; margin-bottom: 20px; text-align: center; animation: fadeIn 0.4s ease both;
 }
-.sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
-
-.flagged-item {
-    background: var(--bg-card); border: 1px solid var(--border-color); border-left: 3px solid var(--danger);
-    border-radius: 14px; padding: 14px 18px; margin-bottom: 10px; animation: fadeIn 0.4s ease both;
+.request-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 14px; }
+.request-btn {
+    background: transparent; color: var(--primary); border: 1.5px solid var(--primary);
+    border-radius: 14px; padding: 12px 22px; font-family: 'Tajawal', sans-serif; font-weight: 800;
+    font-size: 0.86rem; cursor: pointer; transition: var(--transition);
 }
-.flagged-item .fi-name { font-size: 0.88rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
-.flagged-item .fi-reason { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 6px; }
-.flagged-item .fi-date { font-size: 0.68rem; color: var(--text-muted); opacity: 0.7; }
+.request-btn:hover:not(:disabled) { background: var(--primary); color: white; transform: translateY(-2px); }
+.request-btn:disabled { opacity: 0.55; cursor: default; transform: none; }
 
-.empty-note { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
-.loading-note { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.85rem; }
+/* ---- Modal ---- */
+.modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    align-items: center; justify-content: center; z-index: 999; padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+    background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px;
+    padding: 24px; width: 100%; max-width: 420px; animation: fadeIn 0.25s ease both;
+}
+.modal-box h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 14px; }
+.modal-box label { display: block; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; }
+.modal-box input, .modal-box textarea {
+    width: 100%; background: rgba(0,0,0,0.28); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 11px 14px; color: var(--text-main); font-family: 'Tajawal', sans-serif;
+    font-size: 0.86rem; outline: none; margin-bottom: 14px; direction: rtl; resize: vertical;
+}
+.modal-box input:focus, .modal-box textarea:focus { border-color: var(--primary); }
+.modal-actions { display: flex; gap: 10px; }
+.modal-actions button {
+    flex: 1; border: none; border-radius: 12px; padding: 12px; font-family: 'Tajawal', sans-serif;
+    font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: var(--transition);
+}
+.modal-send { background: var(--accent-gradient); color: white; }
+.modal-cancel { background: rgba(255,255,255,0.06); color: var(--text-main); }
+.modal-note { font-size: 0.74rem; color: var(--text-muted); margin-top: 4px; display: none; }
+.modal-note.show { display: block; }
 
 .footer-note {
     margin-top: 26px; font-size: 0.76rem; color: var(--text-muted); text-align: center;
@@ -108,7 +132,7 @@
 
     <div class="search-card">
         <div class="search-row">
-            <input type="text" id="scriptInput" placeholder="اسم السكربت..." autocomplete="off">
+            <input type="text" id="scriptInput" placeholder="السكربت..." autocomplete="off">
             <button id="checkBtn">🔍 فحص</button>
         </div>
 
@@ -119,8 +143,10 @@
         </div>
     </div>
 
-    <div class="sec-title">🚩 آخر السكربتات المُحذّر منها</div>
-    <div id="recentFlagged"><div class="loading-note">⏳ جارٍ التحميل...</div></div>
+    <div class="request-card">
+        <p>مش لاقي السكربت اللي بتدور عليه؟ ابعت طلب لإدارة CCRAFT SPACE عشان يضيفوه أو يفحصوه.</p>
+        <button class="request-btn" id="openRequestBtn">➕ طلب إضافة سكربت</button>
+    </div>
 
     <p class="footer-note">
         نتيجة "لم يتم الإبلاغ عنه" معناها إن الإدارة لسه ما حذّرتش منه — مش شهادة أمان 100%.
@@ -129,9 +155,24 @@
 
 </div>
 
+<div class="modal-overlay" id="requestModal">
+    <div class="modal-box">
+        <h3>➕ طلب إضافة سكربت</h3>
+        <label for="reqName">اسم السكربت</label>
+        <input type="text" id="reqName" placeholder="اكتب اسم السكربت هنا...">
+        <label for="reqNote">ملاحظة (اختياري)</label>
+        <textarea id="reqNote" rows="3" placeholder="لينك السكربت، سبب الشك، أو أي تفاصيل تانية..."></textarea>
+        <div class="modal-actions">
+            <button class="modal-send" id="sendRequestBtn">إرسال للإدارة</button>
+            <button class="modal-cancel" id="cancelRequestBtn">إلغاء</button>
+        </div>
+        <div class="modal-note" id="requestNote"></div>
+    </div>
+</div>
+
 <script type="module">
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 const fc = {apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1",measurementId:"G-MHDM7YYYBN"};
 const app = getApps().length ? getApp() : initializeApp(fc);
@@ -148,37 +189,10 @@ function toKey(normalizedName) {
 function escapeHTML(str) {
     return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
-function formatDate(iso) {
-    try { return new Date(iso).toLocaleDateString('ar-EG', { year:'numeric', month:'short', day:'numeric' }); }
-    catch { return ''; }
-}
 
 async function loadUnsafeList() {
     const snap = await get(ref(db, 'unsafeScripts'));
     unsafeMap = snap.exists() ? snap.val() : {};
-    renderRecent();
-}
-
-function renderRecent() {
-    const box = document.getElementById('recentFlagged');
-    const entries = Object.values(unsafeMap).sort((a, b) => new Date(b.reportedAt||0) - new Date(a.reportedAt||0)).slice(0, 10);
-
-    if (!entries.length) {
-        box.innerHTML = `<div class="empty-note">مفيش سكربتات متحذّر منها لحد دلوقتي 🎉</div>`;
-        return;
-    }
-
-    box.innerHTML = '';
-    entries.forEach(e => {
-        const item = document.createElement('div');
-        item.className = 'flagged-item';
-        item.innerHTML = `
-            <div class="fi-name">⚠️ ${escapeHTML(e.originalName || '—')}</div>
-            <div class="fi-reason">${escapeHTML(e.reason || 'تم الإبلاغ عنه من قبل الإدارة')}</div>
-            <div class="fi-date">🕐 ${formatDate(e.reportedAt)}</div>
-        `;
-        box.appendChild(item);
-    });
 }
 
 function showResult(type, data, matches) {
@@ -230,6 +244,62 @@ async function checkScript() {
 
     btn.disabled = false; btn.textContent = '🔍 فحص';
 }
+
+/* ---- Request-to-add-script modal ---- */
+const modal        = document.getElementById('requestModal');
+const openBtn       = document.getElementById('openRequestBtn');
+const cancelBtn      = document.getElementById('cancelRequestBtn');
+const sendBtn        = document.getElementById('sendRequestBtn');
+const reqNameInput  = document.getElementById('reqName');
+const reqNoteInput  = document.getElementById('reqNote');
+const requestNote   = document.getElementById('requestNote');
+
+function openModal() {
+    modal.classList.add('show');
+    requestNote.className = 'modal-note';
+    requestNote.textContent = '';
+    reqNameInput.value = document.getElementById('scriptInput').value || '';
+    reqNoteInput.value = '';
+    reqNameInput.focus();
+}
+function closeModal() {
+    modal.classList.remove('show');
+}
+
+openBtn.addEventListener('click', openModal);
+cancelBtn.addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+async function sendRequest() {
+    const name = reqNameInput.value.trim();
+    const note = reqNoteInput.value.trim();
+
+    if (!name) { reqNameInput.focus(); return; }
+
+    sendBtn.disabled = true; sendBtn.textContent = '⏳ بيترسل...';
+
+    try {
+        const reqRef = push(ref(db, 'scriptRequests'));
+        await set(reqRef, {
+            scriptName: name,
+            note: note || null,
+            status: 'pending',
+            requestedAt: serverTimestamp()
+        });
+        requestNote.className = 'modal-note show';
+        requestNote.style.color = 'var(--success)';
+        requestNote.textContent = '✅ اتبعت الطلب للإدارة، هيتراجع قريب.';
+        setTimeout(closeModal, 1400);
+    } catch (err) {
+        requestNote.className = 'modal-note show';
+        requestNote.style.color = 'var(--danger)';
+        requestNote.textContent = '❌ حصل خطأ وإحنا بنبعت الطلب، جرّب تاني.';
+    }
+
+    sendBtn.disabled = false; sendBtn.textContent = 'إرسال للإدارة';
+}
+
+sendBtn.addEventListener('click', sendRequest);
 
 document.getElementById('checkBtn').addEventListener('click', checkScript);
 document.getElementById('scriptInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkScript(); });
