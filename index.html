@@ -791,7 +791,6 @@ header { display: none; }
         <div class="sb-item"><i class="fa-solid fa-users"></i> <span class="sb-val" id="ls-users">—</span> <span>مستخدم</span></div>
         <div class="sb-item"><i class="fa-solid fa-thumbs-up"></i> <span class="sb-val" id="ls-likes">—</span> <span>لايك</span></div>
         <div class="sb-item"><i class="fa-solid fa-circle" style="color:#4ade80;font-size:0.6em"></i> <span class="sb-val" id="ls-online">—</span> <span>أونلاين</span></div>
-        <div class="sb-item"><i class="fa-solid fa-user-plus"></i> <span class="sb-val" id="ls-newusers">—</span> <span>جديد اليوم</span></div>
         <div class="sb-item"><i class="fa-solid fa-file-circle-plus"></i> <span class="sb-val" id="ls-newscripts">—</span> <span>سكربت جديد اليوم</span></div>
     </div>
 
@@ -950,11 +949,6 @@ function startOfTodayTs(){
     return d.getTime();
 }
 
-function getEntityTs(obj){
-    // يحاول قراءة أي حقل زمني شائع بالاسم
-    return obj?.timestamp || obj?.createdAt || obj?.joinedAt || obj?.joined || obj?.registeredAt || obj?.regTimestamp || 0;
-}
-
 async function loadStats(){
     const [ss,us] = await Promise.all([get(ref(db,'scripts')), get(ref(db,'users'))]);
     const scripts = ss.exists() ? ss.val() : {};
@@ -966,9 +960,7 @@ async function loadStats(){
 
     const todayTs = startOfTodayTs();
     const newScriptsToday = Object.values(scripts).filter(s => (s.timestamp||0) >= todayTs).length;
-    const newUsersToday   = Object.values(users).filter(u => getEntityTs(u) >= todayTs).length;
     animCount('ls-newscripts', newScriptsToday);
-    animCount('ls-newusers',   newUsersToday);
 
     loadFeaturedScripts(scripts);
     loadTopUsers(users, scripts);
