@@ -16,6 +16,11 @@
     .edit-name-btn{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:4px 10px;font-size:0.72rem;font-weight:800;color:var(--primary);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);flex-shrink:0;}
     .edit-name-btn:hover{background:var(--primary-dim);transform:none;filter:none;}
     .profile-email{color:var(--text-muted);font-size:0.88rem;margin-bottom:4px;}
+    .email-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+    .email-row .profile-email{margin-bottom:0;}
+    .hide-email-btn{background:rgba(255,255,255,0.04);border:1px solid var(--border-color);border-radius:8px;padding:3px 10px;font-size:0.68rem;font-weight:800;color:var(--text-muted);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+    .hide-email-btn:hover{border-color:rgba(139,92,246,0.35);color:var(--primary);transform:none;filter:none;}
+    .hide-email-btn:disabled{opacity:0.5;cursor:default;}
     .join-date{color:var(--text-muted);font-size:0.78rem;}
     .profile-actions{display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;}
 
@@ -306,7 +311,10 @@
                 <h2 id="username">جارٍ التحميل...</h2>
                 <button class="edit-name-btn" id="editNameBtn" style="display:none" onclick="openModal()">✏️ تغيير</button>
             </div>
-            <div class="profile-email" id="userEmail"></div>
+            <div class="email-row">
+                <div class="profile-email" id="userEmail"></div>
+                <button class="hide-email-btn" id="hideEmailBtn" style="display:none"></button>
+            </div>
             <div class="join-date" id="joinDate"></div>
             <div class="join-date" id="lastNameChange" style="margin-top:2px;color:rgba(139,92,246,0.7)"></div>
             <div class="social-row" id="socialRow"></div>
@@ -465,6 +473,48 @@ function enableAvatarEditing(uid,name){
         }finally{
             wrap.classList.remove('uploading');
             input.value='';
+        }
+    };
+}
+
+/* ============================================================
+   📧 إخفاء البريد الإلكتروني
+   ----------------------------------------------------------------
+   لما المستخدم يضغط "إخفاء"، بنستبدل users/{uid}/email في قاعدة
+   البيانات باسمه الظاهر في الموقع (username) بدل الإيميل الحقيقي،
+   فأي حد (أو أي صفحة زي profile.html بتاعت زائر تاني) بيقرا من
+   الحقل ده هيشوف اليوزرنيم بس — إخفاء كامل من البيانات المعروضة.
+   حساب الدخول نفسه (Firebase Auth) مش بيتأثر، فتسجيل الدخول
+   بالإيميل يفضل شغال عادي.
+   ============================================================ */
+async function renderEmailVisibility(uid, realEmail, username){
+    const emailEl=document.getElementById('userEmail');
+    const btn=document.getElementById('hideEmailBtn');
+    btn.style.display='inline-flex';
+
+    const snap=await get(ref(db,`users/${uid}/emailHidden`));
+    const isHidden=snap.exists()&&snap.val()===true;
+
+    emailEl.innerText=isHidden?username:realEmail;
+    btn.innerHTML=isHidden?'👁️ إظهار البريد الإلكتروني':'🙈 إخفاء البريد الإلكتروني';
+
+    btn.onclick=async()=>{
+        btn.disabled=true;
+        try{
+            if(isHidden){
+                await set(ref(db,`users/${uid}/email`),realEmail);
+                await set(ref(db,`users/${uid}/emailHidden`),false);
+                showToast('✅ تم إظهار البريد الإلكتروني');
+            }else{
+                if(!confirm('هيتم إخفاء بريدك الإلكتروني بالكامل من قاعدة البيانات ويتحط اسمك بدله — أي حد يشوف بروفايلك مش هيشوف إيميلك خالص. تكمل؟')){btn.disabled=false;return;}
+                await set(ref(db,`users/${uid}/email`),username);
+                await set(ref(db,`users/${uid}/emailHidden`),true);
+                showToast('✅ تم إخفاء البريد الإلكتروني بالكامل');
+            }
+            await renderEmailVisibility(uid,realEmail,username);
+        }catch(e){
+            alert('❌ خطأ: '+e.message);
+            btn.disabled=false;
         }
     };
 }
@@ -920,7 +970,7 @@ async function loadMyProfile(user){
     renderFollowStats(user.uid);
 
     document.getElementById('username').innerText=savedUsername;
-    document.getElementById('userEmail').innerText=user.email;
+    await renderEmailVisibility(user.uid, user.email, savedUsername);
     document.getElementById('editNameBtn').style.display='inline-flex';
     const created=new Date(parseInt(user.metadata.createdAt));
     document.getElementById('joinDate').innerText=`انضم في: ${created.toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})}`;
