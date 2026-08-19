@@ -40,6 +40,22 @@ body { min-height: 100svh; }
     padding: 0 20px 80px;
 }
 
+/* أيقونات SVG عامة */
+.i {
+    width: 1em; height: 1em;
+    display: inline-block;
+    vertical-align: -0.15em;
+    flex-shrink: 0;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.i-fill { fill: currentColor; stroke: none; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
 .page-hero {
     padding: 28px 0 24px;
     display: flex;
@@ -57,6 +73,7 @@ body { min-height: 100svh; }
     background: var(--accent-gradient);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     margin: 0;
+    display: flex; align-items: center; gap: 10px;
 }
 
 .scripts-count-pill {
@@ -136,9 +153,9 @@ body { min-height: 100svh; }
 }
 
 .ai-result-banner.show { display: flex; align-items: center; gap: 8px; }
-.aib-icon { font-size: 0.9rem; flex-shrink: 0; }
+.aib-icon { font-size: 0.9rem; flex-shrink: 0; display: flex; }
 .aib-text { flex: 1; }
-.aib-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; margin: 0; font-size: 0.85rem; flex-shrink: 0; opacity: 0.6; }
+.aib-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; margin: 0; font-size: 0.85rem; flex-shrink: 0; opacity: 0.6; display: flex; }
 .aib-close:hover { color: var(--danger); opacity: 1; transform: none; filter: none; }
 
 .filter-row {
@@ -151,6 +168,7 @@ body { min-height: 100svh; }
 .filter-label {
     font-size: 0.72rem; font-weight: 800; color: var(--text-muted);
     text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+    display: flex; align-items: center; gap: 5px;
 }
 
 .filter-btn {
@@ -160,6 +178,7 @@ body { min-height: 100svh; }
     font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
     cursor: pointer; font-family: 'Tajawal', sans-serif;
     margin: 0; transition: var(--transition); white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
 }
 
 .filter-btn:hover  { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
@@ -170,7 +189,7 @@ body { min-height: 100svh; }
     margin-top: 10px; flex-wrap: wrap;
 }
 
-.sort-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+.sort-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; display: flex; align-items: center; gap: 5px; }
 
 .sort-select {
     background: var(--bg-card); border: 1px solid var(--border-color);
@@ -263,7 +282,7 @@ body { min-height: 100svh; }
     background: var(--accent-gradient); color: white;
     font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
     border-radius: 50px; flex-shrink: 0; align-self: flex-start;
-    margin-top: 2px;
+    margin-top: 2px; display: inline-flex; align-items: center; gap: 3px;
 }
 
 .sc-ai-badge {
@@ -271,7 +290,7 @@ body { min-height: 100svh; }
     border: 1px solid rgba(139,92,246,0.35); color: #a78bfa;
     font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
     border-radius: 50px; flex-shrink: 0; align-self: flex-start;
-    margin-top: 2px;
+    margin-top: 2px; display: inline-flex; align-items: center; gap: 3px;
 }
 
 .sc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -320,6 +339,7 @@ body { min-height: 100svh; }
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    display: flex; align-items: center; gap: 6px;
 }
 
 .sc-preview-btn {
@@ -335,6 +355,7 @@ body { min-height: 100svh; }
     margin: 0;
     transition: var(--transition);
     align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 6px;
 }
 
 .sc-preview-btn:hover { background: rgba(0,242,254,0.16); transform: none; filter: none; }
@@ -374,8 +395,9 @@ body { min-height: 100svh; }
 .sc-stars { display: flex; align-items: center; gap: 2px; }
 
 .sc-star {
-    cursor: pointer; font-size: 0.95rem; color: #3a3a4a;
+    cursor: pointer; color: #3a3a4a;
     transition: color 0.15s, transform 0.15s;
+    display: inline-flex;
 }
 
 .sc-star:hover { transform: scale(1.2); }
@@ -417,7 +439,8 @@ body { min-height: 100svh; }
     animation: fadeIn 0.4s ease both;
 }
 
-.empty-state .es-icon { font-size: 3rem; display: block; margin-bottom: 14px; }
+.empty-state .es-icon { font-size: 3rem; margin-bottom: 14px; display: flex; justify-content: center; }
+.empty-state .es-icon .i { width: 1em; height: 1em; }
 .empty-state h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
 .empty-state p  { font-size: 0.88rem; line-height: 1.7; }
 
@@ -463,7 +486,10 @@ body { min-height: 100svh; }
 <body>
 
 <header>
-  <button onclick="location.href='publish.html'">📤 نشر سكربت</button>
+  <button onclick="location.href='publish.html'">
+    <svg class="i" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    نشر سكربت
+  </button>
   <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
@@ -475,7 +501,9 @@ function toggleCodePreview(btn) {
     if (!full) return;
     const willOpen = !full.classList.contains('open');
     full.classList.toggle('open');
-    btn.innerText = willOpen ? '🔼 إخفاء الكود' : '👁️ معاينة سريعة';
+    btn.innerHTML = willOpen
+        ? '<svg class="i" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg> إخفاء الكود'
+        : '<svg class="i" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> معاينة سريعة';
 }
 </script>
 
@@ -484,7 +512,10 @@ function toggleCodePreview(btn) {
 
     <!-- Page Hero -->
     <div class="page-hero">
-        <h1>📜 قائمة السكربتات</h1>
+        <h1>
+            <svg class="i" viewBox="0 0 24 24" style="width:1.1em;height:1.1em"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            قائمة السكربتات
+        </h1>
         <div class="scripts-count-pill">
             إجمالي السكربتات: <span class="scp-num" id="scriptCount">—</span>
         </div>
@@ -495,32 +526,61 @@ function toggleCodePreview(btn) {
 
         <!-- Search Box -->
         <div class="search-wrap">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon">
+                <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
             <input type="text" id="searchScripts" placeholder="ابحث عن اسم سكربت، قسم، ماب، أو تاج...">
             <button class="ai-search-btn" id="aiSearchBtn" title="بحث ذكي بواسطة Nova AI">
-                🤖 <span>بحث ذكي</span>
+                <svg class="i" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+                <span>بحث ذكي</span>
             </button>
         </div>
 
         <!-- AI Banner -->
         <div class="ai-result-banner" id="aiBanner">
-            <span class="aib-icon">🤖</span>
+            <span class="aib-icon"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg></span>
             <div class="aib-text" id="aiBannerText">—</div>
-            <button class="aib-close" onclick="closeAiBanner()">✕</button>
+            <button class="aib-close" onclick="closeAiBanner()">
+                <svg class="i" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
         </div>
 
         <!-- Filters -->
         <div class="filter-row">
             <span class="filter-label">القسم:</span>
-            <button class="filter-btn active" data-cat="all">🌟 الكل</button>
-            <button class="filter-btn" data-cat="game">🎮 Game</button>
-            <button class="filter-btn" data-cat="admin">🛡️ Admin</button>
-            <button class="filter-btn" data-cat="ai">🤖 AI & NPCs</button>
-            <button class="filter-btn" data-cat="سكربت من الادارة">👑 من الإدارة</button>
-            <span class="filter-label" style="margin-right:auto">🔑 المفتاح:</span>
+            <button class="filter-btn active" data-cat="all">
+                <svg class="i" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                الكل
+            </button>
+            <button class="filter-btn" data-cat="game">
+                <svg class="i" viewBox="0 0 24 24"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><circle cx="15" cy="13" r="1"/><circle cx="18" cy="11" r="1"/><rect x="2" y="6" width="20" height="12" rx="4"/></svg>
+                Game
+            </button>
+            <button class="filter-btn" data-cat="admin">
+                <svg class="i" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+                Admin
+            </button>
+            <button class="filter-btn" data-cat="ai">
+                <svg class="i" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+                AI &amp; NPCs
+            </button>
+            <button class="filter-btn" data-cat="سكربت من الادارة">
+                <svg class="i" viewBox="0 0 24 24"><path d="M2 7l4 3 6-6 6 6 4-3-2 12H4L2 7z"/></svg>
+                من الإدارة
+            </button>
+            <span class="filter-label" style="margin-right:auto">
+                <svg class="i" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/></svg>
+                المفتاح:
+            </span>
             <button class="filter-btn active" data-key="all">الكل</button>
-            <button class="filter-btn" data-key="yes">🔒 بمفتاح</button>
-            <button class="filter-btn" data-key="no">🔓 بدون مفتاح</button>
+            <button class="filter-btn" data-key="yes">
+                <svg class="i" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                بمفتاح
+            </button>
+            <button class="filter-btn" data-key="no">
+                <svg class="i" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                بدون مفتاح
+            </button>
         </div>
 
         <!-- تاجات ديناميكية -->
@@ -528,12 +588,15 @@ function toggleCodePreview(btn) {
 
         <!-- Sort & Count -->
         <div class="sort-row">
-            <span class="sort-label">ترتيب:</span>
+            <span class="sort-label">
+                <svg class="i" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>
+                ترتيب:
+            </span>
             <select class="sort-select" id="sortSelect">
-                <option value="newest">🕐 الأحدث أولاً</option>
-                <option value="oldest">🕑 الأقدم أولاً</option>
-                <option value="likes">👍 الأكثر لايكات</option>
-                <option value="rating">⭐ الأعلى تقييماً</option>
+                <option value="newest">الأحدث أولاً</option>
+                <option value="oldest">الأقدم أولاً</option>
+                <option value="likes">الأكثر لايكات</option>
+                <option value="rating">الأعلى تقييماً</option>
             </select>
             <span class="results-info">عرض <span id="resultsCount">—</span> سكربت</span>
         </div>
@@ -546,7 +609,10 @@ function toggleCodePreview(btn) {
 <div class="scripts-grid" id="scriptsList">
 </div>
 <div style="text-align:center;margin-top:18px">
-    <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s">⬇️ عرض المزيد</button>
+    <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s">
+        <svg class="i" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+        عرض المزيد
+    </button>
 </div>
 
 </div>
@@ -579,6 +645,33 @@ onAuthStateChanged(auth, user => { currentUser = user; });
 
 // عنوان الباك إند بتاع Nova AI — نفس السيرفر المستخدم في nova.html
 const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
+
+/* ============================================================
+   🖼️ مكتبة أيقونات SVG صغيرة (بديل الإيموجيز) — بتتحقن جوه
+   الكروت اللي بتتبني ديناميكيًا من الداتا
+   ============================================================ */
+const ICONS = {
+    folder:  '<svg class="i" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+    map:     '<svg class="i" viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>',
+    lock:    '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+    unlock:  '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>',
+    tag:     '<svg class="i" viewBox="0 0 24 24"><path d="M20.59 13.41L11 3.83A2 2 0 0 0 9.59 3.2L4 3a1 1 0 0 0-1 1l.2 5.59a2 2 0 0 0 .58 1.41l9.6 9.6a2 2 0 0 0 2.82 0l4.4-4.4a2 2 0 0 0 0-2.82z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>',
+    code:    '<svg class="i" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+    eye:     '<svg class="i" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+    thumb:   '<svg class="i" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>',
+    user:    '<svg class="i" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    star:    '<svg class="i i-fill" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    starOutline: '<svg class="i" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    clipboard: '<svg class="i" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>',
+    check:   '<svg class="i" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+    heartOutline: '<svg class="i" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+    heartFill: '<svg class="i i-fill" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+    flag:    '<svg class="i" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
+    sparkle: '<svg class="i" viewBox="0 0 24 24"><path d="M12 2l1.6 6.4L20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6z"/></svg>',
+    verifiedDot: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>',
+    search:  '<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+    alert:   '<svg class="i" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+};
 
 // 🔔 إرسال إشعار لصاحب السكربت (لايك) — ما بيبعتش لنفسه، ومحتاج المستخدم يكون مسجل دخول عشان نعرف اسمه
 function notifyAuthor(authorUid, text) {
@@ -640,6 +733,7 @@ async function loadScripts() {
 
     const q = getQuery();
     renderScripts(q);
+    injectStructuredData();
 }
 
 function getQuery() {
@@ -671,7 +765,7 @@ function renderTagsFilter() {
     allScripts.forEach(s => (s.tags||[]).forEach(t => allTags.add(t)));
     if (!allTags.size) { row.style.display = 'none'; return; }
     row.style.display = 'flex';
-    row.innerHTML = `<span class="sort-label">🏷️ تاجات:</span>` +
+    row.innerHTML = `<span class="sort-label">${ICONS.tag} تاجات:</span>` +
         [...allTags].map(t => `<button type="button" class="filter-btn" data-tag="${escHTML(t)}">#${escHTML(t)}</button>`).join('');
     row.querySelectorAll('[data-tag]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -738,9 +832,9 @@ function renderScripts(query = '') {
     if (!results.length) {
         list.innerHTML = `
             <div class="empty-state">
-                <span class="es-icon">🔍</span>
+                <span class="es-icon">${ICONS.search}</span>
                 <h3>لا توجد نتائج</h3>
-                <p>جرّب كلمات مختلفة أو استخدم البحث الذكي 🤖</p>
+                <p>جرّب كلمات مختلفة أو استخدم البحث الذكي</p>
             </div>`;
         document.getElementById('loadMoreBtn').style.display = 'none';
         return;
@@ -774,8 +868,8 @@ function renderVisibleCards() {
 
         const hasKeyFlag = !!(s.hasKey || s.key);
         const keyBadge = hasKeyFlag
-            ? '<span class="sc-key-badge">🔒 يتطلب مفتاح</span>'
-            : '<span class="sc-key-badge" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>';
+            ? `<span class="sc-key-badge">${ICONS.lock} يتطلب مفتاح</span>`
+            : `<span class="sc-key-badge" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.25);color:#4ade80">${ICONS.unlock} بدون مفتاح</span>`;
         const tagBadges = (s.tags||[]).map(t => `<span class="sc-tag-badge">#${escHTML(t)}</span>`).join('');
 
         const scriptUrl = `script.html?id=${encodeURIComponent(s.id)}`;
@@ -787,37 +881,36 @@ function renderVisibleCards() {
                 <div class="sc-header">
                     <div class="sc-title">${escHTML(s.title || 'بدون عنوان')}</div>
                     ${s.verified ? `<span class="sc-verified-badge" title="سكربت موثّق من الإدارة"><svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vg-${escHTML(s.id)}" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vg-${escHTML(s.id)})"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>` : ''}
-                    ${isAiMatch ? '<span class="sc-ai-badge">🤖 AI</span>' : ''}
-                    ${isNew && !isAiMatch ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
-                    ${isNew && isAiMatch  ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
+                    ${isAiMatch ? `<span class="sc-ai-badge">${ICONS.sparkle} AI</span>` : ''}
+                    ${isNew ? `<span class="sc-new-badge">${ICONS.sparkle} جديد</span>` : ''}
                 </div>
                 <div class="sc-badges">
-                    <span class="sc-cat">📁 ${escHTML(s.category || '—')}</span>
-                    ${s.map ? `<span class="sc-map">🗺️ ${escHTML(s.map)}</span>` : ''}
+                    <span class="sc-cat">${ICONS.folder} ${escHTML(s.category || '—')}</span>
+                    ${s.map ? `<span class="sc-map">${ICONS.map} ${escHTML(s.map)}</span>` : ''}
                     ${keyBadge}
                     ${tagBadges}
                 </div>
                 <div class="sc-stats">
-                    <span class="sc-stat">👍 <strong>${s.likes||0}</strong></span>
-                    <span class="sc-stat">👁️ <strong>${s.views||0}</strong></span>
-                    <span class="sc-stat">👤 ${escHTML(s.author||'مجهول')}</span>
+                    <span class="sc-stat">${ICONS.thumb} <strong>${s.likes||0}</strong></span>
+                    <span class="sc-stat">${ICONS.eye} <strong>${s.views||0}</strong></span>
+                    <span class="sc-stat">${ICONS.user} ${escHTML(s.author||'مجهول')}</span>
                     <span style="margin-right:auto"></span>
                     <div class="sc-stars" data-id="${s.id}" data-rated="${rated}">
-                        ${[1,2,3,4,5].map(n=>`<span class="sc-star${n<=Math.round(avg)?' filled':''}" data-v="${n}">★</span>`).join('')}
+                        ${[1,2,3,4,5].map(n=>`<span class="sc-star${n<=Math.round(avg)?' filled':''}" data-v="${n}">${n<=Math.round(avg) ? ICONS.star : ICONS.starOutline}</span>`).join('')}
                         <span class="sc-avg">${s.votes ? avg.toFixed(1) : '—'}</span>
                     </div>
                 </div>
-                <div class="sc-code-snippet">💻 ${codeSnippet}${(s.code || '').length > 70 ? '…' : ''}</div>
-                <button type="button" class="sc-preview-btn" onclick="event.stopPropagation(); toggleCodePreview(this)">👁️ معاينة سريعة</button>
+                <div class="sc-code-snippet">${ICONS.code} ${codeSnippet}${(s.code || '').length > 70 ? '…' : ''}</div>
+                <button type="button" class="sc-preview-btn" onclick="event.stopPropagation(); toggleCodePreview(this)">${ICONS.eye} معاينة سريعة</button>
                 <pre class="sc-code-full" onclick="event.stopPropagation()">${codeFull}</pre>
             </div>
             <div class="sc-footer">
-                <a class="sc-btn view" href="${scriptUrl}" data-id="${s.id}">👁️ عرض</a>
-                <button class="sc-btn copy"   data-id="${s.id}">📋 نسخ</button>
+                <a class="sc-btn view" href="${scriptUrl}" data-id="${s.id}">${ICONS.eye} عرض</a>
+                <button class="sc-btn copy"   data-id="${s.id}">${ICONS.clipboard} نسخ</button>
                 <button class="sc-btn like${liked?' liked':''}" data-id="${s.id}" ${liked?'disabled':''}>
-                    ${liked?'❤️':'🤍'} <span class="lc">${s.likes||0}</span>
+                    ${liked ? ICONS.heartFill : ICONS.heartOutline} <span class="lc">${s.likes||0}</span>
                 </button>
-                <button class="sc-btn report" data-id="${s.id}" title="إبلاغ">🚩</button>
+                <button class="sc-btn report" data-id="${s.id}" title="إبلاغ">${ICONS.flag}</button>
             </div>
         `;
 
@@ -830,21 +923,24 @@ function renderVisibleCards() {
 
         card.querySelector('.sc-btn.copy').onclick = async e => {
             e.stopPropagation();
-            const id   = e.currentTarget.dataset.id;
+            const btn  = e.currentTarget;
+            const id   = btn.dataset.id;
             const raw  = codeStore.get(id) || '';
             if (!raw) { alert('لا يوجد كود لهذا السكربت'); return; }
             const code = withCopyWarning(raw, !!s.verified);
-            try {
-                await navigator.clipboard.writeText(code);
-                const btn = e.currentTarget;
-                btn.innerText = '✅ تم النسخ';
+            const setDone = () => {
+                btn.innerHTML = `${ICONS.check} تم النسخ`;
                 btn.style.background = 'rgba(74,222,128,0.15)';
                 btn.style.color = 'var(--success)';
                 setTimeout(() => {
-                    btn.innerText = '📋 نسخ';
+                    btn.innerHTML = `${ICONS.clipboard} نسخ`;
                     btn.style.background = '';
                     btn.style.color = '';
                 }, 2200);
+            };
+            try {
+                await navigator.clipboard.writeText(code);
+                setDone();
             } catch {
                 const ta = document.createElement('textarea');
                 ta.value = code;
@@ -853,8 +949,7 @@ function renderVisibleCards() {
                 ta.select();
                 document.execCommand('copy');
                 ta.remove();
-                e.currentTarget.innerText = '✅ تم';
-                setTimeout(() => { e.currentTarget.innerText = '📋 نسخ'; }, 2000);
+                setDone();
             }
         };
 
@@ -868,7 +963,7 @@ function renderVisibleCards() {
             await set(likeRef, newLikes);
             likeBtn.querySelector('.lc').innerText = newLikes;
             likeBtn.classList.add('liked');
-            likeBtn.innerHTML = `❤️ <span class="lc">${newLikes}</span>`;
+            likeBtn.innerHTML = `${ICONS.heartFill} <span class="lc">${newLikes}</span>`;
             likeBtn.disabled = true;
             localStorage.setItem(`liked_${s.id}`, 'true');
 
@@ -899,7 +994,9 @@ function renderVisibleCards() {
                 starsEl.dataset.rated = 'true';
                 const newAvg = r/v;
                 starsEl.querySelectorAll('.sc-star').forEach((st,idx) => {
-                    st.classList.toggle('filled', idx+1 <= Math.round(newAvg));
+                    const isFilled = idx+1 <= Math.round(newAvg);
+                    st.classList.toggle('filled', isFilled);
+                    st.innerHTML = isFilled ? ICONS.star : ICONS.starOutline;
                 });
                 starsEl.querySelector('.sc-avg').innerText = newAvg.toFixed(1);
             });
@@ -910,8 +1007,8 @@ function renderVisibleCards() {
 
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     if (visibleCount < currentResults.length) {
-        loadMoreBtn.style.display = 'inline-block';
-        loadMoreBtn.innerText = `⬇️ عرض المزيد (${currentResults.length - visibleCount} متبقي)`;
+        loadMoreBtn.style.display = 'inline-flex';
+        loadMoreBtn.innerHTML = `<svg class="i" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg> عرض المزيد (${currentResults.length - visibleCount} متبقي)`;
     } else {
         loadMoreBtn.style.display = 'none';
     }
@@ -989,6 +1086,31 @@ function parseIntent(query) {
 }
 
 /* ============================================================
+   🔎 ترشيح محلي واسع (عتبة منخفضة جدًا) — بيستخدم قبل ما نبعت
+   لـ Nova عشان نقلل عدد السكربتات المرسلة. مش بديل عن smartSearchLocal
+   الكامل، ده بس "تصفية أولى" عشان نوفر توكنز ونحسن دقة Nova.
+   ============================================================ */
+function broadLocalCandidates(query) {
+    if (!query || !allScripts.length) return [];
+    const qWords = normalizeAr(query).split(/\s+/).filter(w => w.length > 1);
+    if (!qWords.length) return [];
+
+    const results = [];
+    for (const s of allScripts) {
+        const haystack = normalizeAr(
+            [s.title, s.category, s.map, s.description, (s.tags || []).join(' ')].join(' ')
+        );
+        // يكفي إن كلمة واحدة بس من كلمات البحث تكون موجودة (حرفيًا أو جزء من كلمة)
+        const matchCount = qWords.filter(w => haystack.includes(w)).length;
+        if (matchCount > 0) {
+            results.push({ ...s, _preScore: matchCount });
+        }
+    }
+    // الأكتر تطابقًا في المقدمة، عشان لو أكتر من 60 نتيجة نقص الأهم
+    return results.sort((a, b) => b._preScore - a._preScore);
+}
+
+/* ============================================================
    🔍 البحث المحلي (Fallback) — بيشتغل من غير إنترنت/سيرفر،
    وبيستخدم لو Nova مش متاح أو حصل rate limit
    ============================================================ */
@@ -1034,13 +1156,17 @@ function smartSearchLocal(query) {
 /* ============================================================
    🤖 البحث الذكي المدعوم من Nova AI
    ----------------------------------------------------------------
-   بيبعت طلب البحث + قائمة مختصرة من السكربتات (من غير الكود) لباك
-   إند Nova، والموديل بيرجع الـ IDs المطابقة بأي ترتيب كلمات كتبها
-   المستخدم (مثلاً "سكربت كيبورد" و"كيبورد سكربت" بيدوا نفس النتيجة).
-   لو فشل الاتصال أو حصل rate limit، بيرجع تلقائيًا للبحث المحلي.
+   بنرشّح الأول محليًا (broadLocalCandidates) عشان نقلل عدد
+   السكربتات المرسلة، وبعدين نبعت المرشحين لباك إند Nova، والموديل
+   بيرجع الـ IDs المطابقة بأي ترتيب كلمات كتبها المستخدم (مثلاً
+   "سكربت كيبورد" و"كيبورد سكربت" بيدوا نفس النتيجة).
+   لو فشل الاتصال أو حصل rate limit، بيرجع تلقائيًا للبحث المحلي الكامل.
    ============================================================ */
 async function novaSearch(query) {
-    const compactList = allScripts.map(s => ({
+    const candidates = broadLocalCandidates(query);
+    const sourceList = candidates.length > 0 ? candidates : allScripts;
+
+    const compactList = sourceList.slice(0, 60).map(s => ({
         id: s.id,
         title: s.title || '',
         category: s.category || '',
@@ -1085,7 +1211,7 @@ async function aiSearch() {
 
     const btn = document.getElementById('aiSearchBtn');
     btn.disabled = true;
-    btn.innerHTML = '<span>⏳</span>';
+    btn.innerHTML = '<svg class="i spin" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
 
     const list = document.getElementById('scriptsList');
     list.innerHTML = `<div class="ai-thinking">
@@ -1134,7 +1260,7 @@ async function aiSearch() {
     }
 
     btn.disabled = false;
-    btn.innerHTML = '🤖 <span>بحث ذكي</span>';
+    btn.innerHTML = '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg><span>بحث ذكي</span>';
 }
 
 function showAiBanner(html) {
@@ -1185,6 +1311,38 @@ function updateURL(q) {
     history.replaceState(null,'',url);
 }
 
+/* ============================================================
+   🗺️ بيانات منظّمة (JSON-LD) لكل سكربت — بتساعد جوجل يفهم إن كل
+   سكربت هو "صفحة" منفصلة وليه رابط خاص بيه (script.html?id=...)،
+   وده بيشجع جوجل يزحف ويفهرس صفحة كل سكربت لوحدها، مش بس الصفحة دي.
+   الرابط الحقيقي <a href> الموجود في كل كارت (sc-card-link) هو
+   اللي بيسمح لجوجل يدخل فعليًا لصفحة السكربت، والـ JSON-LD ده
+   بيدي سياق إضافي عن المحتوى.
+   ============================================================ */
+function injectStructuredData() {
+    const items = allScripts.slice(0, 200).map((s, idx) => ({
+        "@type": "ListItem",
+        "position": idx + 1,
+        "url": `https://ccraftspace.ddnsking.com/script.html?id=${encodeURIComponent(s.id)}`,
+        "name": s.title || 'سكربت Roblox'
+    }));
+
+    const ld = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": items
+    };
+
+    const existing = document.getElementById('scriptsListLd');
+    if (existing) existing.remove();
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'scriptsListLd';
+    script.textContent = JSON.stringify(ld);
+    document.head.appendChild(script);
+}
+
 // ✅ رسم أولي فوري من البيانات الثابتة (لو موجودة) قبل ما Firebase يرد — بيضمن إن الزائر وبوتات الزحف يشوفوا محتوى حقيقي من أول لحظة
 function renderStaticFallback() {
     try {
@@ -1195,6 +1353,7 @@ function renderStaticFallback() {
             .filter(s => s.id && s.title && s.title.trim());
         document.getElementById('scriptCount').innerText = allScripts.length;
         renderScripts(getQuery());
+        injectStructuredData();
     } catch (e) { /* أي خطأ هنا لا يوقف تحميل الصفحة — Firebase هيكمل عادي بعد كده */ }
 }
 
