@@ -189,14 +189,14 @@ body { min-height: 100svh; }
 
     <div class="pp-hero">
         <h1>🔒 احمِ سكربتك</h1>
-        <p>الصق كود السكربت بتاعك تحت، وهنولّدلك لودر (كود آمن للنشر) ومفتاح خاص — الكود الحقيقي بيتخزن عندنا بس ومايظهرش لحد.</p>
+        <p>الصق كود السكربت بتاعك تحت، وهنولّدلك لودر (كود آمن للنشر) ومفتاح خاص — الكود الحقيقي بيتخزن عندنا مشفّر ومايظهرش لحد.</p>
     </div>
 
     <div class="pp-card" id="formCard">
         <label class="pp-label">اسم السكربت</label>
         <input type="text" id="scriptTitle" class="pp-input" placeholder="مثال: Auto Farm - Blox Fruits">
 
-        <label class="pp-label">كود السكربت (Lua) — هيتخزن بشكل خاص ومحمي</label>
+        <label class="pp-label">كود السكربت (Lua) — هيتخزن مشفّر ومحمي</label>
         <textarea id="scriptCode" class="pp-textarea" placeholder="-- الصق كودك هنا"></textarea>
 
         <div class="pp-error" id="ppError"></div>
@@ -272,18 +272,66 @@ async function protectScript() {
             return;
         }
 
+        // ============================================================
+        // اللودر ده بيفك تشفير XOR+Base64 جوه Roblox نفسه — الكود
+        // بيتخزن على السيرفر مشفر بالكامل، ومش بيتفك إلا هنا.
+        // ============================================================
         const loaderCode =
 `-- 🔒 CCRAFT SPACE PROTECTED SCRIPT LOADER
 local SCRIPT_ID = "${data.scriptId}"
 local YOUR_KEY  = "${data.key}"
+local XOR_KEY   = "${data.xorKey}"
 
 local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
 
+-- فك Base64
+local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+local function base64Decode(data)
+    data = data:gsub("[^" .. b64chars .. "=]", "")
+    local bytes = {}
+    local val, bits = 0, 0
+    for i = 1, #data do
+        local c = data:sub(i, i)
+        if c ~= "=" then
+            local idx = b64chars:find(c, 1, true) - 1
+            val = (val << 6) | idx
+            bits = bits + 6
+            if bits >= 8 then
+                bits = bits - 8
+                bytes[#bytes + 1] = string.char((val >> bits) & 0xFF)
+            end
+        end
+    end
+    return table.concat(bytes)
+end
+
+-- فك تشفير XOR (المفتاح مكتوب Hex، بنحوله لبايتات)
+local function hexToBytes(hex)
+    local bytes = {}
+    for i = 1, #hex, 2 do
+        bytes[#bytes + 1] = tonumber(hex:sub(i, i + 1), 16)
+    end
+    return bytes
+end
+
+local function xorDecrypt(cipherBytes, keyBytes)
+    local out = {}
+    for i = 1, #cipherBytes do
+        local b = string.byte(cipherBytes, i)
+        local k = keyBytes[((i - 1) % #keyBytes) + 1]
+        out[i] = string.char(b ~ k)
+    end
+    return table.concat(out)
+end
+
 local success, result = pcall(function()
-    return game:HttpGet(
+    local encrypted = game:HttpGet(
         "${BACKEND_URL}/get-script?id=" .. SCRIPT_ID ..
         "&key=" .. YOUR_KEY .. "&hwid=" .. hwid
     )
+    local cipherBytes = base64Decode(encrypted)
+    local keyBytes = hexToBytes(XOR_KEY)
+    return xorDecrypt(cipherBytes, keyBytes)
 end)
 
 if success then
