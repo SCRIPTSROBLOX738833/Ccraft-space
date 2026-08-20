@@ -454,6 +454,26 @@ body { min-height: 100svh; }
 .ai-dots span:nth-child(2){animation-delay:.2s} .ai-dots span:nth-child(3){animation-delay:.4s}
 @keyframes adb { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-7px);opacity:1} }
 
+.all-scripts-index {
+    margin-top: 40px; padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+.asi-title {
+    font-size: 0.8rem; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+}
+.asi-links {
+    display: flex; flex-wrap: wrap; gap: 6px 14px;
+}
+.asi-links a {
+    font-size: 0.76rem; color: var(--text-muted);
+    text-decoration: none; white-space: nowrap;
+    border-bottom: 1px dotted transparent;
+    transition: var(--transition);
+}
+.asi-links a:hover { color: var(--primary); border-bottom-color: var(--primary); }
+
 @media (max-width: 640px) {
     .scripts-grid { grid-template-columns: 1fr; }
     #searchScripts { padding-left: 110px; }
@@ -556,6 +576,19 @@ function toggleCodePreview(btn) {
     <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s"><i class="fa-solid fa-chevron-down"></i> عرض المزيد</button>
 </div>
 
+<!-- ============================================================
+     🗺️ فهرس كامل لكل السكربتات — روابط <a href> حقيقية لكل سكربت
+     دفعة واحدة (مش بس أول 8 زي كروت العرض المقسّمة بصفحات).
+     الهدف: لما جوجل يزحف scripts.html، يلاقي رابط حقيقي لكل سكربت
+     في نفس الصفحة من غير ما يحتاج يدوس "عرض المزيد" (زرار JS مش
+     بيتبعوش الزاحف). العرض بسيط ومضغوط، مفيد كمرجع سريع للزوار
+     كمان مش مخفي بصريًا.
+     ============================================================ -->
+<div class="all-scripts-index" id="allScriptsIndex" style="display:none">
+    <div class="asi-title"><i class="fa-solid fa-map-location-dot"></i> فهرس كل السكربتات</div>
+    <div class="asi-links" id="allScriptsLinksList"></div>
+</div>
+
 </div>
 
 <!-- بيانات ثابتة مولّدة تلقائيًا (كل السكربتات) — بتتحمّل فورًا قبل Firebase، لصالح السيو والزوار من غير جافاسكريبت كامل -->
@@ -644,9 +677,26 @@ async function loadScripts() {
     document.getElementById('scriptCount').innerText = allScripts.length;
 
     renderTagsFilter();
+    renderAllScriptsIndex();
 
     const q = getQuery();
     renderScripts(q);
+}
+
+/* ============================================================
+   🗺️ فهرس روابط كامل لكل السكربتات (مش مرتبط بالباجينيشن/الفلاتر)
+   — كل سكربت بياخد <a href="script.html?id=..."> حقيقي هنا، عشان
+   أي زاحف (Googlebot) يلاقي كل السكربتات في نفس صفحة scripts.html
+   من غير ما يحتاج يدوس "عرض المزيد".
+   ============================================================ */
+function renderAllScriptsIndex() {
+    const box = document.getElementById('allScriptsIndex');
+    const list = document.getElementById('allScriptsLinksList');
+    if (!allScripts.length) { box.style.display = 'none'; return; }
+    list.innerHTML = allScripts
+        .map(s => `<a href="script.html?id=${encodeURIComponent(s.id)}">${escHTML(s.title || 'سكربت')}</a>`)
+        .join('');
+    box.style.display = 'block';
 }
 
 function getQuery() {
@@ -1201,6 +1251,7 @@ function renderStaticFallback() {
             .map(([id,s]) => ({id,...s}))
             .filter(s => s.id && s.title && s.title.trim());
         document.getElementById('scriptCount').innerText = allScripts.length;
+        renderAllScriptsIndex();
         renderScripts(getQuery());
     } catch (e) { /* أي خطأ هنا لا يوقف تحميل الصفحة — Firebase هيكمل عادي بعد كده */ }
 }
