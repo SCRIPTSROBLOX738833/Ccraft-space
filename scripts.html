@@ -461,6 +461,7 @@ body { min-height: 100svh; }
 .asi-links {
     display: flex; flex-wrap: wrap; gap: 6px 14px;
     max-width: 100%;
+    min-width: 0;
 }
 .asi-links a {
     font-size: 0.76rem; color: var(--text-muted);
@@ -468,8 +469,10 @@ body { min-height: 100svh; }
     border-bottom: 1px dotted transparent;
     transition: var(--transition);
     max-width: 100%;
-    overflow-wrap: break-word;
+    min-width: 0;
+    overflow-wrap: anywhere;
     word-break: break-word;
+    hyphens: auto;
 }
 .asi-links a:hover { color: var(--primary); border-bottom-color: var(--primary); }
 
