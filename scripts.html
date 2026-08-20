@@ -455,7 +455,40 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
 .ai-dots span:nth-child(2){animation-delay:.2s} .ai-dots span:nth-child(3){animation-delay:.4s}
 @keyframes adb { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-7px);opacity:1} }
 
-.all-scripts-index {
+.load-more-wrap { text-align: center; margin-top: 18px; }
+
+.load-more-fab {
+    position: fixed;
+    bottom: 18px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 80;
+    background: var(--accent-gradient);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 26px;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 800; font-size: 0.85rem;
+    cursor: pointer; margin: 0;
+    display: none;
+    align-items: center; gap: 8px;
+    box-shadow: 0 10px 28px rgba(139,92,246,0.45);
+    transition: var(--transition);
+}
+.load-more-fab.show { display: inline-flex; }
+.load-more-fab:hover { transform: translateX(-50%) translateY(-3px); filter: brightness(1.08); }
+
+.asi-toggle-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 8px 18px;
+    color: var(--text-muted); font-size: 0.78rem; font-weight: 800;
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    margin: 0; display: inline-flex; align-items: center; gap: 8px;
+    transition: var(--transition);
+}
+.asi-toggle-btn:hover { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
+.asi-links { margin-top: 14px; }
     margin-top: 40px; padding-top: 24px;
     border-top: 1px solid var(--border-color);
 }
@@ -574,8 +607,8 @@ function toggleCodePreview(btn) {
     <!-- Scripts Grid -->
 <div class="scripts-grid" id="scriptsList">
 </div>
-<div style="text-align:center;margin-top:18px">
-    <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s"><i class="fa-solid fa-chevron-down"></i> عرض المزيد</button>
+<div class="load-more-wrap">
+    <button type="button" id="loadMoreBtn" class="load-more-fab"><i class="fa-solid fa-chevron-down"></i> عرض المزيد</button>
 </div>
 
 <!-- ============================================================
@@ -587,8 +620,9 @@ function toggleCodePreview(btn) {
      كمان مش مخفي بصريًا.
      ============================================================ -->
 <div class="all-scripts-index" id="allScriptsIndex" style="display:none">
-    <div class="asi-title"><i class="fa-solid fa-map-location-dot"></i> فهرس كل السكربتات</div>
-    <div class="asi-links" id="allScriptsLinksList"></div>
+    <button type="button" class="asi-toggle-btn" id="asiToggleBtn"><i class="fa-solid fa-list"></i> إظهار فهرس كل السكربتات</button>
+    <div class="asi-title" id="asiTitle" style="display:none"><i class="fa-solid fa-map-location-dot"></i> فهرس كل السكربتات</div>
+    <div class="asi-links" id="allScriptsLinksList" style="display:none"></div>
 </div>
 
 </div>
@@ -801,7 +835,7 @@ function renderScripts(query = '') {
                 <h3>لا توجد نتائج</h3>
                 <p>جرّب كلمات مختلفة أو استخدم البحث الذكي <i class="fa-solid fa-robot"></i></p>
             </div>`;
-        document.getElementById('loadMoreBtn').style.display = 'none';
+        document.getElementById('loadMoreBtn').classList.remove('show');
         return;
     }
 
@@ -969,12 +1003,24 @@ function renderVisibleCards() {
 
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     if (visibleCount < currentResults.length) {
-        loadMoreBtn.style.display = 'inline-block';
+        loadMoreBtn.classList.add('show');
         loadMoreBtn.innerHTML = `<i class="fa-solid fa-chevron-down"></i> عرض المزيد (${currentResults.length - visibleCount} متبقي)`;
     } else {
-        loadMoreBtn.style.display = 'none';
+        loadMoreBtn.classList.remove('show');
     }
 }
+
+document.getElementById('asiToggleBtn').addEventListener('click', () => {
+    const title = document.getElementById('asiTitle');
+    const links = document.getElementById('allScriptsLinksList');
+    const btn   = document.getElementById('asiToggleBtn');
+    const opening = links.style.display === 'none';
+    title.style.display = opening ? 'flex' : 'none';
+    links.style.display = opening ? 'flex' : 'none';
+    btn.innerHTML = opening
+        ? '<i class="fa-solid fa-list"></i> إخفاء الفهرس'
+        : '<i class="fa-solid fa-list"></i> إظهار فهرس كل السكربتات';
+});
 
 document.getElementById('loadMoreBtn').addEventListener('click', () => {
     visibleCount += PAGE_SIZE;
