@@ -2,12 +2,1308 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CCRAFT SPACE | قائمة سكربتات Roblox</title>
+  <meta name="application-name" content="CCRAFT SPACE">
+  <meta name="description" content="CCRAFT SPACE — أفضل منصة عربية لسكربتات Roblox.">
+  <meta name="robots" content="index, follow">
+<div class="gcse-search"></div>
+<div class="gcse-search"></div>
   <link rel="canonical" href="https://ccraftspace.ddnsking.com/scripts/">
-  <meta http-equiv="refresh" content="0; url=/scripts/">
-  <script>location.replace('/scripts/');</script>
+  <meta property="og:site_name" content="CCRAFT SPACE">
+  <meta property="og:title"     content="CCRAFT SPACE | قائمة سكربتات Roblox">
+  <meta property="og:image"     content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:secure_url" content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:width"  content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:type"  content="website">
+  <meta property="og:url"   content="https://ccraftspace.ddnsking.com/scripts/">
+  <link rel="icon"            type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="shortcut icon"   type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="apple-touch-icon"                  href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"CCRAFT SPACE",
+   "url":"https://ccraftspace.ddnsking.com/","image":"https://ccraftspace.ddnsking.com/cCraft.jpg"}
+  </script>
+  <script type="module" src="/presence.js"></script>
+  <script>(function(s){s.dataset.zone='11585956',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+	
+<style>
+
+body { min-height: 100svh; }
+
+.scripts-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    overflow-x: hidden;
+}
+
+.page-hero {
+    padding: 28px 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
+}
+
+.page-hero h1 {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.scripts-count-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 7px 16px;
+    font-size: 0.82rem; color: var(--text-muted); font-weight: 700;
+}
+
+.scripts-count-pill .scp-num {
+    font-weight: 900; color: var(--primary); font-size: 0.95rem;
+}
+
+.search-section { margin-bottom: 22px; }
+
+.search-wrap {
+    position: relative;
+    margin-bottom: 14px;
+}
+
+.search-wrap .search-icon {
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem; pointer-events: none;
+    color: var(--text-muted);
+}
+
+#searchScripts {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 14px 48px 14px 140px;
+    color: var(--text-main);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: var(--transition);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    direction: rtl;
+    box-sizing: border-box;
+}
+
+#searchScripts:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.15), 0 2px 10px rgba(0,0,0,0.2);
+}
+
+#searchScripts::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+.ai-search-btn {
+    position: absolute; left: 8px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--accent-gradient);
+    color: white; border: none;
+    border-radius: 12px; padding: 8px 14px;
+    font-size: 0.75rem; font-weight: 800;
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    margin: 0; transition: var(--transition);
+    display: flex; align-items: center; gap: 5px;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(139,92,246,0.35);
+}
+
+.ai-search-btn:hover { transform: translateY(-50%) scale(1.04); filter: brightness(1.1); }
+.ai-search-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: translateY(-50%); }
+
+.ai-result-banner {
+    display: none;
+    background: rgba(139,92,246,0.07);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 10px; padding: 7px 14px;
+    margin-bottom: 12px;
+    font-size: 0.76rem; color: var(--text-muted);
+    animation: fadeIn 0.3s ease both;
+    line-height: 1.5;
+}
+
+.ai-result-banner.show { display: flex; align-items: center; gap: 8px; }
+.aib-icon { font-size: 0.9rem; flex-shrink: 0; }
+.aib-text { flex: 1; }
+.aib-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; margin: 0; font-size: 0.85rem; flex-shrink: 0; opacity: 0.6; }
+.aib-close:hover { color: var(--danger); opacity: 1; transform: none; filter: none; }
+
+.filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-label {
+    font-size: 0.72rem; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+}
+
+.filter-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 7px 16px;
+    font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    margin: 0; transition: var(--transition); white-space: nowrap;
+}
+
+.filter-btn:hover  { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
+.filter-btn.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.4); }
+
+.sort-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; flex-wrap: wrap;
+}
+
+.sort-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+
+.sort-select {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 10px; padding: 7px 12px;
+    color: var(--text-main); font-family: 'Tajawal', sans-serif;
+    font-size: 0.8rem; outline: none; cursor: pointer;
+}
+
+.results-info {
+    font-size: 0.78rem; color: var(--text-muted);
+    margin-right: auto;
+}
+
+.results-info span { color: var(--primary); font-weight: 800; }
+
+.scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.sc-thumb {
+    width: 100%; height: 140px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--border-color);
+    transition: transform 0.3s ease;
+}
+
+.script-card:hover .sc-thumb { transform: scale(1.04); }
+
+.script-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 0;
+    overflow: hidden;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease both;
+    position: relative;
+    cursor: pointer;
+}
+
+.script-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+
+.script-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.script-card:hover::before { opacity: 1; }
+.script-card[data-cat="game"]  .sc-top-bar,
+.script-card[data-cat="game"]::before  { background: linear-gradient(90deg, #4ade80, #22c55e); }
+.script-card[data-cat="admin"] .sc-top-bar,
+.script-card[data-cat="admin"]::before { background: linear-gradient(90deg, #f87171, #ef4444); }
+.script-card[data-cat="ai"]    .sc-top-bar,
+.script-card[data-cat="ai"]::before    { background: linear-gradient(90deg, #a78bfa, #8b5cf6); }
+.script-card::before                   { background: var(--accent-gradient); }
+
+/* ---- Crawlable full-card link overlay ---- */
+.sc-card-link {
+    position: absolute; inset: 0; z-index: 1;
+    text-indent: -9999px; overflow: hidden;
+}
+.sc-body, .sc-footer { position: relative; z-index: 2; }
+
+.sc-body { padding: 20px 20px 16px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+.sc-header { display: flex; align-items: flex-start; gap: 10px; }
+.sc-verified-badge { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.sc-verified-badge svg { display: block; }
+
+.sc-title {
+    font-size: 1rem; font-weight: 900; color: var(--text-main);
+    flex: 1; line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sc-new-badge {
+    background: var(--accent-gradient); color: white;
+    font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
+    border-radius: 50px; flex-shrink: 0; align-self: flex-start;
+    margin-top: 2px;
+}
+
+.sc-ai-badge {
+    background: linear-gradient(135deg,rgba(139,92,246,0.2),rgba(0,242,254,0.12));
+    border: 1px solid rgba(139,92,246,0.35); color: #a78bfa;
+    font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
+    border-radius: 50px; flex-shrink: 0; align-self: flex-start;
+    margin-top: 2px;
+}
+
+.sc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.sc-cat {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--primary-dim); color: #b48bf8;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-map {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(0,242,254,0.08); border: 1px solid rgba(0,242,254,0.2);
+    color: var(--secondary);
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-key-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3);
+    color: #fbbf24;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-tag-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(0,242,254,0.08); border: 1px solid rgba(0,242,254,0.2);
+    color: #67e8f9;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-code-snippet {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(139,92,246,0.15);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.72rem;
+    color: #8be9fd;
+    direction: ltr;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sc-preview-btn {
+    background: rgba(0,242,254,0.08);
+    border: 1px solid rgba(0,242,254,0.2);
+    color: var(--secondary);
+    border-radius: 10px;
+    padding: 7px 14px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    margin: 0;
+    transition: var(--transition);
+    align-self: flex-start;
+}
+
+.sc-preview-btn:hover { background: rgba(0,242,254,0.16); transform: none; filter: none; }
+
+.sc-code-full {
+    display: none;
+    background: #050810;
+    border: 1px solid rgba(139,92,246,0.15);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 0;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.76rem;
+    line-height: 1.7;
+    color: #8be9fd;
+    direction: ltr;
+    text-align: left;
+    white-space: pre-wrap;
+    max-height: 260px;
+    overflow-y: auto;
+    cursor: text;
+}
+
+.sc-code-full.open { display: block; animation: fadeIn 0.25s ease both; }
+
+.sc-code-full::-webkit-scrollbar { width: 5px; }
+.sc-code-full::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+.sc-code-full::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+
+.sc-stats {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.78rem; color: var(--text-muted);
+}
+
+.sc-stat { display: flex; align-items: center; gap: 4px; }
+
+.sc-stars { display: flex; align-items: center; gap: 2px; }
+
+.sc-star {
+    cursor: pointer; font-size: 0.95rem; color: #3a3a4a;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.sc-star:hover { transform: scale(1.2); }
+.sc-star.filled { color: gold; }
+
+.sc-avg { font-size: 0.72rem; color: var(--text-muted); }
+
+.sc-footer {
+    display: flex; gap: 8px; padding: 12px 20px 16px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    flex-wrap: wrap;
+}
+
+.sc-btn {
+    flex: 1; min-width: 80px;
+    padding: 9px 12px; border-radius: 12px;
+    font-size: 0.78rem; font-weight: 800;
+    border: none; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; margin: 0;
+    transition: var(--transition); display: flex;
+    align-items: center; justify-content: center; gap: 5px;
+    white-space: nowrap;
+}
+
+.sc-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.sc-btn:active { transform: scale(0.96); }
+
+.sc-btn.view { background: var(--accent-gradient); color: white; box-shadow: 0 4px 12px rgba(139,92,246,0.3); text-decoration: none; }
+.sc-btn.copy { background: rgba(0,242,254,0.1); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
+.sc-btn.like { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); }
+.sc-btn.like.liked  { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.3); }
+.sc-btn.report { background: rgba(248,113,113,0.06); color: var(--text-muted); border: 1px solid var(--border-color); }
+.sc-btn.report:hover { color: #f87171; border-color: rgba(248,113,113,0.3); }
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center; padding: 60px 20px;
+    color: var(--text-muted);
+    animation: fadeIn 0.4s ease both;
+}
+
+.empty-state .es-icon { font-size: 3rem; display: block; margin-bottom: 14px; }
+.empty-state h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+.empty-state p  { font-size: 0.88rem; line-height: 1.7; }
+
+.loading-grid {
+    grid-column: 1 / -1;
+    display: flex; flex-direction: column; gap: 12px;
+}
+
+.skeleton {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 20px; padding: 20px; height: 180px;
+    animation: shimmer 1.5s ease infinite;
+}
+
+@keyframes shimmer {
+    0%,100% { opacity: 1; } 50% { opacity: 0.5; }
+}
+
+.ai-thinking {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 12px;
+    justify-content: center; padding: 40px;
+    color: var(--text-muted); font-size: 0.9rem;
+    font-weight: 700; animation: fadeIn 0.3s ease both;
+}
+
+.ai-dots { display: flex; gap: 5px; }
+.ai-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); animation: adb 1.2s ease infinite; }
+.ai-dots span:nth-child(2){animation-delay:.2s} .ai-dots span:nth-child(3){animation-delay:.4s}
+@keyframes adb { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-7px);opacity:1} }
+
+.all-scripts-index {
+    margin-top: 40px; padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+.asi-title {
+    font-size: 0.8rem; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer; user-select: none;
+    list-style: none;
+    display: flex; align-items: center; gap: 6px;
+}
+.asi-title::-webkit-details-marker { display: none; }
+.asi-title::before {
+    content: '▶';
+    font-size: 0.65rem;
+    transition: transform 0.2s ease;
+    color: var(--primary);
+}
+.all-scripts-index[open] .asi-title::before { transform: rotate(90deg); }
+.asi-title:hover { color: var(--text-main); }
+.asi-links {
+    display: flex; flex-wrap: wrap; gap: 6px 14px;
+    max-width: 100%;
+    min-width: 0;
+    margin-top: 14px;
+}
+.asi-links a {
+    font-size: 0.76rem; color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: 1px dotted transparent;
+    transition: var(--transition);
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+}
+.asi-links a:hover { color: var(--primary); border-bottom-color: var(--primary); }
+
+@media (max-width: 640px) {
+    .scripts-grid { grid-template-columns: 1fr; }
+    #searchScripts { padding-left: 110px; }
+    .ai-search-btn span { display: none; }
+    .ai-search-btn { padding: 8px 10px; }
+    .page-hero { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+</style>
 </head>
+  
 <body>
-  <p>الصفحة انتقلت إلى <a href="/scripts/">/scripts/</a></p>
+
+<header>
+  <button onclick="location.href='/publish/'">📤 نشر سكربت</button>
+  <button class="nav-button" onclick="location.href='/'">رجوع للصفحة الرئيسية</button>
+</header>
+
+<script>
+// دالة عامة لفتح/قفل معاينة الكود الكاملة جوه الكارت (بتشتغل على الكروت الثابتة والحية)
+function toggleCodePreview(btn) {
+    const card = btn.closest('.script-card');
+    const full = card.querySelector('.sc-code-full');
+    if (!full) return;
+    const willOpen = !full.classList.contains('open');
+    full.classList.toggle('open');
+    btn.innerText = willOpen ? '🔼 إخفاء الكود' : '👁️ معاينة سريعة';
+}
+</script>
+
+<div class="scripts-page">
+
+
+    <!-- Page Hero -->
+    <div class="page-hero">
+        <h1>📜 قائمة السكربتات</h1>
+        <div class="scripts-count-pill">
+            إجمالي السكربتات: <span class="scp-num" id="scriptCount">—</span>
+        </div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="search-section">
+
+        <!-- Search Box -->
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchScripts" placeholder="ابحث عن اسم سكربت، قسم، ماب، أو تاج...">
+            <button class="ai-search-btn" id="aiSearchBtn" title="بحث ذكي بواسطة Nova AI">
+                🤖 <span>بحث ذكي</span>
+            </button>
+        </div>
+
+        <!-- AI Banner -->
+        <div class="ai-result-banner" id="aiBanner">
+            <span class="aib-icon">🤖</span>
+            <div class="aib-text" id="aiBannerText">—</div>
+            <button class="aib-close" onclick="closeAiBanner()">✕</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-row">
+            <span class="filter-label">القسم:</span>
+            <button class="filter-btn active" data-cat="all">🌟 الكل</button>
+            <button class="filter-btn" data-cat="game">🎮 Game</button>
+            <button class="filter-btn" data-cat="admin">🛡️ Admin</button>
+            <button class="filter-btn" data-cat="ai">🤖 AI & NPCs</button>
+            <button class="filter-btn" data-cat="سكربت من الادارة">👑 من الإدارة</button>
+            <span class="filter-label" style="margin-right:auto">🔑 المفتاح:</span>
+            <button class="filter-btn active" data-key="all">الكل</button>
+            <button class="filter-btn" data-key="yes">🔒 بمفتاح</button>
+            <button class="filter-btn" data-key="no">🔓 بدون مفتاح</button>
+        </div>
+
+        <!-- تاجات ديناميكية -->
+        <div class="sort-row" id="tagsFilterRow" style="display:none;flex-wrap:wrap"></div>
+
+        <!-- Sort & Count -->
+        <div class="sort-row">
+            <span class="sort-label">ترتيب:</span>
+            <select class="sort-select" id="sortSelect">
+                <option value="newest">🕐 الأحدث أولاً</option>
+                <option value="oldest">🕑 الأقدم أولاً</option>
+                <option value="likes">👍 الأكثر لايكات</option>
+                <option value="rating">⭐ الأعلى تقييماً</option>
+            </select>
+            <span class="results-info">عرض <span id="resultsCount">—</span> سكربت</span>
+        </div>
+
+    </div>
+
+
+	
+    <!-- Scripts Grid -->
+<div class="scripts-grid" id="scriptsList">
+</div>
+<div style="text-align:center;margin-top:18px">
+    <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s">⬇️ عرض المزيد</button>
+</div>
+
+<!-- ============================================================
+     🗺️ فهرس كامل لكل السكربتات — روابط <a href> حقيقية لكل سكربت
+     دفعة واحدة (مش بس أول 8 زي كروت العرض المقسّمة بصفحات).
+     الهدف: لما جوجل يزحف scripts.html، يلاقي رابط حقيقي لكل سكربت
+     في نفس الصفحة من غير ما يحتاج يدوس "عرض المزيد" (زرار JS مش
+     بيتبعوش الزاحف). العرض بسيط ومضغوط، مفيد كمرجع سريع للزوار
+     كمان مش مخفي بصريًا.
+     ============================================================ -->
+<details class="all-scripts-index" id="allScriptsIndex" style="display:none">
+    <summary class="asi-title">🗺️ فهرس كل السكربتات (اضغط للعرض)</summary>
+    <div class="asi-links" id="allScriptsLinksList"></div>
+</details>
+
+</div>
+
+<!-- بيانات ثابتة مولّدة تلقائيًا (كل السكربتات) — بتتحمّل فورًا قبل Firebase، لصالح السيو والزوار من غير جافاسكريبت كامل -->
+<script src="/scripts-data.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { guardAgainstBanned } from "/auth-guard.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
+  authDomain:"ccraft-space-scripts.firebaseapp.com",
+  databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",
+  projectId:"ccraft-space-scripts",
+  storageBucket:"ccraft-space-scripts.firebasestorage.app",
+  messagingSenderId:"816078027492",
+  appId:"1:816078027492:web:6472cce474078fd4d90af1",
+  measurementId:"G-MHDM7YYYBN"
+};
+
+const app = initializeApp(firebaseConfig);
+guardAgainstBanned(app);
+const db  = getDatabase(app);
+const auth = getAuth(app);
+let currentUser = null;
+onAuthStateChanged(auth, user => { currentUser = user; });
+
+// عنوان الباك إند بتاع Nova AI — نفس السيرفر المستخدم في nova.html
+const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
+
+// 🔔 إرسال إشعار لصاحب السكربت (لايك) — ما بيبعتش لنفسه، ومحتاج المستخدم يكون مسجل دخول عشان نعرف اسمه
+function notifyAuthor(authorUid, text) {
+    if (!authorUid || !currentUser || authorUid === currentUser.uid) return;
+    push(ref(db, `notifications/${authorUid}`), {
+        type: 'like',
+        text,
+        timestamp: Date.now(),
+    }).catch(() => {});
+}
+
+let allScripts   = [];
+let filteredIds  = null;
+let activeFilter = 'all';
+let activeSort   = 'newest';
+let activeKeyFilter = 'all';
+let activeTagFilter = null;
+
+const codeStore = new Map();
+
+function incrementViews(id) {
+    const vRef = ref(db, `scripts/${id}/views`);
+    get(vRef).then(snap => {
+        const newViews = (snap.exists() ? snap.val() : 0) + 1;
+        set(vRef, newViews);
+    }).catch(() => {});
+}
+
+let unsafeNameSet = new Set();
+
+function normalizeScriptName(name) {
+    return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+async function loadUnsafeNames() {
+    try {
+        const snap = await get(ref(db, 'unsafeScripts'));
+        unsafeNameSet = new Set();
+        if (snap.exists()) {
+            Object.values(snap.val()).forEach(u => {
+                if (u.originalName) unsafeNameSet.add(normalizeScriptName(u.originalName));
+            });
+        }
+    } catch { unsafeNameSet = new Set(); }
+}
+
+async function loadScripts() {
+    await loadUnsafeNames();
+    const snap = await get(ref(db,'scripts'));
+    const data = snap.exists() ? snap.val() : {};
+
+    allScripts = Object.entries(data)
+        .map(([id,s]) => ({id,...s}))
+        .filter(s => s.id && s.title && s.title.trim()) // ✅ استبعاد السجلات التالفة
+        .filter(s => !unsafeNameSet.has(normalizeScriptName(s.title))); // 🚫 إخفاء السكربتات المُحذّر منها
+    document.getElementById('scriptCount').innerText = allScripts.length;
+
+    renderTagsFilter();
+    renderAllScriptsIndex();
+
+    const q = getQuery();
+    renderScripts(q);
+}
+
+/* ============================================================
+   🗺️ فهرس روابط كامل لكل السكربتات (مش مرتبط بالباجينيشن/الفلاتر)
+   — كل سكربت بياخد <a href="script/?id=..."> حقيقي هنا، عشان
+   أي زاحف (Googlebot) يلاقي كل السكربتات في نفس صفحة scripts.html
+   من غير ما يحتاج يدوس "عرض المزيد".
+   ============================================================ */
+function renderAllScriptsIndex() {
+    const box = document.getElementById('allScriptsIndex');
+    const list = document.getElementById('allScriptsLinksList');
+    if (!allScripts.length) { box.style.display = 'none'; return; }
+    list.innerHTML = allScripts
+        .map(s => `<a href="script/?id=${encodeURIComponent(s.id)}">${escHTML(s.title || 'سكربت')}</a>`)
+        .join('');
+    box.style.display = 'block';
+    injectScriptsItemListSchema();
+}
+
+/* ============================================================
+   🚀 JSON-LD ItemList — مش عنصر مرئي، مجرد بيانات منظمة قياسية
+   بتدّي جوجل قائمة صريحة بكل رابط سكربت في الصفحة دفعة واحدة.
+   ده بيسرّع الاكتشاف والفهرسة، ومش له علاقة بإخفاء محتوى عن حد.
+   ============================================================ */
+function injectScriptsItemListSchema() {
+    const old = document.getElementById('scriptsItemListSchema');
+    if (old) old.remove();
+
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": allScripts.map((s, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "url": `https://ccraftspace.ddnsking.com/script/?id=${encodeURIComponent(s.id)}`,
+            "name": s.title || 'سكربت'
+        }))
+    };
+
+    const tag = document.createElement('script');
+    tag.type = 'application/ld+json';
+    tag.id = 'scriptsItemListSchema';
+    tag.textContent = JSON.stringify(schema);
+    document.head.appendChild(tag);
+}
+
+function getQuery() {
+    return new URLSearchParams(location.search).get('search')?.toLowerCase().trim() || '';
+}
+
+function sortScripts(arr) {
+    const s = [...arr];
+    if (activeSort === '__ai__' && window.__aiScoreMap) {
+        return s.sort((a,b)=>(window.__aiScoreMap[b.id]||0)-(window.__aiScoreMap[a.id]||0));
+    }
+    if (activeSort === 'newest')  return s.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    if (activeSort === 'oldest')  return s.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+    if (activeSort === 'likes')   return s.sort((a,b)=>(b.likes||0)-(a.likes||0));
+    if (activeSort === 'rating')  return s.sort((a,b)=>{
+        const ra = a.votes ? a.rating/a.votes : 0;
+        const rb = b.votes ? b.rating/b.votes : 0;
+        return rb - ra;
+    });
+    return s;
+}
+
+/* ============================================================
+   🏷️ فلتر التاجات الديناميكي
+   ============================================================ */
+function renderTagsFilter() {
+    const row = document.getElementById('tagsFilterRow');
+    const allTags = new Set();
+    allScripts.forEach(s => (s.tags||[]).forEach(t => allTags.add(t)));
+    if (!allTags.size) { row.style.display = 'none'; return; }
+    row.style.display = 'flex';
+    row.innerHTML = `<span class="sort-label">🏷️ تاجات:</span>` +
+        [...allTags].map(t => `<button type="button" class="filter-btn" data-tag="${escHTML(t)}">#${escHTML(t)}</button>`).join('');
+    row.querySelectorAll('[data-tag]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const t = btn.dataset.tag;
+            if (activeTagFilter === t) {
+                activeTagFilter = null;
+                btn.classList.remove('active');
+            } else {
+                row.querySelectorAll('[data-tag]').forEach(b => b.classList.remove('active'));
+                activeTagFilter = t;
+                btn.classList.add('active');
+            }
+            renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+        });
+    });
+}
+
+document.querySelectorAll('[data-key]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-key]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeKeyFilter = btn.dataset.key;
+        renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+    });
+});
+
+const PAGE_SIZE = 8;
+let visibleCount = PAGE_SIZE;
+let currentResults = [];
+
+function renderScripts(query = '') {
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = '';
+
+    let results = allScripts;
+
+    if (filteredIds) {
+        results = results.filter(s => filteredIds.includes(s.id));
+    }
+    if (activeFilter !== 'all') {
+        results = results.filter(s => (s.category||'') === activeFilter);
+    }
+    if (activeKeyFilter === 'yes') results = results.filter(s => s.hasKey || s.key);
+    if (activeKeyFilter === 'no')  results = results.filter(s => !s.hasKey && !s.key);
+    if (activeTagFilter) results = results.filter(s => Array.isArray(s.tags) && s.tags.includes(activeTagFilter));
+    if (query) {
+        results = results.filter(s =>
+            (s.title||'').toLowerCase().includes(query) ||
+            (s.category||'').toLowerCase().includes(query) ||
+            (s.map||'').toLowerCase().includes(query) ||
+            (s.description||'').toLowerCase().includes(query) ||
+            (s.author||'').toLowerCase().includes(query) ||
+            (Array.isArray(s.tags) ? s.tags.join(' ').toLowerCase() : '').includes(query)
+        );
+    }
+
+    results = sortScripts(results);
+    document.getElementById('resultsCount').innerText = results.length;
+
+    // 🔄 أي تغيير في البحث أو الفلاتر بيرجّع العدد الظاهر لأول 8 من جديد
+    currentResults = results;
+    visibleCount = PAGE_SIZE;
+
+    if (!results.length) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <span class="es-icon">🔍</span>
+                <h3>لا توجد نتائج</h3>
+                <p>جرّب كلمات مختلفة أو استخدم البحث الذكي 🤖</p>
+            </div>`;
+        document.getElementById('loadMoreBtn').style.display = 'none';
+        return;
+    }
+
+    renderVisibleCards();
+}
+
+function renderVisibleCards() {
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = '';
+
+    const now = Date.now();
+    const isAiSearch = !!filteredIds;
+    const slice = currentResults.slice(0, visibleCount);
+
+    slice.forEach((s, i) => {
+        const isNew      = (now - (s.timestamp||0)) < 3 * 24 * 3600 * 1000;
+        const isAiMatch  = isAiSearch;
+        const avg    = s.votes ? (s.rating / s.votes) : 0;
+        const liked  = !!localStorage.getItem(`liked_${s.id}`);
+        const rated  = !!localStorage.getItem(`rated_${s.id}`);
+
+        const card = document.createElement('div');
+        card.className = 'script-card';
+        card.dataset.cat = s.category || 'other';
+        card.style.animationDelay = `${Math.min(i * 0.04, 0.4)}s`;
+
+        const codeFull = escHTML(s.code || '-- لا يوجد كود');
+        const codeSnippet = escHTML((s.code || '').replace(/\s+/g, ' ').trim().slice(0, 70));
+
+        const hasKeyFlag = !!(s.hasKey || s.key);
+        const keyBadge = hasKeyFlag
+            ? '<span class="sc-key-badge">🔒 يتطلب مفتاح</span>'
+            : '<span class="sc-key-badge" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>';
+        const tagBadges = (s.tags||[]).map(t => `<span class="sc-tag-badge">#${escHTML(t)}</span>`).join('');
+
+        const scriptUrl = `script/?id=${encodeURIComponent(s.id)}`;
+
+        card.innerHTML = `
+            <a href="${scriptUrl}" class="sc-card-link" aria-label="${escHTML(s.title || 'عرض السكربت')}">${escHTML(s.title || 'عرض السكربت')}</a>
+            ${s.image ? `<div style="overflow:hidden;border-radius:20px 20px 0 0"><img class="sc-thumb" src="${s.image}" alt="صورة السكربت" loading="lazy"></div>` : ''}
+            <div class="sc-body">
+                <div class="sc-header">
+                    <div class="sc-title">${escHTML(s.title || 'بدون عنوان')}</div>
+                    ${s.verified ? `<span class="sc-verified-badge" title="سكربت موثّق من الإدارة"><svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vg-${escHTML(s.id)}" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vg-${escHTML(s.id)})"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>` : ''}
+                    ${isAiMatch ? '<span class="sc-ai-badge">🤖 AI</span>' : ''}
+                    ${isNew && !isAiMatch ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
+                    ${isNew && isAiMatch  ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
+                </div>
+                <div class="sc-badges">
+                    <span class="sc-cat">📁 ${escHTML(s.category || '—')}</span>
+                    ${s.map ? `<span class="sc-map">🗺️ ${escHTML(s.map)}</span>` : ''}
+                    ${keyBadge}
+                    ${tagBadges}
+                </div>
+                <div class="sc-stats">
+                    <span class="sc-stat">👍 <strong>${s.likes||0}</strong></span>
+                    <span class="sc-stat">👁️ <strong>${s.views||0}</strong></span>
+                    <span class="sc-stat">👤 ${escHTML(s.author||'مجهول')}</span>
+                    <span style="margin-right:auto"></span>
+                    <div class="sc-stars" data-id="${s.id}" data-rated="${rated}">
+                        ${[1,2,3,4,5].map(n=>`<span class="sc-star${n<=Math.round(avg)?' filled':''}" data-v="${n}">★</span>`).join('')}
+                        <span class="sc-avg">${s.votes ? avg.toFixed(1) : '—'}</span>
+                    </div>
+                </div>
+                <div class="sc-code-snippet">💻 ${codeSnippet}${(s.code || '').length > 70 ? '…' : ''}</div>
+                <button type="button" class="sc-preview-btn" onclick="event.stopPropagation(); toggleCodePreview(this)">👁️ معاينة سريعة</button>
+                <pre class="sc-code-full" onclick="event.stopPropagation()">${codeFull}</pre>
+            </div>
+            <div class="sc-footer">
+                <a class="sc-btn view" href="${scriptUrl}" data-id="${s.id}">👁️ عرض</a>
+                <button class="sc-btn copy"   data-id="${s.id}">📋 نسخ</button>
+                <button class="sc-btn like${liked?' liked':''}" data-id="${s.id}" ${liked?'disabled':''}>
+                    ${liked?'❤️':'🤍'} <span class="lc">${s.likes||0}</span>
+                </button>
+                <button class="sc-btn report" data-id="${s.id}" title="إبلاغ">🚩</button>
+            </div>
+        `;
+
+        codeStore.set(s.id, s.code || '');
+
+        // رابط الكارت الكامل (وزر عرض) — رابط <a> حقيقي عشان جوجل يقدر يزحف لصفحة كل سكربت،
+        // مع تسجيل عدد المشاهدات لحظة الضغط قبل ما التنقل يحصل
+        card.querySelector('.sc-card-link').addEventListener('click', () => incrementViews(s.id));
+        card.querySelector('.sc-btn.view').addEventListener('click', () => incrementViews(s.id));
+
+        card.querySelector('.sc-btn.copy').onclick = async e => {
+            e.stopPropagation();
+            const id   = e.currentTarget.dataset.id;
+            const raw  = codeStore.get(id) || '';
+            if (!raw) { alert('لا يوجد كود لهذا السكربت'); return; }
+            const code = withCopyWarning(raw, !!s.verified);
+            try {
+                await navigator.clipboard.writeText(code);
+                const btn = e.currentTarget;
+                btn.innerText = '✅ تم النسخ';
+                btn.style.background = 'rgba(74,222,128,0.15)';
+                btn.style.color = 'var(--success)';
+                setTimeout(() => {
+                    btn.innerText = '📋 نسخ';
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 2200);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = code;
+                ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                e.currentTarget.innerText = '✅ تم';
+                setTimeout(() => { e.currentTarget.innerText = '📋 نسخ'; }, 2000);
+            }
+        };
+
+        const likeBtn = card.querySelector('.sc-btn.like');
+        likeBtn.onclick = async e => {
+            e.stopPropagation();
+            if (liked || likeBtn.disabled) return;
+            const likeRef = ref(db, `scripts/${s.id}/likes`);
+            const snap = await get(likeRef);
+            const newLikes = (snap.exists() ? snap.val() : 0) + 1;
+            await set(likeRef, newLikes);
+            likeBtn.querySelector('.lc').innerText = newLikes;
+            likeBtn.classList.add('liked');
+            likeBtn.innerHTML = `❤️ <span class="lc">${newLikes}</span>`;
+            likeBtn.disabled = true;
+            localStorage.setItem(`liked_${s.id}`, 'true');
+
+            // 🔔 إشعار لصاحب السكربت باللايك (لو المستخدم مسجل دخول)
+            if (currentUser) {
+                const likerName = currentUser.email.split('@')[0];
+                notifyAuthor(s.authorUid, `👍 ${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
+            }
+        };
+
+        card.querySelector('.sc-btn.report').onclick = e => {
+            e.stopPropagation();
+            location.href = `report/?id=${s.id}`;
+        };
+
+        const starsEl = card.querySelector('.sc-stars');
+        starsEl.querySelectorAll('.sc-star').forEach(star => {
+            star.addEventListener('click', async e => {
+                e.stopPropagation();
+                if (starsEl.dataset.rated === 'true') return;
+                const val = parseInt(star.dataset.v);
+                const rRef = ref(db, `scripts/${s.id}`);
+                const snap = await get(rRef);
+                let { rating: r=0, votes: v=0, ...rest } = snap.exists() ? snap.val() : {};
+                r += val; v++;
+                await set(rRef, { ...rest, rating: r, votes: v });
+                localStorage.setItem(`rated_${s.id}`, 'true');
+                starsEl.dataset.rated = 'true';
+                const newAvg = r/v;
+                starsEl.querySelectorAll('.sc-star').forEach((st,idx) => {
+                    st.classList.toggle('filled', idx+1 <= Math.round(newAvg));
+                });
+                starsEl.querySelector('.sc-avg').innerText = newAvg.toFixed(1);
+            });
+        });
+
+        list.appendChild(card);
+    });
+
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (visibleCount < currentResults.length) {
+        loadMoreBtn.style.display = 'inline-block';
+        loadMoreBtn.innerText = `⬇️ عرض المزيد (${currentResults.length - visibleCount} متبقي)`;
+    } else {
+        loadMoreBtn.style.display = 'none';
+    }
+}
+
+document.getElementById('loadMoreBtn').addEventListener('click', () => {
+    visibleCount += PAGE_SIZE;
+    renderVisibleCards();
+});
+
+function escHTML(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+const UNVERIFIED_WARNING = '--[[\n\tتحذير هذا السكربت ليس تم التحقق منه من قبل cCraft space يرجي الحظر منه\n]]\n\n';
+
+// يضيف تعليق تحذير أعلى الكود إذا كان السكربت غير موثّق — تعليق Lua فقط، لا يؤثر على تشغيل السكربت
+function withCopyWarning(code, verified) {
+    if (verified) return code;
+    return UNVERIFIED_WARNING + code;
+}
+
+function fuzzyScore(text, query) {
+    if (!text || !query) return 0;
+    text  = text.toLowerCase().trim();
+    query = query.toLowerCase().trim();
+
+    if (text === query)            return 100;
+    if (text.startsWith(query))    return 90;
+    if (text.includes(query))      return 80;
+
+    const tWords = text.split(/\s+/);
+    const qWords = query.split(/\s+/);
+    let wordScore = 0;
+    for (const qw of qWords) {
+        if (tWords.some(tw => tw === qw))          wordScore += 20;
+        else if (tWords.some(tw => tw.includes(qw))) wordScore += 12;
+        else if (tWords.some(tw => qw.includes(tw) && tw.length > 2)) wordScore += 6;
+    }
+    if (wordScore > 0) return Math.min(70, wordScore);
+
+    let qi = 0;
+    for (let ti = 0; ti < text.length && qi < query.length; ti++) {
+        if (text[ti] === query[qi]) qi++;
+    }
+    if (qi === query.length) return Math.max(5, Math.round(40 * qi / text.length));
+
+    return 0;
+}
+
+function normalizeAr(t) {
+    return (t||'')
+        .replace(/[أإآ]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .toLowerCase()
+        .trim();
+}
+
+function parseIntent(query) {
+    const q = query.toLowerCase();
+    const intent = { category: null, map: null, feature: null };
+
+    if (/game|جيم|لعب|سبيد|speed/.test(q))            intent.category = 'game';
+    if (/admin|ادمن|أدمن/.test(q))                      intent.category = 'admin';
+    if (/ai|ذكاء|npc/.test(q))                          intent.category = 'ai';
+
+    const maps = ['jailbreak','adopt me','bloxburg','arsenal','bedwars','doors',
+                  'da hood','brookhaven','pet sim','murder mystery'];
+    for (const m of maps) {
+        if (q.includes(m)) { intent.map = m; break; }
+    }
+
+    return intent;
+}
+
+/* ============================================================
+   🔍 البحث المحلي (Fallback) — بيشتغل من غير إنترنت/سيرفر،
+   وبيستخدم لو Nova مش متاح أو حصل rate limit
+   ============================================================ */
+function smartSearchLocal(query) {
+    if (!query || !allScripts.length) return [];
+
+    const qNorm   = normalizeAr(query);
+    const intent  = parseIntent(query);
+    const results = [];
+
+    for (const s of allScripts) {
+        let score = 0;
+        const title    = normalizeAr(s.title);
+        const category = normalizeAr(s.category);
+        const map      = normalizeAr(s.map);
+        const desc     = normalizeAr(s.description);
+        const author   = normalizeAr(s.author);
+        const tags     = normalizeAr((s.tags||[]).join(' '));
+
+        score += fuzzyScore(title,    qNorm) * 3.0;
+        score += fuzzyScore(category, qNorm) * 1.5;
+        score += fuzzyScore(map,      qNorm) * 2.0;
+        score += fuzzyScore(desc,     qNorm) * 1.0;
+        score += fuzzyScore(author,   qNorm) * 0.5;
+        score += fuzzyScore(tags,     qNorm) * 1.5;
+
+        if (intent.category && (s.category||'').toLowerCase() === intent.category) score += 30;
+        if (intent.map      && map.includes(intent.map))  score += 25;
+
+        const likes  = s.likes  || 0;
+        const rating = s.votes  ? s.rating / s.votes : 0;
+        score += Math.min(15, likes  * 0.3);
+        score += Math.min(10, rating * 2);
+
+        if ((Date.now() - (s.timestamp||0)) < 7 * 86400000) score += 5;
+
+        if (score > 8) results.push({ ...s, _score: score });
+    }
+
+    return results.sort((a, b) => b._score - a._score);
+}
+
+/* ============================================================
+   🤖 البحث الذكي المدعوم من Nova AI
+   ----------------------------------------------------------------
+   بيبعت طلب البحث + قائمة مختصرة من السكربتات (من غير الكود) لباك
+   إند Nova، والموديل بيرجع الـ IDs المطابقة بأي ترتيب كلمات كتبها
+   المستخدم (مثلاً "سكربت كيبورد" و"كيبورد سكربت" بيدوا نفس النتيجة).
+   لو فشل الاتصال أو حصل rate limit، بيرجع تلقائيًا للبحث المحلي.
+   ============================================================ */
+async function novaSearch(query) {
+    const compactList = allScripts.map(s => ({
+        id: s.id,
+        title: s.title || '',
+        category: s.category || '',
+        map: s.map || '',
+        tags: s.tags || [],
+        description: s.description || ''
+    }));
+
+    const res = await fetch(`${NOVA_URL}/ai-search-scripts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, scripts: compactList })
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    console.log('%c[Nova Search] الرد الخام:', 'color:#8b5cf6;font-weight:bold', data);
+    console.log('%c[Nova Search] عدد السكربتات المرسلة:', 'color:#8b5cf6;font-weight:bold', compactList.length);
+
+    if (data.error === 'rate_limited') {
+        throw new Error('rate_limited');
+    }
+
+    const ids = Array.isArray(data.ids) ? data.ids : [];
+    // نحول الـ ids المرتبة لنفس شكل نتائج البحث المحلي (id + _score) عشان الترتيب يتحافظ عليه
+    return ids
+        .map(id => allScripts.find(s => s.id === id))
+        .filter(Boolean)
+        .map((s, idx) => ({ ...s, _score: ids.length - idx }));
+}
+
+function highlightMatch(text, query) {
+    if (!query || !text) return escHTML(text);
+    const safe = escHTML(text);
+    const re   = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    return safe.replace(re, '<mark style="background:rgba(139,92,246,0.25);color:#c084fc;border-radius:3px;padding:0 2px">$1</mark>');
+}
+
+async function aiSearch() {
+    const query = document.getElementById('searchScripts').value.trim();
+    if (!query) return;
+
+    const btn = document.getElementById('aiSearchBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span>';
+
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = `<div class="ai-thinking">
+        <div class="ai-dots"><span></span><span></span><span></span></div>
+        <span>Nova بتحلل البحث...</span>
+    </div>`;
+
+    let results = [];
+    let usedFallback = false;
+
+    try {
+        results = await novaSearch(query);
+    } catch (e) {
+        // فشل الاتصال بـ Nova (رفض، rate limit، أو مفيش إنترنت) -> نرجع للبحث المحلي
+        console.error('%c[Nova Search] فشل الاتصال:', 'color:#f87171;font-weight:bold', e);
+        usedFallback = true;
+        results = smartSearchLocal(query);
+    }
+
+    if (results.length > 0) {
+        filteredIds = results.map(s => s.id);
+        const scoreMap = Object.fromEntries(results.map(s => [s.id, s._score]));
+
+        const savedSort = activeSort;
+        activeSort = '__ai__';
+        window.__aiScoreMap = scoreMap;
+
+        const intent = parseIntent(query);
+        let bannerMsg = usedFallback
+            ? `🔍 ${results.length} نتيجة (بحث محلي — Nova مش متاح دلوقتي)`
+            : `🤖 ${results.length} نتيجة من Nova AI`;
+        if (intent.map)      bannerMsg += ` · ماب: ${intent.map}`;
+        if (intent.category) bannerMsg += ` · قسم: ${intent.category}`;
+
+        showAiBanner(bannerMsg);
+        renderScripts(query);
+
+        activeSort = savedSort;
+        delete window.__aiScoreMap;
+
+    } else {
+        filteredIds = null;
+        const source = usedFallback ? '(بحث محلي — Nova مش متاح دلوقتي)' : '(بحث Nova AI)';
+        showAiBanner(`⚠️ لا نتائج دقيقة لـ "${escHTML(query)}" ${source} — عارض الكل`);
+        renderScripts('');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '🤖 <span>بحث ذكي</span>';
+}
+
+function showAiBanner(html) {
+    const banner = document.getElementById('aiBanner');
+    document.getElementById('aiBannerText').innerHTML = html;
+    banner.classList.add('show');
+}
+
+window.closeAiBanner = function() {
+    document.getElementById('aiBanner').classList.remove('show');
+    filteredIds = null;
+    renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+};
+
+document.getElementById('searchScripts').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    updateURL(q);
+    if (!q) { filteredIds = null; closeAiBanner(); }
+    renderScripts(q);
+});
+
+document.getElementById('searchScripts').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        aiSearch();
+    }
+});
+
+document.getElementById('aiSearchBtn').addEventListener('click', aiSearch);
+
+document.querySelectorAll('.filter-btn[data-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn[data-cat]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.cat;
+        renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+    });
+});
+
+document.getElementById('sortSelect').addEventListener('change', e => {
+    activeSort = e.target.value;
+    renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+});
+
+function updateURL(q) {
+    const url = new URL(location.href);
+    q ? url.searchParams.set('search',q) : url.searchParams.delete('search');
+    history.replaceState(null,'',url);
+}
+
+// ✅ رسم أولي فوري من البيانات الثابتة (لو موجودة) قبل ما Firebase يرد — بيضمن إن الزائر وبوتات الزحف يشوفوا محتوى حقيقي من أول لحظة
+function renderStaticFallback() {
+    try {
+        const data = window.__SCRIPTS_DATA__;
+        if (!data) return;
+        allScripts = Object.entries(data)
+            .map(([id,s]) => ({id,...s}))
+            .filter(s => s.id && s.title && s.title.trim());
+        document.getElementById('scriptCount').innerText = allScripts.length;
+        renderAllScriptsIndex();
+        renderScripts(getQuery());
+    } catch (e) { /* أي خطأ هنا لا يوقف تحميل الصفحة — Firebase هيكمل عادي بعد كده */ }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    const q = new URLSearchParams(location.search).get('search') || '';
+    if (q) document.getElementById('searchScripts').value = q;
+    renderStaticFallback();
+    loadScripts();
+});
+
+</script>
 </body>
 </html>
