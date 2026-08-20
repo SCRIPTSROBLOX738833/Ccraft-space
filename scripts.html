@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow">
 <div class="gcse-search"></div>
 <div class="gcse-search"></div>
-  <link rel="canonical" href="https://ccraftspace.ddnsking.com/scripts/">
+  <link rel="canonical" href="https://ccraftspace.ddnsking.com/scripts.html">
   <meta property="og:site_name" content="CCRAFT SPACE">
   <meta property="og:title"     content="CCRAFT SPACE | قائمة سكربتات Roblox">
   <meta property="og:image"     content="https://ccraftspace.ddnsking.com/cCraft.jpg">
@@ -17,16 +17,16 @@
   <meta property="og:image:width"  content="512">
   <meta property="og:image:height" content="512">
   <meta property="og:type"  content="website">
-  <meta property="og:url"   content="https://ccraftspace.ddnsking.com/scripts/">
+  <meta property="og:url"   content="https://ccraftspace.ddnsking.com/scripts.html">
   <link rel="icon"            type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
   <link rel="shortcut icon"   type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
   <link rel="apple-touch-icon"                  href="https://ccraftspace.ddnsking.com/cCraft.jpg">
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="styles.css">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebSite","name":"CCRAFT SPACE",
    "url":"https://ccraftspace.ddnsking.com/","image":"https://ccraftspace.ddnsking.com/cCraft.jpg"}
   </script>
-  <script type="module" src="/presence.js"></script>
+  <script type="module" src="presence.js"></script>
   <script>(function(s){s.dataset.zone='11585956',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 	
@@ -503,8 +503,8 @@ body { min-height: 100svh; }
 <body>
 
 <header>
-  <button onclick="location.href='/publish/'">📤 نشر سكربت</button>
-  <button class="nav-button" onclick="location.href='/'">رجوع للصفحة الرئيسية</button>
+  <button onclick="location.href='publish.html'">📤 نشر سكربت</button>
+  <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
 <script>
@@ -605,12 +605,12 @@ function toggleCodePreview(btn) {
 </div>
 
 <!-- بيانات ثابتة مولّدة تلقائيًا (كل السكربتات) — بتتحمّل فورًا قبل Firebase، لصالح السيو والزوار من غير جافاسكريبت كامل -->
-<script src="/scripts-data.js"></script>
+<script src="scripts-data.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { guardAgainstBanned } from "/auth-guard.js";
+import { guardAgainstBanned } from "./auth-guard.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
@@ -698,7 +698,7 @@ async function loadScripts() {
 
 /* ============================================================
    🗺️ فهرس روابط كامل لكل السكربتات (مش مرتبط بالباجينيشن/الفلاتر)
-   — كل سكربت بياخد <a href="script/?id=..."> حقيقي هنا، عشان
+   — كل سكربت بياخد <a href="script.html?id=..."> حقيقي هنا، عشان
    أي زاحف (Googlebot) يلاقي كل السكربتات في نفس صفحة scripts.html
    من غير ما يحتاج يدوس "عرض المزيد".
    ============================================================ */
@@ -707,7 +707,7 @@ function renderAllScriptsIndex() {
     const list = document.getElementById('allScriptsLinksList');
     if (!allScripts.length) { box.style.display = 'none'; return; }
     list.innerHTML = allScripts
-        .map(s => `<a href="script/?id=${encodeURIComponent(s.id)}">${escHTML(s.title || 'سكربت')}</a>`)
+        .map(s => `<a href="script.html?id=${encodeURIComponent(s.id)}">${escHTML(s.title || 'سكربت')}</a>`)
         .join('');
     box.style.display = 'block';
     injectScriptsItemListSchema();
@@ -728,7 +728,7 @@ function injectScriptsItemListSchema() {
         "itemListElement": allScripts.map((s, i) => ({
             "@type": "ListItem",
             "position": i + 1,
-            "url": `https://ccraftspace.ddnsking.com/script/?id=${encodeURIComponent(s.id)}`,
+            "url": `https://ccraftspace.ddnsking.com/script.html?id=${encodeURIComponent(s.id)}`,
             "name": s.title || 'سكربت'
         }))
     };
@@ -876,7 +876,7 @@ function renderVisibleCards() {
             : '<span class="sc-key-badge" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>';
         const tagBadges = (s.tags||[]).map(t => `<span class="sc-tag-badge">#${escHTML(t)}</span>`).join('');
 
-        const scriptUrl = `script/?id=${encodeURIComponent(s.id)}`;
+        const scriptUrl = `script.html?id=${encodeURIComponent(s.id)}`;
 
         card.innerHTML = `
             <a href="${scriptUrl}" class="sc-card-link" aria-label="${escHTML(s.title || 'عرض السكربت')}">${escHTML(s.title || 'عرض السكربت')}</a>
@@ -979,7 +979,7 @@ function renderVisibleCards() {
 
         card.querySelector('.sc-btn.report').onclick = e => {
             e.stopPropagation();
-            location.href = `report/?id=${s.id}`;
+            location.href = `report.html?id=${s.id}`;
         };
 
         const starsEl = card.querySelector('.sc-stars');
