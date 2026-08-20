@@ -456,12 +456,25 @@ body { min-height: 100svh; }
 }
 .asi-title {
     font-size: 0.8rem; font-weight: 800; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
+    text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer; user-select: none;
+    list-style: none;
+    display: flex; align-items: center; gap: 6px;
 }
+.asi-title::-webkit-details-marker { display: none; }
+.asi-title::before {
+    content: '▶';
+    font-size: 0.65rem;
+    transition: transform 0.2s ease;
+    color: var(--primary);
+}
+.all-scripts-index[open] .asi-title::before { transform: rotate(90deg); }
+.asi-title:hover { color: var(--text-main); }
 .asi-links {
     display: flex; flex-wrap: wrap; gap: 6px 14px;
     max-width: 100%;
     min-width: 0;
+    margin-top: 14px;
 }
 .asi-links a {
     font-size: 0.76rem; color: var(--text-muted);
@@ -584,6 +597,10 @@ function toggleCodePreview(btn) {
      بيتبعوش الزاحف). العرض بسيط ومضغوط، مفيد كمرجع سريع للزوار
      كمان مش مخفي بصريًا.
      ============================================================ -->
+<details class="all-scripts-index" id="allScriptsIndex" style="display:none">
+    <summary class="asi-title">🗺️ فهرس كل السكربتات (اضغط للعرض)</summary>
+    <div class="asi-links" id="allScriptsLinksList"></div>
+</details>
 
 </div>
 
@@ -693,6 +710,34 @@ function renderAllScriptsIndex() {
         .map(s => `<a href="script.html?id=${encodeURIComponent(s.id)}">${escHTML(s.title || 'سكربت')}</a>`)
         .join('');
     box.style.display = 'block';
+    injectScriptsItemListSchema();
+}
+
+/* ============================================================
+   🚀 JSON-LD ItemList — مش عنصر مرئي، مجرد بيانات منظمة قياسية
+   بتدّي جوجل قائمة صريحة بكل رابط سكربت في الصفحة دفعة واحدة.
+   ده بيسرّع الاكتشاف والفهرسة، ومش له علاقة بإخفاء محتوى عن حد.
+   ============================================================ */
+function injectScriptsItemListSchema() {
+    const old = document.getElementById('scriptsItemListSchema');
+    if (old) old.remove();
+
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": allScripts.map((s, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "url": `https://ccraftspace.ddnsking.com/script.html?id=${encodeURIComponent(s.id)}`,
+            "name": s.title || 'سكربت'
+        }))
+    };
+
+    const tag = document.createElement('script');
+    tag.type = 'application/ld+json';
+    tag.id = 'scriptsItemListSchema';
+    tag.textContent = JSON.stringify(schema);
+    document.head.appendChild(tag);
 }
 
 function getQuery() {
