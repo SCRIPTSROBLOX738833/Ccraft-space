@@ -273,14 +273,16 @@ async function protectScript() {
         }
 
         // ============================================================
-        // اللودر ده بيفك تشفير XOR+Base64 جوه Roblox نفسه — الكود
-        // بيتخزن على السيرفر مشفر بالكامل، ومش بيتفك إلا هنا.
+        // اللودر ده بيحسب مفتاح التشفير بنفسه (مش بياخده جاهز من
+        // السيرفر) — بمعادلة FNV1a32 + xorshift32 مطابقة تمامًا
+        // للسيرفر. الـ DERIVE_SALT ثابت ولازم يفضل متطابق مع
+        // DERIVE_SALT في get_script_endpoint.py.
         // ============================================================
         const loaderCode =
 `-- 🔒 CCRAFT SPACE PROTECTED SCRIPT LOADER
 local SCRIPT_ID = "${data.scriptId}"
 local YOUR_KEY  = "${data.key}"
-local XOR_KEY   = "${data.xorKey}"
+local DERIVE_SALT = "cCraftSpaceV1_9f3a"
 
 local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
 
@@ -305,11 +307,34 @@ local function base64Decode(data)
     return table.concat(bytes)
 end
 
--- فك تشفير XOR (المفتاح مكتوب Hex، بنحوله لبايتات)
-local function hexToBytes(hex)
+-- FNV-1a 32-bit hash (مطابق للسيرفر بالظبط)
+local function fnv1a32(str)
+    local h = 2166136261
+    for i = 1, #str do
+        h = (h ~ string.byte(str, i)) & 0xFFFFFFFF
+        h = (h * 16777619) & 0xFFFFFFFF
+    end
+    return h
+end
+
+-- xorshift32 PRNG (مطابق للسيرفر بالظبط)
+local function xorshift32(state)
+    state = state & 0xFFFFFFFF
+    state = (state ~ (state << 13)) & 0xFFFFFFFF
+    state = (state ~ (state >> 17)) & 0xFFFFFFFF
+    state = (state ~ (state << 5)) & 0xFFFFFFFF
+    return state & 0xFFFFFFFF
+end
+
+-- نولّد بايتات مفتاح التشفير من seed مشتق من SALT+KEY+SCRIPT_ID
+local function deriveKeyBytes(seedStr, length)
+    local seed = fnv1a32(seedStr)
+    if seed == 0 then seed = 1 end
+    local state = seed
     local bytes = {}
-    for i = 1, #hex, 2 do
-        bytes[#bytes + 1] = tonumber(hex:sub(i, i + 1), 16)
+    for i = 1, length do
+        state = xorshift32(state)
+        bytes[i] = state & 0xFF
     end
     return bytes
 end
@@ -330,7 +355,8 @@ local success, result = pcall(function()
         "&key=" .. YOUR_KEY .. "&hwid=" .. hwid
     )
     local cipherBytes = base64Decode(encrypted)
-    local keyBytes = hexToBytes(XOR_KEY)
+    local seedStr = DERIVE_SALT .. ":" .. YOUR_KEY .. ":" .. SCRIPT_ID
+    local keyBytes = deriveKeyBytes(seedStr, 16)
     return xorDecrypt(cipherBytes, keyBytes)
 end)
 
