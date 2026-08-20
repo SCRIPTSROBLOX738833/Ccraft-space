@@ -22,7 +22,6 @@
   <link rel="shortcut icon"   type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
   <link rel="apple-touch-icon"                  href="https://ccraftspace.ddnsking.com/cCraft.jpg">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebSite","name":"CCRAFT SPACE",
    "url":"https://ccraftspace.ddnsking.com/","image":"https://ccraftspace.ddnsking.com/cCraft.jpg"}
@@ -33,7 +32,7 @@
 	
 <style>
 
-html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
+body { min-height: 100svh; }
 
 .scripts-page {
     max-width: 980px;
@@ -58,7 +57,6 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
     background: var(--accent-gradient);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     margin: 0;
-    display: flex; align-items: center; gap: 10px;
 }
 
 .scripts-count-pill {
@@ -162,7 +160,6 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
     font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
     cursor: pointer; font-family: 'Tajawal', sans-serif;
     margin: 0; transition: var(--transition); white-space: nowrap;
-    display: inline-flex; align-items: center; gap: 6px;
 }
 
 .filter-btn:hover  { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
@@ -173,7 +170,7 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
     margin-top: 10px; flex-wrap: wrap;
 }
 
-.sort-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; }
+.sort-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
 
 .sort-select {
     background: var(--bg-card); border: 1px solid var(--border-color);
@@ -257,17 +254,16 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
 
 .sc-title {
     font-size: 1rem; font-weight: 900; color: var(--text-main);
-    flex: 1; line-height: 1.3; min-width: 0;
+    flex: 1; line-height: 1.3;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
     overflow: hidden;
-    word-break: break-word; overflow-wrap: anywhere;
 }
 
 .sc-new-badge {
     background: var(--accent-gradient); color: white;
     font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
     border-radius: 50px; flex-shrink: 0; align-self: flex-start;
-    margin-top: 2px; display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 2px;
 }
 
 .sc-ai-badge {
@@ -275,7 +271,7 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
     border: 1px solid rgba(139,92,246,0.35); color: #a78bfa;
     font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
     border-radius: 50px; flex-shrink: 0; align-self: flex-start;
-    margin-top: 2px; display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 2px;
 }
 
 .sc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -324,7 +320,6 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    display: flex; align-items: center; gap: 8px;
 }
 
 .sc-preview-btn {
@@ -340,7 +335,6 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
     margin: 0;
     transition: var(--transition);
     align-self: flex-start;
-    display: inline-flex; align-items: center; gap: 6px;
 }
 
 .sc-preview-btn:hover { background: rgba(0,242,254,0.16); transform: none; filter: none; }
@@ -455,55 +449,20 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
 .ai-dots span:nth-child(2){animation-delay:.2s} .ai-dots span:nth-child(3){animation-delay:.4s}
 @keyframes adb { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-7px);opacity:1} }
 
-.load-more-wrap { text-align: center; margin-top: 18px; }
-
-.load-more-fab {
-    position: fixed;
-    bottom: 18px; left: 50%;
-    transform: translateX(-50%);
-    z-index: 80;
-    background: var(--accent-gradient);
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 26px;
-    font-family: 'Tajawal', sans-serif;
-    font-weight: 800; font-size: 0.85rem;
-    cursor: pointer; margin: 0;
-    display: none;
-    align-items: center; gap: 8px;
-    box-shadow: 0 10px 28px rgba(139,92,246,0.45);
-    transition: var(--transition);
-}
-.load-more-fab.show { display: inline-flex; }
-.load-more-fab:hover { transform: translateX(-50%) translateY(-3px); filter: brightness(1.08); }
-
-.asi-toggle-btn {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border-color);
-    border-radius: 50px; padding: 8px 18px;
-    color: var(--text-muted); font-size: 0.78rem; font-weight: 800;
-    cursor: pointer; font-family: 'Tajawal', sans-serif;
-    margin: 0; display: inline-flex; align-items: center; gap: 8px;
-    transition: var(--transition);
-}
-.asi-toggle-btn:hover { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
-.asi-links { margin-top: 14px; }
+.all-scripts-index {
     margin-top: 40px; padding-top: 24px;
     border-top: 1px solid var(--border-color);
 }
 .asi-title {
     font-size: 0.8rem; font-weight: 800; color: var(--text-muted);
     text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
 }
 .asi-links {
     display: flex; flex-wrap: wrap; gap: 6px 14px;
 }
 .asi-links a {
     font-size: 0.76rem; color: var(--text-muted);
-    text-decoration: none;
-    max-width: 100%; word-break: break-word; overflow-wrap: anywhere;
+    text-decoration: none; white-space: nowrap;
     border-bottom: 1px dotted transparent;
     transition: var(--transition);
 }
@@ -523,7 +482,7 @@ html, body { min-height: 100svh; max-width: 100%; overflow-x: hidden; }
 <body>
 
 <header>
-  <button onclick="location.href='publish.html'"><i class="fa-solid fa-upload"></i> نشر سكربت</button>
+  <button onclick="location.href='publish.html'">📤 نشر سكربت</button>
   <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
@@ -535,9 +494,7 @@ function toggleCodePreview(btn) {
     if (!full) return;
     const willOpen = !full.classList.contains('open');
     full.classList.toggle('open');
-    btn.innerHTML = willOpen
-        ? '<i class="fa-solid fa-chevron-up"></i> إخفاء الكود'
-        : '<i class="fa-solid fa-eye"></i> معاينة سريعة';
+    btn.innerText = willOpen ? '🔼 إخفاء الكود' : '👁️ معاينة سريعة';
 }
 </script>
 
@@ -546,7 +503,7 @@ function toggleCodePreview(btn) {
 
     <!-- Page Hero -->
     <div class="page-hero">
-        <h1><i class="fa-solid fa-scroll"></i> قائمة السكربتات</h1>
+        <h1>📜 قائمة السكربتات</h1>
         <div class="scripts-count-pill">
             إجمالي السكربتات: <span class="scp-num" id="scriptCount">—</span>
         </div>
@@ -557,32 +514,32 @@ function toggleCodePreview(btn) {
 
         <!-- Search Box -->
         <div class="search-wrap">
-            <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <span class="search-icon">🔍</span>
             <input type="text" id="searchScripts" placeholder="ابحث عن اسم سكربت، قسم، ماب، أو تاج...">
             <button class="ai-search-btn" id="aiSearchBtn" title="بحث ذكي بواسطة Nova AI">
-                <i class="fa-solid fa-robot"></i> <span>بحث ذكي</span>
+                🤖 <span>بحث ذكي</span>
             </button>
         </div>
 
         <!-- AI Banner -->
         <div class="ai-result-banner" id="aiBanner">
-            <span class="aib-icon"><i class="fa-solid fa-robot"></i></span>
+            <span class="aib-icon">🤖</span>
             <div class="aib-text" id="aiBannerText">—</div>
-            <button class="aib-close" onclick="closeAiBanner()"><i class="fa-solid fa-xmark"></i></button>
+            <button class="aib-close" onclick="closeAiBanner()">✕</button>
         </div>
 
         <!-- Filters -->
         <div class="filter-row">
             <span class="filter-label">القسم:</span>
-            <button class="filter-btn active" data-cat="all"><i class="fa-solid fa-star"></i> الكل</button>
-            <button class="filter-btn" data-cat="game"><i class="fa-solid fa-gamepad"></i> Game</button>
-            <button class="filter-btn" data-cat="admin"><i class="fa-solid fa-shield-halved"></i> Admin</button>
-            <button class="filter-btn" data-cat="ai"><i class="fa-solid fa-robot"></i> AI & NPCs</button>
-            <button class="filter-btn" data-cat="سكربت من الادارة"><i class="fa-solid fa-crown"></i> من الإدارة</button>
-            <span class="filter-label" style="margin-right:auto"><i class="fa-solid fa-key"></i> المفتاح:</span>
+            <button class="filter-btn active" data-cat="all">🌟 الكل</button>
+            <button class="filter-btn" data-cat="game">🎮 Game</button>
+            <button class="filter-btn" data-cat="admin">🛡️ Admin</button>
+            <button class="filter-btn" data-cat="ai">🤖 AI & NPCs</button>
+            <button class="filter-btn" data-cat="سكربت من الادارة">👑 من الإدارة</button>
+            <span class="filter-label" style="margin-right:auto">🔑 المفتاح:</span>
             <button class="filter-btn active" data-key="all">الكل</button>
-            <button class="filter-btn" data-key="yes"><i class="fa-solid fa-lock"></i> بمفتاح</button>
-            <button class="filter-btn" data-key="no"><i class="fa-solid fa-lock-open"></i> بدون مفتاح</button>
+            <button class="filter-btn" data-key="yes">🔒 بمفتاح</button>
+            <button class="filter-btn" data-key="no">🔓 بدون مفتاح</button>
         </div>
 
         <!-- تاجات ديناميكية -->
@@ -592,10 +549,10 @@ function toggleCodePreview(btn) {
         <div class="sort-row">
             <span class="sort-label">ترتيب:</span>
             <select class="sort-select" id="sortSelect">
-                <option value="newest">الأحدث أولاً</option>
-                <option value="oldest">الأقدم أولاً</option>
-                <option value="likes">الأكثر لايكات</option>
-                <option value="rating">الأعلى تقييماً</option>
+                <option value="newest">🕐 الأحدث أولاً</option>
+                <option value="oldest">🕑 الأقدم أولاً</option>
+                <option value="likes">👍 الأكثر لايكات</option>
+                <option value="rating">⭐ الأعلى تقييماً</option>
             </select>
             <span class="results-info">عرض <span id="resultsCount">—</span> سكربت</span>
         </div>
@@ -607,8 +564,8 @@ function toggleCodePreview(btn) {
     <!-- Scripts Grid -->
 <div class="scripts-grid" id="scriptsList">
 </div>
-<div class="load-more-wrap">
-    <button type="button" id="loadMoreBtn" class="load-more-fab"><i class="fa-solid fa-chevron-down"></i> عرض المزيد</button>
+<div style="text-align:center;margin-top:18px">
+    <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s">⬇️ عرض المزيد</button>
 </div>
 
 <!-- ============================================================
@@ -620,7 +577,7 @@ function toggleCodePreview(btn) {
      كمان مش مخفي بصريًا.
      ============================================================ -->
 <div class="all-scripts-index" id="allScriptsIndex" style="display:none">
-    <div class="asi-title"><i class="fa-solid fa-map-location-dot"></i> فهرس كل السكربتات</div>
+    <div class="asi-title">🗺️ فهرس كل السكربتات</div>
     <div class="asi-links" id="allScriptsLinksList"></div>
 </div>
 
@@ -763,7 +720,7 @@ function renderTagsFilter() {
     allScripts.forEach(s => (s.tags||[]).forEach(t => allTags.add(t)));
     if (!allTags.size) { row.style.display = 'none'; return; }
     row.style.display = 'flex';
-    row.innerHTML = `<span class="sort-label"><i class="fa-solid fa-tag"></i> تاجات:</span>` +
+    row.innerHTML = `<span class="sort-label">🏷️ تاجات:</span>` +
         [...allTags].map(t => `<button type="button" class="filter-btn" data-tag="${escHTML(t)}">#${escHTML(t)}</button>`).join('');
     row.querySelectorAll('[data-tag]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -830,11 +787,11 @@ function renderScripts(query = '') {
     if (!results.length) {
         list.innerHTML = `
             <div class="empty-state">
-                <span class="es-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <span class="es-icon">🔍</span>
                 <h3>لا توجد نتائج</h3>
-                <p>جرّب كلمات مختلفة أو استخدم البحث الذكي <i class="fa-solid fa-robot"></i></p>
+                <p>جرّب كلمات مختلفة أو استخدم البحث الذكي 🤖</p>
             </div>`;
-        document.getElementById('loadMoreBtn').classList.remove('show');
+        document.getElementById('loadMoreBtn').style.display = 'none';
         return;
     }
 
@@ -866,8 +823,8 @@ function renderVisibleCards() {
 
         const hasKeyFlag = !!(s.hasKey || s.key);
         const keyBadge = hasKeyFlag
-            ? '<span class="sc-key-badge"><i class="fa-solid fa-lock"></i> يتطلب مفتاح</span>'
-            : '<span class="sc-key-badge" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.25);color:#4ade80"><i class="fa-solid fa-lock-open"></i> بدون مفتاح</span>';
+            ? '<span class="sc-key-badge">🔒 يتطلب مفتاح</span>'
+            : '<span class="sc-key-badge" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>';
         const tagBadges = (s.tags||[]).map(t => `<span class="sc-tag-badge">#${escHTML(t)}</span>`).join('');
 
         const scriptUrl = `script.html?id=${encodeURIComponent(s.id)}`;
@@ -879,37 +836,37 @@ function renderVisibleCards() {
                 <div class="sc-header">
                     <div class="sc-title">${escHTML(s.title || 'بدون عنوان')}</div>
                     ${s.verified ? `<span class="sc-verified-badge" title="سكربت موثّق من الإدارة"><svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vg-${escHTML(s.id)}" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vg-${escHTML(s.id)})"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>` : ''}
-                    ${isAiMatch ? '<span class="sc-ai-badge"><i class="fa-solid fa-robot"></i> AI</span>' : ''}
-                    ${isNew && !isAiMatch ? '<span class="sc-new-badge"><i class="fa-solid fa-sparkles"></i> جديد</span>' : ''}
-                    ${isNew && isAiMatch  ? '<span class="sc-new-badge"><i class="fa-solid fa-sparkles"></i> جديد</span>' : ''}
+                    ${isAiMatch ? '<span class="sc-ai-badge">🤖 AI</span>' : ''}
+                    ${isNew && !isAiMatch ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
+                    ${isNew && isAiMatch  ? '<span class="sc-new-badge">✨ جديد</span>' : ''}
                 </div>
                 <div class="sc-badges">
-                    <span class="sc-cat"><i class="fa-solid fa-folder"></i> ${escHTML(s.category || '—')}</span>
-                    ${s.map ? `<span class="sc-map"><i class="fa-solid fa-map-location-dot"></i> ${escHTML(s.map)}</span>` : ''}
+                    <span class="sc-cat">📁 ${escHTML(s.category || '—')}</span>
+                    ${s.map ? `<span class="sc-map">🗺️ ${escHTML(s.map)}</span>` : ''}
                     ${keyBadge}
                     ${tagBadges}
                 </div>
                 <div class="sc-stats">
-                    <span class="sc-stat"><i class="fa-solid fa-thumbs-up"></i> <strong>${s.likes||0}</strong></span>
-                    <span class="sc-stat"><i class="fa-solid fa-eye"></i> <strong>${s.views||0}</strong></span>
-                    <span class="sc-stat"><i class="fa-solid fa-user"></i> ${escHTML(s.author||'مجهول')}</span>
+                    <span class="sc-stat">👍 <strong>${s.likes||0}</strong></span>
+                    <span class="sc-stat">👁️ <strong>${s.views||0}</strong></span>
+                    <span class="sc-stat">👤 ${escHTML(s.author||'مجهول')}</span>
                     <span style="margin-right:auto"></span>
                     <div class="sc-stars" data-id="${s.id}" data-rated="${rated}">
                         ${[1,2,3,4,5].map(n=>`<span class="sc-star${n<=Math.round(avg)?' filled':''}" data-v="${n}">★</span>`).join('')}
                         <span class="sc-avg">${s.votes ? avg.toFixed(1) : '—'}</span>
                     </div>
                 </div>
-                <div class="sc-code-snippet"><i class="fa-solid fa-code"></i> ${codeSnippet}${(s.code || '').length > 70 ? '…' : ''}</div>
-                <button type="button" class="sc-preview-btn" onclick="event.stopPropagation(); toggleCodePreview(this)"><i class="fa-solid fa-eye"></i> معاينة سريعة</button>
+                <div class="sc-code-snippet">💻 ${codeSnippet}${(s.code || '').length > 70 ? '…' : ''}</div>
+                <button type="button" class="sc-preview-btn" onclick="event.stopPropagation(); toggleCodePreview(this)">👁️ معاينة سريعة</button>
                 <pre class="sc-code-full" onclick="event.stopPropagation()">${codeFull}</pre>
             </div>
             <div class="sc-footer">
-                <a class="sc-btn view" href="${scriptUrl}" data-id="${s.id}"><i class="fa-solid fa-eye"></i> عرض</a>
-                <button class="sc-btn copy"   data-id="${s.id}"><i class="fa-solid fa-copy"></i> نسخ</button>
+                <a class="sc-btn view" href="${scriptUrl}" data-id="${s.id}">👁️ عرض</a>
+                <button class="sc-btn copy"   data-id="${s.id}">📋 نسخ</button>
                 <button class="sc-btn like${liked?' liked':''}" data-id="${s.id}" ${liked?'disabled':''}>
-                    <i class="fa-${liked?'solid':'regular'} fa-heart"></i> <span class="lc">${s.likes||0}</span>
+                    ${liked?'❤️':'🤍'} <span class="lc">${s.likes||0}</span>
                 </button>
-                <button class="sc-btn report" data-id="${s.id}" title="إبلاغ"><i class="fa-solid fa-flag"></i></button>
+                <button class="sc-btn report" data-id="${s.id}" title="إبلاغ">🚩</button>
             </div>
         `;
 
@@ -929,11 +886,11 @@ function renderVisibleCards() {
             try {
                 await navigator.clipboard.writeText(code);
                 const btn = e.currentTarget;
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> تم النسخ';
+                btn.innerText = '✅ تم النسخ';
                 btn.style.background = 'rgba(74,222,128,0.15)';
                 btn.style.color = 'var(--success)';
                 setTimeout(() => {
-                    btn.innerHTML = '<i class="fa-solid fa-copy"></i> نسخ';
+                    btn.innerText = '📋 نسخ';
                     btn.style.background = '';
                     btn.style.color = '';
                 }, 2200);
@@ -945,8 +902,8 @@ function renderVisibleCards() {
                 ta.select();
                 document.execCommand('copy');
                 ta.remove();
-                e.currentTarget.innerHTML = '<i class="fa-solid fa-check"></i> تم';
-                setTimeout(() => { e.currentTarget.innerHTML = '<i class="fa-solid fa-copy"></i> نسخ'; }, 2000);
+                e.currentTarget.innerText = '✅ تم';
+                setTimeout(() => { e.currentTarget.innerText = '📋 نسخ'; }, 2000);
             }
         };
 
@@ -960,14 +917,14 @@ function renderVisibleCards() {
             await set(likeRef, newLikes);
             likeBtn.querySelector('.lc').innerText = newLikes;
             likeBtn.classList.add('liked');
-            likeBtn.innerHTML = `<i class="fa-solid fa-heart"></i> <span class="lc">${newLikes}</span>`;
+            likeBtn.innerHTML = `❤️ <span class="lc">${newLikes}</span>`;
             likeBtn.disabled = true;
             localStorage.setItem(`liked_${s.id}`, 'true');
 
             // 🔔 إشعار لصاحب السكربت باللايك (لو المستخدم مسجل دخول)
             if (currentUser) {
                 const likerName = currentUser.email.split('@')[0];
-                notifyAuthor(s.authorUid, `${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
+                notifyAuthor(s.authorUid, `👍 ${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
             }
         };
 
@@ -1002,24 +959,12 @@ function renderVisibleCards() {
 
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     if (visibleCount < currentResults.length) {
-        loadMoreBtn.classList.add('show');
-        loadMoreBtn.innerHTML = `<i class="fa-solid fa-chevron-down"></i> عرض المزيد (${currentResults.length - visibleCount} متبقي)`;
+        loadMoreBtn.style.display = 'inline-block';
+        loadMoreBtn.innerText = `⬇️ عرض المزيد (${currentResults.length - visibleCount} متبقي)`;
     } else {
-        loadMoreBtn.classList.remove('show');
+        loadMoreBtn.style.display = 'none';
     }
 }
-
-document.getElementById('asiToggleBtn').addEventListener('click', () => {
-    const title = document.getElementById('asiTitle');
-    const links = document.getElementById('allScriptsLinksList');
-    const btn   = document.getElementById('asiToggleBtn');
-    const opening = links.style.display === 'none';
-    title.style.display = opening ? 'flex' : 'none';
-    links.style.display = opening ? 'flex' : 'none';
-    btn.innerHTML = opening
-        ? '<i class="fa-solid fa-list"></i> إخفاء الفهرس'
-        : '<i class="fa-solid fa-list"></i> إظهار فهرس كل السكربتات';
-});
 
 document.getElementById('loadMoreBtn').addEventListener('click', () => {
     visibleCount += PAGE_SIZE;
@@ -1189,7 +1134,7 @@ async function aiSearch() {
 
     const btn = document.getElementById('aiSearchBtn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    btn.innerHTML = '<span>⏳</span>';
 
     const list = document.getElementById('scriptsList');
     list.innerHTML = `<div class="ai-thinking">
@@ -1219,8 +1164,8 @@ async function aiSearch() {
 
         const intent = parseIntent(query);
         let bannerMsg = usedFallback
-            ? `<i class="fa-solid fa-magnifying-glass"></i> ${results.length} نتيجة (بحث محلي — Nova مش متاح دلوقتي)`
-            : `<i class="fa-solid fa-robot"></i> ${results.length} نتيجة من Nova AI`;
+            ? `🔍 ${results.length} نتيجة (بحث محلي — Nova مش متاح دلوقتي)`
+            : `🤖 ${results.length} نتيجة من Nova AI`;
         if (intent.map)      bannerMsg += ` · ماب: ${intent.map}`;
         if (intent.category) bannerMsg += ` · قسم: ${intent.category}`;
 
@@ -1233,12 +1178,12 @@ async function aiSearch() {
     } else {
         filteredIds = null;
         const source = usedFallback ? '(بحث محلي — Nova مش متاح دلوقتي)' : '(بحث Nova AI)';
-        showAiBanner(`<i class="fa-solid fa-triangle-exclamation"></i> لا نتائج دقيقة لـ "${escHTML(query)}" ${source} — عارض الكل`);
+        showAiBanner(`⚠️ لا نتائج دقيقة لـ "${escHTML(query)}" ${source} — عارض الكل`);
         renderScripts('');
     }
 
     btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-robot"></i> <span>بحث ذكي</span>';
+    btn.innerHTML = '🤖 <span>بحث ذكي</span>';
 }
 
 function showAiBanner(html) {
