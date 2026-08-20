@@ -1,0 +1,33 @@
+name: Generate Sitemap
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # كل يوم الساعة 3 صباحًا UTC — عدّلها براحتك
+  workflow_dispatch:        # يسمح بتشغيله يدويًا من تبويب Actions
+  push:
+    branches: [main]        # يشتغل كمان مع أي push لو حابب (اختياري، احذفه لو مش عايزه)
+
+jobs:
+  build-sitemap:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate sitemap.xml
+        run: node generate-sitemap.js
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "sitemap-bot"
+          git config user.email "actions@github.com"
+          git add sitemap.xml
+          git diff --staged --quiet || git commit -m "🗺️ تحديث sitemap.xml تلقائيًا"
+          git push
