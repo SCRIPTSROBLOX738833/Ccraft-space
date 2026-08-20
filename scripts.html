@@ -38,6 +38,7 @@ body { min-height: 100svh; }
     max-width: 980px;
     margin: 0 auto;
     padding: 0 20px 80px;
+    overflow-x: hidden;
 }
 
 .page-hero {
@@ -459,12 +460,16 @@ body { min-height: 100svh; }
 }
 .asi-links {
     display: flex; flex-wrap: wrap; gap: 6px 14px;
+    max-width: 100%;
 }
 .asi-links a {
     font-size: 0.76rem; color: var(--text-muted);
-    text-decoration: none; white-space: nowrap;
+    text-decoration: none;
     border-bottom: 1px dotted transparent;
     transition: var(--transition);
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 .asi-links a:hover { color: var(--primary); border-bottom-color: var(--primary); }
 
