@@ -15,6 +15,12 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          # لازم PAT شخصي هنا (سر اسمه PAT_TOKEN) بدل GITHUB_TOKEN الافتراضي —
+          # GitHub عمدًا بيمنع أي كومِت بالـ GITHUB_TOKEN الافتراضي من إنه
+          # يشغّل workflow تاني (زي نشر Pages) تلقائيًا، عشان يمنع لوب لا نهائي.
+          # الـ PAT الشخصي مش عليه القيد ده، فالنشر هيحصل أوتوماتيك بعد كل تحديث.
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -30,4 +36,4 @@ jobs:
           git config user.email "actions@github.com"
           git add sitemap.xml
           git diff --staged --quiet || git commit -m "🗺️ تحديث sitemap.xml تلقائيًا"
-          git push
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
