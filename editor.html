@@ -207,7 +207,7 @@ header { flex: none; }
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    border-top: 1px solid var(--nova-border);
+    border-bottom: 1px solid var(--nova-border);
     background: var(--nova-surface);
     direction: ltr;
 }
@@ -280,6 +280,89 @@ header { flex: none; }
     transition: transform 0.25s ease;
 }
 .nova-panel.open { transform: translateX(0); }
+
+.files-panel {
+    position: fixed; top: 0; bottom: 0; right: 0;
+    width: min(340px, 90vw);
+    background: var(--nova-surface);
+    border-left: 1px solid var(--nova-border);
+    z-index: 100;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+}
+.files-panel.open { transform: translateX(0); }
+.fp-head {
+    flex: none;
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px;
+    border-bottom: 1px solid var(--nova-border);
+}
+.fp-head h2 {
+    flex: 1 1 auto; min-width: 0;
+    font-size: 0.92rem; font-weight: 900; margin: 0;
+    background: var(--nova-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.fp-actions {
+    flex: none;
+    display: flex; gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--nova-border);
+}
+.fp-btn {
+    flex: 1 1 auto;
+    background: var(--nova-primary-soft);
+    border: 1px solid rgba(139,92,246,0.3);
+    color: var(--nova-primary);
+    border-radius: 10px;
+    padding: 9px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    cursor: pointer; margin: 0;
+    font-family: 'Tajawal', sans-serif;
+}
+.fp-btn:active { background: rgba(139,92,246,0.25); }
+.fp-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 12px;
+    display: flex; flex-direction: column; gap: 4px;
+}
+.fp-hint {
+    flex: none;
+    padding: 8px 12px 12px;
+    font-size: 0.68rem;
+    color: var(--nova-text-dim);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.conv-item {
+    flex: none;
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    font-size: 0.84rem;
+    color: var(--nova-text-dim);
+    cursor: pointer;
+}
+.conv-item:active { background: rgba(255,255,255,0.06); }
+.conv-item.active { background: var(--nova-primary-soft); color: var(--nova-text); }
+.conv-item .conv-title {
+    flex: 1 1 auto; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.conv-item .conv-del {
+    flex: none;
+    font-size: 0.85rem;
+    color: var(--nova-text-dim);
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+.conv-item .conv-del:active { color: var(--nova-danger); background: rgba(248,113,113,0.15); }
 
 .np-head {
     flex: none;
@@ -436,6 +519,7 @@ header { flex: none; }
 <div class="editor-app">
 
     <div class="nova-topbar">
+        <button class="icon-btn" onclick="toggleFilesPanel(true)" title="ملفاتي">📁</button>
         <button class="icon-btn" onclick="downloadCode()" title="تحميل">💾</button>
         <button class="icon-btn" onclick="copyAllCode()" title="نسخ الكود">📋</button>
         <div class="nova-title-block">
@@ -455,6 +539,8 @@ header { flex: none; }
         <button class="sn-chip" onclick="insertSnippet('pcall(function()\n\t\nend)')">🛡️ pcall</button>
     </div>
 
+    <div class="suggest-bar" id="suggestBar"></div>
+
     <div class="editor-wrap">
         <div class="gutter" id="gutter"><div>1</div></div>
         <div class="code-stack">
@@ -463,15 +549,28 @@ header { flex: none; }
         </div>
     </div>
 
-    <div class="suggest-bar" id="suggestBar"></div>
-
     <div class="bottom-bar">
         <button class="bb-btn" onclick="clearEditor()">🗑️ مسح الكل</button>
         <button class="bb-btn" onclick="formatIndentHint()">📐 محاذاة</button>
         <button class="bb-btn primary" onclick="togglePanel(true)">🤖 اسأل نوفا</button>
     </div>
 
-    <div class="sidebar-backdrop" id="panelBackdrop" onclick="togglePanel(false)"></div>
+    <div class="sidebar-backdrop" id="panelBackdrop" onclick="closeAllPanels()"></div>
+
+    <aside class="files-panel" id="filesPanel">
+        <div class="fp-head">
+            <span style="font-size:1.2rem;">📁</span>
+            <h2>ملفاتي</h2>
+            <button class="icon-btn" onclick="toggleFilesPanel(false)" style="width:32px;height:32px;font-size:0.85rem;">✕</button>
+        </div>
+        <div class="fp-actions">
+            <button class="fp-btn" onclick="saveCurrentFile()">💾 حفظ الحالي</button>
+            <button class="fp-btn" onclick="saveAsNewFile()">➕ حفظ كملف جديد</button>
+        </div>
+        <div class="fp-list" id="filesList"></div>
+        <div class="fp-hint">تقدر تشفّر أي ملف بكلمة سر وقت الحفظ 🔒 — التشفير بسيط ومحلي بالكامل جوه المتصفح من غير أي سيرفر</div>
+    </aside>
+
     <aside class="nova-panel" id="novaPanel">
         <div class="np-head">
             <div class="nova-avatar">🤖</div>
@@ -479,10 +578,10 @@ header { flex: none; }
             <button class="icon-btn" onclick="togglePanel(false)" style="width:32px;height:32px;font-size:0.85rem;">✕</button>
         </div>
         <div class="np-actions">
-            <button class="np-action" onclick="askNova('اشرحلي الكود ده بالتفصيل')">📖 اشرح الكود</button>
-            <button class="np-action" onclick="askNova('دور على أي أخطاء في الكود ده وصلحها')">🐞 دوّر على الأخطاء</button>
-            <button class="np-action" onclick="askNova('حسّن أداء وتنظيم الكود ده')">⚡ حسّن الكود</button>
-            <button class="np-action" onclick="askNova('كمل الكود ده بمنطقية')">➕ أكمل الكود</button>
+            <button class="np-action" onclick="askNova('اشرحلي الكود ده بالتفصيل، من غير ما تديني كود جديد، فسّر بس')">📖 اشرح الكود</button>
+            <button class="np-action" onclick="askNova('دور على أي أخطاء في الكود ده وصلحها بنفسك وابعتلي الكود الكامل بعد التصحيح')">🐞 دوّر على الأخطاء</button>
+            <button class="np-action" onclick="askNova('حسّن أداء وتنظيم الكود ده وابعتلي الكود الكامل بعد التحسين')">⚡ حسّن الكود</button>
+            <button class="np-action" onclick="askNova('كمل الكود ده بمنطقية وابعتلي الكود الكامل بعد الإكمال')">➕ أكمل الكود</button>
         </div>
         <div class="np-chat" id="npChat">
             <div class="np-empty" id="npEmpty">اسألني عن أي حاجة في الكود اللي بتكتبه، أو دوسي على زر جاهز فوق ⬆️</div>
@@ -679,6 +778,7 @@ function applySuggestion(suggestion) {
 function clearEditor() {
     if (codeInput.value && !confirm('مسح كل الكود؟')) return;
     codeInput.value = '';
+    currentFileId = null;
     renderHighlight();
     codeInput.focus();
 }
@@ -730,21 +830,244 @@ codeInput.addEventListener('scroll', syncScroll);
 codeInput.addEventListener('keyup', (e) => {
     if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(e.key)) updateSuggestions();
 });
+const AUTO_PAIRS = { '(': ')', '{': '}', '[': ']', '"': '"', "'": "'" };
+const AUTO_CLOSERS = [')', '}', ']', '"', "'"];
+
 codeInput.addEventListener('keydown', (e) => {
     if (e.key === 'Tab') {
         e.preventDefault();
         insertAtCursor('\t');
+        return;
+    }
+
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const pos = codeInput.selectionStart;
+        const val = codeInput.value;
+        const lineStart = val.lastIndexOf('\n', pos - 1) + 1;
+        const currentLine = val.slice(lineStart, pos);
+        const indentMatch = currentLine.match(/^[ \t]*/);
+        let indent = indentMatch ? indentMatch[0] : '';
+        const trimmed = currentLine.trim();
+        if (/(then|do|function\([^)]*\)|\{|\(|\[)$/.test(trimmed)) indent += '\t';
+        insertAtCursor('\n' + indent);
+        return;
+    }
+
+    if (Object.keys(AUTO_PAIRS).includes(e.key)) {
+        const start = codeInput.selectionStart;
+        const end = codeInput.selectionEnd;
+        if (start === end) {
+            e.preventDefault();
+            const closer = AUTO_PAIRS[e.key];
+            insertAtCursor(e.key + closer);
+            codeInput.setSelectionRange(start + 1, start + 1);
+            return;
+        }
+    }
+
+    if (AUTO_CLOSERS.includes(e.key)) {
+        const pos = codeInput.selectionStart;
+        if (codeInput.value[pos] === e.key && codeInput.selectionStart === codeInput.selectionEnd) {
+            e.preventDefault();
+            codeInput.setSelectionRange(pos + 1, pos + 1);
+        }
     }
 });
 codeInput.addEventListener('click', updateSuggestions);
 
+const filesPanel = document.getElementById('filesPanel');
+
 /* ================================================================
-   لوحة نوفا — مساعد الكود
+   فتح/قفل اللوحات (نوفا / الملفات) — لوحة واحدة مفتوحة في نفس الوقت
    ================================================================ */
 function togglePanel(force) {
     const open = force !== undefined ? force : !novaPanel.classList.contains('open');
+    if (open) filesPanel.classList.remove('open');
     novaPanel.classList.toggle('open', open);
-    panelBack.classList.toggle('show', open);
+    panelBack.classList.toggle('show', open || filesPanel.classList.contains('open'));
+}
+
+function toggleFilesPanel(force) {
+    const open = force !== undefined ? force : !filesPanel.classList.contains('open');
+    if (open) novaPanel.classList.remove('open');
+    filesPanel.classList.toggle('open', open);
+    panelBack.classList.toggle('show', open || novaPanel.classList.contains('open'));
+    if (open) renderFilesList();
+}
+
+function closeAllPanels() {
+    novaPanel.classList.remove('open');
+    filesPanel.classList.remove('open');
+    panelBack.classList.remove('show');
+}
+
+/* ================================================================
+   نظام حفظ الملفات — كله محلي جوه المتصفح (localStorage)، من غير باك اند
+   ================================================================ */
+const FILES_KEY = 'ccraftEditorFiles_v1';
+let currentFileId = null;
+
+function loadFiles() {
+    try { return JSON.parse(localStorage.getItem(FILES_KEY) || '[]'); } catch { return []; }
+}
+function saveFilesList(files) { localStorage.setItem(FILES_KEY, JSON.stringify(files)); }
+
+/* ================================================================
+   تشفير بسيط خالص (XOR + Base64) — يشتغل بالكامل جوه المتصفح
+   مش تشفير حقيقي قوي، بس كفاية لحماية الملف من عين حد بيتصفح بسرعة
+   ================================================================ */
+function simpleChecksum(str) {
+    let sum = 7;
+    for (let i = 0; i < str.length; i++) sum = (sum * 31 + str.charCodeAt(i)) % 999999937;
+    return sum;
+}
+
+function xorBytes(bytes, key) {
+    const keyBytes = new TextEncoder().encode(key);
+    const out = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) out[i] = bytes[i] ^ keyBytes[i % keyBytes.length];
+    return out;
+}
+function bytesToBase64(bytes) {
+    let binary = '';
+    bytes.forEach(b => binary += String.fromCharCode(b));
+    return btoa(binary);
+}
+function base64ToBytes(b64) {
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+}
+function encryptText(text, password) {
+    return bytesToBase64(xorBytes(new TextEncoder().encode(text), password));
+}
+function decryptText(b64, password) {
+    return new TextDecoder().decode(xorBytes(base64ToBytes(b64), password));
+}
+
+/* ================================================================
+   حفظ / فتح / إعادة تسمية / حذف الملفات
+   ================================================================ */
+function saveCurrentFile() {
+    const code = codeInput.value;
+    if (!code.trim()) { showToast('المحرر فارغ، اكتب كود الأول'); return; }
+
+    let files = loadFiles();
+    let file = files.find(f => f.id === currentFileId);
+    const wantEncrypt = confirm('عايز تشفّر الملف بكلمة سر؟\n"موافق" = تشفير، "إلغاء" = حفظ عادي');
+
+    let payload = code, encrypted = false, checksum = null;
+    if (wantEncrypt) {
+        const password = prompt('اكتب كلمة السر للتشفير:');
+        if (!password) { showToast('اتلغى الحفظ، محتاج كلمة سر للتشفير'); return; }
+        checksum = simpleChecksum(code);
+        payload = encryptText(code, password);
+        encrypted = true;
+    }
+
+    if (file) {
+        file.encrypted = encrypted;
+        file.data = payload;
+        file.checksum = checksum;
+        file.updatedAt = Date.now();
+    } else {
+        const name = prompt('اسم الملف:', 'سكربت جديد');
+        if (!name) return;
+        file = {
+            id: 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            name, encrypted, data: payload, checksum, updatedAt: Date.now()
+        };
+        files.unshift(file);
+        currentFileId = file.id;
+    }
+    saveFilesList(files);
+    renderFilesList();
+    showToast(encrypted ? '🔒 تم حفظ الملف مشفّرًا' : '💾 تم حفظ الملف');
+}
+
+function saveAsNewFile() {
+    currentFileId = null;
+    saveCurrentFile();
+}
+
+function openFile(id) {
+    const files = loadFiles();
+    const file = files.find(f => f.id === id);
+    if (!file) return;
+
+    if (file.encrypted) {
+        const password = prompt('الملف ده مشفّر 🔒 اكتب كلمة السر:');
+        if (!password) return;
+        let decrypted;
+        try { decrypted = decryptText(file.data, password); } catch { showToast('❌ كلمة السر غلط'); return; }
+        if (simpleChecksum(decrypted) !== file.checksum) { showToast('❌ كلمة السر غلط'); return; }
+        codeInput.value = decrypted;
+    } else {
+        codeInput.value = file.data;
+    }
+    currentFileId = file.id;
+    renderHighlight();
+    toggleFilesPanel(false);
+    showToast('📂 اتفتح: ' + file.name);
+}
+
+function renameFile(id, evt) {
+    evt.stopPropagation();
+    const files = loadFiles();
+    const file = files.find(f => f.id === id);
+    if (!file) return;
+    const name = prompt('اسم جديد للملف:', file.name);
+    if (!name) return;
+    file.name = name;
+    saveFilesList(files);
+    renderFilesList();
+}
+
+function deleteFile(id, evt) {
+    evt.stopPropagation();
+    if (!confirm('حذف الملف ده نهائيًا؟')) return;
+    const files = loadFiles().filter(f => f.id !== id);
+    saveFilesList(files);
+    if (currentFileId === id) currentFileId = null;
+    renderFilesList();
+}
+
+function renderFilesList() {
+    const files = loadFiles();
+    const list = document.getElementById('filesList');
+    list.innerHTML = '';
+
+    if (files.length === 0) {
+        list.innerHTML = '<div class="np-empty">لسه مفيش ملفات محفوظة. احفظ أول سكربت من الأزرار فوق 👆</div>';
+        return;
+    }
+
+    files.forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'conv-item' + (f.id === currentFileId ? ' active' : '');
+        item.onclick = () => openFile(f.id);
+
+        const title = document.createElement('span');
+        title.className = 'conv-title';
+        title.innerText = (f.encrypted ? '🔒 ' : '📄 ') + f.name;
+
+        const ren = document.createElement('span');
+        ren.className = 'conv-del';
+        ren.innerText = '✎';
+        ren.onclick = (e) => renameFile(f.id, e);
+
+        const del = document.createElement('span');
+        del.className = 'conv-del';
+        del.innerText = '✕';
+        del.onclick = (e) => deleteFile(f.id, e);
+
+        item.appendChild(title);
+        item.appendChild(ren);
+        item.appendChild(del);
+        list.appendChild(item);
+    });
 }
 
 function npAppendMessage(text, sender) {
@@ -788,6 +1111,63 @@ function npCopyCode(btn) {
         .catch(() => { fallbackCopy(code); btn.innerText = '✅ تم النسخ'; setTimeout(() => btn.innerText = '📋 نسخ الكود', 1500); });
 }
 
+/* ================================================================
+   تطبيق تعديلات نوفا مباشرة على الكود بدل ما تدي كود يتنسخ
+   ================================================================ */
+const novaUndoStack = [];
+
+function handleNovaReply(text) {
+    const codeBlockRe = /```(\w*)\n?([\s\S]*?)```/g;
+    let match, lastCode = null;
+    while ((match = codeBlockRe.exec(text)) !== null) {
+        lastCode = match[2].replace(/\n$/, '');
+    }
+
+    if (lastCode && lastCode.trim().length > 3 && lastCode.trim() !== codeInput.value.trim()) {
+        novaUndoStack.push(codeInput.value);
+        codeInput.value = lastCode;
+        renderHighlight();
+        showToast('✅ نوفا عدّلت الكود في المحرر');
+
+        const explanation = text.replace(codeBlockRe, '').trim();
+        npAppendAppliedMessage(explanation || 'تم تحديث الكود في المحرر مباشرة.');
+    } else {
+        npAppendMessage(text, 'nova');
+    }
+}
+
+function npAppendAppliedMessage(explanation) {
+    document.getElementById('npEmpty')?.remove();
+    const row = document.createElement('div');
+    row.className = 'message-row nova';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    avatar.innerText = '🤖';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.innerHTML = renderNovaRichText(explanation) +
+        '<div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+        '<span style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.35);color:var(--nova-success);border-radius:8px;padding:4px 9px;font-size:0.7rem;font-weight:800;">✅ اتطبق على المحرر</span>' +
+        '<button class="np-copy-btn" style="width:auto;border:1px solid var(--nova-border);border-radius:8px;padding:4px 9px;font-size:0.7rem;" onclick="undoNovaEdit(this)">↩️ تراجع عن التعديل</button>' +
+        '</div>';
+
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    npChat.appendChild(row);
+    npChat.scrollTop = npChat.scrollHeight;
+}
+
+function undoNovaEdit(btn) {
+    if (novaUndoStack.length === 0) { showToast('مفيش تعديل سابق للتراجع عنه'); return; }
+    codeInput.value = novaUndoStack.pop();
+    renderHighlight();
+    showToast('↩️ تم التراجع عن تعديل نوفا');
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+}
+
 function npShowTyping() {
     const row = document.createElement('div');
     row.className = 'message-row nova';
@@ -805,7 +1185,8 @@ async function sendToNova(message) {
     npShowTyping();
 
     const code = codeInput.value;
-    const pageCtx = `الصفحة: editor.html (محرر أكواد روبلوكس Lua). الكود الحالي في المحرر:\n${code.slice(0, 4000)}`;
+    const pageCtx = `الصفحة: editor.html (محرر أكواد روبلوكس Lua). الكود الحالي في المحرر:\n${code.slice(0, 4000)}\n\n` +
+        `تعليمات مهمة: لو المستخدم طلب تعديل، تصحيح، تحسين، أو إكمال للكود، متديش الكود كنصيحة يطبقها هو — ابعت الكود الكامل بعد التعديل جوه بلوك كود واحد (\`\`\`lua ... \`\`\`) وده هيتطبق تلقائيًا في المحرر، واكتب شرح مختصر بس خارج البلوك. لو الطلب مجرد سؤال أو شرح من غير تعديل، متبعتش بلوك كود للكود كامل.`;
 
     try {
         const res = await fetch(`${NOVA_URL}/chat`, {
@@ -816,7 +1197,7 @@ async function sendToNova(message) {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         npRemoveTyping();
-        if (data.reply) npAppendMessage(data.reply, 'nova');
+        if (data.reply) handleNovaReply(data.reply);
     } catch (e) {
         npRemoveTyping();
         npAppendMessage(`عذراً، حدث خطأ 😢 — ${e.message}`, 'nova');
