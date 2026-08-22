@@ -80,6 +80,22 @@ body {
 
 .back-btn:hover { color: var(--text-main); filter: none; transform: scale(1.1); }
 
+.header-icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    cursor: pointer;
+    padding: 4px 6px;
+    margin: 0;
+    min-width: unset;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: var(--transition);
+}
+
+.header-icon-btn:hover { color: var(--text-main); filter: none; transform: rotate(30deg) scale(1.1); }
+
 .ch-icon {
     width: 40px; height: 40px;
     border-radius: 14px;
@@ -755,6 +771,278 @@ body {
 #scrollBtn.show { display: flex; }
 
 /* ============================================================
+   Image Lightbox (full-screen viewer with pinch/double-tap zoom)
+   ============================================================ */
+
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.94);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+}
+
+.lightbox-overlay.show { display: flex; }
+
+.lightbox-close {
+    position: absolute;
+    top: calc(16px + env(safe-area-inset-top));
+    left: 16px;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    margin: 0; padding: 0;
+}
+
+.lightbox-close:hover { background: rgba(255,255,255,0.2); filter: none; transform: none; }
+
+.lightbox-stage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    touch-action: none;
+}
+
+.lightbox-stage img {
+    max-width: 96vw;
+    max-height: 92vh;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    will-change: transform;
+    touch-action: none;
+}
+
+.lightbox-hint {
+    position: absolute;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    color: rgba(255,255,255,0.5);
+    font-size: 0.75rem;
+    text-align: center;
+    width: 100%;
+    pointer-events: none;
+}
+
+
+/* ============================================================
+   Sticker Panel (your saved stickers)
+   ============================================================ */
+
+.sticker-panel {
+    position: absolute;
+    bottom: 78px;
+    right: 10px;
+    left: 10px;
+    margin: 0 auto;
+    max-width: 340px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 12px 14px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 50;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+    max-height: 46vh;
+}
+
+.sticker-panel.show { display: flex; }
+
+.sticker-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.sticker-add-btn {
+    background: var(--primary-dim);
+    color: var(--primary);
+    border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 50px;
+    padding: 5px 12px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin: 0;
+}
+
+.sticker-add-btn:hover { background: var(--primary); color: white; filter: none; transform: none; }
+
+.sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    overflow-y: auto;
+}
+
+.sticker-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.sticker-item:hover { border-color: var(--border-hover); transform: scale(1.05); }
+
+.sticker-item img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.sticker-del-btn {
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    font-size: 0.6rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    margin: 0; padding: 0;
+    min-width: unset;
+}
+
+.sticker-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    padding: 20px 4px;
+    line-height: 1.7;
+}
+
+
+/* ============================================================
+   Chat Settings Modal (message bubble shape — TikTok style)
+   ============================================================ */
+
+.settings-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 500;
+}
+
+.settings-overlay.show { display: flex; }
+
+.settings-panel {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px 24px 0 0;
+    padding: 20px 22px calc(24px + env(safe-area-inset-bottom));
+    animation: fadeIn 0.25s ease both;
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.settings-header h3 {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--text-main);
+}
+
+.settings-close {
+    background: rgba(255,255,255,0.06);
+    border: none;
+    color: var(--text-muted);
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 0; padding: 0;
+    min-width: unset;
+}
+
+.settings-close:hover { color: var(--text-main); filter: none; transform: none; }
+
+.shape-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.shape-option {
+    background: var(--bg-surface);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.shape-option:hover { border-color: var(--border-hover); }
+.shape-option.active { border-color: var(--primary); background: var(--primary-dim); }
+
+.shape-preview-bubble {
+    background: var(--accent-gradient);
+    color: white;
+    padding: 8px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    max-width: 90%;
+}
+
+.shape-option .shape-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    align-self: center;
+}
+
+.shape-option.active .shape-label { color: var(--primary); }
+
+.shape-preview-bubble.p-rounded { border-radius: 18px; border-bottom-left-radius: 6px; }
+.shape-preview-bubble.p-square  { border-radius: 8px; }
+.shape-preview-bubble.p-pill    { border-radius: 999px; }
+.shape-preview-bubble.p-soft    { border-radius: 20px; }
+
+
+/* ============================================================
+   Bubble Shape Variants — applied via body class from settings
+   (default "rounded" needs no class; it's the existing look)
+   ============================================================ */
+
+body.shape-square .msg-bubble { border-radius: 8px !important; }
+
+body.shape-pill .msg-bubble { border-radius: 999px !important; }
+
+body.shape-soft .msg-bubble { border-radius: 20px !important; }
+
+
+/* ============================================================
    Responsive — phones
    ============================================================ */
 
@@ -775,6 +1063,9 @@ body {
     .code-block pre { max-height: 200px; }
     .input-area { padding: 8px 8px calc(10px + env(safe-area-inset-bottom)); }
     #sendBtn { width: 40px; height: 40px; font-size: 1rem; }
+    .sticker-panel { right: 6px; left: 6px; bottom: 74px; }
+    .sticker-grid { grid-template-columns: repeat(3, 1fr); }
+    .shape-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 380px) {
@@ -796,6 +1087,7 @@ body {
             <div class="ch-name">شات CCRAFT SPACE</div>
             <div class="ch-status">متصل</div>
         </div>
+        <button class="header-icon-btn" id="settingsBtn" title="إعدادات الشات">⚙️</button>
         <div class="ch-online">
             <div class="dot"></div>
             <span id="onlineCount">—</span> أونلاين
@@ -826,6 +1118,13 @@ body {
     <div class="input-area" style="position:relative">
         <div class="quick-emojis" id="quickEmojis"></div>
         <div class="mention-panel" id="mentionPanel"></div>
+        <div class="sticker-panel" id="stickerPanel">
+            <div class="sticker-panel-header">
+                <span>ملصقاتك</span>
+                <button class="sticker-add-btn" id="stickerAddBtn" type="button">➕ إضافة ملصق</button>
+            </div>
+            <div class="sticker-grid" id="stickerGrid"></div>
+        </div>
 
         <div class="input-side-btns">
             <button class="media-trigger" id="imageTrigger" title="إرسال صورة">📷</button>
@@ -847,6 +1146,26 @@ body {
 
 <!-- Scroll to bottom -->
 <button id="scrollBtn" onclick="scrollToBottom()">⬇️ رسائل جديدة</button>
+
+<!-- Image Lightbox -->
+<div class="lightbox-overlay" id="imgLightbox">
+    <button class="lightbox-close" id="lightboxClose" type="button">✕</button>
+    <div class="lightbox-stage" id="lightboxStage">
+        <img id="lightboxImg" src="" alt="صورة مكبّرة">
+    </div>
+    <div class="lightbox-hint">دبل تاب أو إصبعين للتكبير</div>
+</div>
+
+<!-- Chat Settings (bubble shape) -->
+<div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-panel">
+        <div class="settings-header">
+            <h3>شكل رسائلك</h3>
+            <button class="settings-close" id="settingsClose" type="button">✕</button>
+        </div>
+        <div class="shape-grid" id="shapeGrid"></div>
+    </div>
+</div>
 
 
 <script type="module">
@@ -878,6 +1197,8 @@ let lastDate     = null;
 let typingTimer  = null;
 let atBottom     = true;
 let pendingUpload = null; // { dataURL, type: 'image'|'sticker' }
+let userStickers  = {};   // id -> dataURL, your saved sticker library
+let currentShape  = 'rounded'; // selected message bubble shape
 
 const chatBox    = document.getElementById('chatBox');
 const msgInput   = document.getElementById('msgInput');
@@ -917,6 +1238,8 @@ onAuthStateChanged(auth, async user => {
     loadChat();
     trackPresence(user);
     trackTyping(user);
+    loadStickers();
+    loadBubbleShape();
 });
 
 
@@ -938,6 +1261,7 @@ function buildQuickEmojis() {
 
 document.getElementById('emojiTrigger').onclick = () => {
     document.getElementById('quickEmojis').classList.toggle('show');
+    document.getElementById('stickerPanel').classList.remove('show');
 };
 
 document.addEventListener('click', e => {
@@ -1044,6 +1368,9 @@ function renderMessageContent(text) {
 
 // Single delegated listener handles copy buttons for every code block ever rendered
 chatBox.addEventListener('click', async e => {
+    const imgEl = e.target.closest('.msg-image-img, .msg-sticker-img');
+    if (imgEl) { openLightbox(imgEl.src); return; }
+
     const btn = e.target.closest('.code-copy-btn');
     if (!btn) return;
     const codeEl = btn.closest('.code-block')?.querySelector('code');
@@ -1145,11 +1472,11 @@ function buildMessageHTML(msg, key, isOwn, avatarHTML, time) {
 
     let contentHTML;
     if (msg.type === 'sticker') {
-        contentHTML = `<img src="${msg.imageData}" class="msg-sticker-img" alt="ملصق" onclick="window.open('${msg.imageData}','_blank')">`;
+        contentHTML = `<img src="${msg.imageData}" class="msg-sticker-img" alt="ملصق">`;
     } else if (msg.type === 'image') {
         contentHTML = `
             ${replyHTML}
-            <img src="${msg.imageData}" class="msg-image-img" alt="صورة" onclick="window.open('${msg.imageData}','_blank')">
+            <img src="${msg.imageData}" class="msg-image-img" alt="صورة">
             ${msg.text ? `<div class="bubble-text" style="margin-top:8px">${renderMessageContent(msg.text)}</div>` : ''}
             ${editedHTML}
         `;
@@ -1323,7 +1650,6 @@ function compressImageFile(file, { maxDim = 1280, quality = 0.7, mimeType = 'ima
    ============================================================ */
 
 document.getElementById('imageTrigger').onclick = () => imageInput.click();
-document.getElementById('stickerTrigger').onclick = () => stickerInput.click();
 
 imageInput.addEventListener('change', async () => {
     const file = imageInput.files[0];
@@ -1335,8 +1661,29 @@ imageInput.addEventListener('change', async () => {
 stickerInput.addEventListener('change', async () => {
     const file = stickerInput.files[0];
     stickerInput.value = '';
-    if (!file) return;
-    await prepareUpload(file, 'sticker');
+    if (!file || !currentUser) return;
+    stickerAddBtn.disabled = true;
+    stickerAddBtn.textContent = '⏳ جاري الحفظ...';
+    try {
+        const dataURL = await compressImageFile(file, {
+            maxDim: STICKER_MAX_DIM,
+            quality: STICKER_QUALITY,
+            mimeType: 'image/webp'
+        });
+        if (dataURL.length > MAX_DATA_LENGTH) {
+            alert('الملصق كبير حتى بعد الضغط، جرّب صورة أصغر.');
+            return;
+        }
+        const newRef = push(ref(db, `users/${currentUser.uid}/stickers`));
+        await set(newRef, dataURL);
+        userStickers[newRef.key] = dataURL;
+        renderStickerPanel();
+    } catch {
+        alert('تعذّر حفظ الملصق');
+    } finally {
+        stickerAddBtn.disabled = false;
+        stickerAddBtn.textContent = '➕ إضافة ملصق';
+    }
 });
 
 async function prepareUpload(file, type) {
@@ -1590,6 +1937,250 @@ window.addEventListener('scroll', () => {
     const scrollBottom = window.scrollY + window.innerHeight;
     atBottom = document.documentElement.scrollHeight - scrollBottom < threshold;
     if (atBottom) scrollBtn.classList.remove('show');
+});
+
+
+/* ============================================================
+   Image Lightbox (pinch-to-zoom + double-tap zoom + pan)
+   ============================================================ */
+
+const imgLightbox   = document.getElementById('imgLightbox');
+const lightboxImg   = document.getElementById('lightboxImg');
+const lightboxStage = document.getElementById('lightboxStage');
+
+let lbScale = 1;
+let lbTranslate = { x: 0, y: 0 };
+let lbStartDist = 0;
+let lbStartScale = 1;
+let lbDragging = false;
+let lbDragStart = { x: 0, y: 0 };
+let lbStartTranslate = { x: 0, y: 0 };
+let lbLastTap = 0;
+
+function resetLightboxTransform() {
+    lbScale = 1;
+    lbTranslate = { x: 0, y: 0 };
+    lightboxImg.style.transform = 'translate(0px,0px) scale(1)';
+}
+
+function applyLightboxTransform() {
+    lightboxImg.style.transform = `translate(${lbTranslate.x}px, ${lbTranslate.y}px) scale(${lbScale})`;
+}
+
+function openLightbox(src) {
+    lightboxImg.src = src;
+    resetLightboxTransform();
+    imgLightbox.classList.add('show');
+}
+
+function closeLightbox() {
+    imgLightbox.classList.remove('show');
+    lightboxImg.src = '';
+}
+
+window.openLightbox = openLightbox;
+
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+
+imgLightbox.addEventListener('click', e => {
+    if (e.target === imgLightbox) closeLightbox();
+});
+
+// Double-tap on the image toggles zoom in/out
+lightboxStage.addEventListener('click', e => {
+    if (e.target !== lightboxImg) return;
+    const now = Date.now();
+    if (now - lbLastTap < 300) {
+        if (lbScale === 1) lbScale = 2.4;
+        else resetLightboxTransform();
+        applyLightboxTransform();
+    }
+    lbLastTap = now;
+});
+
+function getTouchDist(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+lightboxStage.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+        lbStartDist = getTouchDist(e.touches);
+        lbStartScale = lbScale;
+    } else if (e.touches.length === 1 && lbScale > 1) {
+        lbDragging = true;
+        lbDragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        lbStartTranslate = { ...lbTranslate };
+    }
+}, { passive: true });
+
+lightboxStage.addEventListener('touchmove', e => {
+    if (e.touches.length === 2) {
+        const dist = getTouchDist(e.touches);
+        const ratio = dist / (lbStartDist || dist);
+        lbScale = Math.min(Math.max(lbStartScale * ratio, 1), 4);
+        applyLightboxTransform();
+    } else if (e.touches.length === 1 && lbDragging) {
+        const dx = e.touches[0].clientX - lbDragStart.x;
+        const dy = e.touches[0].clientY - lbDragStart.y;
+        lbTranslate = { x: lbStartTranslate.x + dx, y: lbStartTranslate.y + dy };
+        applyLightboxTransform();
+    }
+}, { passive: true });
+
+lightboxStage.addEventListener('touchend', e => {
+    if (e.touches.length === 0) {
+        lbDragging = false;
+        if (lbScale <= 1.02) resetLightboxTransform();
+    }
+}, { passive: true });
+
+
+/* ============================================================
+   Sticker Library ("ملصقاتك") — save once, send anytime
+   ============================================================ */
+
+const stickerPanel  = document.getElementById('stickerPanel');
+const stickerGrid   = document.getElementById('stickerGrid');
+const stickerAddBtn = document.getElementById('stickerAddBtn');
+
+async function loadStickers() {
+    try {
+        const snap = await get(ref(db, `users/${currentUser.uid}/stickers`));
+        userStickers = snap.exists() ? snap.val() : {};
+    } catch {
+        userStickers = {};
+    }
+    renderStickerPanel();
+}
+
+function renderStickerPanel() {
+    const entries = Object.entries(userStickers);
+    if (!entries.length) {
+        stickerGrid.innerHTML = `<div class="sticker-empty">لسه معندكش ملصقات محفوظة 🎨<br>اضغط "➕ إضافة ملصق" لحفظ أول واحد</div>`;
+        return;
+    }
+    stickerGrid.innerHTML = entries.map(([id, dataURL]) => `
+        <div class="sticker-item" data-id="${id}">
+            <button class="sticker-del-btn" data-id="${id}" type="button" title="حذف">✕</button>
+            <img src="${dataURL}" alt="ملصق">
+        </div>
+    `).join('');
+
+    stickerGrid.querySelectorAll('.sticker-item').forEach(item => {
+        item.addEventListener('click', e => {
+            if (e.target.closest('.sticker-del-btn')) return;
+            sendStickerDirect(userStickers[item.dataset.id]);
+        });
+    });
+
+    stickerGrid.querySelectorAll('.sticker-del-btn').forEach(btn => {
+        btn.addEventListener('click', async e => {
+            e.stopPropagation();
+            const id = btn.dataset.id;
+            if (!confirm('حذف الملصق ده من ملصقاتك؟')) return;
+            delete userStickers[id];
+            renderStickerPanel();
+            await remove(ref(db, `users/${currentUser.uid}/stickers/${id}`));
+        });
+    });
+}
+
+async function sendStickerDirect(dataURL) {
+    if (!currentUser || !dataURL) return;
+    const data = {
+        userId:    currentUser.uid,
+        username:  currentUser.email.split('@')[0],
+        type:      'sticker',
+        imageData: dataURL,
+        timestamp: Date.now(),
+    };
+    if (replyTo) {
+        data.replyTo = { key: replyTo.key, username: replyTo.username, text: replyTo.text };
+        replyTo = null;
+        replyBar.style.display = 'none';
+    }
+    await push(ref(db, 'chat'), data);
+    stickerPanel.classList.remove('show');
+    scrollToBottom();
+}
+
+document.getElementById('stickerTrigger').onclick = () => {
+    stickerPanel.classList.toggle('show');
+    document.getElementById('quickEmojis').classList.remove('show');
+};
+
+stickerAddBtn.addEventListener('click', () => stickerInput.click());
+
+document.addEventListener('click', e => {
+    if (!e.target.closest('#stickerPanel') && !e.target.closest('#stickerTrigger'))
+        stickerPanel.classList.remove('show');
+});
+
+
+/* ============================================================
+   Chat Settings — message bubble shape (TikTok-style picker)
+   ============================================================ */
+
+const BUBBLE_SHAPES = [
+    { id: 'rounded', label: 'دائري (افتراضي)' },
+    { id: 'square',  label: 'مربّع' },
+    { id: 'pill',    label: 'كبسولة' },
+    { id: 'soft',    label: 'ناعم' },
+];
+
+const settingsOverlay = document.getElementById('settingsOverlay');
+const shapeGrid = document.getElementById('shapeGrid');
+
+function applyBubbleShape(shape) {
+    document.body.classList.remove('shape-square', 'shape-pill', 'shape-soft');
+    if (shape && shape !== 'rounded') document.body.classList.add('shape-' + shape);
+}
+
+async function loadBubbleShape() {
+    try {
+        const snap = await get(ref(db, `users/${currentUser.uid}/settings/bubbleShape`));
+        currentShape = snap.exists() ? snap.val() : 'rounded';
+    } catch {
+        currentShape = 'rounded';
+    }
+    applyBubbleShape(currentShape);
+    renderShapeGrid();
+}
+
+function renderShapeGrid() {
+    shapeGrid.innerHTML = BUBBLE_SHAPES.map(s => `
+        <div class="shape-option ${currentShape === s.id ? 'active' : ''}" data-shape="${s.id}">
+            <div class="shape-preview-bubble p-${s.id}">مرحبا! 👋</div>
+            <span class="shape-label">${s.label}</span>
+        </div>
+    `).join('');
+
+    shapeGrid.querySelectorAll('.shape-option').forEach(opt => {
+        opt.addEventListener('click', async () => {
+            const shape = opt.dataset.shape;
+            currentShape = shape;
+            applyBubbleShape(shape);
+            renderShapeGrid();
+            settingsOverlay.classList.remove('show');
+            if (currentUser) {
+                try { await set(ref(db, `users/${currentUser.uid}/settings/bubbleShape`), shape); } catch {}
+            }
+        });
+    });
+}
+
+document.getElementById('settingsBtn').addEventListener('click', () => {
+    settingsOverlay.classList.add('show');
+});
+
+document.getElementById('settingsClose').addEventListener('click', () => {
+    settingsOverlay.classList.remove('show');
+});
+
+settingsOverlay.addEventListener('click', e => {
+    if (e.target === settingsOverlay) settingsOverlay.classList.remove('show');
 });
 
 
