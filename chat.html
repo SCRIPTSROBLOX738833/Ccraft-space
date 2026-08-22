@@ -12,25 +12,30 @@
    ============================================================ */
 
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
 }
 
 /* position:fixed pins the page to the REAL visible viewport on mobile —
    unlike 100vh (which can be taller than what's actually visible when the
    browser's address bar is showing), this never leaves content stranded
-   below the fold. */
+   below the fold. --app-height is set/kept in sync by JS as a second,
+   independent safety net in case anything overrides the fixed positioning. */
 body {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+    width: 100% !important;
+    height: var(--app-height, 100dvh) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
 }
 
 .chat-layout {
-    flex: 1;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     max-width: 860px;
@@ -38,6 +43,7 @@ body {
     margin: 0 auto;
     padding: 0;
     min-height: 0;
+    overflow: hidden;
 }
 
 
@@ -295,6 +301,70 @@ body {
     height: 120px;
     object-fit: contain;
     cursor: pointer;
+}
+
+/* Mentions inside message text */
+.mention {
+    color: var(--primary);
+    font-weight: 800;
+    background: rgba(139,92,246,0.15);
+    padding: 1px 5px;
+    border-radius: 6px;
+    unicode-bidi: plaintext;
+}
+
+.msg-group.own .mention { background: rgba(255,255,255,0.2); color: #fff; }
+
+.mention-me {
+    background: rgba(250,204,21,0.28) !important;
+    color: #fbbf24 !important;
+}
+
+.msg-bubble.mention-glow {
+    box-shadow: 0 0 0 2px rgba(250,204,21,0.65), 0 4px 14px rgba(250,204,21,0.25);
+}
+
+/* @mention autocomplete panel */
+.mention-panel {
+    position: absolute;
+    bottom: 78px;
+    right: 10px;
+    left: 10px;
+    margin: 0 auto;
+    max-width: 320px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 60;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+}
+
+.mention-panel.show { display: block; }
+
+.mention-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-main);
+}
+
+.mention-item:hover { background: rgba(139,92,246,0.12); }
+
+.mi-avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 900;
+    color: white;
+    flex-shrink: 0;
 }
 
 /* Code blocks inside messages */
@@ -751,6 +821,7 @@ body {
     <!-- Input -->
     <div class="input-area" style="position:relative">
         <div class="quick-emojis" id="quickEmojis"></div>
+        <div class="mention-panel" id="mentionPanel"></div>
 
         <div class="input-side-btns">
             <button class="media-trigger" id="imageTrigger" title="إرسال صورة">📷</button>
@@ -762,7 +833,7 @@ body {
 
         <div class="input-wrap">
             <button class="emoji-trigger" id="emojiTrigger" title="إيموجي">😊</button>
-            <textarea id="msgInput" placeholder="اكتب رسالتك... (```code``` لإرسال كود)" rows="1"></textarea>
+            <textarea id="msgInput" placeholder="اكتب رسالتك... (@ للمنشن، ```code``` لإرسال كود)" rows="1"></textarea>
         </div>
 
         <button id="sendBtn" title="إرسال">➤</button>
@@ -774,6 +845,24 @@ body {
 <button id="scrollBtn" onclick="scrollToBottom()">⬇️ رسائل جديدة</button>
 
 
+<script>
+// Robust mobile viewport height fix: computed in JS from the REAL visible
+// viewport (visualViewport when available) and applied as a CSS variable,
+// so the layout can never rely on a vh unit that mobile browsers get wrong.
+(function () {
+    function setAppHeight() {
+        const h = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+        document.documentElement.style.setProperty('--app-height', h + 'px');
+    }
+    setAppHeight();
+    window.addEventListener('resize', setAppHeight);
+    window.addEventListener('orientationchange', setAppHeight);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', setAppHeight);
+        window.visualViewport.addEventListener('scroll', setAppHeight);
+    }
+})();
+</script>
 <script type="module">
 import { initializeApp, getApps, getApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, update, remove, get, set, onValue, serverTimestamp }
@@ -816,6 +905,8 @@ const uploadText = document.getElementById('uploadText');
 const uploadPreviewImg = document.getElementById('uploadPreviewImg');
 const imageInput = document.getElementById('imageInput');
 const stickerInput = document.getElementById('stickerInput');
+const mentionPanel = document.getElementById('mentionPanel');
+let mentionStart = -1; // index of '@' that the current suggestion list refers to
 
 const EMOJIS = ['😂','😍','🔥','👍','💎','🚀','😎','🤩','😭','💀','🥶','🤯','👑','💜','⚡','🎮','🏆','🎯','💯','🌟','❤️','✨','🫡','🤝','🎉'];
 const REACT_EMOJIS = ['👍','❤️','😂','🔥','💎','👑'];
@@ -835,6 +926,7 @@ const MAX_DATA_LENGTH = 900000; // ~ safety cap on the base64 payload size
 onAuthStateChanged(auth, async user => {
     if (!user) { alert('يجب تسجيل الدخول'); location.href='login.html'; return; }
     currentUser = user;
+    registerUser(user.uid, user.email.split('@')[0]);
     buildQuickEmojis();
     loadChat();
     trackPresence(user);
@@ -911,6 +1003,33 @@ const LANG_LABELS = {
     xml:'XML', yaml:'YAML', yml:'YAML', dart:'Dart', txt:'Text', text:'Text'
 };
 
+// Registry of every username we've ever seen (from messages + presence),
+// used to power @mention autocomplete and to know which @word is a real mention
+const knownUsers = new Map(); // uid -> username
+
+function registerUser(uid, username) {
+    if (uid && username) knownUsers.set(uid, username);
+}
+
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function linkifyMentions(escapedText) {
+    // escapedText is already HTML-escaped; usernames are plain ASCII so this is safe to run after escaping
+    return escapedText.replace(/@([A-Za-z0-9_.\-]+)/g, (full, uname) => {
+        let isMe = false, isKnown = false;
+        for (const [uid, name] of knownUsers) {
+            if (name.toLowerCase() === uname.toLowerCase()) {
+                isKnown = true;
+                if (currentUser && uid === currentUser.uid) isMe = true;
+            }
+        }
+        if (!isKnown) return full;
+        return `<span class="mention${isMe ? ' mention-me' : ''}">@${uname}</span>`;
+    });
+}
+
 function renderMessageContent(text) {
     if (!text) return '';
     const regex = /```(\w+)?[ \t]*\n?([\s\S]*?)```/g;
@@ -918,7 +1037,7 @@ function renderMessageContent(text) {
     while ((match = regex.exec(text)) !== null) {
         found = true;
         const before = text.slice(lastIndex, match.index);
-        if (before) html += `<span class="msg-text-part">${escapeHTML(before)}</span>`;
+        if (before) html += `<span class="msg-text-part">${linkifyMentions(escapeHTML(before))}</span>`;
         const rawLang = (match[1] || '').toLowerCase();
         const label = LANG_LABELS[rawLang] || (rawLang ? rawLang : 'نص عادي');
         const code = match[2].replace(/\n$/, '');
@@ -933,8 +1052,8 @@ function renderMessageContent(text) {
         lastIndex = regex.lastIndex;
     }
     const after = text.slice(lastIndex);
-    if (after) html += `<span class="msg-text-part">${escapeHTML(after)}</span>`;
-    return found ? html : escapeHTML(text);
+    if (after) html += `<span class="msg-text-part">${linkifyMentions(escapeHTML(after))}</span>`;
+    return found ? html : linkifyMentions(escapeHTML(text));
 }
 
 // Single delegated listener handles copy buttons for every code block ever rendered
@@ -985,6 +1104,7 @@ function loadChat() {
         const avatarHTML = await getAvatar(msg.userId, 32, msg.username);
         const isOwn = msg.userId === currentUser.uid;
         const time  = date.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+        registerUser(msg.userId, msg.username);
 
         const el = document.createElement('div');
         el.className = `msg-group ${isOwn ? 'own' : ''}`;
@@ -1033,6 +1153,10 @@ function buildMessageHTML(msg, key, isOwn, avatarHTML, time) {
     const editedHTML = msg.edited ? '<span class="edited-tag">(معدّل)</span>' : '<span class="edited-tag" style="display:none">(معدّل)</span>';
     const isMedia = msg.type === 'image' || msg.type === 'sticker';
 
+    const myUsername = currentUser ? currentUser.email.split('@')[0].toLowerCase() : '';
+    const mentionsMe = !isOwn && myUsername && msg.text &&
+        new RegExp(`(^|\\s)@${escapeRegex(myUsername)}(\\s|$)`, 'i').test(msg.text + ' ');
+
     let contentHTML;
     if (msg.type === 'sticker') {
         contentHTML = `<img src="${msg.imageData}" class="msg-sticker-img" alt="ملصق" onclick="window.open('${msg.imageData}','_blank')">`;
@@ -1055,7 +1179,7 @@ function buildMessageHTML(msg, key, isOwn, avatarHTML, time) {
         <div class="msg-avatar" onclick="location.href='profile.html?uid=${msg.userId}'">${avatarHTML}</div>
         <div class="msg-col">
             ${!isOwn ? `<div class="msg-username" onclick="location.href='profile.html?uid=${msg.userId}'">${msg.username || 'مجهول'}</div>` : ''}
-            <div class="msg-bubble ${msg.type === 'sticker' ? 'sticker-bubble' : ''}">
+            <div class="msg-bubble ${msg.type === 'sticker' ? 'sticker-bubble' : ''} ${mentionsMe ? 'mention-glow' : ''}">
                 <div class="msg-actions-hover">
                     <div class="emoji-picker" id="ep-${key}">
                         ${REACT_EMOJIS.map(e=>`<span class="emoji-opt" data-emoji="${e}" data-key="${key}">${e}</span>`).join('')}
@@ -1353,6 +1477,65 @@ function autoResize() {
 msgInput.addEventListener('input', () => {
     autoResize();
     handleTyping();
+    updateMentionPanel();
+});
+
+msgInput.addEventListener('keyup', updateMentionPanel);
+msgInput.addEventListener('click', updateMentionPanel);
+
+
+/* ============================================================
+   @Mention Autocomplete
+   ============================================================ */
+
+function getMentionQuery() {
+    const val = msgInput.value;
+    const pos = msgInput.selectionStart;
+    const upToCaret = val.slice(0, pos);
+    const match = upToCaret.match(/(?:^|\s)@([A-Za-z0-9_.\-]*)$/);
+    if (!match) return null;
+    return { query: match[1], start: pos - match[1].length - 1 };
+}
+
+function updateMentionPanel() {
+    const m = getMentionQuery();
+    if (!m) { mentionPanel.classList.remove('show'); mentionStart = -1; return; }
+    const q = m.query.toLowerCase();
+    const matches = [...knownUsers.entries()]
+        .filter(([uid, name]) => uid !== currentUser?.uid && name.toLowerCase().includes(q))
+        .slice(0, 6);
+    if (!matches.length) { mentionPanel.classList.remove('show'); mentionStart = -1; return; }
+    mentionStart = m.start;
+    mentionPanel.innerHTML = matches.map(([, name]) => `
+        <div class="mention-item" data-username="${escapeHTML(name)}">
+            <div class="mi-avatar">${escapeHTML(name.charAt(0).toUpperCase())}</div>
+            <span>${escapeHTML(name)}</span>
+        </div>
+    `).join('');
+    mentionPanel.classList.add('show');
+}
+
+mentionPanel.addEventListener('click', e => {
+    const item = e.target.closest('.mention-item');
+    if (!item || mentionStart < 0) return;
+    const username = item.dataset.username;
+    const val = msgInput.value;
+    const pos = msgInput.selectionStart;
+    const before = val.slice(0, mentionStart);
+    const after = val.slice(pos);
+    const insertion = `@${username} `;
+    msgInput.value = before + insertion + after;
+    const newPos = (before + insertion).length;
+    mentionPanel.classList.remove('show');
+    mentionStart = -1;
+    msgInput.focus();
+    msgInput.setSelectionRange(newPos, newPos);
+    autoResize();
+});
+
+document.addEventListener('click', e => {
+    if (!e.target.closest('#mentionPanel') && !e.target.closest('#msgInput'))
+        mentionPanel.classList.remove('show');
 });
 
 
@@ -1399,6 +1582,7 @@ function trackPresence(user) {
         if (!snap.exists()) { document.getElementById('onlineCount').innerText = '0'; return; }
         const online = Object.values(snap.val()).filter(p => p.online && Date.now() - p.ts < 60000).length;
         document.getElementById('onlineCount').innerText = online;
+        Object.entries(snap.val()).forEach(([uid, p]) => registerUser(uid, p.name));
     });
 }
 
