@@ -1070,6 +1070,45 @@ function normalizeAr(t) {
         .trim();
 }
 
+/* ============================================================
+   🔤 قاموس مرادفات عربي↔إنجليزي لأشهر مصطلحات سكربتات Roblox
+   — بيتطبّق على نص البحث نفسه (مش على عناوين السكربتات) عشان لو
+   حد كتب "سرقة بيض" يتحول لبحث يشمل "steal egg" كمان، فيطابق
+   سكربت اسمه فعليًا "Steal Egg" بالإنجليزي.
+   ده شبكة أمان محلية بس، مش بديل عن فهم Nova AI الدلالي.
+   ============================================================ */
+const SYNONYM_MAP = {
+    'سرقة': 'steal', 'سرقه': 'steal', 'اسرق': 'steal',
+    'بيض': 'egg', 'بيضة': 'egg', 'بيضه': 'egg',
+    'سرعة': 'speed', 'سرعه': 'speed',
+    'طيران': 'fly', 'طير': 'fly',
+    'قفز': 'jump',
+    'قتل': 'kill',
+    'اموال': 'money', 'فلوس': 'money', 'كاش': 'cash',
+    'مفاتيح': 'keys', 'مفتاح': 'key',
+    'زومبي': 'zombie',
+    'وحش': 'monster',
+    'قوة': 'strength', 'قوه': 'strength',
+    'اسلحة': 'weapons', 'سلاح': 'weapon',
+    'حماية': 'admin', 'ادمن': 'admin',
+    'لانهائي': 'infinite',
+    'اوتو': 'auto', 'تلقائي': 'auto',
+    'فارم': 'farm', 'زراعة': 'farm', 'زراعه': 'farm',
+    'كنز': 'treasure',
+    'قتال': 'fight', 'معركة': 'fight', 'معركه': 'fight'
+};
+
+// بيوسّع نص البحث (query) بس بالمرادفات الإنجليزية، عشان يطابق
+// عناوين إنجليزية زي "Steal Egg" لما حد يكتب "سرقة بيض"
+function expandWithSynonyms(text) {
+    if (!text) return text;
+    let expanded = text;
+    for (const [ar, en] of Object.entries(SYNONYM_MAP)) {
+        if (text.includes(ar)) expanded += ' ' + en;
+    }
+    return expanded;
+}
+
 function parseIntent(query) {
     const q = query.toLowerCase();
     const intent = { category: null, map: null, feature: null };
@@ -1089,12 +1128,14 @@ function parseIntent(query) {
 
 /* ============================================================
    🔍 البحث المحلي (Fallback) — بيشتغل من غير إنترنت/سيرفر،
-   وبيستخدم لو Nova مش متاح أو حصل rate limit
+   وبيستخدم لو Nova مش متاح أو حصل rate limit، أو لو Nova رجّعت
+   نتيجة فاضية (مفيش تطابق) قبل ما نستسلم ونقول "لا يوجد"
    ============================================================ */
 function smartSearchLocal(query) {
     if (!query || !allScripts.length) return [];
 
-    const qNorm   = normalizeAr(query);
+    // ✅ نوسّع نص البحث نفسه بالمرادفات (سرقة بيض -> سرقة بيض steal egg)
+    const qNorm   = expandWithSynonyms(normalizeAr(query));
     const intent  = parseIntent(query);
     const results = [];
 
@@ -1197,6 +1238,17 @@ async function aiSearch() {
 
     try {
         results = await novaSearch(query);
+
+        // 🛟 Nova ردت بنجاح لكن ملقتش أي تطابق (ids: []) — قبل ما نستسلم
+        // ونقول "لا يوجد"، نجرب البحث المحلي (اللي بيفهم مرادفات زي
+        // سرقة=steal بيض=egg) كمحاولة أخيرة بدل عرض رسالة سلبية فورًا
+        if (results.length === 0) {
+            const localResults = smartSearchLocal(query);
+            if (localResults.length > 0) {
+                results = localResults;
+                usedFallback = true;
+            }
+        }
     } catch (e) {
         // فشل الاتصال بـ Nova (رفض، rate limit، أو مفيش إنترنت) -> نرجع للبحث المحلي
         console.error('%c[Nova Search] فشل الاتصال:', 'color:#f87171;font-weight:bold', e);
@@ -1214,7 +1266,7 @@ async function aiSearch() {
 
         const intent = parseIntent(query);
         let bannerMsg = usedFallback
-            ? `🔍 ${results.length} نتيجة (بحث محلي — Nova مش متاح دلوقتي)`
+            ? `🔍 ${results.length} نتيجة (بحث محلي احتياطي)`
             : `🤖 ${results.length} نتيجة من Nova AI`;
         if (intent.map)      bannerMsg += ` · ماب: ${intent.map}`;
         if (intent.category) bannerMsg += ` · قسم: ${intent.category}`;
@@ -1227,8 +1279,7 @@ async function aiSearch() {
 
     } else {
         filteredIds = null;
-        const source = usedFallback ? '(بحث محلي — Nova مش متاح دلوقتي)' : '(بحث Nova AI)';
-        showAiBanner(`⚠️ لا نتائج دقيقة لـ "${escHTML(query)}" ${source} — عارض الكل`);
+        showAiBanner(`⚠️ لا نتائج لـ "${escHTML(query)}" — عارض الكل`);
         renderScripts('');
     }
 
