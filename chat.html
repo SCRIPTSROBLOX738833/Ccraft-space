@@ -31,7 +31,8 @@ body {
     height: var(--app-height, 100dvh) !important;
     display: flex !important;
     flex-direction: column !important;
-    overflow: hidden !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 }
 
 .chat-layout {
@@ -849,18 +850,31 @@ body {
 // Robust mobile viewport height fix: computed in JS from the REAL visible
 // viewport (visualViewport when available) and applied as a CSS variable,
 // so the layout can never rely on a vh unit that mobile browsers get wrong.
+// Runs multiple times after load because some mobile browsers report an
+// incorrect height in the first few hundred ms before their UI chrome
+// (address bar / bottom bar) settles.
 (function () {
     function setAppHeight() {
         const h = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
         document.documentElement.style.setProperty('--app-height', h + 'px');
     }
     setAppHeight();
+    window.addEventListener('load', setAppHeight);
+    setTimeout(setAppHeight, 150);
+    setTimeout(setAppHeight, 400);
+    setTimeout(setAppHeight, 1000);
     window.addEventListener('resize', setAppHeight);
-    window.addEventListener('orientationchange', setAppHeight);
+    window.addEventListener('orientationchange', () => {
+        setAppHeight();
+        setTimeout(setAppHeight, 300);
+    });
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', setAppHeight);
         window.visualViewport.addEventListener('scroll', setAppHeight);
     }
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) setAppHeight();
+    });
 })();
 </script>
 <script type="module">
