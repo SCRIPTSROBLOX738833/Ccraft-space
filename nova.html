@@ -557,6 +557,104 @@ header { flex: none; }
 #worldFrame { flex: 1 1 auto; min-height: 0; border: none; background: white; width: 100%; }
 
 /* ============================================================
+   بطاقات الفيديو (يوتيوب)
+   ============================================================ */
+.video-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    width: 100%;
+}
+.video-cards-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 4px;
+    font-size: 0.8rem;
+    color: var(--nova-text-dim);
+}
+.video-card {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    background: var(--nova-code-bg);
+    border: 1px solid var(--nova-border);
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--nova-text);
+    cursor: pointer;
+}
+.video-card:active { background: rgba(255,255,255,0.04); }
+.video-card .vc-thumb-wrap {
+    flex: none;
+    position: relative;
+    width: 120px;
+}
+.video-card .vc-thumb {
+    width: 120px;
+    height: 100%;
+    min-height: 78px;
+    object-fit: cover;
+    display: block;
+}
+.video-card .vc-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.25);
+    font-size: 1.4rem;
+    color: white;
+}
+.video-card .vc-info {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    padding: 8px 10px 8px 4px;
+}
+.video-card .vc-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.video-card .vc-channel {
+    font-size: 0.72rem;
+    color: var(--nova-text-dim);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.video-player-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 10px;
+    background: #000;
+}
+.video-player-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* ============================================================
    توست
    ============================================================ */
 .nova-toast {
@@ -608,7 +706,7 @@ header { flex: none; }
         <button class="qp-chip" onclick="quickSend('اصنع عالم فضائي تفاعلي')">🌌 عالم فضائي</button>
         <button class="qp-chip" onclick="quickSend('غيّر خلفية الصفحة لأزرق داكن')">🎨 غيّر الخلفية</button>
         <button class="qp-chip" onclick="quickSend('اكتب سكربت لوحة تسجيل نقاط بالجافاسكريبت')">💻 سكربت جافاسكريبت</button>
-        <button class="qp-chip" onclick="quickSend('ابعت رسالة تنبيه جميلة')">💬 رسالة تنبيه</button>
+        <button class="qp-chip" onclick="quickSend('ابعتلي فيديوهات عن الأكل')">🎬 فيديوهات</button>
     </div>
 
     <!-- الرسائل -->
@@ -769,12 +867,15 @@ function renderChat() {
             <div class="welcome-block">
                 <span class="w-icon">🤖</span>
                 <h2>أهلاً، أنا Nova</h2>
-                <p>ذكاء CCRAFT SPACE. أتذكر المحادثة، أتحكم في الصفحة، وأكتبلك أكواد جاهزة بشكل مرتب ✨</p>
+                <p>ذكاء CCRAFT SPACE. أتذكر المحادثة، أتحكم في الصفحة، وأجيبلك فيديوهات يوتيوب، وأكتبلك أكواد جاهزة بشكل مرتب ✨</p>
             </div>`;
         return;
     }
 
-    conv.messages.forEach(m => appendMessage(m.text, m.sender));
+    conv.messages.forEach(m => {
+        const row = appendMessage(m.text, m.sender);
+        if (m.videos && m.videos.length) renderVideoCards(row, m.videos);
+    });
     scrollToBottom();
 }
 
@@ -963,6 +1064,105 @@ function closeWorld() {
     document.getElementById('worldFrame').srcdoc = '';
 }
 
+/* ================================================================
+   بطاقات فيديو يوتيوب
+   ================================================================ */
+
+/**
+ * يجيب فيديوهات من الباك إند (يوتيوب) بناءً على كلمة بحث، ويعرضها
+ * كبطاقات جوه فقاعة رسالة Nova. لو الضغط على بطاقة، بيشغل الفيديو
+ * جوّه مشغل مضمّن (iframe) بدل ما يفتح تبويب جديد.
+ */
+async function fetchAndRenderVideos(row, query) {
+    const col = row.querySelector('.msg-col');
+    if (!col) return;
+
+    const loadingEl = document.createElement('div');
+    loadingEl.className = 'video-cards-loading';
+    loadingEl.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div> جاري البحث عن فيديوهات...`;
+    col.appendChild(loadingEl);
+    scrollToBottom();
+
+    try {
+        const res = await fetch(`${NOVA_URL}/search-videos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, max_results: 6 })
+        });
+        const data = await res.json();
+        loadingEl.remove();
+
+        if (!res.ok || !data.videos || !data.videos.length) {
+            const err = document.createElement('div');
+            err.className = 'video-cards-loading';
+            err.innerText = '⚠️ مقدرتش ألاقي فيديوهات دلوقتي';
+            col.appendChild(err);
+            scrollToBottom();
+            return;
+        }
+
+        renderVideoCards(row, data.videos);
+
+        // احفظ الفيديوهات في المحادثة عشان تفضل ظاهرة لو رجعنا للمحادثة تاني
+        const conv = getActiveConversation();
+        if (conv) {
+            const last = conv.messages[conv.messages.length - 1];
+            if (last && last.sender === 'nova') last.videos = data.videos;
+            saveConversations();
+        }
+    } catch (e) {
+        loadingEl.remove();
+        const err = document.createElement('div');
+        err.className = 'video-cards-loading';
+        err.innerText = '⚠️ في مشكلة في الاتصال بخدمة الفيديو';
+        col.appendChild(err);
+        scrollToBottom();
+    }
+}
+
+function renderVideoCards(row, videos) {
+    const col = row.querySelector('.msg-col');
+    if (!col) return;
+    // امنع تكرار البطاقات لو الرسالة اتعرضت قبل كده
+    if (col.querySelector('.video-cards')) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'video-cards';
+
+    videos.forEach(v => {
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `
+            <div class="vc-thumb-wrap">
+                <img class="vc-thumb" src="${escapeHtml(v.thumbnail)}" alt="" loading="lazy">
+                <div class="vc-play">▶️</div>
+            </div>
+            <div class="vc-info">
+                <div class="vc-title">${escapeHtml(v.title)}</div>
+                <div class="vc-channel">📺 ${escapeHtml(v.channel || '')}</div>
+            </div>`;
+        card.onclick = () => playVideoInline(card, v);
+        wrap.appendChild(card);
+    });
+
+    // اترك مساحة قبل زر النسخ
+    const copyBtn = col.querySelector('.msg-copy-btn');
+    col.insertBefore(wrap, copyBtn || null);
+    scrollToBottom();
+}
+
+function playVideoInline(cardEl, video) {
+    // شيل أي مشغل قديم مفتوح جوه نفس مجموعة البطاقات
+    const wrap = cardEl.closest('.video-cards');
+    wrap.querySelectorAll('.video-player-wrap').forEach(el => el.remove());
+
+    const player = document.createElement('div');
+    player.className = 'video-player-wrap';
+    player.innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(video.videoId)}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+    cardEl.insertAdjacentElement('afterend', player);
+    scrollToBottom();
+}
+
 function showToast(msg) {
     const t = document.getElementById('novaToast');
     t.innerText = msg;
@@ -1005,8 +1205,9 @@ async function sendMessage() {
         const data = await res.json();
         removeTyping();
 
+        let novaRow = null;
         if (data.reply) {
-            appendMessage(data.reply, 'nova');
+            novaRow = appendMessage(data.reply, 'nova');
             conv.messages.push({ text: data.reply, sender: 'nova' });
             saveConversations();
             scrollToBottom();
@@ -1023,6 +1224,20 @@ async function sendMessage() {
                 const lastBubble = chatScroll.querySelector('.message-row.nova:last-child .msg-bubble');
                 if (lastBubble) { lastBubble.appendChild(document.createElement('br')); lastBubble.appendChild(btn); }
             }, 100);
+        }
+
+        // لو الباك إند رجّع الفيديوهات جاهزة مع الرد
+        if (data.type === 'video' && data.videos && data.videos.length) {
+            if (novaRow) {
+                renderVideoCards(novaRow, data.videos);
+                const last = conv.messages[conv.messages.length - 1];
+                if (last) last.videos = data.videos;
+                saveConversations();
+            }
+        }
+        // لو الباك إند رجّع بس كلمة البحث (video_query) وسايب البحث للفرونت إند
+        else if (data.type === 'video' && data.video_query) {
+            if (novaRow) fetchAndRenderVideos(novaRow, data.video_query);
         }
     } catch (e) {
         removeTyping();
