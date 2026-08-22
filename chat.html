@@ -12,39 +12,38 @@
    ============================================================ */
 
 html, body {
-    height: 100% !important;
+    height: auto;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
 }
 
-/* position:fixed pins the page to the REAL visible viewport on mobile —
-   unlike 100vh (which can be taller than what's actually visible when the
-   browser's address bar is showing), this never leaves content stranded
-   below the fold. --app-height is set/kept in sync by JS as a second,
-   independent safety net in case anything overrides the fixed positioning. */
+/* No position:fixed and no JS-calculated height here on purpose.
+   Mobile browsers (Chrome/Safari) draw their own toolbar OVER
+   fixed-positioned elements pinned to the screen edge, even when the
+   height math is exactly right — that toolbar can visually cover the
+   bottom of a fixed box with nothing the page can do about it, since
+   it isn't a scrollable overflow, it's a physical viewport overlay.
+   Sticky header/footer inside a normally-scrolling page sidesteps the
+   whole problem: this is genuine scroll, so the browser manages its
+   own UI chrome correctly, and nothing can end up trapped off-screen. */
 body {
-    position: fixed !important;
-    inset: 0 !important;
-    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
-    width: 100% !important;
-    height: var(--app-height, 100dvh) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    min-height: 100svh;   /* smallest possible viewport — always visible */
+    min-height: 100dvh;   /* refines to the live viewport where supported */
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
 }
 
 .chat-layout {
-    flex: 1 1 auto;
+    flex: 1;
     display: flex;
     flex-direction: column;
     max-width: 860px;
     width: 100%;
     margin: 0 auto;
     padding: 0;
-    min-height: 0;
-    overflow: hidden;
+    min-height: 100svh;
+    min-height: 100dvh;
 }
 
 
@@ -60,6 +59,9 @@ body {
     background: var(--bg-card);
     border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 30;
 }
 
 .back-btn {
@@ -131,13 +133,11 @@ body {
 
 #chatBox {
     flex: 1;
-    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 14px 12px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    min-height: 0;
     scroll-behavior: smooth;
 }
 
@@ -616,6 +616,9 @@ body {
     background: var(--bg-card);
     border-top: 1px solid var(--border-color);
     flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
 }
 
 .input-wrap {
@@ -846,37 +849,6 @@ body {
 <button id="scrollBtn" onclick="scrollToBottom()">⬇️ رسائل جديدة</button>
 
 
-<script>
-// Robust mobile viewport height fix: computed in JS from the REAL visible
-// viewport (visualViewport when available) and applied as a CSS variable,
-// so the layout can never rely on a vh unit that mobile browsers get wrong.
-// Runs multiple times after load because some mobile browsers report an
-// incorrect height in the first few hundred ms before their UI chrome
-// (address bar / bottom bar) settles.
-(function () {
-    function setAppHeight() {
-        const h = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
-        document.documentElement.style.setProperty('--app-height', h + 'px');
-    }
-    setAppHeight();
-    window.addEventListener('load', setAppHeight);
-    setTimeout(setAppHeight, 150);
-    setTimeout(setAppHeight, 400);
-    setTimeout(setAppHeight, 1000);
-    window.addEventListener('resize', setAppHeight);
-    window.addEventListener('orientationchange', () => {
-        setAppHeight();
-        setTimeout(setAppHeight, 300);
-    });
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', setAppHeight);
-        window.visualViewport.addEventListener('scroll', setAppHeight);
-    }
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) setAppHeight();
-    });
-})();
-</script>
 <script type="module">
 import { initializeApp, getApps, getApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, update, remove, get, set, onValue, serverTimestamp }
@@ -1606,16 +1578,17 @@ function trackPresence(user) {
    ============================================================ */
 
 function scrollToBottom() {
-    chatBox.scrollTop = chatBox.scrollHeight;
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'auto' });
     scrollBtn.classList.remove('show');
     atBottom = true;
 }
 
 window.scrollToBottom = scrollToBottom;
 
-chatBox.addEventListener('scroll', () => {
+window.addEventListener('scroll', () => {
     const threshold = 120;
-    atBottom = chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < threshold;
+    const scrollBottom = window.scrollY + window.innerHeight;
+    atBottom = document.documentElement.scrollHeight - scrollBottom < threshold;
     if (atBottom) scrollBtn.classList.remove('show');
 });
 
