@@ -1136,7 +1136,7 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
 
         <div class="input-wrap">
             <button class="emoji-trigger" id="emojiTrigger" title="إيموجي">😊</button>
-            <textarea id="msgInput" placeholder="اكتب رسالتك... (@ للمنشن، ```code``` لإرسال كود)" rows="1"></textarea>
+            <textarea id="msgInput" placeholder="اكتب رسالتك... (@ للمنشن، ```code``` لإرسال كود)" rows="1" maxlength="1500"></textarea>
         </div>
 
         <button id="sendBtn" title="إرسال">➤</button>
@@ -1224,6 +1224,49 @@ const IMAGE_QUALITY   = 0.7;
 const STICKER_MAX_DIM = 300;
 const STICKER_QUALITY = 0.85;
 const MAX_DATA_LENGTH = 900000; // ~ safety cap on the base64 payload size
+const MAX_TEXT_LENGTH = 1500;   // يطابق حد الطول في Firebase Rules
+
+/* ============================================================
+   Anti-Spam: Send Cooldown
+   ============================================================
+   الحماية الحقيقية اتعملت في Firebase Rules (users/$uid/lastMessageTs
+   لازم يتحدّث في نفس عملية الكتابة، وبفاصل 2.9 ثانية على الأقل بين كل
+   تحديث والتاني — ده بيتفرض من السيرفر نفسه، مش بس من الكود ده، فحتى
+   لو حد بعت طلبات مباشرة لقاعدة البيانات من برّه الموقع، هيترفض).
+   الكود هنا طبقة تجربة استخدام إضافية بس (تعطيل الزرار + عدّاد) عشان
+   المستخدم العادي ياخد فيدباك واضح، مش عشان تمنع سبام متعمّد بمفردها. */
+const SEND_COOLDOWN_MS = 2900;
+let lastSendAt = 0;
+let cooldownTimer = null;
+const originalPlaceholder = msgInput.placeholder;
+
+function startCooldownUI() {
+    lastSendAt = Date.now();
+    sendBtn.disabled = true;
+    tickCooldown();
+}
+
+function tickCooldown() {
+    clearTimeout(cooldownTimer);
+    const remaining = SEND_COOLDOWN_MS - (Date.now() - lastSendAt);
+    if (remaining <= 0) {
+        sendBtn.disabled = false;
+        if (!editingKey) msgInput.placeholder = originalPlaceholder;
+        return;
+    }
+    const secs = (remaining / 1000).toFixed(1);
+    if (!editingKey) msgInput.placeholder = `⏳ استنى ${secs} ثانية قبل الرسالة الجاية...`;
+    cooldownTimer = setTimeout(tickCooldown, 100);
+}
+
+function isOnCooldown() {
+    return Date.now() - lastSendAt < SEND_COOLDOWN_MS;
+}
+
+// Blocks the same spam pattern the rules reject (single character repeated 8+ times, e.g. "🔥🔥🔥🔥🔥🔥🔥🔥")
+function looksLikeCharSpam(str) {
+    return /^(.)\1{7,}$/.test(str);
+}
 
 
 /* ============================================================
@@ -1714,7 +1757,7 @@ async function prepareUpload(file, type) {
         alert('تعذّر معالجة الصورة');
         cancelUpload();
     } finally {
-        sendBtn.disabled = false;
+        sendBtn.disabled = isOnCooldown();
     }
 }
 
@@ -1728,6 +1771,24 @@ window.cancelUpload = cancelUpload;
 
 
 /* ============================================================
+   Send Message (Firebase write helper)
+   ============================================================
+   بيكتب الرسالة و users/$uid/lastMessageTs في نفس العملية الذرّية
+   (atomic multi-path update). قواعد الـ Firebase بترفض أي رسالة
+   جديدة إلا لو القيمتين دول متطابقتين وبفاصل 2.9 ثانية عن آخر مرة —
+   فمينفعش حد يبعت رسالة من غير ما "يدفع" الفاصل الزمني ده، حتى لو
+   استخدم استدعاء مباشر لقاعدة البيانات من برّه الصفحة دي. */
+async function sendChatData(data) {
+    const newKey = push(ref(db, 'chat')).key;
+    const updates = {};
+    updates[`chat/${newKey}`] = data;
+    updates[`users/${currentUser.uid}/lastMessageTs`] = data.timestamp;
+    await update(ref(db), updates);
+    return newKey;
+}
+
+
+/* ============================================================
    Send Message
    ============================================================ */
 
@@ -1736,52 +1797,71 @@ async function sendMessage() {
     if (!text && !pendingUpload) return;
     if (!currentUser) return;
 
-    sendBtn.disabled = true;
+    // Editing an existing message isn't a "new message", so it's exempt from the send cooldown
+    if (!editingKey && isOnCooldown()) return;
 
-    if (editingKey) {
-        // تعديل رسالة نصيّة
-        if (text) await update(ref(db, `chat/${editingKey}`), { text, edited: true });
-        editingKey = null;
-        msgInput.style.borderColor = '';
-        msgInput.placeholder = 'اكتب رسالتك... (```code``` لإرسال كود)';
-    } else if (pendingUpload) {
-        const data = {
-            userId:    currentUser.uid,
-            username:  currentUser.email.split('@')[0],
-            type:      pendingUpload.type,
-            imageData: pendingUpload.dataURL,
-            timestamp: Date.now(),
-        };
-        if (pendingUpload.type === 'image' && text) data.text = text;
-        if (replyTo) {
-            data.replyTo = { key: replyTo.key, username: replyTo.username, text: replyTo.text };
-            replyTo = null;
-            replyBar.style.display = 'none';
-        }
-        await push(ref(db, 'chat'), data);
-        cancelUpload();
-    } else {
-        // رسالة نصية جديدة
-        const data = {
-            userId:    currentUser.uid,
-            username:  currentUser.email.split('@')[0],
-            text,
-            timestamp: Date.now(),
-        };
-        if (replyTo) {
-            data.replyTo = { key: replyTo.key, username: replyTo.username, text: replyTo.text };
-            replyTo = null;
-            replyBar.style.display = 'none';
-        }
-        await push(ref(db, 'chat'), data);
+    if (text.length > MAX_TEXT_LENGTH) {
+        alert(`الرسالة طويلة أوي (الحد الأقصى ${MAX_TEXT_LENGTH} حرف)`);
+        return;
+    }
+    if (text && looksLikeCharSpam(text)) {
+        alert('الرسالة دي شكلها سبام (نفس الحرف متكرر)، غيّرها وابعتها تاني');
+        return;
     }
 
-    msgInput.value = '';
-    msgInput.style.height = 'auto';
-    sendBtn.disabled = false;
-    msgInput.focus();
-    clearTyping();
-    scrollToBottom();
+    sendBtn.disabled = true;
+
+    try {
+        if (editingKey) {
+            // تعديل رسالة نصيّة (مش خاضع لكولداون الإرسال)
+            if (text) await update(ref(db, `chat/${editingKey}`), { text, edited: true });
+            editingKey = null;
+            msgInput.style.borderColor = '';
+            msgInput.placeholder = originalPlaceholder;
+        } else if (pendingUpload) {
+            const data = {
+                userId:    currentUser.uid,
+                username:  currentUser.email.split('@')[0],
+                type:      pendingUpload.type,
+                imageData: pendingUpload.dataURL,
+                timestamp: Date.now(),
+            };
+            if (pendingUpload.type === 'image' && text) data.text = text;
+            if (replyTo) {
+                data.replyTo = { key: replyTo.key, username: replyTo.username, text: replyTo.text };
+                replyTo = null;
+                replyBar.style.display = 'none';
+            }
+            await sendChatData(data);
+            cancelUpload();
+            startCooldownUI();
+        } else {
+            // رسالة نصية جديدة
+            const data = {
+                userId:    currentUser.uid,
+                username:  currentUser.email.split('@')[0],
+                text,
+                timestamp: Date.now(),
+            };
+            if (replyTo) {
+                data.replyTo = { key: replyTo.key, username: replyTo.username, text: replyTo.text };
+                replyTo = null;
+                replyBar.style.display = 'none';
+            }
+            await sendChatData(data);
+            startCooldownUI();
+        }
+
+        msgInput.value = '';
+        msgInput.style.height = 'auto';
+        clearTyping();
+        scrollToBottom();
+    } catch (err) {
+        console.error('sendMessage failed', err);
+    } finally {
+        if (!isOnCooldown()) sendBtn.disabled = false;
+        msgInput.focus();
+    }
 }
 
 sendBtn.onclick = sendMessage;
@@ -2089,6 +2169,8 @@ function renderStickerPanel() {
 
 async function sendStickerDirect(dataURL) {
     if (!currentUser || !dataURL) return;
+    if (isOnCooldown()) return; // نفس كولداون الإرسال العادي
+
     const data = {
         userId:    currentUser.uid,
         username:  currentUser.email.split('@')[0],
@@ -2101,9 +2183,14 @@ async function sendStickerDirect(dataURL) {
         replyTo = null;
         replyBar.style.display = 'none';
     }
-    await push(ref(db, 'chat'), data);
-    stickerPanel.classList.remove('show');
-    scrollToBottom();
+    try {
+        await sendChatData(data);
+        startCooldownUI();
+        stickerPanel.classList.remove('show');
+        scrollToBottom();
+    } catch (err) {
+        console.error('sendStickerDirect failed', err);
+    }
 }
 
 document.getElementById('stickerTrigger').onclick = () => {
