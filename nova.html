@@ -7,12 +7,6 @@
 <link rel="stylesheet" href="styles.css">
 <style>
 
-/* ============================================================
-   NOVA AI — إعادة بناء كاملة، تصميم بسيط وقوي يشتغل صح على الموبايل
-   القايمة الجانبية دايمًا "درج" فوق الصفحة (overlay) — سواء على
-   الموبايل أو الكمبيوتر — عشان نتجنب أي مشاكل انضغاط تخطيط.
-   ============================================================ */
-
 :root {
     --nova-primary: #8b5cf6;
     --nova-primary-soft: rgba(139,92,246,0.14);
@@ -48,9 +42,6 @@ body {
 
 header { flex: none; }
 
-/* ============================================================
-   الحاوية الرئيسية
-   ============================================================ */
 .nova-app {
     flex: 1 1 auto;
     min-height: 0;
@@ -60,9 +51,6 @@ header { flex: none; }
     width: 100%;
 }
 
-/* ============================================================
-   الهيدر العلوي — ثابت وبسيط، كل عنصر فيه له عرض ثابت مضمون
-   ============================================================ */
 .nova-topbar {
     flex: none;
     display: flex;
@@ -138,9 +126,6 @@ header { flex: none; }
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* ============================================================
-   القايمة الجانبية — دايمًا Overlay Drawer (مفيش تخطيطين مختلفين)
-   ============================================================ */
 .sidebar-backdrop {
     position: fixed;
     inset: 0;
@@ -244,9 +229,6 @@ header { flex: none; }
     text-align: center;
 }
 
-/* ============================================================
-   شريط الاقتراحات السريعة — دايمًا ظاهر، شريط بيتمرر أفقيًا
-   ============================================================ */
 .quick-bar {
     flex: none;
     display: flex;
@@ -274,9 +256,6 @@ header { flex: none; }
 }
 .qp-chip:active { background: rgba(139,92,246,0.25); }
 
-/* ============================================================
-   منطقة الرسائل
-   ============================================================ */
 .chat-scroll {
     flex: 1 1 auto;
     min-height: 0;
@@ -360,7 +339,6 @@ header { flex: none; }
     flex: 1 1 auto;
 }
 
-/* بلوك الكود */
 .code-block {
     direction: ltr;
     text-align: left;
@@ -453,9 +431,6 @@ header { flex: none; }
 }
 .welcome-block p { font-size: 0.85rem; line-height: 1.7; max-width: 380px; margin: 0 auto; }
 
-/* ============================================================
-   شريط الإدخال السفلي
-   ============================================================ */
 .input-bar {
     flex: none;
     display: flex;
@@ -506,9 +481,36 @@ header { flex: none; }
 #sendBtn:active { transform: scale(0.92); }
 #sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* ============================================================
-   شارة "تم تعديل الصفحة"
-   ============================================================ */
+#micBtn {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--nova-card);
+    border: 1px solid var(--nova-border);
+    color: var(--nova-text-dim);
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    transition: all 0.15s ease;
+}
+#micBtn:active { transform: scale(0.92); }
+#micBtn.listening {
+    background: var(--nova-gradient);
+    color: white;
+    border-color: transparent;
+    animation: micPulse 1.2s infinite;
+}
+@keyframes micPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(139,92,246,0.55); }
+    70%  { box-shadow: 0 0 0 12px rgba(139,92,246,0); }
+    100% { box-shadow: 0 0 0 0 rgba(139,92,246,0); }
+}
+
 .mod-badge {
     display: none;
     flex: none;
@@ -523,9 +525,6 @@ header { flex: none; }
 }
 .mod-badge.show { display: inline-flex; align-items: center; gap: 4px; }
 
-/* ============================================================
-   Modal العالم/اللعبة
-   ============================================================ */
 .world-modal {
     display: none;
     position: fixed; inset: 0;
@@ -556,9 +555,6 @@ header { flex: none; }
 }
 #worldFrame { flex: 1 1 auto; min-height: 0; border: none; background: white; width: 100%; }
 
-/* ============================================================
-   بطاقات الفيديو (يوتيوب)
-   ============================================================ */
 .video-cards {
     display: flex;
     flex-direction: column;
@@ -654,9 +650,6 @@ header { flex: none; }
     border: none;
 }
 
-/* ============================================================
-   توست
-   ============================================================ */
 .nova-toast {
     position: fixed;
     bottom: calc(78px + env(safe-area-inset-bottom));
@@ -688,7 +681,6 @@ header { flex: none; }
 
 <div class="nova-app">
 
-    <!-- الهيدر العلوي -->
     <div class="nova-topbar">
         <button class="icon-btn" id="sidebarBtn" onclick="toggleSidebar()">☰</button>
         <div class="nova-avatar">🤖</div>
@@ -700,7 +692,6 @@ header { flex: none; }
         <button class="icon-btn" onclick="clearMemory()" title="مسح الذاكرة">🗑️</button>
     </div>
 
-    <!-- شريط الاقتراحات -->
     <div class="quick-bar">
         <button class="qp-chip" onclick="quickSend('اصنع لي لعبة تجنب العقبات')">🎮 لعبة تجنب عقبات</button>
         <button class="qp-chip" onclick="quickSend('اصنع عالم فضائي تفاعلي')">🌌 عالم فضائي</button>
@@ -709,16 +700,14 @@ header { flex: none; }
         <button class="qp-chip" onclick="quickSend('ابعتلي فيديوهات عن الأكل')">🎬 فيديوهات</button>
     </div>
 
-    <!-- الرسائل -->
     <div class="chat-scroll" id="chatScroll"></div>
 
-    <!-- الإدخال -->
     <div class="input-bar">
         <textarea id="userInput" rows="1" placeholder="اكتب لـ Nova..."></textarea>
+        <button id="micBtn" type="button" title="تحدث بدل الكتابة">🎤</button>
         <button id="sendBtn" onclick="sendMessage()">➤</button>
     </div>
 
-    <!-- القايمة الجانبية -->
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
     <aside class="nova-sidebar" id="novaSidebar">
         <div class="sidebar-head">
@@ -732,7 +721,6 @@ header { flex: none; }
 
 </div>
 
-<!-- عالم/لعبة -->
 <div class="world-modal" id="worldModal">
     <div class="world-toolbar">
         <span class="world-title" id="worldTitle">عالم Nova</span>
@@ -741,14 +729,10 @@ header { flex: none; }
     <iframe id="worldFrame" sandbox="allow-scripts allow-same-origin"></iframe>
 </div>
 
-<!-- توست -->
 <div class="nova-toast" id="novaToast"></div>
 
 
 <script>
-/* ================================================================
-   إعدادات عامة
-   ================================================================ */
 const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
 
 const chatScroll   = document.getElementById('chatScroll');
@@ -757,10 +741,6 @@ const sendBtn      = document.getElementById('sendBtn');
 const novaSidebar  = document.getElementById('novaSidebar');
 const sidebarBack  = document.getElementById('sidebarBackdrop');
 
-/* ================================================================
-   عزل الذاكرة بين المستخدمين — كل متصفح ليه هوية عشوائية فريدة
-   محفوظة في localStorage الخاص بيه بس. مفيش أي تداخل بين شخصين.
-   ================================================================ */
 let userId = localStorage.getItem('novaUserId');
 if (!userId) {
     userId = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
@@ -768,10 +748,6 @@ if (!userId) {
 }
 const userIcon = (localStorage.getItem('currentUser') || '').charAt(0).toUpperCase() || 'أ';
 
-/* ================================================================
-   إدارة المحادثات المتعددة — كل محادثة بذاكرة منفصلة في الباك إند
-   عن طريق session key = userId + '::' + conversationId
-   ================================================================ */
 const CONV_KEY = 'novaConversations_' + userId;
 const ACTIVE_KEY = 'novaActiveConv_' + userId;
 
@@ -846,18 +822,12 @@ function renderSidebar() {
     });
 }
 
-/* ================================================================
-   القايمة الجانبية (Drawer)
-   ================================================================ */
 function toggleSidebar(force) {
     const open = force !== undefined ? force : !novaSidebar.classList.contains('open');
     novaSidebar.classList.toggle('open', open);
     sidebarBack.classList.toggle('show', open);
 }
 
-/* ================================================================
-   عرض الشات
-   ================================================================ */
 function renderChat() {
     chatScroll.innerHTML = '';
     const conv = getActiveConversation();
@@ -912,9 +882,6 @@ function appendMessage(text, sender) {
     return row;
 }
 
-/**
- * دالة نسخ عامة تستخدم للرسالة كاملة وبلوكات الكود مع بعض
- */
 function copyToClipboard(text, btn, iconSel, textSel, resetLabel) {
     const icon = btn.querySelector(iconSel);
     const label = btn.querySelector(textSel);
@@ -935,9 +902,6 @@ function copyToClipboard(text, btn, iconSel, textSel, resetLabel) {
     }
 }
 
-/* ================================================================
-   تنسيق نص Nova: أكواد + عريض/مائل + أسطر جديدة
-   ================================================================ */
 function renderRichText(text) {
     const blocks = [];
     let working = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (m, lang, code) => {
@@ -1019,9 +983,6 @@ function showTyping() {
 function removeTyping() { document.getElementById('typingRow')?.remove(); }
 
 
-/* ================================================================
-   أوامر التحكم في الصفحة (DOM)
-   ================================================================ */
 function executeDomCommand(cmd) {
     try {
         if (cmd.startsWith('bg:')) { document.body.style.background = cmd.slice(3).trim(); showToast('🎨 تم تغيير الخلفية'); showModBadge(); return; }
@@ -1064,15 +1025,6 @@ function closeWorld() {
     document.getElementById('worldFrame').srcdoc = '';
 }
 
-/* ================================================================
-   بطاقات فيديو يوتيوب
-   ================================================================ */
-
-/**
- * يجيب فيديوهات من الباك إند (يوتيوب) بناءً على كلمة بحث، ويعرضها
- * كبطاقات جوه فقاعة رسالة Nova. لو الضغط على بطاقة، بيشغل الفيديو
- * جوّه مشغل مضمّن (iframe) بدل ما يفتح تبويب جديد.
- */
 async function fetchAndRenderVideos(row, query) {
     const col = row.querySelector('.msg-col');
     if (!col) return;
@@ -1103,7 +1055,6 @@ async function fetchAndRenderVideos(row, query) {
 
         renderVideoCards(row, data.videos);
 
-        // احفظ الفيديوهات في المحادثة عشان تفضل ظاهرة لو رجعنا للمحادثة تاني
         const conv = getActiveConversation();
         if (conv) {
             const last = conv.messages[conv.messages.length - 1];
@@ -1123,7 +1074,6 @@ async function fetchAndRenderVideos(row, query) {
 function renderVideoCards(row, videos) {
     const col = row.querySelector('.msg-col');
     if (!col) return;
-    // امنع تكرار البطاقات لو الرسالة اتعرضت قبل كده
     if (col.querySelector('.video-cards')) return;
 
     const wrap = document.createElement('div');
@@ -1145,14 +1095,12 @@ function renderVideoCards(row, videos) {
         wrap.appendChild(card);
     });
 
-    // اترك مساحة قبل زر النسخ
     const copyBtn = col.querySelector('.msg-copy-btn');
     col.insertBefore(wrap, copyBtn || null);
     scrollToBottom();
 }
 
 function playVideoInline(cardEl, video) {
-    // شيل أي مشغل قديم مفتوح جوه نفس مجموعة البطاقات
     const wrap = cardEl.closest('.video-cards');
     wrap.querySelectorAll('.video-player-wrap').forEach(el => el.remove());
 
@@ -1171,9 +1119,6 @@ function showToast(msg) {
 }
 function showModBadge() { document.getElementById('modBadge').classList.add('show'); }
 
-/* ================================================================
-   إرسال الرسائل
-   ================================================================ */
 async function sendMessage() {
     const msg = userInput.value.trim();
     if (!msg) return;
@@ -1226,7 +1171,6 @@ async function sendMessage() {
             }, 100);
         }
 
-        // لو الباك إند رجّع الفيديوهات جاهزة مع الرد
         if (data.type === 'video' && data.videos && data.videos.length) {
             if (novaRow) {
                 renderVideoCards(novaRow, data.videos);
@@ -1235,7 +1179,6 @@ async function sendMessage() {
                 saveConversations();
             }
         }
-        // لو الباك إند رجّع بس كلمة البحث (video_query) وسايب البحث للفرونت إند
         else if (data.type === 'video' && data.video_query) {
             if (novaRow) fetchAndRenderVideos(novaRow, data.video_query);
         }
@@ -1265,25 +1208,71 @@ async function clearMemory() {
     showToast('🗑️ تم مسح الذاكرة');
 }
 
-/* ================================================================
-   Textarea تلقائي الارتفاع
-   ================================================================ */
 function autoResize() {
     userInput.style.height = 'auto';
     userInput.style.height = Math.min(userInput.scrollHeight, 110) + 'px';
 }
 
-/* ================================================================
-   الأحداث
-   ================================================================ */
 userInput.addEventListener('input', autoResize);
 userInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
 
 /* ================================================================
-   بدء التشغيل
+   الإدخال الصوتي (Web Speech API) — جديد
    ================================================================ */
+(function () {
+    const micBtn = document.getElementById('micBtn');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        micBtn.style.display = 'none';
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ar-EG';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    let isListening = false;
+
+    micBtn.addEventListener('click', () => {
+        if (isListening) { recognition.stop(); return; }
+        try { recognition.start(); } catch (e) { console.error(e); }
+    });
+
+    recognition.addEventListener('start', () => {
+        isListening = true;
+        micBtn.classList.add('listening');
+        micBtn.innerText = '⏺️';
+    });
+
+    recognition.addEventListener('end', () => {
+        isListening = false;
+        micBtn.classList.remove('listening');
+        micBtn.innerText = '🎤';
+    });
+
+    recognition.addEventListener('result', (event) => {
+        let transcript = '';
+        for (let i = 0; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+        }
+        userInput.value = transcript;
+        autoResize();
+    });
+
+    recognition.addEventListener('error', (event) => {
+        isListening = false;
+        micBtn.classList.remove('listening');
+        micBtn.innerText = '🎤';
+        if (event.error === 'not-allowed') {
+            showToast('⚠️ لازم تسمح بالوصول للمايك');
+        }
+    });
+})();
+
 (function init() {
     if (conversations.length === 0) {
         const conv = createConversation();
