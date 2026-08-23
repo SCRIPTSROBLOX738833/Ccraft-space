@@ -1071,7 +1071,7 @@ function timeAgo(ts){
     return 'الآن';
 }
 
-const NOTIF_ICONS = { like:'<i class="fa-solid fa-thumbs-up"></i>', comment:'<i class="fa-solid fa-comment"></i>', announcement:'<i class="fa-solid fa-bullhorn"></i>' };
+const NOTIF_ICONS = { like:'<i class="fa-solid fa-thumbs-up"></i>', comment:'<i class="fa-solid fa-comment"></i>', announcement:'<i class="fa-solid fa-bullhorn"></i>', report_reply:'<i class="fa-solid fa-shield-halved"></i>' };
 
 async function loadNotifications(){
     const listEl = document.getElementById('notifList');
@@ -1087,7 +1087,7 @@ async function loadNotifications(){
     }
     if(personalSnap && personalSnap.exists()){
         items = items.concat(Object.entries(personalSnap.val()).map(([id,n]) => ({
-            id, type: n.type||'like', text: n.text||'', timestamp: n.timestamp||0
+            id, type: n.type||'like', text: n.text||'', timestamp: n.timestamp||0, scriptId: n.scriptId||null
         })));
     }
 
@@ -1117,7 +1117,7 @@ async function loadNotifications(){
         const item = document.createElement('div');
         item.className = `notif-item${isUnread ? ' unread' : ''}`;
         item.innerHTML = `<div class="ni-text">${NOTIF_ICONS[n.type]||'<i class="fa-solid fa-bell"></i>'} ${n.text}</div><div class="ni-time">${timeAgo(n.timestamp)}</div>`;
-        if(n.id) item.onclick = () => location.href='profile.html';
+        if(n.id) item.onclick = () => location.href = n.scriptId ? `script.html?id=${n.scriptId}` : 'profile.html';
         listEl.appendChild(item);
     });
 }
