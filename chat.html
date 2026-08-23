@@ -1263,9 +1263,14 @@ function isOnCooldown() {
     return Date.now() - lastSendAt < SEND_COOLDOWN_MS;
 }
 
-// Blocks the same spam pattern the rules reject (single character repeated 8+ times, e.g. "🔥🔥🔥🔥🔥🔥🔥🔥")
+// UX-only nicety: warns the user before they send an obviously-spammy message
+// (same character/emoji repeated 8+ times). The 'u' flag matters here — without
+// it "." only matches half of a two-unit emoji like 🔥, so the check silently
+// never fires. NOTE: this is client-side feedback only, not real protection —
+// a modified/forged client could skip it entirely. The actual protection
+// against flooding is the 2.9s server-enforced interval in the Firebase Rules.
 function looksLikeCharSpam(str) {
-    return /^(.)\1{7,}$/.test(str);
+    return /^(.)\1{7,}$/u.test(str);
 }
 
 
