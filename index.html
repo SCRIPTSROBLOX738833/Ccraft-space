@@ -792,6 +792,8 @@ header { display: none; }
         <div class="sb-item"><i class="fa-solid fa-thumbs-up"></i> <span class="sb-val" id="ls-likes">—</span> <span>لايك</span></div>
         <div class="sb-item"><i class="fa-solid fa-circle" style="color:#4ade80;font-size:0.6em"></i> <span class="sb-val" id="ls-online">—</span> <span>أونلاين</span></div>
         <div class="sb-item"><i class="fa-solid fa-file-circle-plus"></i> <span class="sb-val" id="ls-newscripts">—</span> <span>سكربت جديد اليوم</span></div>
+        <div class="sb-item"><i class="fa-solid fa-eye"></i> <span class="sb-val" id="ls-visitstoday">—</span> <span>زيارة اليوم</span></div>
+        <div class="sb-item"><i class="fa-solid fa-user-plus"></i> <span class="sb-val" id="ls-newusers">—</span> <span>يوزر جديد اليوم</span></div>
     </div>
 
     <nav class="nav-grid">
@@ -840,6 +842,11 @@ header { display: none; }
         <span class="ann-icon"><i class="fa-solid fa-bullhorn"></i></span>
         <div class="ann-text" id="annText">—</div>
         <button class="ann-close" onclick="this.closest('.ann-banner').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="sec-head"><h3><span><i class="fa-solid fa-star"></i> سكربت اليوم المميز</span></h3></div>
+    <div class="feat-card" id="featuredToday">
+        <div style="color:var(--lo);text-align:center;padding:20px;font-size:0.8rem"><i class="fa-solid fa-spinner fa-spin"></i> جارٍ التحميل...</div>
     </div>
 
     <div class="sec-head">
@@ -909,7 +916,7 @@ header { display: none; }
 
 <script type="module">
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { getDatabase, ref, get, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import { guardAgainstBanned } from "./auth-guard.js";
 
@@ -953,6 +960,24 @@ function startOfTodayTs(){
     return d.getTime();
 }
 
+function todayKey(){
+    return new Date().toISOString().slice(0,10); // YYYY-MM-DD
+}
+
+/* ─── زيارات اليوم: عدّاد صحيح بدون تكرار للتابات/الزيارات المتعددة من نفس الجهاز ─── */
+function trackVisitToday(){
+    const key = 'ccraft_visited_' + todayKey();
+    if(localStorage.getItem(key)) return; // الجهاز ده اتحسب النهاردة قبل كده
+    localStorage.setItem(key, '1');
+    runTransaction(ref(db, `dailyVisits/${todayKey()}`), cur => (cur || 0) + 1)
+        .catch(() => { localStorage.removeItem(key); }); // لو فشلت المعاملة، امسح العلامة عشان تتحاول تاني بعدين
+}
+trackVisitToday();
+
+onValue(ref(db, `dailyVisits/${todayKey()}`), snap => {
+    animCount('ls-visitstoday', snap.exists() ? snap.val() : 0);
+});
+
 async function loadStats(){
     const [ss,us] = await Promise.all([get(ref(db,'scripts')), get(ref(db,'users'))]);
     const scripts = ss.exists() ? ss.val() : {};
@@ -966,7 +991,14 @@ async function loadStats(){
     const newScriptsToday = Object.values(scripts).filter(s => (s.timestamp||0) >= todayTs).length;
     animCount('ls-newscripts', newScriptsToday);
 
+    const newUsersToday = Object.values(users).filter(u => {
+        const t = u.createdAt || u.joinedAt || u.timestamp || 0;
+        return t >= todayTs;
+    }).length;
+    animCount('ls-newusers', newUsersToday);
+
     loadFeaturedScripts(scripts);
+    loadFeaturedToday(scripts);
     loadTopUsers(users, scripts);
 }
 
@@ -993,6 +1025,35 @@ function loadFeaturedScripts(scripts){
         card.innerHTML = `<div class="fc-title">${s.title||'بدون عنوان'}</div><div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>${s.map?`<span class="fc-map"><i class="fa-solid fa-map-location-dot"></i> ${s.map}</span>`:''}<span class="fc-stat"><i class="fa-solid fa-thumbs-up"></i> ${s.likes||0}</span><span class="fc-stat"><i class="fa-solid fa-star"></i> ${s.votes?(s.rating/s.votes).toFixed(1):'—'}</span></div>`;
         c.appendChild(card);
     });
+}
+
+/* ─── سكربت اليوم المميز: بيعتمد على dailyStats/{today}/scripts/{id}/{views,likes} ───
+   لازم تسجّل الـ views/likes دول من script.html (وأي صفحة فيها زرار لايك) بنفس المسار،
+   وإلا الكارت هيفضل فاضي لغاية ما يبدأ يتسجل نشاط اليوم. */
+async function loadFeaturedToday(scripts){
+    const box = document.getElementById('featuredToday'); if(!box) return;
+    const dsSnap = await get(ref(db, `dailyStats/${todayKey()}/scripts`));
+    let bestId = null, bestScore = -1, bestViews = 0, bestLikes = 0;
+    if(dsSnap.exists()){
+        Object.entries(dsSnap.val()).forEach(([id,d]) => {
+            const views = d.views||0, lk = d.likes||0;
+            const score = views + lk*3;
+            if(score > bestScore){ bestScore = score; bestId = id; bestViews = views; bestLikes = lk; }
+        });
+    }
+    if(!bestId || !scripts[bestId]){
+        box.style.cursor = 'default';
+        box.onclick = null;
+        box.innerHTML = '<div style="color:var(--lo);text-align:center;padding:20px;font-size:0.8rem">لا يوجد سكربت مميز النهاردة لسه</div>';
+        return;
+    }
+    const s = scripts[bestId];
+    box.style.cursor = 'pointer';
+    box.onclick = () => location.href = `script.html?id=${bestId}`;
+    box.innerHTML = `<div class="fc-title">${s.title||'بدون عنوان'}</div>
+        <div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>
+        <span class="fc-stat"><i class="fa-solid fa-thumbs-up"></i> ${bestLikes} اليوم</span>
+        <span class="fc-stat"><i class="fa-solid fa-eye"></i> ${bestViews} اليوم</span></div>`;
 }
 
 async function loadTopUsers(users, scripts){
