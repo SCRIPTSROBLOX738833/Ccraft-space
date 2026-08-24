@@ -978,28 +978,47 @@ onValue(ref(db, `dailyVisits/${todayKey()}`), snap => {
     animCount('ls-visitstoday', snap.exists() ? snap.val() : 0);
 });
 
+/* ─── إحصائيات: كل قراءة منفصلة عن التانية عشان فشل قراءة واحدة (زي users
+   المحمية للأدمن بس) ميوقفش باقي الصفحة عن التحميل ─── */
 async function loadStats(){
-    const [ss,us] = await Promise.all([get(ref(db,'scripts')), get(ref(db,'users'))]);
-    const scripts = ss.exists() ? ss.val() : {};
-    const users   = us.exists() ? us.val() : {};
+    // السكربتات — عامة دايمًا، ومنها بتتغذى كل أقسام الصفحة الرئيسية
+    let scripts = {};
+    try{
+        const ss = await get(ref(db,'scripts'));
+        scripts = ss.exists() ? ss.val() : {};
+    }catch(err){
+        console.error('تعذر تحميل السكربتات:', err);
+    }
+
     let likes = 0; Object.values(scripts).forEach(s => likes += s.likes||0);
     animCount('ls-scripts', Object.keys(scripts).length);
-    animCount('ls-users',   Object.keys(users).length);
     animCount('ls-likes',   likes);
 
     const todayTs = startOfTodayTs();
     const newScriptsToday = Object.values(scripts).filter(s => (s.timestamp||0) >= todayTs).length;
     animCount('ls-newscripts', newScriptsToday);
 
-    const newUsersToday = Object.values(users).filter(u => {
-        const t = u.createdAt || u.joinedAt || u.timestamp || 0;
-        return t >= todayTs;
-    }).length;
-    animCount('ls-newusers', newUsersToday);
-
+    // السكربتات مستقلة عن users، فتشتغل حتى لو users اترفضت
     loadFeaturedScripts(scripts);
     loadFeaturedToday(scripts);
-    loadTopUsers(users, scripts);
+    loadTopUsers(scripts);
+
+    // المستخدمون — محمية (بس للأدمن)، فمحتاجة تتعامل بمفردها
+    // ولو المستخدم الحالي مش أدمن هترجع Permission Denied وهنسيب العداد "—"
+    try{
+        const us = await get(ref(db,'users'));
+        const users = us.exists() ? us.val() : {};
+        animCount('ls-users', Object.keys(users).length);
+        const newUsersToday = Object.values(users).filter(u => {
+            const t = u.createdAt || u.joinedAt || u.timestamp || 0;
+            return t >= todayTs;
+        }).length;
+        animCount('ls-newusers', newUsersToday);
+    }catch(err){
+        // متوقع لغير الأدمن بعد تحديث صلاحيات users — مش خطأ حقيقي
+        document.getElementById('ls-users').innerText = '—';
+        document.getElementById('ls-newusers').innerText = '—';
+    }
 }
 
 let _lastOnline = -1;
@@ -1032,31 +1051,37 @@ function loadFeaturedScripts(scripts){
    وإلا الكارت هيفضل فاضي لغاية ما يبدأ يتسجل نشاط اليوم. */
 async function loadFeaturedToday(scripts){
     const box = document.getElementById('featuredToday'); if(!box) return;
-    const dsSnap = await get(ref(db, `dailyStats/${todayKey()}/scripts`));
-    let bestId = null, bestScore = -1, bestViews = 0, bestLikes = 0;
-    if(dsSnap.exists()){
-        Object.entries(dsSnap.val()).forEach(([id,d]) => {
-            const views = d.views||0, lk = d.likes||0;
-            const score = views + lk*3;
-            if(score > bestScore){ bestScore = score; bestId = id; bestViews = views; bestLikes = lk; }
-        });
-    }
-    if(!bestId || !scripts[bestId]){
-        box.style.cursor = 'default';
-        box.onclick = null;
+    try{
+        const dsSnap = await get(ref(db, `dailyStats/${todayKey()}/scripts`));
+        let bestId = null, bestScore = -1, bestViews = 0, bestLikes = 0;
+        if(dsSnap.exists()){
+            Object.entries(dsSnap.val()).forEach(([id,d]) => {
+                const views = d.views||0, lk = d.likes||0;
+                const score = views + lk*3;
+                if(score > bestScore){ bestScore = score; bestId = id; bestViews = views; bestLikes = lk; }
+            });
+        }
+        if(!bestId || !scripts[bestId]){
+            box.style.cursor = 'default';
+            box.onclick = null;
+            box.innerHTML = '<div style="color:var(--lo);text-align:center;padding:20px;font-size:0.8rem">لا يوجد سكربت مميز النهاردة لسه</div>';
+            return;
+        }
+        const s = scripts[bestId];
+        box.style.cursor = 'pointer';
+        box.onclick = () => location.href = `script.html?id=${bestId}`;
+        box.innerHTML = `<div class="fc-title">${s.title||'بدون عنوان'}</div>
+            <div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>
+            <span class="fc-stat"><i class="fa-solid fa-thumbs-up"></i> ${bestLikes} اليوم</span>
+            <span class="fc-stat"><i class="fa-solid fa-eye"></i> ${bestViews} اليوم</span></div>`;
+    }catch(err){
         box.innerHTML = '<div style="color:var(--lo);text-align:center;padding:20px;font-size:0.8rem">لا يوجد سكربت مميز النهاردة لسه</div>';
-        return;
     }
-    const s = scripts[bestId];
-    box.style.cursor = 'pointer';
-    box.onclick = () => location.href = `script.html?id=${bestId}`;
-    box.innerHTML = `<div class="fc-title">${s.title||'بدون عنوان'}</div>
-        <div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>
-        <span class="fc-stat"><i class="fa-solid fa-thumbs-up"></i> ${bestLikes} اليوم</span>
-        <span class="fc-stat"><i class="fa-solid fa-eye"></i> ${bestViews} اليوم</span></div>`;
 }
 
-async function loadTopUsers(users, scripts){
+/* ─── أفضل المستخدمين: بيتحسب من بيانات السكربتات نفسها (author, authorUid)
+   بدل ما يقرا users/ كامل — وبيقرا بس users/{uid}/photo المسموح بيها للعامة ─── */
+async function loadTopUsers(scripts){
     const c = document.getElementById('topUsers'); if(!c) return; c.innerHTML='';
     const us = {};
     Object.entries(scripts).forEach(([,s])=>{
@@ -1072,6 +1097,7 @@ async function loadTopUsers(users, scripts){
         let av = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#00bcd4);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:0.85rem">${(u.name||'?').charAt(0).toUpperCase()}</div>`;
         if(uid){
             try{
+                // photo/ بس المسموح بيها للعامة في Rules — باقي بيانات users محمية
                 const sn = await get(ref(db,`users/${uid}/photo`));
                 if(sn.exists()){
                     av = `<img src="${sn.val()}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block">`;
@@ -1086,38 +1112,46 @@ async function loadTopUsers(users, scripts){
 }
 
 async function loadAnnouncement(){
-    const snap = await get(ref(db,'announcements')); if(!snap.exists()) return;
-    const entries = Object.entries(snap.val()).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0));
-    if(!entries.length) return;
-    const latest = entries[0][1];
-    if(Date.now()-(latest.timestamp||0)<7*24*3600*1000){
-        document.getElementById('annText').innerText = latest.text;
-        document.getElementById('annBanner').classList.add('show');
+    try{
+        const snap = await get(ref(db,'announcements')); if(!snap.exists()) return;
+        const entries = Object.entries(snap.val()).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0));
+        if(!entries.length) return;
+        const latest = entries[0][1];
+        if(Date.now()-(latest.timestamp||0)<7*24*3600*1000){
+            document.getElementById('annText').innerText = latest.text;
+            document.getElementById('annBanner').classList.add('show');
+        }
+    }catch(err){
+        console.error('تعذر تحميل الإعلانات:', err);
     }
 }
 
 async function loadUserPages(){
-    const snap = await get(ref(db,'userPages'));
-    const c = document.getElementById('userPagesGallery');
-    if(!snap.exists()){
-        c.innerHTML='<div style="color:var(--lo);text-align:center;padding:22px;grid-column:1/-1;font-size:0.78rem">لا توجد صفحات — <a href="page-builder.html" style="color:var(--violet)">كن أول من ينشئ!</a></div>';
-        return;
+    try{
+        const snap = await get(ref(db,'userPages'));
+        const c = document.getElementById('userPagesGallery');
+        if(!snap.exists()){
+            c.innerHTML='<div style="color:var(--lo);text-align:center;padding:22px;grid-column:1/-1;font-size:0.78rem">لا توجد صفحات — <a href="page-builder.html" style="color:var(--violet)">كن أول من ينشئ!</a></div>';
+            return;
+        }
+        const pages = Object.entries(snap.val()).sort((a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0,8);
+        c.innerHTML='';
+        const TC={dark:'#8b5cf6',space:'#818cf8',ocean:'#00bcd4',sunset:'#f97316',forest:'#4ade80',neon:'#a78bfa'};
+        pages.forEach(([uid,p])=>{
+            const accent = p.accent||TC[p.theme]||'#8b5cf6';
+            const name = (p.name||p.displayName||'مستخدم').replace(/[<>&"]/g,'');
+            const card = document.createElement('div'); card.className='page-card';
+            card.style.setProperty('--acc', accent);
+            card.style.borderColor = accent+'22';
+            card.onmouseenter = () => card.style.borderColor = accent+'55';
+            card.onmouseleave = () => card.style.borderColor = accent+'22';
+            card.onclick = () => location.href=`user-page.html?uid=${uid}`;
+            card.innerHTML = `<div class="pc-banner" style="background:linear-gradient(135deg,${accent}20,${accent}08)"><i class="fa-solid fa-globe"></i></div><div class="pc-body"><div class="pc-name">${name}</div><div class="pc-meta">صفحة شخصية</div></div>`;
+            c.appendChild(card);
+        });
+    }catch(err){
+        console.error('تعذر تحميل صفحات المستخدمين:', err);
     }
-    const pages = Object.entries(snap.val()).sort((a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0,8);
-    c.innerHTML='';
-    const TC={dark:'#8b5cf6',space:'#818cf8',ocean:'#00bcd4',sunset:'#f97316',forest:'#4ade80',neon:'#a78bfa'};
-    pages.forEach(([uid,p])=>{
-        const accent = p.accent||TC[p.theme]||'#8b5cf6';
-        const name = (p.name||p.displayName||'مستخدم').replace(/[<>&"]/g,'');
-        const card = document.createElement('div'); card.className='page-card';
-        card.style.setProperty('--acc', accent);
-        card.style.borderColor = accent+'22';
-        card.onmouseenter = () => card.style.borderColor = accent+'55';
-        card.onmouseleave = () => card.style.borderColor = accent+'22';
-        card.onclick = () => location.href=`user-page.html?uid=${uid}`;
-        card.innerHTML = `<div class="pc-banner" style="background:linear-gradient(135deg,${accent}20,${accent}08)"><i class="fa-solid fa-globe"></i></div><div class="pc-body"><div class="pc-name">${name}</div><div class="pc-meta">صفحة شخصية</div></div>`;
-        c.appendChild(card);
-    });
 }
 
 /* ─── Notifications ─── */
@@ -1136,51 +1170,55 @@ const NOTIF_ICONS = { like:'<i class="fa-solid fa-thumbs-up"></i>', comment:'<i 
 
 async function loadNotifications(){
     const listEl = document.getElementById('notifList');
-    const fetches = [get(ref(db,'announcements'))];
-    if(notifUid) fetches.push(get(ref(db,`notifications/${notifUid}`)));
-    const [annSnap, personalSnap] = await Promise.all(fetches);
+    try{
+        const fetches = [get(ref(db,'announcements'))];
+        if(notifUid) fetches.push(get(ref(db,`notifications/${notifUid}`)));
+        const [annSnap, personalSnap] = await Promise.all(fetches);
 
-    let items = [];
-    if(annSnap.exists()){
-        items = items.concat(Object.values(annSnap.val()).map(n => ({
-            type: 'announcement', text: n.text||'', timestamp: n.timestamp||0
-        })));
-    }
-    if(personalSnap && personalSnap.exists()){
-        items = items.concat(Object.entries(personalSnap.val()).map(([id,n]) => ({
-            id, type: n.type||'like', text: n.text||'', timestamp: n.timestamp||0, scriptId: n.scriptId||null
-        })));
-    }
+        let items = [];
+        if(annSnap.exists()){
+            items = items.concat(Object.values(annSnap.val()).map(n => ({
+                type: 'announcement', text: n.text||'', timestamp: n.timestamp||0
+            })));
+        }
+        if(personalSnap && personalSnap.exists()){
+            items = items.concat(Object.entries(personalSnap.val()).map(([id,n]) => ({
+                id, type: n.type||'like', text: n.text||'', timestamp: n.timestamp||0, scriptId: n.scriptId||null
+            })));
+        }
 
-    if(!items.length){
+        if(!items.length){
+            listEl.innerHTML = '<div class="notif-empty">لا توجد إشعارات حالياً</div>';
+            document.getElementById('notifBadge').classList.remove('show');
+            return;
+        }
+
+        items.sort((a,b)=>b.timestamp-a.timestamp);
+        items = items.slice(0,25);
+
+        const lastSeen = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0');
+        const unreadCount = items.filter(n => n.timestamp > lastSeen).length;
+
+        const badge = document.getElementById('notifBadge');
+        if(unreadCount > 0){
+            badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+            badge.classList.add('show');
+        } else {
+            badge.classList.remove('show');
+        }
+
+        listEl.innerHTML = '';
+        items.forEach(n => {
+            const isUnread = n.timestamp > lastSeen;
+            const item = document.createElement('div');
+            item.className = `notif-item${isUnread ? ' unread' : ''}`;
+            item.innerHTML = `<div class="ni-text">${NOTIF_ICONS[n.type]||'<i class="fa-solid fa-bell"></i>'} ${n.text}</div><div class="ni-time">${timeAgo(n.timestamp)}</div>`;
+            if(n.id) item.onclick = () => location.href = n.scriptId ? `script.html?id=${n.scriptId}` : 'profile.html';
+            listEl.appendChild(item);
+        });
+    }catch(err){
         listEl.innerHTML = '<div class="notif-empty">لا توجد إشعارات حالياً</div>';
-        document.getElementById('notifBadge').classList.remove('show');
-        return;
     }
-
-    items.sort((a,b)=>b.timestamp-a.timestamp);
-    items = items.slice(0,25);
-
-    const lastSeen = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0');
-    const unreadCount = items.filter(n => n.timestamp > lastSeen).length;
-
-    const badge = document.getElementById('notifBadge');
-    if(unreadCount > 0){
-        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-        badge.classList.add('show');
-    } else {
-        badge.classList.remove('show');
-    }
-
-    listEl.innerHTML = '';
-    items.forEach(n => {
-        const isUnread = n.timestamp > lastSeen;
-        const item = document.createElement('div');
-        item.className = `notif-item${isUnread ? ' unread' : ''}`;
-        item.innerHTML = `<div class="ni-text">${NOTIF_ICONS[n.type]||'<i class="fa-solid fa-bell"></i>'} ${n.text}</div><div class="ni-time">${timeAgo(n.timestamp)}</div>`;
-        if(n.id) item.onclick = () => location.href = n.scriptId ? `script.html?id=${n.scriptId}` : 'profile.html';
-        listEl.appendChild(item);
-    });
 }
 
 window.toggleNotifPanel = function(){
