@@ -11,6 +11,9 @@
     --nova-primary: #8b5cf6;
     --nova-primary-soft: rgba(139,92,246,0.14);
     --nova-gradient: linear-gradient(135deg, #8b5cf6, #6366f1);
+    --nova-gold: #f5c518;
+    --nova-gold-soft: rgba(245,197,24,0.14);
+    --nova-gold-gradient: linear-gradient(135deg, #f5c518, #e0a800);
     --nova-bg: #0b0c10;
     --nova-surface: #14151c;
     --nova-card: #1a1c25;
@@ -59,6 +62,7 @@ header { flex: none; }
     padding: 10px 14px;
     border-bottom: 1px solid var(--nova-border);
     background: var(--nova-surface);
+    flex-wrap: wrap;
 }
 
 .icon-btn {
@@ -125,6 +129,33 @@ header { flex: none; }
     animation: blink 1.6s ease infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* --- زر "وضع الأكواد" الذهبي --- */
+.code-mode-btn {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--nova-gold-soft);
+    border: 1px solid rgba(245,197,24,0.4);
+    color: var(--nova-gold);
+    border-radius: 50px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    margin: 0;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+.code-mode-btn:active { transform: scale(0.96); }
+.code-mode-btn.active {
+    background: var(--nova-gold-gradient);
+    color: #14151c;
+    border-color: transparent;
+    box-shadow: 0 0 14px rgba(245,197,24,0.45);
+}
 
 .sidebar-backdrop {
     position: fixed;
@@ -650,6 +681,96 @@ header { flex: none; }
     border: none;
 }
 
+/* --- بطاقة ملف الكود --- */
+.code-file-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--nova-code-bg);
+    border: 1px solid rgba(245,197,24,0.3);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+.code-file-card:active { background: rgba(245,197,24,0.06); }
+.cf-icon {
+    flex: none;
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: var(--nova-gold-soft);
+    color: var(--nova-gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+}
+.cf-info { flex: 1 1 auto; min-width: 0; }
+.cf-name {
+    font-size: 0.85rem;
+    font-weight: 800;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cf-lang { font-size: 0.7rem; color: var(--nova-text-dim); }
+.cf-open {
+    flex: none;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--nova-gold);
+}
+
+.code-file-modal {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.94);
+    z-index: 500;
+    flex-direction: column;
+}
+.code-file-modal.open { display: flex; }
+.cf-toolbar {
+    flex: none;
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px calc(12px + env(safe-area-inset-top));
+    background: rgba(10,10,20,0.96);
+    border-bottom: 1px solid var(--nova-border);
+    flex-wrap: wrap;
+}
+.cf-title { flex: 1 1 auto; min-width: 0; font-size: 0.85rem; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-action-btn {
+    flex: none;
+    display: flex; align-items: center; gap: 5px;
+    border-radius: 10px;
+    padding: 8px 13px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin: 0;
+    font-family: 'Tajawal', sans-serif;
+    border: 1px solid transparent;
+}
+.cf-download-btn { background: var(--nova-gold-soft); border-color: rgba(245,197,24,0.4); color: var(--nova-gold); }
+.cf-copy-btn { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.3); color: var(--nova-primary); }
+.cf-copy-btn.copied { background: rgba(74,222,128,0.18); border-color: rgba(74,222,128,0.4); color: var(--nova-success); }
+.cf-close-btn { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.3); color: var(--nova-danger); }
+.cf-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 14px;
+    direction: ltr;
+    text-align: left;
+}
+.cf-body pre { margin: 0; }
+.cf-body code {
+    font-family: 'Consolas', 'Menlo', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #d6d6e2;
+    white-space: pre;
+}
+
 .nova-toast {
     position: fixed;
     bottom: calc(78px + env(safe-area-inset-bottom));
@@ -688,6 +809,9 @@ header { flex: none; }
             <h1>NOVA AI</h1>
             <div class="nova-status" id="novaStatus">جاري الاتصال...</div>
         </div>
+        <button class="code-mode-btn" id="codeModeBtn" onclick="toggleCodeMode()" title="تفعيل وضع الأكواد الاحترافي">
+            💛 وضع الأكواد
+        </button>
         <span class="mod-badge" id="modBadge">🎨 معدّلة</span>
         <button class="icon-btn" onclick="clearMemory()" title="مسح الذاكرة">🗑️</button>
     </div>
@@ -729,6 +853,18 @@ header { flex: none; }
     <iframe id="worldFrame" sandbox="allow-scripts allow-same-origin"></iframe>
 </div>
 
+<div class="code-file-modal" id="codeFileModal">
+    <div class="cf-toolbar">
+        <span class="cf-title" id="cfTitle">كود.txt</span>
+        <button class="cf-action-btn cf-download-btn" id="cfDownloadBtn">⬇️ تحميل</button>
+        <button class="cf-action-btn cf-copy-btn" id="cfCopyBtn">📋 نسخ</button>
+        <button class="cf-action-btn cf-close-btn" onclick="closeCodeFile()">✕ إغلاق</button>
+    </div>
+    <div class="cf-body">
+        <pre><code id="cfCode"></code></pre>
+    </div>
+</div>
+
 <div class="nova-toast" id="novaToast"></div>
 
 
@@ -740,6 +876,7 @@ const userInput    = document.getElementById('userInput');
 const sendBtn      = document.getElementById('sendBtn');
 const novaSidebar  = document.getElementById('novaSidebar');
 const sidebarBack  = document.getElementById('sidebarBackdrop');
+const codeModeBtn  = document.getElementById('codeModeBtn');
 
 let userId = localStorage.getItem('novaUserId');
 if (!userId) {
@@ -753,6 +890,9 @@ const ACTIVE_KEY = 'novaActiveConv_' + userId;
 
 let conversations = loadConversations();
 let activeConvId = localStorage.getItem(ACTIVE_KEY);
+
+// وضع الأكواد الاحترافي (زر ذهبي) — بيتفعّل يدويًا وبيتبعت مع كل رسالة
+let codeModeActive = localStorage.getItem('novaCodeMode') === '1';
 
 function loadConversations() {
     try {
@@ -828,6 +968,18 @@ function toggleSidebar(force) {
     sidebarBack.classList.toggle('show', open);
 }
 
+/* --- تفعيل/تعطيل وضع الأكواد --- */
+function toggleCodeMode() {
+    codeModeActive = !codeModeActive;
+    localStorage.setItem('novaCodeMode', codeModeActive ? '1' : '0');
+    updateCodeModeUI();
+    showToast(codeModeActive ? '💛 وضع الأكواد الاحترافي مفعّل' : 'تم إلغاء وضع الأكواد');
+}
+function updateCodeModeUI() {
+    codeModeBtn.classList.toggle('active', codeModeActive);
+}
+updateCodeModeUI();
+
 function renderChat() {
     chatScroll.innerHTML = '';
     const conv = getActiveConversation();
@@ -845,6 +997,7 @@ function renderChat() {
     conv.messages.forEach(m => {
         const row = appendMessage(m.text, m.sender);
         if (m.videos && m.videos.length) renderVideoCards(row, m.videos);
+        if (m.codeFile) renderCodeFileCard(row, m.codeFile);
     });
     scrollToBottom();
 }
@@ -1025,6 +1178,86 @@ function closeWorld() {
     document.getElementById('worldFrame').srcdoc = '';
 }
 
+/* ================================================================
+   بطاقة ملف الكود (وضع الأكواد) — فتح / تحميل / نسخ
+   ================================================================ */
+function renderCodeFileCard(row, fileData) {
+    const col = row.querySelector('.msg-col');
+    if (!col) return;
+    if (col.querySelector('.code-file-card')) return;
+
+    const ext = guessExtension(fileData.language, fileData.filename);
+    const filename = fileData.filename || ('nova-code' + ext);
+
+    const card = document.createElement('div');
+    card.className = 'code-file-card';
+    card.innerHTML = `
+        <div class="cf-icon">📄</div>
+        <div class="cf-info">
+            <div class="cf-name">${escapeHtml(filename)}</div>
+            <div class="cf-lang">${escapeHtml(fileData.language || 'code')}</div>
+        </div>
+        <div class="cf-open">فتح الملف ›</div>`;
+    card.onclick = () => openCodeFile(filename, fileData.language || '', fileData.code || '');
+
+    const copyBtn = col.querySelector('.msg-copy-btn');
+    col.insertBefore(card, copyBtn || null);
+    scrollToBottom();
+}
+
+function guessExtension(language, filename) {
+    if (filename && filename.includes('.')) return '';
+    const map = { lua: '.lua', luau: '.lua', javascript: '.js', js: '.js', html: '.html', css: '.css', python: '.py', json: '.json' };
+    return map[(language || '').toLowerCase()] || '.txt';
+}
+
+let currentCodeFile = null;
+
+function openCodeFile(filename, language, code) {
+    if (filename && !filename.includes('.')) filename += guessExtension(language, filename);
+    currentCodeFile = { filename: filename || 'nova-code.txt', code: code || '' };
+
+    document.getElementById('cfTitle').innerText = currentCodeFile.filename;
+    document.getElementById('cfCode').innerText = currentCodeFile.code;
+    document.getElementById('codeFileModal').classList.add('open');
+
+    const downloadBtn = document.getElementById('cfDownloadBtn');
+    const copyBtn = document.getElementById('cfCopyBtn');
+
+    downloadBtn.onclick = () => downloadCodeFile(currentCodeFile.filename, currentCodeFile.code);
+    copyBtn.onclick = () => {
+        copyToClipboard(currentCodeFile.code, copyBtn, null, null, null);
+        // نسخ مباشر بدون الاعتماد على selectors داخلية للزرار ده
+        const done = () => {
+            copyBtn.classList.add('copied');
+            copyBtn.innerHTML = '✅ تم النسخ';
+            setTimeout(() => { copyBtn.classList.remove('copied'); copyBtn.innerHTML = '📋 نسخ'; }, 1600);
+        };
+        if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(currentCodeFile.code).then(done).catch(() => fallbackCopy(currentCodeFile.code, done));
+        } else {
+            fallbackCopy(currentCodeFile.code, done);
+        }
+    };
+}
+
+function closeCodeFile() {
+    document.getElementById('codeFileModal').classList.remove('open');
+}
+
+function downloadCodeFile(filename, code) {
+    const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('⬇️ جاري تحميل الملف');
+}
+
 async function fetchAndRenderVideos(row, query) {
     const col = row.querySelector('.msg-col');
     if (!col) return;
@@ -1144,7 +1377,12 @@ async function sendMessage() {
         const res = await fetch(`${NOVA_URL}/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg, user_id: sessionKeyFor(conv.id), page_context: pageCtx })
+            body: JSON.stringify({
+                message: msg,
+                user_id: sessionKeyFor(conv.id),
+                page_context: pageCtx,
+                code_mode: codeModeActive
+            })
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
@@ -1181,6 +1419,16 @@ async function sendMessage() {
         }
         else if (data.type === 'video' && data.video_query) {
             if (novaRow) fetchAndRenderVideos(novaRow, data.video_query);
+        }
+
+        if (data.type === 'code_file' && data.code) {
+            const fileData = { filename: data.filename, language: data.language, code: data.code };
+            if (novaRow) {
+                renderCodeFileCard(novaRow, fileData);
+                const last = conv.messages[conv.messages.length - 1];
+                if (last) last.codeFile = fileData;
+                saveConversations();
+            }
         }
     } catch (e) {
         removeTyping();
@@ -1219,7 +1467,7 @@ userInput.addEventListener('keydown', (e) => {
 });
 
 /* ================================================================
-   الإدخال الصوتي (Web Speech API) — جديد
+   الإدخال الصوتي (Web Speech API)
    ================================================================ */
 (function () {
     const micBtn = document.getElementById('micBtn');
