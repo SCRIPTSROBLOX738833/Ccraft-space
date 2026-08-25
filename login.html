@@ -156,9 +156,8 @@ googleLoginBtn.addEventListener("click", async () => {
         const user = result.user;
         
         // تحديث بيانات المستخدم في قاعدة البيانات
-        // ملاحظة: الإيميل بيتخزن هنا للتعرف على الحساب فقط، وما بيتعرضش في أي واجهة للمستخدمين
+        // ملاحظة: ما بنخزّنش الإيميل خالص من هنا ولا في أي مكان تاني في الموقع
         await update(ref(db, `users/${user.uid}`), {
-            email: user.email,
             displayName: user.displayName,
             photoURL: user.photoURL,
             lastLogin: new Date().toISOString()
