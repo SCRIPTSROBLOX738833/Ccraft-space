@@ -38,7 +38,6 @@
     .user-bar { display: flex; align-items: center; gap: 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px 18px; }
     .ub-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; font-size: 0.9rem; flex-shrink: 0; }
     .ub-name  { font-weight: 800; font-size: 0.9rem; }
-    .ub-email { color: var(--text-muted); font-size: 0.78rem; }
     .ub-badge { margin-right: auto; background: var(--primary-dim); color: var(--primary); font-size: 0.72rem; font-weight: 800; padding: 4px 12px; border-radius: 50px; }
     .ub-badge.auto-verify { background: rgba(0,242,254,0.1); color: #67e8f9; }
 
@@ -199,7 +198,6 @@
         <div class="ub-avatar" id="ubAvatar">أ</div>
         <div>
             <div class="ub-name"  id="ubName">—</div>
-            <div class="ub-email" id="ubEmail">—</div>
         </div>
         <span class="ub-badge" id="ubBadge">✅ مسجل دخول</span>
     </div>
@@ -342,6 +340,7 @@
   const auth = getAuth(app);
 
   let currentUser  = null;
+  let myUsername   = 'cCraft Space User'; // ✅ اسم المستخدم الحقيقي (مش الإيميل) — بيتحمّل من البروفايل
   let selectedMap  = null;
   let imageBase64  = null;   // الصورة المضغوطة جاهزة للحفظ
   let hasKey       = false;  // ✅ هل السكربت يحتاج مفتاح
@@ -370,10 +369,25 @@
   onAuthStateChanged(auth, async user => {
     if (user) {
         currentUser = user;
-        const name = user.email.split('@')[0];
-        document.getElementById('ubAvatar').innerText = name.charAt(0).toUpperCase();
-        document.getElementById('ubName').innerText   = name;
-        document.getElementById('ubEmail').innerText  = user.email;
+
+        // ✅ اسم المستخدم الحقيقي بيتجاب من البروفايل، مش من الإيميل خالص
+        let hasUsername = false;
+        try {
+            const nameSnap = await get(ref(db, `users/${user.uid}/username`));
+            if (nameSnap.exists() && nameSnap.val()) {
+                myUsername = nameSnap.val();
+                hasUsername = true;
+            }
+        } catch (e) { /* لو التحقق فشل، هنكمل بالاسم الافتراضي */ }
+
+        // 🚧 لسه ما اختارش اسم مستخدم — لازم يختار الأول قبل ما ينشر أي حاجة باسمه
+        if (!hasUsername) {
+            location.href = 'profile.html';
+            return;
+        }
+
+        document.getElementById('ubAvatar').innerText = myUsername.charAt(0).toUpperCase();
+        document.getElementById('ubName').innerText   = myUsername;
         document.getElementById('userInfo').style.display    = 'block';
         document.getElementById('publishMain').style.display = 'block';
         document.getElementById('authNotice').style.display  = 'none';
@@ -670,7 +684,6 @@
 
     btn.innerText = '⏳ جارٍ النشر...';
 
-    const username = currentUser.email.split('@')[0];
     const newRef   = push(ref(db, 'scripts'));
 
     const scriptData = {
@@ -679,8 +692,7 @@
         category,
         description,
         map:         selectedMap || null,
-        author:      username,
-        authorEmail: currentUser.email,
+        author:      myUsername,     // ✅ اسم المستخدم الحقيقي — مش بادئة الإيميل ومفيش إيميل مخزّن هنا خالص
         authorUid:   currentUser.uid,
         timestamp:   Date.now(),
         rating:      0,
@@ -737,11 +749,10 @@
 
   async function checkAndAwardBadges() {
     const uid      = currentUser.uid;
-    const username = currentUser.email.split('@')[0];
     const scriptsSnap = await get(ref(db, 'scripts'));
     const all  = scriptsSnap.exists() ? scriptsSnap.val() : {};
     const mine = Object.values(all).filter(s =>
-        s.author === username || s.authorEmail === currentUser.email
+        s.authorUid === uid || s.author === myUsername
     );
 
     let totalLikes=0, totalRating=0, totalVotes=0;
