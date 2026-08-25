@@ -204,8 +204,8 @@
 <!-- Username Modal -->
 <div class="modal-overlay" id="usernameModal">
     <div class="modal-box">
-        <div class="modal-title">✏️ تغيير اسم المستخدم</div>
-        <div class="modal-sub">الاسم يظهر في البروفايل والسكربتات والشات. يمكن تغييره مرة كل أسبوع.</div>
+        <div class="modal-title" id="usernameModalTitle">✏️ تغيير اسم المستخدم</div>
+        <div class="modal-sub" id="usernameModalSub">الاسم يظهر في البروفايل والسكربتات والشات. يمكن تغييره مرة كل أسبوع.</div>
         <div class="username-input-wrap">
             <span class="username-prefix">@</span>
             <input type="text" id="usernameInput" placeholder="اسمك_هنا" maxlength="20" autocomplete="off" spellcheck="false">
@@ -219,7 +219,7 @@
         </ul>
         <div class="check-msg info" id="checkMsg">اكتب الاسم المطلوب</div>
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
+            <button class="btn-cancel" id="usernameCancelBtn" onclick="closeModal()">إلغاء</button>
             <button class="btn-save" id="saveNameBtn" disabled onclick="saveUsername()">💾 حفظ</button>
         </div>
     </div>
@@ -306,7 +306,6 @@
                 <h2 id="username">جارٍ التحميل...</h2>
                 <button class="edit-name-btn" id="editNameBtn" style="display:none" onclick="openModal()">✏️ تغيير</button>
             </div>
-            <div class="profile-email" id="userEmail"></div>
             <div class="join-date" id="joinDate"></div>
             <div class="join-date" id="lastNameChange" style="margin-top:2px;color:rgba(139,92,246,0.7)"></div>
             <div class="social-row" id="socialRow"></div>
@@ -388,6 +387,7 @@ guardAgainstBanned(app);
 const urlParams=new URLSearchParams(window.location.search);
 const targetUid=urlParams.get('uid');
 let currentUser=null;
+const ANON_NAME='مجهول';
 
 const AVATAR_MAX_DIM = 320;
 const AVATAR_QUALITY  = 0.75;
@@ -470,10 +470,25 @@ function enableAvatarEditing(uid,name){
 }
 
 const COOLDOWN_DAYS=7, USERNAME_REGEX=/^[a-zA-Z0-9_]{3,20}$/;
-let checkTimeout=null, nameIsValid=false;
+let checkTimeout=null, nameIsValid=false, forceUsernameSetup=false;
 
-window.openModal=function(){document.getElementById('usernameModal').classList.add('open');document.getElementById('usernameInput').focus();};
+window.openModal=function(forced){
+    if(forced){
+        forceUsernameSetup=true;
+        document.getElementById('usernameModalTitle').innerText='🎉 اختر اسم مستخدم';
+        document.getElementById('usernameModalSub').innerText='قبل ما تكمل، اختر اسم مستخدم يظهر في البروفايل والسكربتات والشات بدل بريدك الإلكتروني.';
+        document.getElementById('usernameCancelBtn').style.display='none';
+    }else{
+        forceUsernameSetup=false;
+        document.getElementById('usernameModalTitle').innerText='✏️ تغيير اسم المستخدم';
+        document.getElementById('usernameModalSub').innerText='الاسم يظهر في البروفايل والسكربتات والشات. يمكن تغييره مرة كل أسبوع.';
+        document.getElementById('usernameCancelBtn').style.display='inline-block';
+    }
+    document.getElementById('usernameModal').classList.add('open');
+    document.getElementById('usernameInput').focus();
+};
 window.closeModal=function(){
+    if(forceUsernameSetup)return;
     document.getElementById('usernameModal').classList.remove('open');
     document.getElementById('usernameInput').value='';
     setCheckState('info','اكتب الاسم المطلوب','⌛','');
@@ -510,10 +525,13 @@ window.saveUsername=async function(){
     if(!nameIsValid||!currentUser)return;
     const newName=document.getElementById('usernameInput').value.trim();
     if(!newName||!USERNAME_REGEX.test(newName))return;
-    const snap=await get(ref(db,`users/${currentUser.uid}/usernameChangedAt`));
-    if(snap.exists()){
-        const days=(Date.now()-snap.val())/(1000*60*60*24);
-        if(days<COOLDOWN_DAYS){alert(`⏳ انتظر ${Math.ceil(COOLDOWN_DAYS-days)} يوم`);return;}
+    const wasForced=forceUsernameSetup;
+    if(!wasForced){
+        const snap=await get(ref(db,`users/${currentUser.uid}/usernameChangedAt`));
+        if(snap.exists()){
+            const days=(Date.now()-snap.val())/(1000*60*60*24);
+            if(days<COOLDOWN_DAYS){alert(`⏳ انتظر ${Math.ceil(COOLDOWN_DAYS-days)} يوم`);return;}
+        }
     }
     const btn=document.getElementById('saveNameBtn');btn.disabled=true;btn.innerText='⏳ جارٍ الحفظ...';
     try{
@@ -524,9 +542,19 @@ window.saveUsername=async function(){
         await set(ref(db,`users/${currentUser.uid}/usernameChangedAt`),Date.now());
         document.getElementById('username').innerText=newName;
         updateLastChangeLabel(Date.now());
-        closeModal();showToast('✅ تم تغيير اسم المستخدم!');
+        forceUsernameSetup=false;
+        closeModalForce();
+        showToast('✅ تم تغيير اسم المستخدم!');
     }catch(e){alert('❌ خطأ: '+e.message);btn.disabled=false;btn.innerText='💾 حفظ';}
 };
+
+function closeModalForce(){
+    document.getElementById('usernameModal').classList.remove('open');
+    document.getElementById('usernameInput').value='';
+    setCheckState('info','اكتب الاسم المطلوب','⌛','');
+    document.getElementById('saveNameBtn').disabled=true;
+    nameIsValid=false;
+}
 
 function updateLastChangeLabel(ts){
     if(!ts)return;
@@ -541,7 +569,7 @@ function updateLastChangeLabel(ts){
         label.innerText='';
         document.getElementById('editNameBtn').style.opacity='1';
         document.getElementById('editNameBtn').style.cursor='pointer';
-        document.getElementById('editNameBtn').onclick=openModal;
+        document.getElementById('editNameBtn').onclick=()=>openModal(false);
     }
 }
 
@@ -875,7 +903,7 @@ window.openFollowListModal = async function(type){
         const users = await Promise.all(uids.map(async uid => {
             const uSnap = await get(ref(db, `users/${uid}`));
             const u = uSnap.exists() ? uSnap.val() : {};
-            return { uid, name: u.username || (u.email ? u.email.split('@')[0] : 'مستخدم'), photo: u.photo || null };
+            return { uid, name: u.username || ANON_NAME, photo: u.photo || null };
         }));
 
         itemsBox.innerHTML = '';
@@ -910,7 +938,8 @@ async function loadMyProfile(user){
     viewedProfileUid = user.uid;
     const[userDataSnap]=await Promise.all([get(ref(db,`users/${user.uid}`))]);
     const userData=userDataSnap.exists()?userDataSnap.val():{};
-    const savedUsername=userData.username||user.email.split('@')[0];
+    const hasUsername=!!userData.username;
+    const savedUsername=userData.username||ANON_NAME;
     const lastChangeTs=userData.usernameChangedAt||null;
 
     renderAvatar(savedUsername, userData.photo||null);
@@ -920,7 +949,6 @@ async function loadMyProfile(user){
     renderFollowStats(user.uid);
 
     document.getElementById('username').innerText=savedUsername;
-    document.getElementById('userEmail').innerText=user.email;
     document.getElementById('editNameBtn').style.display='inline-flex';
     const created=new Date(parseInt(user.metadata.createdAt));
     document.getElementById('joinDate').innerText=`انضم في: ${created.toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})}`;
@@ -945,6 +973,12 @@ async function loadMyProfile(user){
     if(pendingRef&&pendingRef!==user.uid){localStorage.removeItem('pendingRef');await awardReferralPoints(pendingRef,user.uid);}
     await loadData(user.uid,user.email,user.metadata.createdAt,true,savedUsername);
     await loadPoints(user.uid);
+
+    // أي مستخدم (خصوصاً القادم لأول مرة عبر جوجل) بدون اسم مستخدم محفوظ
+    // لازم يختار اسم قبل ما يكمل استخدام الموقع
+    if(!hasUsername){
+        openModal(true);
+    }
 }
 
 async function loadOtherProfile(uid){
@@ -952,11 +986,9 @@ async function loadOtherProfile(uid){
     document.getElementById('viewingBadge').style.display='block';
     const userSnap=await get(ref(db,`users/${uid}`));
     const userData=userSnap.exists()?userSnap.val():{};
-    const email=userData.email||'غير معروف';
-    const name=userData.username||email.split('@')[0];
+    const name=userData.username||ANON_NAME;
     document.getElementById('viewingName').innerText=name;
     document.getElementById('username').innerText=name;
-    document.getElementById('userEmail').innerText=email;
     renderAvatar(name, userData.photo||null);
     renderTiktok(uid, userData.tiktok||null, false);
     renderRoblox(uid, userData.roblox||null, false);
@@ -964,7 +996,7 @@ async function loadOtherProfile(uid){
     await renderFollowButton(uid);
     await renderFollowStats(uid);
     document.getElementById('scriptsTitle').innerText=`📜 سكربتات ${name}`;
-    await loadData(uid,email,null,false,name);
+    await loadData(uid,userData.email||null,null,false,name);
 }
 
 async function loadData(uid,email,createdAt,canDelete,username){
