@@ -740,6 +740,17 @@ onAuthStateChanged(auth, user => { currentUser = user; });
 // عنوان الباك إند بتاع Nova AI — نفس السيرفر المستخدم في nova.html
 const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
 
+let myUsernameCache = null;
+async function getMyDisplayName() {
+    if (!currentUser) return 'مجهول';
+    if (myUsernameCache) return myUsernameCache;
+    try {
+        const snap = await get(ref(db, `users/${currentUser.uid}/username`));
+        myUsernameCache = (snap.exists() && snap.val()) ? snap.val() : 'مجهول';
+    } catch { myUsernameCache = 'مجهول'; }
+    return myUsernameCache;
+}
+
 /* ============================================================
    🎨 مكتبة أيقونات SVG خفيفة (بديل الإيموجيز) — كل أيقونة
    عبارة عن سطر واحد نظيف بنفس نمط الخط (stroke) ومتناسقة مع
@@ -1132,7 +1143,7 @@ function renderVisibleCards() {
 
             // 🔔 إشعار لصاحب السكربت باللايك (لو المستخدم مسجل دخول)
             if (currentUser) {
-                const likerName = currentUser.email.split('@')[0];
+                const likerName = await getMyDisplayName();
                 notifyAuthor(s.authorUid, `${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
             }
         };
