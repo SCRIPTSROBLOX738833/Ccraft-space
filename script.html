@@ -535,6 +535,18 @@ function withCopyWarning(code) {
     return scriptVerified ? code : (UNVERIFIED_WARNING + code);
 }
 
+// ✅ اسم العرض الحقيقي للمستخدم الحالي (username المحفوظ في البروفايل) — مش الإيميل ولا جزء منه
+let myUsernameCache = null;
+async function getMyDisplayName() {
+    if (!currentUser) return 'مجهول';
+    if (myUsernameCache) return myUsernameCache;
+    try {
+        const snap = await get(ref(db, `users/${currentUser.uid}/username`));
+        myUsernameCache = (snap.exists() && snap.val()) ? snap.val() : 'مجهول';
+    } catch { myUsernameCache = 'مجهول'; }
+    return myUsernameCache;
+}
+
 // 🔔 إرسال إشعار لصاحب السكربت (لايك أو تعليق) — ما بيبعتش لنفسه لو هو صاحب السكربت
 function notifyAuthor(type, text) {
     if (!scriptAuthorUid || !currentUser || scriptAuthorUid === currentUser.uid) return;
@@ -626,6 +638,7 @@ const MAP_ICONS = {
 
 onAuthStateChanged(auth, user => {
     currentUser = user;
+    myUsernameCache = null;
     refreshCommentBoxAvatar();
     renderComments();
 });
@@ -760,7 +773,7 @@ async function loadScript() {
         document.getElementById('st-likes').innerText = newVal;
 
         // 🔔 إشعار لصاحب السكربت باللايك
-        const likerName = currentUser.email.split('@')[0];
+        const likerName = await getMyDisplayName();
         notifyAuthor('like', `👍 ${likerName} أعجب بسكربتك: ${scriptTitleForNotif}`);
     });
 
@@ -961,7 +974,7 @@ function buildCommentRow(c) {
         if (!text) return;
         if (text.length > 300) { alert('الرد طويل جدًا (الحد الأقصى 300 حرف)'); return; }
         replySend.disabled = true;
-        const replierName = currentUser.email.split('@')[0];
+        const replierName = await getMyDisplayName();
         const replyData = { name: replierName, uid: currentUser.uid, text, timestamp: Date.now() };
         try {
             await push(ref(db, `scripts/${scriptId}/comments/${c.key}/replies`), replyData);
@@ -1070,7 +1083,8 @@ commentInputEl.addEventListener('input', () => {
 async function refreshCommentBoxAvatar() {
     if (!currentUser) { cwAvatarEl.innerHTML = ''; cwAvatarEl.textContent = '؟'; return; }
     delete avatarCache[currentUser.uid]; // نجبر تحديث الكاش عشان لو المستخدم غيّر صورته لسه
-    await applyAvatar(cwAvatarEl, currentUser.uid, currentUser.email);
+    const myName = await getMyDisplayName();
+    await applyAvatar(cwAvatarEl, currentUser.uid, myName);
 }
 
 document.getElementById('submitComment').addEventListener('click', async () => {
@@ -1085,7 +1099,7 @@ document.getElementById('submitComment').addEventListener('click', async () => {
     btn.disabled = true;
     btn.innerText = '⏳';
 
-    const commenterName = currentUser.email.split('@')[0];
+    const commenterName = await getMyDisplayName();
 
     // ✅ التصميم الجديد بيجيب صورة المعلّق لايف وقت العرض (applyAvatar) مش من الفيلد المخزّن،
     // فمفيش داعي نحفظ نسخة تجمّدت من الصورة مع كل تعليق — ده اللي كان بيسبب اختفاءها أحيانًا.
