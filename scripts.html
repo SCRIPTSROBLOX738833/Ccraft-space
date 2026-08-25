@@ -742,12 +742,12 @@ const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
 
 let myUsernameCache = null;
 async function getMyDisplayName() {
-    if (!currentUser) return 'مجهول';
+    if (!currentUser) return 'cCraft Space User';
     if (myUsernameCache) return myUsernameCache;
     try {
         const snap = await get(ref(db, `users/${currentUser.uid}/username`));
-        myUsernameCache = (snap.exists() && snap.val()) ? snap.val() : 'مجهول';
-    } catch { myUsernameCache = 'مجهول'; }
+        myUsernameCache = (snap.exists() && snap.val()) ? snap.val() : 'cCraft Space User';
+    } catch { myUsernameCache = 'cCraft Space User'; }
     return myUsernameCache;
 }
 
@@ -1066,7 +1066,7 @@ function renderVisibleCards() {
                 <div class="sc-stats">
                     <span class="sc-stat">${ic('thumb',13)}<strong>${s.likes||0}</strong></span>
                     <span class="sc-stat">${ic('eye',13)}<strong>${s.views||0}</strong></span>
-                    <span class="sc-stat">${ic('user',13)}${escHTML(s.author||'مجهول')}</span>
+                    <span class="sc-stat">${ic('user',13)}${escHTML(s.author||'cCraft Space User')}</span>
                     <span style="margin-right:auto"></span>
                     <div class="sc-stars" data-id="${s.id}" data-rated="${rated}">
                         ${[1,2,3,4,5].map(n=>`<span class="sc-star${n<=Math.round(avg)?' filled':''}" data-v="${n}">${ic('star',15)}</span>`).join('')}
