@@ -454,9 +454,9 @@ body {
         }
 
         const authorNameEl = document.getElementById('authorName');
-        if (authorNameEl) authorNameEl.innerText = data.author || 'مجهول';
+        if (authorNameEl) authorNameEl.innerText = data.author || 'cCraft Space User';
         const acNameEl = document.getElementById('acName');
-        if (acNameEl) acNameEl.innerText = data.author || 'مجهول';
+        if (acNameEl) acNameEl.innerText = data.author || 'cCraft Space User';
 
         const mapCard = document.getElementById('mapCardSide');
         if (mapCard) {
@@ -538,12 +538,12 @@ function withCopyWarning(code) {
 // ✅ اسم العرض الحقيقي للمستخدم الحالي (username المحفوظ في البروفايل) — مش الإيميل ولا جزء منه
 let myUsernameCache = null;
 async function getMyDisplayName() {
-    if (!currentUser) return 'مجهول';
+    if (!currentUser) return 'cCraft Space User';
     if (myUsernameCache) return myUsernameCache;
     try {
         const snap = await get(ref(db, `users/${currentUser.uid}/username`));
-        myUsernameCache = (snap.exists() && snap.val()) ? snap.val() : 'مجهول';
-    } catch { myUsernameCache = 'مجهول'; }
+        myUsernameCache = (snap.exists() && snap.val()) ? snap.val() : 'cCraft Space User';
+    } catch { myUsernameCache = 'cCraft Space User'; }
     return myUsernameCache;
 }
 
@@ -699,7 +699,7 @@ async function loadScript() {
         : '—';
     document.getElementById('scriptDate').innerText = `نُشر في ${date}`;
 
-    const authorName = data.author || 'مجهول';
+    const authorName = data.author || 'cCraft Space User';
     document.getElementById('authorName').innerText = authorName;
     document.getElementById('acName').innerText     = authorName;
 
@@ -893,7 +893,7 @@ function buildCommentRow(c) {
 
     const userEl = document.createElement('span');
     userEl.className = 'cmt-user';
-    userEl.textContent = c.name || 'مجهول';
+    userEl.textContent = c.name || 'cCraft Space User';
     userEl.onclick = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
     head.appendChild(userEl);
 
@@ -957,7 +957,7 @@ function buildCommentRow(c) {
     const replyInput = document.createElement('input');
     replyInput.type = 'text';
     replyInput.maxLength = 300;
-    replyInput.placeholder = `الرد على ${c.name || 'مجهول'}...`;
+    replyInput.placeholder = `الرد على ${c.name || 'cCraft Space User'}...`;
     const replySend = document.createElement('button');
     replySend.textContent = 'إرسال';
     replyBox.appendChild(replyInput);
@@ -1033,7 +1033,7 @@ function buildReplyRow(parentComment, rkey, r) {
 
     const userEl = document.createElement('span');
     userEl.className = 'cmt-user';
-    userEl.textContent = r.name || 'مجهول';
+    userEl.textContent = r.name || 'cCraft Space User';
     userEl.onclick = () => { if (r.uid) location.href = `profile.html?uid=${r.uid}`; };
     head.appendChild(userEl);
 
