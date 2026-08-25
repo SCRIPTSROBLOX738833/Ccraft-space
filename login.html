@@ -85,6 +85,10 @@ const googleLoginBtn = document.getElementById("googleLoginBtn");
 const msg = document.getElementById("msg");
 const authContainer = document.getElementById("authContainer");
 
+// لو المستخدم لسه ما اختارش اسم مستخدم، نبعته لصفحة البروفايل
+// عشان يظهر له فورًا فورم "اختر اسم مستخدم" (الإجباري) بدل ما يشوف بريده الإلكتروني في أي مكان
+let redirecting = false;
+
 function showMessage(text, isError = true) {
     msg.textContent = text;
     msg.className = isError ? "error-msg" : "";
@@ -106,6 +110,21 @@ onAuthStateChanged(auth, async (user) => {
         } catch (e) { /* لو التحقق فشل لأي سبب، منكملش تسجيل دخول بأمان */ }
 
         localStorage.setItem("currentUser", user.uid);
+
+        // ✅ تحقق هل عنده اسم مستخدم محفوظ ولا لأ
+        let hasUsername = false;
+        try {
+            const nameSnap = await get(ref(db, `users/${user.uid}/username`));
+            hasUsername = nameSnap.exists() && !!nameSnap.val();
+        } catch (e) { /* لو التحقق فشل، نكمل عادي بدون تحويل إجباري */ }
+
+        if (!hasUsername) {
+            // يظهر له فورم اختيار الاسم في صفحة البروفايل (إجباري هناك)
+            redirecting = true;
+            location.href = "profile.html";
+            return;
+        }
+
         showLoggedInView(user);
     } else {
         localStorage.removeItem("currentUser");
@@ -113,8 +132,9 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 function showLoggedInView(user){
+    if (redirecting) return;
     authContainer.innerHTML = `
-        <h2>مرحبا بك ${user.displayName || user.email}!</h2>
+        <h2>مرحبا بك ${user.displayName || 'مجهول'}!</h2>
         <button id="logoutBtn">تسجيل خروج</button>
         <button onclick="location.href='index.html'">الصفحة الرئيسية</button>
     `;
@@ -136,12 +156,14 @@ googleLoginBtn.addEventListener("click", async () => {
         const user = result.user;
         
         // تحديث بيانات المستخدم في قاعدة البيانات
+        // ملاحظة: الإيميل بيتخزن هنا للتعرف على الحساب فقط، وما بيتعرضش في أي واجهة للمستخدمين
         await update(ref(db, `users/${user.uid}`), {
             email: user.email,
             displayName: user.displayName,
             photoURL: user.photoURL,
             lastLogin: new Date().toISOString()
         });
+        // باقي الخطوة (التحقق من اسم المستخدم والتحويل) بتتم في onAuthStateChanged
     } catch (error) {
         console.error("Google Login Error:", error);
         if (error.code === 'auth/unauthorized-domain') {
