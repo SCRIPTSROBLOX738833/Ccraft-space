@@ -11,6 +11,11 @@
  * جدًا — ده اللي كان بيخلي scripts.html توصل 1.5 ميجا. الصور
  * بترجع عادي أول ما Firebase يرد فعليًا (JS الحي مش متأثر).
  *
+ * ⚠️ أمان: authorEmail اتشال نهائيًا من KEEP_FIELDS بعد ما لقينا
+ * إنه كان بيتسرب في الملف الثابت (ده كان متاح للجميع من غير auth).
+ * كمان مضاف safety net (stripSensitiveFields) بيشيل أي حقل اسمه
+ * فيه "email" حتى لو اتضاف غلط تاني في المستقبل.
+ *
  * الاستخدام:
  *   node generate-scripts-data.js
  *
@@ -29,11 +34,21 @@ const OUTPUT_FILE = path.join(__dirname, 'scripts-data.js');
 
 // الحقول اللي بنسيبها في الملف الثابت — من غير الصورة والتعليقات
 // (دول بيتحمّلوا لايف من Firebase أول ما الصفحة تفتح)
+// ⚠️ authorEmail اتشال عمدًا — ده كان سبب تسريب الإيميلات.
 const KEEP_FIELDS = [
     'title', 'code', 'description', 'category', 'map',
-    'author', 'authorEmail', 'authorUid', 'timestamp',
+    'author', 'authorUid', 'timestamp',
     'rating', 'votes', 'likes', 'hasKey', 'key', 'tags', 'verified',
 ];
+
+// شبكة أمان إضافية: أي حقل اسمه فيه "email" (بأي شكل كتابة)
+// بيتشال تلقائيًا حتى لو حد ضافه غلط في KEEP_FIELDS مستقبلًا.
+function stripSensitiveFields(obj) {
+    for (const key of Object.keys(obj)) {
+        if (/email/i.test(key)) delete obj[key];
+    }
+    return obj;
+}
 
 function fetchJSON(url) {
     return new Promise((resolve, reject) => {
@@ -58,7 +73,7 @@ function slim(script) {
     for (const field of KEEP_FIELDS) {
         if (script[field] !== undefined) out[field] = script[field];
     }
-    return out;
+    return stripSensitiveFields(out);
 }
 
 async function main() {
