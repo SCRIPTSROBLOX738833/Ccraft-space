@@ -1190,6 +1190,7 @@ const db   = getDatabase(app);
 const auth = getAuth(app);
 
 let currentUser  = null;
+let myUsername   = 'cCraft Space User'; // ✅ اسم المستخدم الحقيقي المحفوظ في البروفايل — مش الإيميل خالص
 let replyTo      = null;  // { key, username, text }
 let editingKey   = null;  // key of message being edited
 let avatarCache  = {};    // uid -> photo dataURL أو null (لو مفيش صورة)
@@ -1281,7 +1282,24 @@ function looksLikeCharSpam(str) {
 onAuthStateChanged(auth, async user => {
     if (!user) { alert('يجب تسجيل الدخول'); location.href='login.html'; return; }
     currentUser = user;
-    registerUser(user.uid, user.email.split('@')[0]);
+
+    // ✅ اسم المستخدم الحقيقي بيتجاب من البروفايل، مش من الإيميل خالص
+    let hasUsername = false;
+    try {
+        const nameSnap = await get(ref(db, `users/${user.uid}/username`));
+        if (nameSnap.exists() && nameSnap.val()) {
+            myUsername = nameSnap.val();
+            hasUsername = true;
+        }
+    } catch (e) { /* لو التحقق فشل، هنكمل بالاسم الافتراضي */ }
+
+    // 🚧 لسه ما اختارش اسم مستخدم — لازم يختار الأول قبل ما يدخل الشات بأي اسم
+    if (!hasUsername) {
+        location.href = 'profile.html';
+        return;
+    }
+
+    registerUser(user.uid, myUsername);
     buildQuickEmojis();
     loadChat();
     trackPresence(user);
@@ -1514,9 +1532,9 @@ function buildMessageHTML(msg, key, isOwn, avatarHTML, time) {
     const editedHTML = msg.edited ? '<span class="edited-tag">(معدّل)</span>' : '<span class="edited-tag" style="display:none">(معدّل)</span>';
     const isMedia = msg.type === 'image' || msg.type === 'sticker';
 
-    const myUsername = currentUser ? currentUser.email.split('@')[0].toLowerCase() : '';
-    const mentionsMe = !isOwn && myUsername && msg.text &&
-        new RegExp(`(^|\\s)@${escapeRegex(myUsername)}(\\s|$)`, 'i').test(msg.text + ' ');
+    const myUsernameLower = (myUsername || '').toLowerCase();
+    const mentionsMe = !isOwn && myUsernameLower && msg.text &&
+        new RegExp(`(^|\\s)@${escapeRegex(myUsernameLower)}(\\s|$)`, 'i').test(msg.text + ' ');
 
     let contentHTML;
     if (msg.type === 'sticker') {
@@ -1539,7 +1557,7 @@ function buildMessageHTML(msg, key, isOwn, avatarHTML, time) {
     return `
         <div class="msg-avatar" onclick="location.href='profile.html?uid=${msg.userId}'">${avatarHTML}</div>
         <div class="msg-col">
-            ${!isOwn ? `<div class="msg-username" onclick="location.href='profile.html?uid=${msg.userId}'">${msg.username || 'مجهول'}</div>` : ''}
+            ${!isOwn ? `<div class="msg-username" onclick="location.href='profile.html?uid=${msg.userId}'">${msg.username || 'cCraft Space User'}</div>` : ''}
             <div class="msg-bubble ${msg.type === 'sticker' ? 'sticker-bubble' : ''} ${mentionsMe ? 'mention-glow' : ''}">
                 <div class="msg-actions-hover">
                     <div class="emoji-picker" id="ep-${key}">
@@ -1826,7 +1844,7 @@ async function sendMessage() {
         } else if (pendingUpload) {
             const data = {
                 userId:    currentUser.uid,
-                username:  currentUser.email.split('@')[0],
+                username:  myUsername,
                 type:      pendingUpload.type,
                 imageData: pendingUpload.dataURL,
                 timestamp: Date.now(),
@@ -1844,7 +1862,7 @@ async function sendMessage() {
             // رسالة نصية جديدة
             const data = {
                 userId:    currentUser.uid,
-                username:  currentUser.email.split('@')[0],
+                username:  myUsername,
                 text,
                 timestamp: Date.now(),
             };
@@ -1963,7 +1981,7 @@ document.addEventListener('click', e => {
 
 function handleTyping() {
     if (!currentUser) return;
-    set(ref(db, `typing/${currentUser.uid}`), { name: currentUser.email.split('@')[0], ts: Date.now() });
+    set(ref(db, `typing/${currentUser.uid}`), { name: myUsername, ts: Date.now() });
     clearTimeout(typingTimer);
     typingTimer = setTimeout(clearTyping, 3000);
 }
@@ -1994,7 +2012,7 @@ function trackTyping(user) {
 
 function trackPresence(user) {
     const presRef = ref(db, `presence/${user.uid}`);
-    set(presRef, { online: true, ts: Date.now(), name: user.email.split('@')[0] });
+    set(presRef, { online: true, ts: Date.now(), name: myUsername });
 
     onValue(ref(db, 'presence'), snap => {
         if (!snap.exists()) { document.getElementById('onlineCount').innerText = '0'; return; }
@@ -2178,7 +2196,7 @@ async function sendStickerDirect(dataURL) {
 
     const data = {
         userId:    currentUser.uid,
-        username:  currentUser.email.split('@')[0],
+        username:  myUsername,
         type:      'sticker',
         imageData: dataURL,
         timestamp: Date.now(),
