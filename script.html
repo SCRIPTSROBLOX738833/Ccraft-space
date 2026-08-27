@@ -387,12 +387,24 @@ body {
 
 <script src="scripts-data.js"></script>
 <script>
+// ⚠️ هذا الجزء يعرض بيانات مبدئية (SEO/Pre-render) من window.__SCRIPTS_DATA__ اللي بييجي من scripts-data.js.
+// اتحدّث عشان يقرأ أسماء الأعمدة الجديدة بتاعة Supabase، مع fallback لأسماء Firebase القديمة
+// لحد ما ملف scripts-data.js نفسه (خارج نطاق الصفحة دي) يتحدّث هو كمان لنفس الأسماء الجديدة.
 (function () {
     try {
         const params   = new URLSearchParams(window.location.search);
         const id       = document.body.dataset.scriptId || params.get('id');
         const data     = window.__SCRIPTS_DATA__ && id ? window.__SCRIPTS_DATA__[id] : null;
         if (!data) return;
+
+        const extra = data.extra || {};
+        const isVerified = data.is_verified ?? data.verified;
+        const authorName = data.author_name ?? data.author;
+        const imageVal   = data.image_base64 ?? data.image;
+        const likesVal   = data.likes_count ?? data.likes;
+        const hasKeyVal  = data.has_key ?? data.hasKey;
+        const mapVal     = data.map ?? extra.map;
+        const keyVal     = data.key ?? extra.key;
 
         document.title = `${data.title} | CCRAFT SPACE`;
 
@@ -411,16 +423,16 @@ body {
             descEl.style.fontStyle = data.description ? 'normal' : 'italic';
         }
 
-        if (data.key) {
+        if (keyVal) {
             const keyCard  = document.getElementById('keyCard');
             const keyValue = document.getElementById('keyValue');
             if (keyCard && keyValue) {
-                keyValue.innerText = data.key;
+                keyValue.innerText = keyVal;
                 keyCard.style.display = 'block';
                 const copyBtn = document.getElementById('copyKeyBtn');
                 if (copyBtn) {
                     copyBtn.onclick = () => {
-                        navigator.clipboard.writeText(data.key).then(() => {
+                        navigator.clipboard.writeText(keyVal).then(() => {
                             const orig = copyBtn.innerText;
                             copyBtn.innerText = '✅ تم النسخ';
                             setTimeout(() => { copyBtn.innerText = orig; }, 2000);
@@ -430,7 +442,7 @@ body {
             }
         }
 
-        if (!data.verified) {
+        if (!isVerified) {
             const ub = document.getElementById('unverifiedBanner');
             if (ub) ub.classList.add('show');
         }
@@ -438,14 +450,14 @@ body {
         const tagsRow = document.getElementById('tagsRow');
         if (tagsRow) {
             const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            tagsRow.innerHTML = data.verified
+            tagsRow.innerHTML = isVerified
                 ? `<span class="tag tag-verified"><svg width="13" height="13" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:-2px;margin-left:4px"><defs><linearGradient id="vgSingle" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vgSingle)"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>موثّق من الإدارة</span>`
                 : `<span class="tag tag-unverified">⚠️ غير موثّق</span>`;
             tagsRow.innerHTML += `<span class="tag tag-cat">📁 ${esc(data.category||'—')}</span>`;
-            tagsRow.innerHTML += data.map
-                ? `<span class="tag tag-map">🗺️ ${esc(data.map)}</span>`
+            tagsRow.innerHTML += mapVal
+                ? `<span class="tag tag-map">🗺️ ${esc(mapVal)}</span>`
                 : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
-            tagsRow.innerHTML += (data.hasKey || data.key)
+            tagsRow.innerHTML += (hasKeyVal || keyVal)
                 ? `<span class="tag" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">🔒 يتطلب مفتاح</span>`
                 : `<span class="tag" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>`;
             if (Array.isArray(data.tags)) {
@@ -454,9 +466,9 @@ body {
         }
 
         const authorNameEl = document.getElementById('authorName');
-        if (authorNameEl) authorNameEl.innerText = data.author || 'cCraft Space User';
+        if (authorNameEl) authorNameEl.innerText = authorName || 'cCraft Space User';
         const acNameEl = document.getElementById('acName');
-        if (acNameEl) acNameEl.innerText = data.author || 'cCraft Space User';
+        if (acNameEl) acNameEl.innerText = authorName || 'cCraft Space User';
 
         const mapCard = document.getElementById('mapCardSide');
         if (mapCard) {
@@ -467,9 +479,9 @@ body {
                 'Anime Fighting Sim':'⚔️','Tower of Hell':'🗼',
             };
             const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            if (data.map) {
-                const icon = MAP_ICONS[data.map] || '🗺️';
-                mapCard.innerHTML = `<span class="mcs-icon">${icon}</span><div class="mcs-label">مخصص لماب</div><div class="mcs-name">${esc(data.map)}</div>`;
+            if (mapVal) {
+                const icon = MAP_ICONS[mapVal] || '🗺️';
+                mapCard.innerHTML = `<span class="mcs-icon">${icon}</span><div class="mcs-label">مخصص لماب</div><div class="mcs-name">${esc(mapVal)}</div>`;
                 mapCard.style.borderColor = 'rgba(0,242,254,0.18)';
                 mapCard.style.boxShadow   = '0 0 20px rgba(0,242,254,0.05)';
             } else {
@@ -477,17 +489,17 @@ body {
             }
         }
 
-        if (data.image) {
+        if (imageVal) {
             const img = document.getElementById('scriptImage');
             const wrap = document.getElementById('scriptImageWrap');
-            if (img && wrap) { img.src = data.image; wrap.classList.add('show'); }
+            if (img && wrap) { img.src = imageVal; wrap.classList.add('show'); }
             const sideImg = document.getElementById('sideThumbImg');
             const sideWrap = document.getElementById('sidebarThumb');
-            if (sideImg && sideWrap) { sideImg.src = data.image; sideWrap.classList.add('show'); }
+            if (sideImg && sideWrap) { sideImg.src = imageVal; sideWrap.classList.add('show'); }
         }
 
         const stLikes = document.getElementById('st-likes');
-        if (stLikes) stLikes.innerText = data.likes || 0;
+        if (stLikes) stLikes.innerText = likesVal || 0;
         const stRating = document.getElementById('st-rating');
         if (stRating) {
             const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
@@ -500,27 +512,23 @@ body {
 </script>
 
 <script type="module">
-import { get, getAuth, getDatabase, initializeApp, onAuthStateChanged, onChildAdded, push, ref, remove, set } from "./supabase-config.js";
-
-
-
-
+import { supabase } from "./supabase-config.js";
 import { guardAgainstBanned } from "./auth-guard.js";
 
-
-
-
-guardAgainstBanned(app);
-const db   = getDatabase(app);
-const auth = getAuth(app);
+// ⚠️ اتفترض إن guardAgainstBanned بقت بتاخد Supabase session من نفسها من غير باراميتر
+// (مفيش app زي Firebase بعد كده) — لو التوقيع الحقيقي مختلف قوللي أظبطها.
+guardAgainstBanned();
 
 const params    = new URLSearchParams(window.location.search);
 const scriptId  = document.body.dataset.scriptId || params.get('id');
-let currentUser = null;
+
+let currentAuthUser = null;   // Supabase Auth user (currentAuthUser.id = auth_uid)
+let currentUserRow  = null;   // صف من جدول users (currentUserRow.id = uuid داخلي يُستخدم كـ FK)
+let scriptRow = null;
 let scriptVerified = false;
-let scriptAuthorUid = null;
+let scriptUploaderId = null;  // uploader_id (uuid داخلي في users)
 let scriptTitleForNotif = 'سكربت';
-const avatarCache = {};
+let hasLiked = false;
 
 const UNVERIFIED_WARNING = '--[[\n\tتحذير هذا السكربت ليس تم التحقق منه من قبل cCraft space يرجي الحظر منه\n]]\n\n';
 
@@ -528,36 +536,39 @@ function withCopyWarning(code) {
     return scriptVerified ? code : (UNVERIFIED_WARNING + code);
 }
 
+async function refreshCurrentUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    currentAuthUser = user || null;
+    if (currentAuthUser) {
+        const { data } = await supabase
+            .from('users')
+            .select('*')
+            .eq('auth_uid', currentAuthUser.id)
+            .maybeSingle();
+        currentUserRow = data || null;
+    } else {
+        currentUserRow = null;
+    }
+}
+
 // ✅ اسم العرض الحقيقي للمستخدم الحالي (username المحفوظ في البروفايل) — مش الإيميل ولا جزء منه
-let myUsernameCache = null;
-async function getMyDisplayName() {
-    if (!currentUser) return 'cCraft Space User';
-    if (myUsernameCache) return myUsernameCache;
+function getMyDisplayName() {
+    if (!currentUserRow) return 'cCraft Space User';
+    return currentUserRow.username || currentUserRow.display_name || 'cCraft Space User';
+}
+
+// 🔔 إرسال إشعار (لايك/تعليق/رد) — ما بيبعتش لنفس الشخص لو هو صاحب السكربت/التعليق
+async function notifyUser(recipientUserId, type, text) {
+    if (!recipientUserId || !currentUserRow || recipientUserId === currentUserRow.id) return;
     try {
-        const snap = await get(ref(db, `users/${currentUser.uid}/username`));
-        myUsernameCache = (snap.exists() && snap.val()) ? snap.val() : 'cCraft Space User';
-    } catch { myUsernameCache = 'cCraft Space User'; }
-    return myUsernameCache;
-}
-
-// 🔔 إرسال إشعار لصاحب السكربت (لايك أو تعليق) — ما بيبعتش لنفسه لو هو صاحب السكربت
-function notifyAuthor(type, text) {
-    if (!scriptAuthorUid || !currentUser || scriptAuthorUid === currentUser.uid) return;
-    push(ref(db, `notifications/${scriptAuthorUid}`), {
-        type,
-        text,
-        timestamp: Date.now(),
-    }).catch(() => { /* فشل الإشعار مش لازم يوقف باقي العملية */ });
-}
-
-// 🔔 إشعار عام لأي مستخدم (يُستخدم للردود على التعليقات)
-function notifyUser(uid, type, text) {
-    if (!uid || !currentUser || uid === currentUser.uid) return;
-    push(ref(db, `notifications/${uid}`), {
-        type,
-        text,
-        timestamp: Date.now(),
-    }).catch(() => {});
+        await supabase.from('notifications').insert({
+            user_id: recipientUserId,
+            type,
+            text,
+            script_id: scriptId,
+            read: false,
+        });
+    } catch (e) { /* فشل الإشعار مش لازم يوقف باقي العملية */ }
 }
 
 window.openLightbox = function() {
@@ -573,35 +584,19 @@ window.closeLightbox = function() {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-// ✅ applyAvatar بيجيب الصورة "لايف" من بروفايل المستخدم مباشرة (مش من قيمة مجمّدة اتخزنت وقت كتابة التعليق)
-// وده اللي بيحل مشكلة إن صورة البروفايل مكنتش بتظهر في التعليقات
-async function applyAvatar(el, uid, fallbackName) {
+// ✅ applyAvatar بيعرض صورة معروفة (photo_url من users أو author_avatar المخزّن على التعليق) مع fallback لحرف الاسم
+function applyAvatar(el, photoUrl, fallbackName) {
     if (!el) return;
     el.innerHTML = '';
     el.textContent = '';
 
-    let photo = null;
-    if (uid) {
-        if (uid in avatarCache && avatarCache[uid]) {
-            // ✅ نستخدم الكاش بس لو فيه صورة فعلاً — لو كانت فاضية، نجرب نجيبها تاني
-            // (عشان لو حد ضاف صورة بروفايل جديدة أثناء تصفحك، السكربتات/التعليقات بتاعته تعرضها فورًا من غير ما تحتاج ريفريش)
-            photo = avatarCache[uid];
-        } else {
-            try {
-                const snap = await get(ref(db, `users/${uid}/photo`));
-                photo = snap.exists() ? snap.val() : null;
-            } catch { photo = null; }
-            if (photo) avatarCache[uid] = photo;
-        }
-    }
-
-    if (!photo) {
+    if (!photoUrl) {
         el.textContent = (fallbackName || '؟').charAt(0).toUpperCase();
         return;
     }
 
     const img = document.createElement('img');
-    img.src = photo;
+    img.src = photoUrl;
     img.alt = '';
     img.loading = 'lazy';
     img.referrerPolicy = 'no-referrer';
@@ -629,14 +624,19 @@ const MAP_ICONS = {
     'Anime Fighting Sim':'⚔️','Tower of Hell':'🗼',
 };
 
-onAuthStateChanged(auth, user => {
-    currentUser = user;
-    myUsernameCache = null;
+supabase.auth.onAuthStateChange(async () => {
+    await refreshCurrentUser();
     refreshCommentBoxAvatar();
     renderComments();
+    refreshLikeButtonState();
 });
 
-loadScript();
+init();
+
+async function init() {
+    await refreshCurrentUser();
+    await loadScript();
+}
 
 async function loadScript() {
     if (!scriptId) {
@@ -644,15 +644,26 @@ async function loadScript() {
         return;
     }
 
-    const snap = await get(ref(db, `scripts/${scriptId}`));
-    if (!snap.exists()) {
+    const { data, error } = await supabase
+        .from('scripts')
+        .select('*')
+        .eq('id', scriptId)
+        .maybeSingle();
+
+    if (error || !data) {
         document.getElementById('title').innerText = "❌ هذا السكربت غير موجود";
         return;
     }
-    const data = snap.val();
-    scriptVerified = !!data.verified;
-    scriptAuthorUid = data.authorUid || null;
+    scriptRow = data;
+    scriptVerified = !!data.is_verified;
+    scriptUploaderId = data.uploader_id || null;
     scriptTitleForNotif = data.title || 'سكربت';
+
+    // ⚠️ "الماب" والمفتاح الفعلي (نص المفتاح، مش has_key بس) مفيهمش عمود مخصص في جدول scripts —
+    // بنقراهم من extra jsonb. لو اتضح إنهم اتخزنوا في مكان تاني وقت الـ migration، قوللي أظبط السطرين دول.
+    const extra = data.extra || {};
+    const mapName = extra.map || null;
+    const keyValue = extra.key || null;
 
     document.getElementById('title').innerText       = data.title;
     document.title = `${data.title} | CCRAFT SPACE`;
@@ -664,13 +675,13 @@ async function loadScript() {
 
     document.getElementById('unverifiedBanner').classList.toggle('show', !scriptVerified);
 
-    if (data.key) {
+    if (keyValue) {
         const keyCard  = document.getElementById('keyCard');
-        const keyValue = document.getElementById('keyValue');
-        keyValue.innerText = data.key;
+        const keyValueEl = document.getElementById('keyValue');
+        keyValueEl.innerText = keyValue;
         keyCard.style.display = 'block';
         document.getElementById('copyKeyBtn').onclick = () => {
-            navigator.clipboard.writeText(data.key).then(() => {
+            navigator.clipboard.writeText(keyValue).then(() => {
                 const btn = document.getElementById('copyKeyBtn');
                 const orig = btn.innerText;
                 btn.innerText = '✅ تم النسخ';
@@ -679,29 +690,37 @@ async function loadScript() {
         };
     }
 
-    if (data.image) {
-        document.getElementById('scriptImage').src     = data.image;
+    if (data.image_base64) {
+        document.getElementById('scriptImage').src     = data.image_base64;
         document.getElementById('scriptImageWrap').classList.add('show');
-        document.getElementById('sideThumbImg').src    = data.image;
+        document.getElementById('sideThumbImg').src    = data.image_base64;
         document.getElementById('sidebarThumb').classList.add('show');
         document.getElementById('sidebarThumb').onclick = openLightbox;
     }
 
-    const date = data.timestamp
-        ? new Date(data.timestamp).toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'})
+    const date = data.created_at
+        ? new Date(data.created_at).toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'})
         : '—';
     document.getElementById('scriptDate').innerText = `نُشر في ${date}`;
 
-    const authorName = data.author || 'cCraft Space User';
+    const authorName = data.author_name || 'cCraft Space User';
     document.getElementById('authorName').innerText = authorName;
     document.getElementById('acName').innerText     = authorName;
 
-    await Promise.all([
-        applyAvatar(document.getElementById('authorAvatarInline'), data.authorUid, authorName),
-        applyAvatar(document.getElementById('authorAvatarSide'), data.authorUid, authorName),
-    ]);
+    // صورة صاحب السكربت من جدول users (photo_url) عن طريق uploader_id
+    let authorPhoto = null;
+    if (scriptUploaderId) {
+        const { data: authorRow } = await supabase
+            .from('users')
+            .select('photo_url')
+            .eq('id', scriptUploaderId)
+            .maybeSingle();
+        authorPhoto = authorRow?.photo_url || null;
+    }
+    applyAvatar(document.getElementById('authorAvatarInline'), authorPhoto, authorName);
+    applyAvatar(document.getElementById('authorAvatarSide'), authorPhoto, authorName);
 
-    const goProfile = () => { if (data.authorUid) location.href = `profile.html?uid=${data.authorUid}`; };
+    const goProfile = () => { if (scriptUploaderId) location.href = `profile.html?uid=${scriptUploaderId}`; };
     document.getElementById('authorRow').onclick      = goProfile;
     document.getElementById('authorCardSide').onclick = goProfile;
     document.getElementById('viewProfileBtn').onclick = e => { e.stopPropagation(); goProfile(); };
@@ -711,10 +730,10 @@ async function loadScript() {
         ? `<span class="tag tag-verified"><svg width="13" height="13" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:-2px;margin-left:4px"><defs><linearGradient id="vgSingle" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vgSingle)"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>موثّق من الإدارة</span>`
         : `<span class="tag tag-unverified">⚠️ غير موثّق</span>`;
     tagsRow.innerHTML += `<span class="tag tag-cat">📁 ${escHTML(data.category||'—')}</span>`;
-    tagsRow.innerHTML += data.map
-        ? `<span class="tag tag-map">🗺️ ${escHTML(data.map)}</span>`
+    tagsRow.innerHTML += mapName
+        ? `<span class="tag tag-map">🗺️ ${escHTML(mapName)}</span>`
         : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
-    tagsRow.innerHTML += (data.hasKey || data.key)
+    tagsRow.innerHTML += data.has_key
         ? `<span class="tag" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">🔒 يتطلب مفتاح</span>`
         : `<span class="tag" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>`;
     if (Array.isArray(data.tags)) {
@@ -722,12 +741,12 @@ async function loadScript() {
     }
 
     const mapCard = document.getElementById('mapCardSide');
-    if (data.map) {
-        const icon = MAP_ICONS[data.map] || '🗺️';
+    if (mapName) {
+        const icon = MAP_ICONS[mapName] || '🗺️';
         mapCard.innerHTML = `
             <span class="mcs-icon">${icon}</span>
             <div class="mcs-label">مخصص لماب</div>
-            <div class="mcs-name">${escHTML(data.map)}</div>
+            <div class="mcs-name">${escHTML(mapName)}</div>
         `;
         mapCard.style.borderColor = 'rgba(0,242,254,0.18)';
         mapCard.style.boxShadow   = '0 0 20px rgba(0,242,254,0.05)';
@@ -739,47 +758,74 @@ async function loadScript() {
         `;
     }
 
-    document.getElementById('st-likes').innerText = data.likes || 0;
+    document.getElementById('st-likes').innerText = data.likes_count || 0;
     const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
     document.getElementById('st-rating').innerText = avg === '—' ? '—' : `${avg} ⭐`;
 
-    const liked = !!localStorage.getItem(`liked_${scriptId}`);
-    const likeBtn = document.getElementById('likeBtn');
-
-    if (liked) {
-        likeBtn.classList.add('liked');
-        likeBtn.innerText = '❤️ أعجبك';
-        likeBtn.disabled = true;
-    }
-
-    likeBtn.addEventListener('click', async () => {
-        if (!currentUser) { alert("يجب تسجيل الدخول لإضافة لايك"); location.href = "login.html"; return; }
-        if (liked || likeBtn.disabled) return;
-        const likeRef = ref(db, `scripts/${scriptId}/likes`);
-        const s = await get(likeRef);
-        const newVal = (s.exists() ? s.val() : 0) + 1;
-        await set(likeRef, newVal);
-        localStorage.setItem(`liked_${scriptId}`, 'true');
-        likeBtn.classList.add('liked');
-        likeBtn.innerText = '❤️ أعجبك';
-        likeBtn.disabled = true;
-        document.getElementById('st-likes').innerText = newVal;
-
-        // 🔔 إشعار لصاحب السكربت باللايك
-        const likerName = await getMyDisplayName();
-        notifyAuthor('like', `👍 ${likerName} أعجب بسكربتك: ${scriptTitleForNotif}`);
-    });
+    await refreshLikeButtonState();
+    document.getElementById('likeBtn').addEventListener('click', onLikeClick);
 
     loadComments();
+    subscribeToComments();
+}
+
+// ✅ بدل localStorage القديم، دلوقتي بنتحقق من script_likes (script_id + user_id) عشان
+// اللايك يفضل مربوط باليوزر الحقيقي مش بالمتصفح بس
+async function refreshLikeButtonState() {
+    const likeBtn = document.getElementById('likeBtn');
+    hasLiked = false;
+    if (currentUserRow && scriptId) {
+        const { data } = await supabase
+            .from('script_likes')
+            .select('script_id')
+            .eq('script_id', scriptId)
+            .eq('user_id', currentUserRow.id)
+            .maybeSingle();
+        hasLiked = !!data;
+    }
+    if (hasLiked) {
+        likeBtn.classList.add('liked');
+        likeBtn.innerText = '❤️ أعجبك';
+        likeBtn.disabled = true;
+    } else {
+        likeBtn.classList.remove('liked');
+        likeBtn.innerText = '❤️ إضافة لايك';
+        likeBtn.disabled = false;
+    }
+}
+
+async function onLikeClick() {
+    if (!currentUserRow) { alert("يجب تسجيل الدخول لإضافة لايك"); location.href = "login.html"; return; }
+    if (hasLiked) return;
+
+    const likeBtn = document.getElementById('likeBtn');
+    likeBtn.disabled = true;
+
+    const { error: insertError } = await supabase
+        .from('script_likes')
+        .insert({ script_id: scriptId, user_id: currentUserRow.id });
+    if (insertError) { likeBtn.disabled = false; return; }
+
+    const newVal = (scriptRow.likes_count || 0) + 1;
+    scriptRow.likes_count = newVal;
+    await supabase.from('scripts').update({ likes_count: newVal }).eq('id', scriptId);
+
+    hasLiked = true;
+    likeBtn.classList.add('liked');
+    likeBtn.innerText = '❤️ أعجبك';
+    document.getElementById('st-likes').innerText = newVal;
+
+    notifyUser(scriptUploaderId, 'like', `👍 ${getMyDisplayName()} أعجب بسكربتك: ${scriptTitleForNotif}`);
 }
 
 const COMMENTS_PAGE_SIZE = 5;
 let commentsVisible = COMMENTS_PAGE_SIZE;
-let allComments = [];
+let topLevelComments = [];        // تعليقات رئيسية (parent_comment_id فاضي)
+let repliesByParent = {};         // { parentId: [ردود] }
 let commentSort = 'new'; // new | old | top
 
 function timeAgoAr(ts) {
-    const diff = Date.now() - ts;
+    const diff = Date.now() - new Date(ts).getTime();
     const m = Math.floor(diff/60000), h = Math.floor(diff/3600000), d = Math.floor(diff/86400000);
     if (d > 0) return `منذ ${d} يوم`;
     if (h > 0) return `منذ ${h} ساعة`;
@@ -787,55 +833,78 @@ function timeAgoAr(ts) {
     return 'الآن';
 }
 
+// ✅ جدول comments بقى flat مع parent_comment_id (FK ذاتي) بدل التعشيش (nesting) بتاع Firebase،
+// فبنقسّم الداتا هنا: تعليقات رئيسية + ردود متجمعة حسب الأب
 async function loadComments() {
-    const snap = await get(ref(db, `scripts/${scriptId}/comments`));
-    if (snap.exists()) {
-        allComments = Object.entries(snap.val()).map(([key, c]) => ({ key, ...c }));
-    }
-    renderComments();
+    const { data, error } = await supabase
+        .from('comments')
+        .select('*')
+        .eq('script_id', scriptId)
+        .order('created_at', { ascending: true });
 
-    onChildAdded(ref(db, `scripts/${scriptId}/comments`), snapshot => {
-        if (allComments.some(c => c.key === snapshot.key)) return; // اتحمّل بالفعل مع الدفعة الأولى
-        allComments.push({ key: snapshot.key, ...snapshot.val() });
-        commentsVisible++; // تعليق جديد لازم يظهر فورًا من غير ما يستنى "عرض المزيد"
-        renderComments();
+    if (error || !data) return;
+
+    topLevelComments = data.filter(c => !c.parent_comment_id);
+    repliesByParent = {};
+    data.filter(c => c.parent_comment_id).forEach(r => {
+        (repliesByParent[r.parent_comment_id] ||= []).push(r);
     });
+
+    renderComments();
+}
+
+function subscribeToComments() {
+    supabase
+        .channel(`comments-${scriptId}`)
+        .on('postgres_changes',
+            { event: 'INSERT', schema: 'public', table: 'comments', filter: `script_id=eq.${scriptId}` },
+            payload => {
+                const row = payload.new;
+                if (row.parent_comment_id) {
+                    (repliesByParent[row.parent_comment_id] ||= []).push(row);
+                } else {
+                    if (topLevelComments.some(c => c.id === row.id)) return;
+                    topLevelComments.push(row);
+                    commentsVisible++; // تعليق جديد لازم يظهر فورًا من غير ما يستنى "عرض المزيد"
+                }
+                renderComments();
+            })
+        .subscribe();
 }
 
 function countAllComments() {
-    return allComments.reduce((sum, c) => sum + 1 + (c.replies ? Object.keys(c.replies).length : 0), 0);
+    return topLevelComments.reduce((sum, c) => sum + 1 + (repliesByParent[c.id]?.length || 0), 0);
 }
 
 function sortComments(list) {
     const arr = [...list];
-    if (commentSort === 'old') arr.sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
-    else if (commentSort === 'top') arr.sort((a,b) => ((b.likes||0)-(b.dislikes||0)) - ((a.likes||0)-(a.dislikes||0)));
-    else arr.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+    if (commentSort === 'old') arr.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+    else if (commentSort === 'top') arr.sort((a,b) => ((b.likes_count||0)-(b.dislikes_count||0)) - ((a.likes_count||0)-(a.dislikes_count||0)));
+    else arr.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
     return arr;
 }
 
-function buildAvatarEl(uid, name, photo, sizeClass) {
+function buildAvatarEl(userId, name, photoUrl, sizeClass) {
     const pic = document.createElement('div');
     pic.className = sizeClass;
-    pic.onclick = () => { if (uid) location.href = `profile.html?uid=${uid}`; };
-    // ✅ بنجيب الصورة لايف من applyAvatar بدل ما نعتمد على قيمة c.photo القديمة بس —
-    // ده اللي بيضمن ظهور الصورة دايمًا حتى لو اتغيرت أو محفوظتش وقت كتابة التعليق
-    applyAvatar(pic, uid, name);
+    pic.onclick = () => { if (userId) location.href = `profile.html?uid=${userId}`; };
+    applyAvatar(pic, photoUrl, name);
     return pic;
 }
 
-function commentVoteKey(key) { return `cvote_${scriptId}_${key}`; }
+function commentVoteKey(id) { return `cvote_${scriptId}_${id}`; }
 
-async function voteComment(path, key, type) {
-    const storageKey = commentVoteKey(key);
+// ⚠️ مفيش جدول لتتبع "مين عمل لايك على أي تعليق" في السكيما الحالية (بعكس script_likes للسكربتات)
+// فلسه بنعتمد على localStorage لمنع التصويت المتكرر من نفس المتصفح — نفس القيد اللي كان موجود قبل كده
+async function voteComment(id, type) {
+    const storageKey = commentVoteKey(id);
     const existing = localStorage.getItem(storageKey);
     if (existing) return; // صوّت قبل كده على الموضوع ده
 
-    const field = type === 'like' ? 'likes' : 'dislikes';
-    const nodeRef = ref(db, `${path}/${field}`);
-    const s = await get(nodeRef);
-    const newVal = (s.exists() ? s.val() : 0) + 1;
-    await set(nodeRef, newVal);
+    const field = type === 'like' ? 'likes_count' : 'dislikes_count';
+    const { data: row } = await supabase.from('comments').select(field).eq('id', id).maybeSingle();
+    const newVal = (row?.[field] || 0) + 1;
+    await supabase.from('comments').update({ [field]: newVal }).eq('id', id);
     localStorage.setItem(storageKey, type);
     return newVal;
 }
@@ -843,7 +912,7 @@ async function voteComment(path, key, type) {
 function renderComments() {
     const commentsDiv = document.getElementById('comments');
     const loadMoreBtn = document.getElementById('cmtLoadMore');
-    const sorted = sortComments(allComments);
+    const sorted = sortComments(topLevelComments);
     const totalCount = countAllComments();
 
     document.getElementById('commentBadge').innerText = totalCount;
@@ -869,13 +938,13 @@ function renderComments() {
 }
 
 function buildCommentRow(c) {
-    const canDelete = currentUser && c.uid === currentUser.uid;
-    const votedAs = localStorage.getItem(commentVoteKey(c.key));
+    const canDelete = currentUserRow && c.user_id === currentUserRow.id;
+    const votedAs = localStorage.getItem(commentVoteKey(c.id));
 
     const row = document.createElement('div');
     row.className = 'cmt-row';
 
-    const pic = buildAvatarEl(c.uid, c.name, c.photo, 'cmt-pic');
+    const pic = buildAvatarEl(c.user_id, c.author_name, c.author_avatar, 'cmt-pic');
     row.appendChild(pic);
 
     const main = document.createElement('div');
@@ -886,13 +955,13 @@ function buildCommentRow(c) {
 
     const userEl = document.createElement('span');
     userEl.className = 'cmt-user';
-    userEl.textContent = c.name || 'cCraft Space User';
-    userEl.onclick = () => { if (c.uid) location.href = `profile.html?uid=${c.uid}`; };
+    userEl.textContent = c.author_name || 'cCraft Space User';
+    userEl.onclick = () => { if (c.user_id) location.href = `profile.html?uid=${c.user_id}`; };
     head.appendChild(userEl);
 
     const whenEl = document.createElement('span');
     whenEl.className = 'cmt-when';
-    whenEl.textContent = c.timestamp ? timeAgoAr(c.timestamp) : '';
+    whenEl.textContent = c.created_at ? timeAgoAr(c.created_at) : '';
     head.appendChild(whenEl);
 
     if (canDelete) {
@@ -902,8 +971,9 @@ function buildCommentRow(c) {
         delBtn.onclick = async e => {
             e.stopPropagation();
             if (!confirm('متأكد إنك عايز تحذف تعليقك؟')) return;
-            await remove(ref(db, `scripts/${scriptId}/comments/${c.key}`));
-            allComments = allComments.filter(x => x.key !== c.key);
+            await supabase.from('comments').delete().eq('id', c.id);
+            topLevelComments = topLevelComments.filter(x => x.id !== c.id);
+            delete repliesByParent[c.id];
             renderComments();
         };
         head.appendChild(delBtn);
@@ -913,26 +983,25 @@ function buildCommentRow(c) {
     msgEl.className = 'cmt-msg';
     msgEl.textContent = c.text;
 
-    // صف الأزرار: لايك / ديسلايك / رد
     const actions = document.createElement('div');
     actions.className = 'cmt-actions';
 
     const likeBtn = document.createElement('button');
     likeBtn.className = 'cmt-vote' + (votedAs === 'like' ? ' voted' : '');
-    likeBtn.innerHTML = `👍 <span>${c.likes || 0}</span>`;
+    likeBtn.innerHTML = `👍 <span>${c.likes_count || 0}</span>`;
     likeBtn.onclick = async () => {
-        if (!currentUser) { alert('يجب تسجيل الدخول'); location.href = 'login.html'; return; }
-        const nv = await voteComment(`scripts/${scriptId}/comments/${c.key}`, c.key, 'like');
-        if (nv !== undefined) { c.likes = nv; renderComments(); }
+        if (!currentUserRow) { alert('يجب تسجيل الدخول'); location.href = 'login.html'; return; }
+        const nv = await voteComment(c.id, 'like');
+        if (nv !== undefined) { c.likes_count = nv; renderComments(); }
     };
 
     const dislikeBtn = document.createElement('button');
     dislikeBtn.className = 'cmt-vote' + (votedAs === 'dislike' ? ' voted' : '');
-    dislikeBtn.innerHTML = `👎 <span>${c.dislikes || 0}</span>`;
+    dislikeBtn.innerHTML = `👎 <span>${c.dislikes_count || 0}</span>`;
     dislikeBtn.onclick = async () => {
-        if (!currentUser) { alert('يجب تسجيل الدخول'); location.href = 'login.html'; return; }
-        const nv = await voteComment(`scripts/${scriptId}/comments/${c.key}`, c.key, 'dislike');
-        if (nv !== undefined) { c.dislikes = nv; renderComments(); }
+        if (!currentUserRow) { alert('يجب تسجيل الدخول'); location.href = 'login.html'; return; }
+        const nv = await voteComment(c.id, 'dislike');
+        if (nv !== undefined) { c.dislikes_count = nv; renderComments(); }
     };
 
     const replyBtn = document.createElement('button');
@@ -943,21 +1012,20 @@ function buildCommentRow(c) {
     actions.appendChild(dislikeBtn);
     actions.appendChild(replyBtn);
 
-    // صندوق كتابة الرد (مخفي افتراضيًا)
     const replyBox = document.createElement('div');
     replyBox.className = 'reply-box';
     replyBox.style.display = 'none';
     const replyInput = document.createElement('input');
     replyInput.type = 'text';
     replyInput.maxLength = 300;
-    replyInput.placeholder = `الرد على ${c.name || 'cCraft Space User'}...`;
+    replyInput.placeholder = `الرد على ${c.author_name || 'cCraft Space User'}...`;
     const replySend = document.createElement('button');
     replySend.textContent = 'إرسال';
     replyBox.appendChild(replyInput);
     replyBox.appendChild(replySend);
 
     replyBtn.onclick = () => {
-        if (!currentUser) { alert('يجب تسجيل الدخول للرد'); location.href = 'login.html'; return; }
+        if (!currentUserRow) { alert('يجب تسجيل الدخول للرد'); location.href = 'login.html'; return; }
         replyBox.style.display = replyBox.style.display === 'none' ? 'flex' : 'none';
         if (replyBox.style.display === 'flex') replyInput.focus();
     };
@@ -967,15 +1035,20 @@ function buildCommentRow(c) {
         if (!text) return;
         if (text.length > 300) { alert('الرد طويل جدًا (الحد الأقصى 300 حرف)'); return; }
         replySend.disabled = true;
-        const replierName = await getMyDisplayName();
-        const replyData = { name: replierName, uid: currentUser.uid, text, timestamp: Date.now() };
+        const replierName = getMyDisplayName();
+        const replyData = {
+            script_id: scriptId,
+            parent_comment_id: c.id,
+            user_id: currentUserRow.id,
+            author_name: replierName,
+            author_avatar: currentUserRow.photo_url || null,
+            text,
+        };
         try {
-            await push(ref(db, `scripts/${scriptId}/comments/${c.key}/replies`), replyData);
-            // 🔔 إشعار لصاحب التعليق الأصلي بالرد (مش لنفس الشخص لو بيرد على نفسه)
-            notifyUser(c.uid, 'reply', `↩️ ${replierName} ردّ على تعليقك في سكربت: ${scriptTitleForNotif}`);
-            c.replies = c.replies || {};
-            const localKey = `local_${Date.now()}`;
-            c.replies[localKey] = replyData;
+            const { data: inserted, error } = await supabase.from('comments').insert(replyData).select().maybeSingle();
+            if (error) throw error;
+            notifyUser(c.user_id, 'reply', `↩️ ${replierName} ردّ على تعليقك في سكربت: ${scriptTitleForNotif}`);
+            (repliesByParent[c.id] ||= []).push(inserted);
             replyInput.value = '';
             replyBox.style.display = 'none';
             renderComments();
@@ -993,15 +1066,13 @@ function buildCommentRow(c) {
     main.appendChild(actions);
     main.appendChild(replyBox);
 
-    // عرض الردود
-    if (c.replies) {
+    const replies = repliesByParent[c.id];
+    if (replies && replies.length) {
         const repliesWrap = document.createElement('div');
         repliesWrap.className = 'replies-list';
-        Object.entries(c.replies)
-            .sort((a,b) => (a[1].timestamp||0) - (b[1].timestamp||0))
-            .forEach(([rkey, r]) => {
-                repliesWrap.appendChild(buildReplyRow(c, rkey, r));
-            });
+        [...replies]
+            .sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
+            .forEach(r => repliesWrap.appendChild(buildReplyRow(c, r)));
         main.appendChild(repliesWrap);
     }
 
@@ -1009,13 +1080,13 @@ function buildCommentRow(c) {
     return row;
 }
 
-function buildReplyRow(parentComment, rkey, r) {
-    const canDelete = currentUser && r.uid === currentUser.uid;
+function buildReplyRow(parentComment, r) {
+    const canDelete = currentUserRow && r.user_id === currentUserRow.id;
 
     const row = document.createElement('div');
     row.className = 'reply-row';
 
-    const pic = buildAvatarEl(r.uid, r.name, r.photo, 'reply-pic');
+    const pic = buildAvatarEl(r.user_id, r.author_name, r.author_avatar, 'reply-pic');
     row.appendChild(pic);
 
     const main = document.createElement('div');
@@ -1026,24 +1097,24 @@ function buildReplyRow(parentComment, rkey, r) {
 
     const userEl = document.createElement('span');
     userEl.className = 'cmt-user';
-    userEl.textContent = r.name || 'cCraft Space User';
-    userEl.onclick = () => { if (r.uid) location.href = `profile.html?uid=${r.uid}`; };
+    userEl.textContent = r.author_name || 'cCraft Space User';
+    userEl.onclick = () => { if (r.user_id) location.href = `profile.html?uid=${r.user_id}`; };
     head.appendChild(userEl);
 
     const whenEl = document.createElement('span');
     whenEl.className = 'cmt-when';
-    whenEl.textContent = r.timestamp ? timeAgoAr(r.timestamp) : '';
+    whenEl.textContent = r.created_at ? timeAgoAr(r.created_at) : '';
     head.appendChild(whenEl);
 
-    if (canDelete && !rkey.startsWith('local_')) {
+    if (canDelete) {
         const delBtn = document.createElement('button');
         delBtn.className = 'cmt-del';
         delBtn.textContent = '🗑️ حذف';
         delBtn.onclick = async e => {
             e.stopPropagation();
             if (!confirm('متأكد إنك عايز تحذف ردك؟')) return;
-            await remove(ref(db, `scripts/${scriptId}/comments/${parentComment.key}/replies/${rkey}`));
-            delete parentComment.replies[rkey];
+            await supabase.from('comments').delete().eq('id', r.id);
+            repliesByParent[parentComment.id] = (repliesByParent[parentComment.id]||[]).filter(x => x.id !== r.id);
             renderComments();
         };
         head.appendChild(delBtn);
@@ -1072,16 +1143,13 @@ commentInputEl.addEventListener('input', () => {
     commentCharCountEl.innerText = commentInputEl.value.length;
 });
 
-// 🖼️ صورة المستخدم في صندوق كتابة التعليق نفسه — بتتجدد لايف مع الكاش المشترك
-async function refreshCommentBoxAvatar() {
-    if (!currentUser) { cwAvatarEl.innerHTML = ''; cwAvatarEl.textContent = '؟'; return; }
-    delete avatarCache[currentUser.uid]; // نجبر تحديث الكاش عشان لو المستخدم غيّر صورته لسه
-    const myName = await getMyDisplayName();
-    await applyAvatar(cwAvatarEl, currentUser.uid, myName);
+function refreshCommentBoxAvatar() {
+    if (!currentUserRow) { cwAvatarEl.innerHTML = ''; cwAvatarEl.textContent = '؟'; return; }
+    applyAvatar(cwAvatarEl, currentUserRow.photo_url, getMyDisplayName());
 }
 
 document.getElementById('submitComment').addEventListener('click', async () => {
-    if (!currentUser) { alert("يجب تسجيل الدخول للتعليق"); location.href = "login.html"; return; }
+    if (!currentUserRow) { alert("يجب تسجيل الدخول للتعليق"); location.href = "login.html"; return; }
 
     const inp  = commentInputEl;
     const text = inp.value.trim();
@@ -1092,23 +1160,23 @@ document.getElementById('submitComment').addEventListener('click', async () => {
     btn.disabled = true;
     btn.innerText = '⏳';
 
-    const commenterName = await getMyDisplayName();
+    const commenterName = getMyDisplayName();
 
-    // ✅ التصميم الجديد بيجيب صورة المعلّق لايف وقت العرض (applyAvatar) مش من الفيلد المخزّن،
-    // فمفيش داعي نحفظ نسخة تجمّدت من الصورة مع كل تعليق — ده اللي كان بيسبب اختفاءها أحيانًا.
     const commentData = {
-        name:      commenterName,
-        uid:       currentUser.uid,
+        script_id: scriptId,
+        parent_comment_id: null,
+        user_id: currentUserRow.id,
+        author_name: commenterName,
+        author_avatar: currentUserRow.photo_url || null,
         text,
-        timestamp: Date.now(),
-        likes: 0,
-        dislikes: 0,
+        likes_count: 0,
+        dislikes_count: 0,
     };
 
     try {
-        await push(ref(db, `scripts/${scriptId}/comments`), commentData);
-        // 🔔 إشعار لصاحب السكربت بالتعليق الجديد
-        notifyAuthor('comment', `💬 ${commenterName} علّق على سكربتك: ${scriptTitleForNotif}`);
+        const { error } = await supabase.from('comments').insert(commentData);
+        if (error) throw error;
+        notifyUser(scriptUploaderId, 'comment', `💬 ${commenterName} علّق على سكربتك: ${scriptTitleForNotif}`);
         inp.value = '';
         commentCharCountEl.innerText = '0';
     } catch (e) {
@@ -1123,7 +1191,6 @@ commentInputEl.addEventListener('keypress', e => {
     if (e.key === 'Enter') document.getElementById('submitComment').click();
 });
 
-// ↕️ فرز التعليقات
 const sortBtn  = document.getElementById('sortBtn');
 const sortMenu = document.getElementById('sortMenu');
 const sortLabel = document.getElementById('sortLabel');
@@ -1163,7 +1230,7 @@ function copyCode() {
 
 document.getElementById('copyBtn').addEventListener('click',    copyCode);
 document.getElementById('copyInline').addEventListener('click', copyCode);
-document.getElementById('rawBtn').addEventListener('click',     () => { if (!currentUser) { alert("يجب تسجيل الدخول"); location.href="login.html"; return; } location.href = `raw.html?id=${scriptId}`; });
+document.getElementById('rawBtn').addEventListener('click',     () => { if (!currentUserRow) { alert("يجب تسجيل الدخول"); location.href="login.html"; return; } location.href = `raw.html?id=${scriptId}`; });
 document.getElementById('reportBtn').addEventListener('click',  () => location.href = `report.html?id=${scriptId}`);
 </script>
 </body>
