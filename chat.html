@@ -1169,21 +1169,13 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
 
 
 <script type="module">
-import { initializeApp, getApps, getApp }   from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, update, remove, get, set, onValue, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { get, getApp, getApps, getAuth, getDatabase, initializeApp, onAuthStateChanged, onChildAdded, onValue, push, ref, remove, serverTimestamp, set, update } from "./supabase-config.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-    authDomain: "ccraft-space-scripts.firebaseapp.com",
-    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-    projectId: "ccraft-space-scripts",
-    storageBucket: "ccraft-space-scripts.firebasestorage.app",
-    messagingSenderId: "816078027492",
-    appId: "1:816078027492:web:6472cce474078fd4d90af1",
-    measurementId: "G-MHDM7YYYBN"
-};
+
+
+
+
+
 
 const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db   = getDatabase(app);
