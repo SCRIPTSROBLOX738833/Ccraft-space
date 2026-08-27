@@ -714,28 +714,83 @@ function toggleCodePreview(btn) {
 <!-- بيانات ثابتة مولّدة تلقائيًا (كل السكربتات) — بتتحمّل فورًا قبل Firebase، لصالح السيو والزوار من غير جافاسكريبت كامل -->
 <script src="scripts-data.js"></script>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { guardAgainstBanned } from "./auth-guard.js";
+import { supabase } from "./supabase-config.js";
 
-const firebaseConfig = {
-  apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-  authDomain:"ccraft-space-scripts.firebaseapp.com",
-  databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-  projectId:"ccraft-space-scripts",
-  storageBucket:"ccraft-space-scripts.firebasestorage.app",
-  messagingSenderId:"816078027492",
-  appId:"1:816078027492:web:6472cce474078fd4d90af1",
-  measurementId:"G-MHDM7YYYBN"
+// ============================================================
+// طبقة تجريد: محاكاة Firebase API باستخدام Supabase
+// ============================================================
+const SUPABASE_URL = 'https://nthqrfsdshsreqdoksyv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_kHd5Y4bBnUDJxCFV-aKg-Q_T9XRJckN';
+const SB_HEADERS = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
 };
 
-const app = initializeApp(firebaseConfig);
-guardAgainstBanned(app);
-const db  = getDatabase(app);
-const auth = getAuth(app);
+// دوال مساعدة لـ Supabase تحاكي Firebase
+const db = {
+    async getScripts() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/scripts?select=*&order=timestamp.desc`, { headers: SB_HEADERS });
+            if (!res.ok) return {};
+            const rows = await res.json();
+            const obj = {};
+            rows.forEach(r => { obj[r.id] = r; });
+            return obj;
+        } catch { return {}; }
+    },
+    async getField(table, id, field) {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}&select=${field}`, { headers: SB_HEADERS });
+            if (!res.ok) return null;
+            const rows = await res.json();
+            return rows.length ? rows[0][field] : null;
+        } catch { return null; }
+    },
+    async setField(table, id, field, value) {
+        try {
+            await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
+                method: 'PATCH',
+                headers: SB_HEADERS,
+                body: JSON.stringify({ [field]: value })
+            });
+        } catch { /* تجاهل */ }
+    },
+    async getUnsafeNames() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/unsafe_scripts?select=original_name`, { headers: SB_HEADERS });
+            if (!res.ok) return [];
+            const rows = await res.json();
+            return rows.map(r => r.original_name);
+        } catch { return []; }
+    },
+    async getUserName(uid) {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${encodeURIComponent(uid)}&select=username`, { headers: SB_HEADERS });
+            if (!res.ok) return null;
+            const rows = await res.json();
+            return rows.length ? rows[0].username : null;
+        } catch { return null; }
+    },
+    async pushNotification(authorUid, data) {
+        try {
+            const id = 'n_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7);
+            await fetch(`${SUPABASE_URL}/rest/v1/notifications`, {
+                method: 'POST',
+                headers: SB_HEADERS,
+                body: JSON.stringify({ id, user_id: authorUid, ...data })
+            });
+        } catch { /* تجاهل */ }
+    }
+};
+
+// مستخدم حالي (بسيط بدون Firebase Auth)
 let currentUser = null;
-onAuthStateChanged(auth, user => { currentUser = user; });
+try {
+    const savedUser = localStorage.getItem('ccraft_user');
+    if (savedUser) currentUser = JSON.parse(savedUser);
+} catch { currentUser = null; }
 
 // عنوان الباك إند بتاع Nova AI — نفس السيرفر المستخدم في nova.html
 const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
@@ -786,14 +841,10 @@ function ic(name, size=14, cls='') {
 
 document.getElementById('aibIcon').innerHTML = ic('robot', 15);
 
-// 🔔 إرسال إشعار لصاحب السكربت (لايك) — ما بيبعتش لنفسه، ومحتاج المستخدم يكون مسجل دخول عشان نعرف اسمه
+// 🔔 إرسال إشعار لصاحب السكربت (لايك) — ما بيبعتش لنفسه
 function notifyAuthor(authorUid, text) {
     if (!authorUid || !currentUser || authorUid === currentUser.uid) return;
-    push(ref(db, `notifications/${authorUid}`), {
-        type: 'like',
-        text,
-        timestamp: Date.now(),
-    }).catch(() => {});
+    db.pushNotification(authorUid, { type: 'like', text, timestamp: Date.now() });
 }
 
 let allScripts   = [];
@@ -805,12 +856,12 @@ let activeTagFilter = null;
 
 const codeStore = new Map();
 
-function incrementViews(id) {
-    const vRef = ref(db, `scripts/${id}/views`);
-    get(vRef).then(snap => {
-        const newViews = (snap.exists() ? snap.val() : 0) + 1;
-        set(vRef, newViews);
-    }).catch(() => {});
+async function incrementViews(id) {
+    try {
+        const current = await db.getField('scripts', id, 'views');
+        const newViews = (current || 0) + 1;
+        await db.setField('scripts', id, 'views', newViews);
+    } catch { /* تجاهل */ }
 }
 
 let unsafeNameSet = new Set();
@@ -821,20 +872,15 @@ function normalizeScriptName(name) {
 
 async function loadUnsafeNames() {
     try {
-        const snap = await get(ref(db, 'unsafeScripts'));
-        unsafeNameSet = new Set();
-        if (snap.exists()) {
-            Object.values(snap.val()).forEach(u => {
-                if (u.originalName) unsafeNameSet.add(normalizeScriptName(u.originalName));
-            });
-        }
+        const names = await db.getUnsafeNames();
+        unsafeNameSet = new Set(names.map(n => normalizeScriptName(n)));
     } catch { unsafeNameSet = new Set(); }
 }
 
 async function loadScripts() {
     await loadUnsafeNames();
-    const snap = await get(ref(db,'scripts'));
-    const data = snap.exists() ? snap.val() : {};
+    // تحميل السكربتات من Supabase
+    const data = await db.getScripts();
 
     allScripts = Object.entries(data)
         .map(([id,s]) => ({id,...s}))
@@ -1126,10 +1172,10 @@ function renderVisibleCards() {
         likeBtn.onclick = async e => {
             e.stopPropagation();
             if (liked || likeBtn.disabled) return;
-            const likeRef = ref(db, `scripts/${s.id}/likes`);
-            const snap = await get(likeRef);
-            const newLikes = (snap.exists() ? snap.val() : 0) + 1;
-            await set(likeRef, newLikes);
+            // تحديث اللايكات في Supabase
+            const currentLikes = await db.getField('scripts', s.id, 'likes');
+            const newLikes = (currentLikes || 0) + 1;
+            await db.setField('scripts', s.id, 'likes', newLikes);
             likeBtn.querySelector('.lc').innerText = newLikes;
             likeBtn.classList.add('liked');
             likeBtn.querySelector('.like-icon').innerHTML = ic('heartFill', 14);
@@ -1173,19 +1219,24 @@ function renderVisibleCards() {
                 e.stopPropagation();
                 if (starsEl.dataset.rated === 'true') return;
                 const val = parseInt(star.dataset.v);
-                const rRef = ref(db, `scripts/${s.id}`);
-                const snap = await get(rRef);
-                let { rating: r=0, votes: v=0, ...rest } = snap.exists() ? snap.val() : {};
-                r += val; v++;
-                await set(rRef, { ...rest, rating: r, votes: v });
+                // تحديث التقييم في Supabase
+                const curRating = await db.getField('scripts', s.id, 'rating') || 0;
+                const curVotes  = await db.getField('scripts', s.id, 'votes')  || 0;
+                const newR = curRating + val;
+                const newV = curVotes + 1;
+                await fetch(`${SUPABASE_URL}/rest/v1/scripts?id=eq.${encodeURIComponent(s.id)}`, {
+                    method: 'PATCH',
+                    headers: SB_HEADERS,
+                    body: JSON.stringify({ rating: newR, votes: newV })
+                });
                 localStorage.setItem(`rated_${s.id}`, 'true');
                 starsEl.dataset.rated = 'true';
-                const newAvg = r/v;
+                const newAvg = newR / newV;
                 starsEl.querySelectorAll('.sc-star').forEach((st,idx) => {
                     st.classList.toggle('filled', idx+1 <= Math.round(newAvg));
                     if (idx+1 <= val) { st.classList.add('just-rated'); setTimeout(()=>st.classList.remove('just-rated'), 450); }
                 });
-                starsEl.querySelector('.sc-avg').innerHTML = `<strong>${newAvg.toFixed(1)}</strong> (${v})`;
+                starsEl.querySelector('.sc-avg').innerHTML = `<strong>${newAvg.toFixed(1)}</strong> (${newV})`;
             });
         });
 
@@ -1650,7 +1701,7 @@ function updateURL(q) {
     history.replaceState(null,'',url);
 }
 
-// ✅ رسم أولي فوري من البيانات الثابتة (لو موجودة) قبل ما Firebase يرد — بيضمن إن الزائر وبوتات الزحف يشوفوا محتوى حقيقي من أول لحظة
+// ✅ رسم أولي فوري من البيانات الثابتة (لو موجودة) قبل ما Supabase يرد — بيضمن إن الزائر وبوتات الزحف يشوفوا محتوى حقيقي من أول لحظة
 function renderStaticFallback() {
     try {
         const data = window.__SCRIPTS_DATA__;
@@ -1661,7 +1712,7 @@ function renderStaticFallback() {
         document.getElementById('scriptCount').innerText = allScripts.length;
         renderAllScriptsIndex();
         renderScripts(getQuery());
-    } catch (e) { /* أي خطأ هنا لا يوقف تحميل الصفحة — Firebase هيكمل عادي بعد كده */ }
+    } catch (e) { /* أي خطأ هنا لا يوقف تحميل الصفحة — Supabase هيكمل عادي بعد كده */ }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
