@@ -914,63 +914,9 @@ header { display: none; }
   </div>
 </div>
 
-<script type="module">
-// ============================================================
-// Supabase بدل Firebase — صفحة index.html
-// ============================================================
-const SUPABASE_URL = 'https://nthqrfsdshsreqdoksyv.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_kHd5Y4bBnUDJxCFV-aKg-Q_T9XRJckN';
-const SB_HEADERS = {
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
-    'Content-Type': 'application/json'
-};
 
-// دوال مساعدة محلية لاستعلام Supabase
-async function sbGet(table, params = '') {
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, { headers: SB_HEADERS });
-        if (!res.ok) return [];
-        return await res.json();
-    } catch { return []; }
-}
-
-async function sbGetField(table, id, field) {
-    try {
-        const rows = await sbGet(table, `id=eq.${encodeURIComponent(id)}&select=${field}`);
-        return rows.length ? rows[0][field] : null;
-    } catch { return null; }
-}
-
-async function sbPatch(table, id, data) {
-    try {
-        await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
-            method: 'PATCH',
-            headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
-            body: JSON.stringify(data)
-        });
-    } catch { /* تجاهل */ }
-}
-
-async function sbInsert(table, data) {
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
-            method: 'POST',
-            headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
-            body: JSON.stringify(data)
-        });
-        return res.ok;
-    } catch { return false; }
-}
-
-// مستخدم حالي من localStorage
-let currentUser = null;
-try {
-    const saved = localStorage.getItem('ccraft_user');
-    if (saved) currentUser = JSON.parse(saved);
-} catch { currentUser = null; }
-
-let notifUid = currentUser ? currentUser.uid : null;
+    <script type="module">
+import { supabase } from './supabase-config.js';
 
 (function(){
     const c = document.getElementById('stars');
@@ -981,6 +927,30 @@ let notifUid = currentUser ? currentUser.uid : null;
         c.appendChild(s);
     }
 })();
+
+// ============================================================
+// المستخدم الحالي — من Supabase Auth session الحقيقية، مش localStorage
+// ============================================================
+let currentUser = null; // { id (users.id / uuid), display_name, username, photo_url }
+let notifUid = null;
+
+async function initCurrentUser(){
+    try{
+        const { data: { user } } = await supabase.auth.getUser();
+        if(!user) return;
+        const { data, error } = await supabase
+            .from('users')
+            .select('id, display_name, username, photo_url')
+            .eq('auth_uid', user.id)
+            .maybeSingle();
+        if(!error && data){
+            currentUser = data;
+            notifUid = data.id;
+        }
+    }catch(err){
+        console.error('تعذر تحميل بيانات المستخدم الحالي:', err);
+    }
+}
 
 function animCount(id, target){
     const el = document.getElementById(id); if(!el) return;
@@ -1003,19 +973,34 @@ function todayKey(){
 }
 
 /* ─── زيارات اليوم: عدّاد صحيح بدون تكرار للتابات/الزيارات المتعددة من نفس الجهاز ─── */
-function trackVisitToday(){
+async function trackVisitToday(){
     const key = 'ccraft_visited_' + todayKey();
     if(localStorage.getItem(key)) return; // الجهاز ده اتحسب النهاردة قبل كده
     localStorage.setItem(key, '1');
-    runTransaction(ref(db, `dailyVisits/${todayKey()}`), cur => (cur || 0) + 1)
-        .catch(() => { localStorage.removeItem(key); }); // لو فشلت المعاملة، امسح العلامة عشان تتحاول تاني بعدين
+    try{
+        const { data: existing } = await supabase
+            .from('daily_visits')
+            .select('count')
+            .eq('visit_date', todayKey())
+            .maybeSingle();
+        const newCount = (existing?.count || 0) + 1;
+        const { error } = await supabase
+            .from('daily_visits')
+            .upsert({ visit_date: todayKey(), count: newCount }, { onConflict: 'visit_date' });
+        if(error) throw error;
+    }catch(err){
+        localStorage.removeItem(key); // فشلت، امسح العلامة عشان تتحاول تاني بعدين
+        console.error('تعذر تسجيل الزيارة:', err);
+    }
 }
 trackVisitToday();
 
 // تحميل عدد زيارات اليوم عند بدء التحميل
 (async () => {
-    const rows = await sbGet('daily_visits', `date=eq.${todayKey()}&select=count`);
-    animCount('ls-visitstoday', rows.length ? (rows[0].count || 0) : 0);
+    try{
+        const { data } = await supabase.from('daily_visits').select('count').eq('visit_date', todayKey()).maybeSingle();
+        animCount('ls-visitstoday', data?.count || 0);
+    }catch{ animCount('ls-visitstoday', 0); }
 })();
 
 /* ─── إحصائيات: كل قراءة منفصلة عن التانية عشان فشل قراءة واحدة (زي users
@@ -1024,18 +1009,19 @@ async function loadStats(){
     // السكربتات — عامة دايمًا، ومنها بتتغذى كل أقسام الصفحة الرئيسية
     let scripts = {};
     try{
-        const rows = await sbGet('scripts', 'select=*&order=timestamp.desc');
-        rows.forEach(r => { scripts[r.id] = r; });
+        const { data, error } = await supabase.from('scripts').select('*').order('created_at', { ascending:false });
+        if(error) throw error;
+        (data||[]).forEach(r => { scripts[r.id] = r; });
     }catch(err){
         console.error('تعذر تحميل السكربتات:', err);
     }
 
-    let likes = 0; Object.values(scripts).forEach(s => likes += s.likes||0);
+    let likes = 0; Object.values(scripts).forEach(s => likes += s.likes_count||0);
     animCount('ls-scripts', Object.keys(scripts).length);
     animCount('ls-likes',   likes);
 
     const todayTs = startOfTodayTs();
-    const newScriptsToday = Object.values(scripts).filter(s => (s.timestamp||0) >= todayTs).length;
+    const newScriptsToday = Object.values(scripts).filter(s => new Date(s.created_at||0).getTime() >= todayTs).length;
     animCount('ls-newscripts', newScriptsToday);
 
     // السكربتات مستقلة عن users، فتشتغل حتى لو users اترفضت
@@ -1046,15 +1032,13 @@ async function loadStats(){
     // المستخدمون — محمية (بس للأدمن)، فمحتاجة تتعامل بمفردها
     // ولو المستخدم الحالي مش أدمن هترجع Permission Denied وهنسيب العداد "—"
     try{
-        const userRows = await sbGet('users', 'select=id,created_at');
-        animCount('ls-users', userRows.length);
-        const newUsersToday = userRows.filter(u => {
-            const t = new Date(u.created_at||0).getTime();
-            return t >= todayTs;
-        }).length;
+        const { data: userRows, error } = await supabase.from('users').select('id, created_at');
+        if(error) throw error;
+        animCount('ls-users', (userRows||[]).length);
+        const newUsersToday = (userRows||[]).filter(u => new Date(u.created_at||0).getTime() >= todayTs).length;
         animCount('ls-newusers', newUsersToday);
     }catch(err){
-        // متوقع لغير الأدمن بعد تحديث صلاحيات users — مش خطأ حقيقي
+        // متوقع لغير الأدمن حسب RLS — مش خطأ حقيقي
         document.getElementById('ls-users').innerText = '—';
         document.getElementById('ls-newusers').innerText = '—';
     }
@@ -1062,12 +1046,13 @@ async function loadStats(){
 
 let _lastOnline = -1;
 
-// تحميل عدد المتصلين من Supabase (presence جدول)
+// تحميل عدد المتصلين من Supabase (جدول presence)
 async function loadOnlineCount(){
     try {
         const since = Date.now() - 60000;
-        const rows = await sbGet('presence', `ts=gte.${since}&select=id`);
-        const total = Math.max(rows.length, 1);
+        const { data, error } = await supabase.from('presence').select('id').gte('ts', since);
+        if(error) throw error;
+        const total = Math.max((data||[]).length, 1);
         if (total !== _lastOnline) {
             _lastOnline = total;
             animCount('ls-online', total);
@@ -1081,12 +1066,15 @@ setInterval(loadOnlineCount, 30000);
 
 function loadFeaturedScripts(scripts){
     const c = document.getElementById('featScripts'); c.innerHTML='';
-    const latest = Object.entries(scripts).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0)).slice(0,6);
+    const latest = Object.entries(scripts)
+        .sort((a,b)=> new Date(b[1].created_at||0) - new Date(a[1].created_at||0))
+        .slice(0,6);
     if(!latest.length){ c.innerHTML='<div style="color:var(--lo);text-align:center;padding:28px;grid-column:1/-1">لا توجد سكربتات بعد</div>'; return; }
     latest.forEach(([id,s])=>{
+        const map = s.extra?.map || null;
         const card = document.createElement('div'); card.className='feat-card';
         card.onclick = () => location.href = `script.html?id=${id}`;
-        card.innerHTML = `<div class="fc-title">${s.title||'بدون عنوان'}</div><div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>${s.map?`<span class="fc-map"><i class="fa-solid fa-map-location-dot"></i> ${s.map}</span>`:''}<span class="fc-stat"><i class="fa-solid fa-thumbs-up"></i> ${s.likes||0}</span><span class="fc-stat"><i class="fa-solid fa-star"></i> ${s.votes?(s.rating/s.votes).toFixed(1):'—'}</span></div>`;
+        card.innerHTML = `<div class="fc-title">${s.title||'بدون عنوان'}</div><div class="fc-meta"><span class="fc-cat">${s.category||'—'}</span>${map?`<span class="fc-map"><i class="fa-solid fa-map-location-dot"></i> ${map}</span>`:''}<span class="fc-stat"><i class="fa-solid fa-thumbs-up"></i> ${s.likes_count||0}</span><span class="fc-stat"><i class="fa-solid fa-star"></i> ${s.votes?(s.rating/s.votes).toFixed(1):'—'}</span></div>`;
         c.appendChild(card);
     });
 }
@@ -1097,14 +1085,20 @@ function loadFeaturedScripts(scripts){
 async function loadFeaturedToday(scripts){
     const box = document.getElementById('featuredToday'); if(!box) return;
     try{
-        const dsRows = await sbGet('daily_stats', `date=eq.${todayKey()}&select=script_id,views,likes&order=views.desc`);
+        const { data: dsRows, error } = await supabase
+            .from('daily_stats')
+            .select('script_id, views, likes')
+            .eq('date', todayKey())
+            .order('views', { ascending:false });
+        if(error) throw error;
+
         let bestId = null, bestScore = -1, bestViews = 0, bestLikes = 0;
-        dsRows.forEach(d => {
+        (dsRows||[]).forEach(d => {
             const views = d.views||0, lk = d.likes||0;
             const score = views + lk*3;
             if(score > bestScore){ bestScore = score; bestId = d.script_id; bestViews = views; bestLikes = lk; }
         });
-        
+
         if(!bestId || !scripts[bestId]){
             box.style.cursor = 'default';
             box.onclick = null;
@@ -1123,15 +1117,15 @@ async function loadFeaturedToday(scripts){
     }
 }
 
-/* ─── أفضل المستخدمين: بيتحسب من بيانات السكربتات نفسها (author, authorUid)
-   بدل ما يقرا users/ كامل — وبيقرا بس users/{uid}/photo المسموح بيها للعامة ─── */
+/* ─── أفضل المستخدمين: بيتحسب من بيانات السكربتات نفسها (uploader_id, author_name)
+   بدل ما يقرا users كامل — وبيقرا بس users.photo_url المسموح بيها للعامة ─── */
 async function loadTopUsers(scripts){
     const c = document.getElementById('topUsers'); if(!c) return; c.innerHTML='';
     const us = {};
     Object.entries(scripts).forEach(([,s])=>{
-        const uid = s.authorUid||s.authorEmail||s.author; if(!uid) return;
-        if(!us[uid]) us[uid]={likes:0,scripts:0,uid:s.authorUid,email:s.authorEmail,name:s.author};
-        us[uid].likes+=s.likes||0; us[uid].scripts+=1;
+        const uid = s.uploader_id; if(!uid) return;
+        if(!us[uid]) us[uid]={likes:0,scripts:0,uid,name:s.author_name};
+        us[uid].likes+=s.likes_count||0; us[uid].scripts+=1;
     });
     const sorted = Object.values(us).sort((a,b)=>b.likes-a.likes).slice(0,4);
     if(!sorted.length){ c.innerHTML='<div style="color:var(--lo);text-align:center;padding:24px;grid-column:1/-1">لا بيانات بعد</div>'; return; }
@@ -1141,10 +1135,9 @@ async function loadTopUsers(scripts){
         let av = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#00bcd4);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:0.85rem">${(u.name||'?').charAt(0).toUpperCase()}</div>`;
         if(uid){
             try{
-                // جلب صورة المستخدم من Supabase
-                const photoRows = await sbGet('users', `id=eq.${encodeURIComponent(uid)}&select=photo`);
-                if(photoRows.length && photoRows[0].photo){
-                    av = `<img src="${photoRows[0].photo}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block">`;
+                const { data: photoRow } = await supabase.from('users').select('photo_url').eq('id', uid).maybeSingle();
+                if(photoRow?.photo_url){
+                    av = `<img src="${photoRow.photo_url}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block">`;
                 }
             }catch{}
         }
@@ -1157,10 +1150,12 @@ async function loadTopUsers(scripts){
 
 async function loadAnnouncement(){
     try{
-        const rows = await sbGet('announcements', 'select=*&order=timestamp.desc&limit=1');
-        if(!rows.length) return;
-        const latest = rows[0];
-        if(Date.now()-(latest.timestamp||0)<7*24*3600*1000){
+        const { data, error } = await supabase.from('announcements').select('*').order('created_at', { ascending:false }).limit(1);
+        if(error) throw error;
+        if(!data?.length) return;
+        const latest = data[0];
+        const ts = new Date(latest.created_at).getTime();
+        if(Date.now()-ts < 7*24*3600*1000){
             document.getElementById('annText').innerText = latest.text;
             document.getElementById('annBanner').classList.add('show');
         }
@@ -1172,19 +1167,20 @@ async function loadAnnouncement(){
 async function loadUserPages(){
     try{
         const c = document.getElementById('userPagesGallery');
-        const rows = await sbGet('user_pages', 'select=*&order=updated_at.desc&limit=8');
-        
-        if(!rows.length){
+        const { data, error } = await supabase.from('user_pages').select('*').order('updated_at', { ascending:false }).limit(8);
+        if(error) throw error;
+
+        if(!data?.length){
             c.innerHTML='<div style="color:var(--lo);text-align:center;padding:22px;grid-column:1/-1;font-size:0.78rem">لا توجد صفحات — <a href="page-builder.html" style="color:var(--violet)">كن أول من ينشئ!</a></div>';
             return;
         }
-        
+
         c.innerHTML='';
         const TC={dark:'#8b5cf6',space:'#818cf8',ocean:'#00bcd4',sunset:'#f97316',forest:'#4ade80',neon:'#a78bfa'};
-        rows.forEach(p=>{
-            const uid = p.user_id || p.id;
+        data.forEach(p=>{
+            const uid = p.user_id;
             const accent = p.accent||TC[p.theme]||'#8b5cf6';
-            const name = (p.name||p.display_name||'مستخدم').replace(/[<>&"]/g,'');
+            const name = (p.display_name||'مستخدم').replace(/[<>&"]/g,'');
             const card = document.createElement('div'); card.className='page-card';
             card.style.setProperty('--acc', accent);
             card.style.borderColor = accent+'22';
@@ -1216,14 +1212,17 @@ const NOTIF_ICONS = { like:'<i class="fa-solid fa-thumbs-up"></i>', comment:'<i 
 async function loadNotifications(){
     const listEl = document.getElementById('notifList');
     try{
-        const fetches = [sbGet('announcements', 'select=*&order=timestamp.desc&limit=10')];
-        if(notifUid) fetches.push(sbGet('notifications', `user_id=eq.${encodeURIComponent(notifUid)}&select=*&order=timestamp.desc&limit=25`));
-        const [annRows, personalRows = []] = await Promise.all(fetches);
+        const annPromise = supabase.from('announcements').select('*').order('created_at', { ascending:false }).limit(10);
+        const personalPromise = notifUid
+            ? supabase.from('notifications').select('*').eq('user_id', notifUid).order('created_at', { ascending:false }).limit(25)
+            : Promise.resolve({ data: [] });
+
+        const [{ data: annRows = [] }, { data: personalRows = [] }] = await Promise.all([annPromise, personalPromise]);
 
         let items = [];
-        annRows.forEach(n => items.push({ type: 'announcement', text: n.text||'', timestamp: n.timestamp||0 }));
+        (annRows||[]).forEach(n => items.push({ type: 'announcement', text: n.text||'', timestamp: new Date(n.created_at||0).getTime() }));
         (personalRows||[]).forEach(n => items.push({
-            id: n.id, type: n.type||'like', text: n.text||'', timestamp: n.timestamp||0, scriptId: n.script_id||null
+            id: n.id, type: n.type||'like', text: n.text||'', timestamp: new Date(n.created_at||0).getTime(), scriptId: n.script_id||null
         }));
 
         if(!items.length){
@@ -1275,10 +1274,14 @@ document.addEventListener('click', e => {
     if(widget && !widget.contains(e.target)) document.getElementById('notifPanel').classList.remove('open');
 });
 
-loadStats();
-loadAnnouncement();
-loadUserPages();
-loadNotifications();
+// الترتيب مهم: لازم نجيب اليوزر الحقيقي الأول قبل ما نحمل الإشعارات الشخصية
+(async () => {
+    await initCurrentUser();
+    loadStats();
+    loadAnnouncement();
+    loadUserPages();
+    loadNotifications();
+})();
 
 (function(){
     const modal = document.getElementById('discordModal');
@@ -1295,85 +1298,9 @@ loadNotifications();
     document.getElementById('discordJoinBtn').addEventListener('click', closeModal);
     modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
 })();
-
 </script>
+    
+    
 
-<!-- Roblox account link logic -->
-<script>
-const RL_STORAGE_KEY = 'ccraftspace_roblox_link';
-
-function openRobloxLinkModal(){
-  document.getElementById('rlResult').innerText = '';
-  document.getElementById('rlUsername').value = '';
-  document.getElementById('robloxLinkModal').classList.add('open');
-}
-function closeRobloxLinkModal(){
-  document.getElementById('robloxLinkModal').classList.remove('open');
-}
-
-async function verifyRobloxLink(){
-  const username = document.getElementById('rlUsername').value.trim();
-  const resultDiv = document.getElementById('rlResult');
-  if(!username){ resultDiv.innerText = '<i class="fa-solid fa-triangle-exclamation"></i> اكتب اليوزرنيم الأول'; return; }
-
-  const btn = document.getElementById('rlVerifyBtn');
-  btn.disabled = true;
-  resultDiv.innerText = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الربط...';
-
-  try {
-    const res = await fetch('https://Anas9vmhh.pythonanywhere.com/lookup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username })
-    });
-    const data = await res.json();
-
-    if(data.success){
-      resultDiv.innerHTML = '<i class="fa-solid fa-circle-check"></i> ' + data.message;
-      const linkedData = { userId: data.userId, username: data.username, avatarUrl: data.avatarUrl };
-      localStorage.setItem(RL_STORAGE_KEY, JSON.stringify(linkedData));
-      showLinkedRoblox(linkedData);
-      setTimeout(closeRobloxLinkModal, 1000);
-    } else {
-      resultDiv.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> ' + data.message;
-    }
-  } catch(err){
-    resultDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> حصل خطأ في الاتصال بالسيرفر';
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-function showLinkedRoblox(linked){
-  const badge = document.getElementById('rlLinkedBadge');
-  const avatar = document.getElementById('rlLinkedAvatar');
-  const nameEl = document.getElementById('rlLinkedName');
-  const linkBtn = document.getElementById('linkRobloxBtn');
-
-  if(linked.userId) avatar.src = `https://Anas9vmhh.pythonanywhere.com/avatar/${linked.userId}`;
-  nameEl.innerText = linked.username;
-  badge.style.display = 'inline-flex';
-  if(linkBtn) linkBtn.style.display = 'none';
-}
-
-function unlinkRoblox(e){
-  if(e) e.stopPropagation();
-  localStorage.removeItem(RL_STORAGE_KEY);
-  document.getElementById('rlLinkedBadge').style.display = 'none';
-  const linkBtn = document.getElementById('linkRobloxBtn');
-  if(linkBtn) linkBtn.style.display = 'inline-flex';
-}
-
-// تحميل حالة الربط المحفوظة عند فتح الصفحة
-(function(){
-  const saved = localStorage.getItem(RL_STORAGE_KEY);
-  if(saved){
-    try { showLinkedRoblox(JSON.parse(saved)); } catch(e){}
-  }
-})();
-</script>
-
-<!-- تسجيل هذه الصفحة ضمن المتصلين الآن فعليًا -->
-<script type="module" src="presence.js"></script>
 </body>
 </html>
