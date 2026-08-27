@@ -318,28 +318,14 @@
 
 
 <script type="module">
-  import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getDatabase, ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+  import { supabase } from "./supabase-config.js";
   import { guardAgainstBanned } from "./auth-guard.js";
 
-  const firebaseConfig = {
-    apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-    authDomain:"ccraft-space-scripts.firebaseapp.com",
-    databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-    projectId:"ccraft-space-scripts",
-    storageBucket:"ccraft-space-scripts.firebasestorage.app",
-    messagingSenderId:"816078027492",
-    appId:"1:816078027492:web:6472cce474078fd4d90af1",
-    measurementId:"G-MHDM7YYYBN"
-  };
+  // ⚠️ تأكد إن توقيع الدالة ده مطابق للنسخة الحالية من auth-guard.js
+  guardAgainstBanned(supabase);
 
-  const app  = initializeApp(firebaseConfig);
-  guardAgainstBanned(app);
-  const db   = getDatabase(app);
-  const auth = getAuth(app);
-
-  let currentUser  = null;
+  let currentUser  = null; // Supabase auth user (من supabase.auth.getUser())
+  let dbUser       = null; // الصف بتاعه في جدول users (فيه id الداخلي، username، extra...)
   let myUsername   = 'cCraft Space User'; // ✅ اسم المستخدم الحقيقي (مش الإيميل) — بيتحمّل من البروفايل
   let selectedMap  = null;
   let imageBase64  = null;   // الصورة المضغوطة جاهزة للحفظ
@@ -351,6 +337,7 @@
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
   const TARGET_WIDTH   = 800;  // العرض المستهدف بعد الضغط
   const JPEG_QUALITY   = 0.82; // جودة الضغط
+  const PUBLISH_COOLDOWN_MS = 60 * 1000; // ⏳ دقيقة بين كل نشر والتاني (app-level، مش أمان كامل)
 
   const ALL_BADGES = [
     { id:'first_script',   icon:'🚀', name:'الانطلاقة',   desc:'نشر أول سكربت',      check:s=>s.scripts>=1    },
@@ -365,49 +352,59 @@
     { id:'veteran',        icon:'🎖️', name:'مخضرم',       desc:'عضو أكثر من 30 يوم', check:s=>s.daysOld>=30     },
   ];
 
-  /* ---- Auth ---- */
-  onAuthStateChanged(auth, async user => {
-    if (user) {
-        currentUser = user;
+  /* ---- Auth: Supabase بدل Firebase ---- */
+  function showLoggedOut(){
+    document.getElementById('authNotice').style.display  = 'block';
+    document.getElementById('publishMain').style.display = 'none';
+    document.getElementById('userInfo').style.display    = 'none';
+  }
 
-        // ✅ اسم المستخدم الحقيقي بيتجاب من البروفايل، مش من الإيميل خالص
-        let hasUsername = false;
-        try {
-            const nameSnap = await get(ref(db, `users/${user.uid}/username`));
-            if (nameSnap.exists() && nameSnap.val()) {
-                myUsername = nameSnap.val();
-                hasUsername = true;
-            }
-        } catch (e) { /* لو التحقق فشل، هنكمل بالاسم الافتراضي */ }
+  async function initAuth(){
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { showLoggedOut(); return; }
 
-        // 🚧 لسه ما اختارش اسم مستخدم — لازم يختار الأول قبل ما ينشر أي حاجة باسمه
-        if (!hasUsername) {
-            location.href = 'profile.html';
-            return;
-        }
+    currentUser = user;
 
-        document.getElementById('ubAvatar').innerText = myUsername.charAt(0).toUpperCase();
-        document.getElementById('ubName').innerText   = myUsername;
-        document.getElementById('userInfo').style.display    = 'block';
-        document.getElementById('publishMain').style.display = 'block';
-        document.getElementById('authNotice').style.display  = 'none';
+    // ✅ اسم المستخدم الحقيقي وباقي بيانات الصف بتاعه في جدول users
+    const { data: row, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('auth_uid', user.id)
+        .maybeSingle();
 
-        // 🎖️ تحقق هل الحساب موثّق دائم عشان السكربتات الجديدة تتوثق أوتوماتيك
-        try {
-            const uSnap = await get(ref(db, `users/${user.uid}/verified`));
-            isAutoVerified = uSnap.exists() && uSnap.val() === true;
-            if (isAutoVerified) {
-                const b = document.getElementById('ubBadge');
-                b.textContent = '🎖️ موثّق دائم';
-                b.classList.add('auto-verify');
-            }
-        } catch (e) { /* تجاهل — مش حرج */ }
-    } else {
-        document.getElementById('authNotice').style.display  = 'block';
-        document.getElementById('publishMain').style.display = 'none';
-        document.getElementById('userInfo').style.display    = 'none';
+    if (error || !row) {
+        // الحساب موجود في Supabase Auth بس مفيش صف مرتبط في جدول users لسه
+        showLoggedOut();
+        return;
     }
-  });
+
+    dbUser = row;
+
+    // 🚧 لسه ما اختارش اسم مستخدم — لازم يختار الأول قبل ما ينشر أي حاجة باسمه
+    if (!row.username) {
+        location.href = 'profile.html';
+        return;
+    }
+
+    myUsername = row.username;
+
+    document.getElementById('ubAvatar').innerText = myUsername.charAt(0).toUpperCase();
+    document.getElementById('ubName').innerText   = myUsername;
+    document.getElementById('userInfo').style.display    = 'block';
+    document.getElementById('publishMain').style.display = 'block';
+    document.getElementById('authNotice').style.display  = 'none';
+
+    // 🎖️ توثيق دائم — متخزن جوه extra.verified لأن عمود مخصص مش موجود في users
+    isAutoVerified = !!(row.extra && row.extra.verified === true);
+    if (isAutoVerified) {
+        const b = document.getElementById('ubBadge');
+        b.textContent = '🎖️ موثّق دائم';
+        b.classList.add('auto-verify');
+    }
+  }
+
+  initAuth();
+  supabase.auth.onAuthStateChange(() => { initAuth(); });
 
   /* ============================================================
      🔑 هل يحتاج مفتاح؟ (Toggle)
@@ -643,7 +640,7 @@
      ============================================================ */
 
   document.getElementById('publishBtn').addEventListener('click', async () => {
-    if (!currentUser) { location.href = 'login.html'; return; }
+    if (!currentUser || !dbUser) { location.href = 'login.html'; return; }
 
     const title       = document.getElementById('scriptTitle').value.trim();
     const code        = document.getElementById('scriptCode').value.trim();
@@ -682,44 +679,58 @@
         return;
     }
 
+    // ⏳ كولداون النشر — بديل app-level لقاعدة Firebase Rules القديمة
+    // ملاحظة: ده مش أمان حقيقي (اليوزر ممكن يتلاعب بيه من console)، لو محتاج تطبيق فعلي
+    // غير قابل للتلاعب لازم يتحول لـ trigger/policy حقيقي في Postgres
+    const lastPublished = dbUser.extra && dbUser.extra.lastPublished ? dbUser.extra.lastPublished : 0;
+    if (Date.now() - lastPublished < PUBLISH_COOLDOWN_MS) {
+        alert('⏳ لازم تستنى دقيقة على الأقل بين كل نشر سكربت والتاني. حاول تاني بعد شوية.');
+        btn.disabled  = false;
+        btn.innerText = '📤 نشر السكربت';
+        return;
+    }
+
     btn.innerText = '⏳ جارٍ النشر...';
 
-    const newRef   = push(ref(db, 'scripts'));
+    // 🗺️/🔑 الماب والمفتاح النصي مفيهمش عمود مخصص في scripts، فبيتخزنوا جوه extra
+    const extraData = {};
+    if (selectedMap) extraData.map = selectedMap;
+    if (key) extraData.key = key;
 
     const scriptData = {
         title,
         code,
         category,
         description,
-        map:         selectedMap || null,
-        author:      myUsername,     // ✅ اسم المستخدم الحقيقي — مش بادئة الإيميل ومفيش إيميل مخزّن هنا خالص
-        authorUid:   currentUser.uid,
-        timestamp:   Date.now(),
-        rating:      0,
-        votes:       0,
-        likes:       0,
-        hasKey,                                        // ✅ فلاج واضح للمفتاح
+        uploader_id:  dbUser.id,
+        author_name:  myUsername,     // ✅ اسم المستخدم الحقيقي — مش بادئة الإيميل ومفيش إيميل مخزّن هنا خالص
+        rating:       0,
+        votes:        0,
+        likes_count:  0,
+        has_key:      hasKey,                          // ✅ فلاج واضح للمفتاح
+        tags:         scriptTags.length ? scriptTags : null,
+        image_base64: imageBase64 || null,
+        extra:        Object.keys(extraData).length ? extraData : null,
     };
 
     // 🎖️ لو صاحب الحساب موثّق دائم من الأدمن — وثّق السكربت من ساعة النشر
     if (isAutoVerified) {
-        scriptData.verified = true;
-        scriptData.verifiedAt = Date.now();
+        scriptData.is_verified = true;
+        scriptData.verified_at = new Date().toISOString();
     }
 
-    // ✅ ضيف المفتاح لو المستخدم كتب حاجة (اختياري تمامًا)
-    if (key) scriptData.key = key;
-
-    // ✅ ضيف التاجات لو موجودة
-    if (scriptTags.length) scriptData.tags = [...scriptTags];
-
-    // ضيف الصورة لو موجودة
-    if (imageBase64) scriptData.image = imageBase64;
-
     try {
-        await set(newRef, scriptData);
-        // 🕒 سجّل وقت النشر ده عشان قاعدة الكولداون في الـ Database Rules تشتغل فعليًا
-        await update(ref(db, `users/${currentUser.uid}`), { lastPublished: Date.now() });
+        const { error: insertErr } = await supabase.from('scripts').insert(scriptData);
+        if (insertErr) throw insertErr;
+
+        // 🕒 سجّل وقت النشر ده عشان الكولداون
+        const newExtra = { ...(dbUser.extra || {}), lastPublished: Date.now() };
+        const { error: updateErr } = await supabase
+            .from('users')
+            .update({ extra: newExtra })
+            .eq('id', dbUser.id);
+        if (!updateErr) dbUser.extra = newExtra;
+
         await checkAndAwardBadges();
 
         document.getElementById('publishForm').reset();
@@ -732,11 +743,8 @@
         noKeyBtn.click();
         renderTags();
     } catch (err) {
-        if (err && err.code === 'PERMISSION_DENIED') {
-            alert('⏳ لازم تستنى دقيقة على الأقل بين كل نشر سكربت والتاني. حاول تاني بعد شوية.');
-        } else {
-            alert('❌ حصل خطأ أثناء النشر، حاول تاني.');
-        }
+        console.error(err);
+        alert('❌ حصل خطأ أثناء النشر، حاول تاني.');
     } finally {
         btn.disabled  = false;
         btn.innerText = '📤 نشر السكربت';
@@ -748,17 +756,17 @@
      ============================================================ */
 
   async function checkAndAwardBadges() {
-    const uid      = currentUser.uid;
-    const scriptsSnap = await get(ref(db, 'scripts'));
-    const all  = scriptsSnap.exists() ? scriptsSnap.val() : {};
-    const mine = Object.values(all).filter(s =>
-        s.authorUid === uid || s.author === myUsername
-    );
+    const { data: mine, error } = await supabase
+        .from('scripts')
+        .select('likes_count, rating, votes, category')
+        .eq('uploader_id', dbUser.id);
+
+    if (error || !mine) return;
 
     let totalLikes=0, totalRating=0, totalVotes=0;
     const cats = new Set();
     mine.forEach(s => {
-        totalLikes  += s.likes  || 0;
+        totalLikes  += s.likes_count || 0;
         totalRating += s.rating || 0;
         totalVotes  += s.votes  || 0;
         if (s.category) cats.add(s.category);
@@ -769,21 +777,29 @@
         totalLikes,
         avgRating:  totalVotes > 0 ? totalRating/totalVotes : 0,
         categories: cats.size,
-        daysOld:    (Date.now()-parseInt(currentUser.metadata.createdAt))/86400000,
+        daysOld:    (Date.now() - new Date(dbUser.created_at).getTime()) / 86400000,
     };
 
-    const savedSnap = await get(ref(db, `users/${uid}/badges`));
-    const saved     = savedSnap.exists() ? savedSnap.val() : {};
+    // 🎖️ البادجات كمان متخزنة جوه extra.badges — مفيش عمود مخصص ليها في users
+    const saved = (dbUser.extra && dbUser.extra.badges) ? dbUser.extra.badges : {};
+    const newBadges = { ...saved };
     const newlyEarned = [];
 
     for (const badge of ALL_BADGES) {
         if (badge.check(stats) && !saved[badge.id]) {
-            await set(ref(db, `users/${uid}/badges/${badge.id}`), { earnedAt: Date.now() });
+            newBadges[badge.id] = { earnedAt: Date.now() };
             newlyEarned.push(badge);
         }
     }
 
-    newlyEarned.length > 0 ? showNewBadges(newlyEarned) : showSuccessOnly();
+    if (newlyEarned.length > 0) {
+        const newExtra = { ...(dbUser.extra || {}), badges: newBadges };
+        const { error: updErr } = await supabase.from('users').update({ extra: newExtra }).eq('id', dbUser.id);
+        if (!updErr) dbUser.extra = newExtra;
+        showNewBadges(newlyEarned);
+    } else {
+        showSuccessOnly();
+    }
   }
 
   function showNewBadges(badges) {
