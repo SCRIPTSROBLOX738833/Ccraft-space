@@ -8,9 +8,6 @@ export const SUPABASE_URL = 'https://nthqrfsdshsreqdoksyv.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_kHd5Y4bBnUDJxCFV-aKg-Q_T9XRJckN';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-// alias لملفين قديمين (scripts.js, publish.js) بيستوردوا "db" مباشرة
-// (الملفين دول مش متضمنين فعليًا في أي صفحة حاليًا، بس بنسيبهم شغالين لو اتستخدموا تاني)
-export const db = supabase;
 
 // ============================================================
 // Firebase Auth Wrapper
@@ -92,14 +89,12 @@ export async function set(refObj, value) {
     if (!table || !id) return;
 
     if (field) {
-        const resolved = await resolveIncrements(table, id, { [field]: value });
-        await supabase.from(table).update(resolved).eq('id', id);
+        await supabase.from(table).update({ [field]: value }).eq('id', id);
     } else if (value === null) {
         await supabase.from(table).delete().eq('id', id);
     } else {
         // تحديث أو إدخال (Upsert)
-        const resolved = await resolveIncrements(table, id, value);
-        await supabase.from(table).upsert({ id, ...resolved });
+        await supabase.from(table).upsert({ id, ...value });
     }
 }
 
@@ -114,8 +109,7 @@ export async function push(refObj, data) {
 export async function update(refObj, data) {
     const { table, id } = parsePath(refObj.path);
     if (!table || !id) return;
-    const resolved = await resolveIncrements(table, id, data);
-    await supabase.from(table).update(resolved).eq('id', id);
+    await supabase.from(table).update(data).eq('id', id);
 }
 
 // محاكاة Realtime - onValue
@@ -198,80 +192,4 @@ export async function updateProfile(user, { displayName, photoURL }) {
         data: { name: displayName, avatar_url: photoURL }
     });
     if (error) throw error;
-}
-
-// ============================================================
-// إضافات كانت ناقصة (كانت بتكسر الصفحات بالكامل لأن الاستيراد
-// كان بيفشل صمتًا على export غير موجود)
-// ============================================================
-
-// Firebase remove() -> حذف الصف كامل، أو تصفير حقل واحد لو المسار بيحدد field
-export async function remove(refObj) {
-    const { table, id, field } = parsePath(refObj.path);
-    if (!table) return;
-    if (id && field) {
-        await supabase.from(table).update({ [field]: null }).eq('id', id);
-    } else if (id) {
-        await supabase.from(table).delete().eq('id', id);
-    }
-}
-
-// Firebase onChildAdded() -> محاكاة: بننده الكولباك لكل صف موجود فورًا،
-// وبعدين لأي صف جديد يتضاف عن طريق realtime INSERT
-export function onChildAdded(refObj, callback) {
-    const { table } = parsePath(refObj.path);
-    if (!table) return () => {};
-
-    supabase.from(table).select('*').then(({ data }) => {
-        (data || []).forEach(row => {
-            callback({ key: row.id, val: () => row });
-        });
-    });
-
-    const channel = supabase.channel(`public:${table}:added`)
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table }, payload => {
-            callback({ key: payload.new.id, val: () => payload.new });
-        })
-        .subscribe();
-
-    return () => supabase.removeChannel(channel);
-}
-
-// Firebase serverTimestamp() -> مفيش سيرفر تايمستامب حقيقي هنا، فبنرجع
-// وقت الجهاز الحالي كـ ISO string (تقريب كافي لمعظم الاستخدامات)
-export function serverTimestamp() {
-    return new Date().toISOString();
-}
-
-// Firebase increment(delta) -> Supabase مش عندها زي كدا جاهزة، فبنرجع
-// كائن خاص، و set/update بيتعرفوا عليه ويحولوه لقراءة-وتحديث (مش atomic 100%
-// لكنه بيمنع الصفحة من الانهيار وبيدي نفس النتيجة في أغلب الحالات)
-export function increment(delta) {
-    return { __isIncrement: true, delta };
-}
-
-async function resolveIncrements(table, id, data) {
-    const incrementKeys = Object.keys(data).filter(k => data[k] && data[k].__isIncrement);
-    if (incrementKeys.length === 0) return data;
-    const { data: row } = await supabase.from(table).select(incrementKeys.join(',')).eq('id', id).maybeSingle();
-    const resolved = { ...data };
-    incrementKeys.forEach(k => {
-        const current = (row && typeof row[k] === 'number') ? row[k] : 0;
-        resolved[k] = current + data[k].delta;
-    });
-    return resolved;
-}
-
-// Firebase GoogleAuthProvider + signInWithPopup -> Supabase OAuth بيشتغل
-// بالـ redirect مش popup حقيقي، فبنستخدم signInWithOAuth كبديل عملي
-export class GoogleAuthProvider {}
-
-export async function signInWithPopup(auth, provider) {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.href }
-    });
-    if (error) throw error;
-    // ملاحظة: هيحصل تحويل (redirect) للصفحة، مش popup فعلي زي Firebase
-    return { user: null };
 }
