@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="styles.css">
 <title>تسجيل الدخول أو إنشاء حساب</title>
 <style>
-    /* تحسين شكل زر جوجل */
     #googleLoginBtn {
         background-color: #fff;
         color: #757575;
@@ -57,37 +56,18 @@
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { 
-    getAuth, 
-    GoogleAuthProvider, 
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-    authDomain: "ccraft-space-scripts.firebaseapp.com",
-    databaseURL: "https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-    projectId: "ccraft-space-scripts",
-    storageBucket: "ccraft-space-scripts.firebasestorage.app",
-    messagingSenderId: "816078027492",
-};
+const SUPABASE_URL = "https://nthqrfsdshsreqdoksyv.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_kHd5Y4bBnUDJxCFV-aKg-Q_T9XRJckN";
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-const googleProvider = new GoogleAuthProvider();
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let redirecting = false;
 
 const googleLoginBtn = document.getElementById("googleLoginBtn");
 const msg = document.getElementById("msg");
 const authContainer = document.getElementById("authContainer");
-
-// لو المستخدم لسه ما اختارش اسم مستخدم، نبعته لصفحة البروفايل
-// عشان يظهر له فورًا فورم "اختر اسم مستخدم" (الإجباري) بدل ما يشوف بريده الإلكتروني في أي مكان
-let redirecting = false;
 
 function showMessage(text, isError = true) {
     msg.textContent = text;
@@ -95,53 +75,108 @@ function showMessage(text, isError = true) {
     msg.style.display = "block";
 }
 
-// مراقبة حالة المصادقة
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        // 🚫 تحقق إن الحساب مش محظور — لو محظور، خروج فوري ومنعه من استخدام أي حاجة
-        try {
-            const banSnap = await get(ref(db, `users/${user.uid}/banned`));
-            if (banSnap.exists() && banSnap.val() === true) {
-                await signOut(auth);
-                localStorage.removeItem("currentUser");
-                showMessage("🚫 حسابك محظور من CCRAFT SPACE. لو ده خطأ، تواصل مع الإدارة.");
-                return;
-            }
-        } catch (e) { /* لو التحقق فشل لأي سبب، منكملش تسجيل دخول بأمان */ }
+// بيدوّر على صف اليوزر في جدول users:
+// 1) الأول بالـ auth_uid (لو سبق وربطناه)
+// 2) لو مفيش، بالإيميل (يوزر قديم من Firebase لسه معملش لينك)
+// 3) لو مفيش خالص، معناه يوزر جديد كليًا
+async function findOrLinkUserRow(user) {
+    // محاولة 1: auth_uid
+    let { data: row } = await supabase
+        .from("users")
+        .select("id, is_banned, username")
+        .eq("auth_uid", user.id)
+        .maybeSingle();
 
-        localStorage.setItem("currentUser", user.uid);
+    if (row) return row;
 
-        // ✅ تحقق هل عنده اسم مستخدم محفوظ ولا لأ
-        let hasUsername = false;
-        try {
-            const nameSnap = await get(ref(db, `users/${user.uid}/username`));
-            hasUsername = nameSnap.exists() && !!nameSnap.val();
-        } catch (e) { /* لو التحقق فشل، نكمل عادي بدون تحويل إجباري */ }
+    // محاولة 2: نفس الإيميل (يوزر قديم من Firebase)
+    if (user.email) {
+        const { data: byEmail } = await supabase
+            .from("users")
+            .select("id, is_banned, username")
+            .eq("email", user.email)
+            .is("auth_uid", null)
+            .maybeSingle();
+
+        if (byEmail) {
+            // اربطه دلوقتي بالـ auth_uid الجديد
+            await supabase
+                .from("users")
+                .update({ auth_uid: user.id })
+                .eq("id", byEmail.id);
+            return byEmail;
+        }
+    }
+
+    // يوزر جديد تمامًا: نعمله صف جديد
+    const { data: created, error } = await supabase
+        .from("users")
+        .insert({
+            auth_uid: user.id,
+            email: user.email,
+            display_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+            photo_url: user.user_metadata?.avatar_url || null,
+            last_login: new Date().toISOString(),
+        })
+        .select("id, is_banned, username")
+        .single();
+
+    if (error) throw error;
+    return created;
+}
+
+async function handleUser(user) {
+    if (!user) {
+        localStorage.removeItem("currentUser");
+        return;
+    }
+
+    try {
+        const row = await findOrLinkUserRow(user);
+
+        if (row?.is_banned === true) {
+            await supabase.auth.signOut();
+            localStorage.removeItem("currentUser");
+            showMessage("🚫 حسابك محظور من CCRAFT SPACE. لو ده خطأ، تواصل مع الإدارة.");
+            return;
+        }
+
+        localStorage.setItem("currentUser", user.id);
+
+        // تحديث بيانات آخر دخول + الصورة/الاسم (من غير ما نلمس username)
+        await supabase.from("users").update({
+            display_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+            photo_url: user.user_metadata?.avatar_url || null,
+            last_login: new Date().toISOString(),
+        }).eq("id", row.id);
+
+        const hasUsername = !!row?.username;
 
         if (!hasUsername) {
-            // يظهر له فورم اختيار الاسم في صفحة البروفايل (إجباري هناك)
             redirecting = true;
             location.href = "profile.html";
             return;
         }
 
         showLoggedInView(user);
-    } else {
-        localStorage.removeItem("currentUser");
+    } catch (e) {
+        console.error(e);
+        showMessage("حصل خطأ أثناء تسجيل الدخول، جرب تاني.");
     }
-});
+}
 
 function showLoggedInView(user){
     if (redirecting) return;
+    const name = user.user_metadata?.full_name || user.user_metadata?.name || "مجهول";
     authContainer.innerHTML = `
-        <h2>مرحبا بك ${user.displayName || 'مجهول'}!</h2>
+        <h2>مرحبا بك ${name}!</h2>
         <button id="logoutBtn">تسجيل خروج</button>
         <button onclick="location.href='index.html'">الصفحة الرئيسية</button>
     `;
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", async ()=>{
         try{
-            await signOut(auth);
+            await supabase.auth.signOut();
             window.location.reload();
         }catch(e){
             alert("حدث خطأ أثناء تسجيل الخروج");
@@ -149,27 +184,26 @@ function showLoggedInView(user){
     });
 }
 
-// تسجيل الدخول عبر جوجل
+supabase.auth.onAuthStateChange((event, session) => {
+    handleUser(session?.user ?? null);
+});
+
+supabase.auth.getSession().then(({ data: { session } }) => {
+    handleUser(session?.user ?? null);
+});
+
 googleLoginBtn.addEventListener("click", async () => {
     try {
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-        
-        // تحديث بيانات المستخدم في قاعدة البيانات
-        // ملاحظة: ما بنخزّنش الإيميل خالص من هنا ولا في أي مكان تاني في الموقع
-        await update(ref(db, `users/${user.uid}`), {
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            lastLogin: new Date().toISOString()
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: window.location.href
+            }
         });
-        // باقي الخطوة (التحقق من اسم المستخدم والتحويل) بتتم في onAuthStateChanged
+        if (error) throw error;
     } catch (error) {
         console.error("Google Login Error:", error);
-        if (error.code === 'auth/unauthorized-domain') {
-            showMessage("خطأ: النطاق الحالي غير مصرح به في Firebase. يرجى إضافة النطاق إلى قائمة Authorized Domains في لوحة تحكم Firebase.");
-        } else {
-            showMessage("فشل تسجيل الدخول عبر جوجل: " + error.message);
-        }
+        showMessage("فشل تسجيل الدخول عبر جوجل: " + error.message);
     }
 });
 </script>
