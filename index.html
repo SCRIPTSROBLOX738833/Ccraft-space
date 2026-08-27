@@ -857,14 +857,6 @@ header { display: none; }
         <div style="color:var(--lo);text-align:center;padding:28px;grid-column:1/-1;font-size:0.82rem"><i class="fa-solid fa-spinner fa-spin"></i> جارٍ التحميل...</div>
     </div>
 
-    <div class="sec-head">
-        <h3><span><i class="fa-solid fa-globe"></i> صفحات المستخدمين</span></h3>
-        <button class="sec-all" onclick="location.href='page-builder.html'">أنشئ صفحتك ←</button>
-    </div>
-    <div class="pages-grid" id="userPagesGallery">
-        <div style="color:var(--lo);text-align:center;padding:24px;grid-column:1/-1;font-size:0.8rem"><i class="fa-solid fa-spinner fa-spin"></i> جارٍ التحميل...</div>
-    </div>
-
     <div class="sec-head"><h3><span><i class="fa-solid fa-bolt"></i> إجراءات سريعة</span></h3></div>
     <div class="actions-grid">
         <div class="action-card" onclick="location.href='publish.html'" style="--ac-color:rgba(139,92,246,0.3)">
@@ -931,7 +923,7 @@ import { supabase } from './supabase-config.js';
 // ============================================================
 // المستخدم الحالي — من Supabase Auth session الحقيقية، مش localStorage
 // ============================================================
-let currentUser = null; // { id (users.id / uuid), display_name, username, photo_url }
+let currentUser = null; // { id (users.id / uuid), display_name, username, photo_url, extra }
 let notifUid = null;
 
 async function initCurrentUser(){
@@ -940,7 +932,7 @@ async function initCurrentUser(){
         if(!user) return;
         const { data, error } = await supabase
             .from('users')
-            .select('id, display_name, username, photo_url')
+            .select('id, display_name, username, photo_url, extra')
             .eq('auth_uid', user.id)
             .maybeSingle();
         if(!error && data){
@@ -1164,37 +1156,6 @@ async function loadAnnouncement(){
     }
 }
 
-async function loadUserPages(){
-    try{
-        const c = document.getElementById('userPagesGallery');
-        const { data, error } = await supabase.from('user_pages').select('*').order('updated_at', { ascending:false }).limit(8);
-        if(error) throw error;
-
-        if(!data?.length){
-            c.innerHTML='<div style="color:var(--lo);text-align:center;padding:22px;grid-column:1/-1;font-size:0.78rem">لا توجد صفحات — <a href="page-builder.html" style="color:var(--violet)">كن أول من ينشئ!</a></div>';
-            return;
-        }
-
-        c.innerHTML='';
-        const TC={dark:'#8b5cf6',space:'#818cf8',ocean:'#00bcd4',sunset:'#f97316',forest:'#4ade80',neon:'#a78bfa'};
-        data.forEach(p=>{
-            const uid = p.user_id;
-            const accent = p.accent||TC[p.theme]||'#8b5cf6';
-            const name = (p.display_name||'مستخدم').replace(/[<>&"]/g,'');
-            const card = document.createElement('div'); card.className='page-card';
-            card.style.setProperty('--acc', accent);
-            card.style.borderColor = accent+'22';
-            card.onmouseenter = () => card.style.borderColor = accent+'55';
-            card.onmouseleave = () => card.style.borderColor = accent+'22';
-            card.onclick = () => location.href=`user-page.html?uid=${uid}`;
-            card.innerHTML = `<div class="pc-banner" style="background:linear-gradient(135deg,${accent}20,${accent}08)"><i class="fa-solid fa-globe"></i></div><div class="pc-body"><div class="pc-name">${name}</div><div class="pc-meta">صفحة شخصية</div></div>`;
-            c.appendChild(card);
-        });
-    }catch(err){
-        console.error('تعذر تحميل صفحات المستخدمين:', err);
-    }
-}
-
 /* ─── Notifications ─── */
 const NOTIF_SEEN_KEY = 'ccraft_notif_seen';
 
@@ -1274,12 +1235,105 @@ document.addEventListener('click', e => {
     if(widget && !widget.contains(e.target)) document.getElementById('notifPanel').classList.remove('open');
 });
 
-// الترتيب مهم: لازم نجيب اليوزر الحقيقي الأول قبل ما نحمل الإشعارات الشخصية
+/* ─── ربط حساب روبلوكس ───
+   ⚠️ backend البحث عن يوزر روبلوكس (Anas9vmhh.pythonanywhere.com) شكل استجابته مش موثّق عندي،
+   فافترضت GET /lookup?username=X بيرجع { id/userId, name/username, avatar/avatarUrl }.
+   لو الشكل الفعلي مختلف قوللي أظبط اسم الـ endpoint وحقول الـ JSON. */
+const ROBLOX_LOOKUP_BASE = 'https://Anas9vmhh.pythonanywhere.com';
+
+function applyRobloxLinkState(robloxData){
+    const linkBtn = document.getElementById('linkRobloxBtn');
+    const badge   = document.getElementById('rlLinkedBadge');
+    if (robloxData) {
+        linkBtn.style.display = 'none';
+        badge.style.display   = 'flex';
+        document.getElementById('rlLinkedName').innerText = robloxData.username || '';
+        document.getElementById('rlLinkedAvatar').src      = robloxData.avatar_url || '';
+    } else {
+        linkBtn.style.display = 'inline-flex';
+        badge.style.display   = 'none';
+    }
+}
+
+window.openRobloxLinkModal = function(){
+    if (!currentUser) { alert('يجب تسجيل الدخول أولاً'); location.href = 'login.html'; return; }
+    document.getElementById('rlResult').innerHTML = '';
+    document.getElementById('rlUsername').value = '';
+    document.getElementById('robloxLinkModal').classList.add('open');
+};
+
+window.closeRobloxLinkModal = function(){
+    document.getElementById('robloxLinkModal').classList.remove('open');
+};
+
+window.verifyRobloxLink = async function(){
+    if (!currentUser) { alert('يجب تسجيل الدخول أولاً'); location.href = 'login.html'; return; }
+
+    const username  = document.getElementById('rlUsername').value.trim();
+    const resultEl  = document.getElementById('rlResult');
+    const verifyBtn = document.getElementById('rlVerifyBtn');
+
+    if (!username) {
+        resultEl.innerHTML = '<span style="color:#f87171">اكتب اسم المستخدم الأول</span>';
+        return;
+    }
+
+    verifyBtn.disabled = true;
+    resultEl.innerHTML = '<span style="color:var(--mid)">⏳ جارٍ البحث عن الحساب...</span>';
+
+    try {
+        const res = await fetch(`${ROBLOX_LOOKUP_BASE}/lookup?username=${encodeURIComponent(username)}`);
+        if (!res.ok) throw new Error('lookup failed');
+        const info = await res.json();
+        const robloxId = info?.id ?? info?.userId;
+        if (!info || !robloxId) throw new Error('not found');
+
+        const robloxData = {
+            username:   info.name || info.username || username,
+            id:         robloxId,
+            avatar_url: info.avatar || info.avatarUrl || info.avatar_url || null,
+            linked_at:  new Date().toISOString(),
+        };
+
+        const newExtra = { ...(currentUser.extra || {}), roblox: robloxData };
+        const { error } = await supabase.from('users').update({ extra: newExtra }).eq('id', currentUser.id);
+        if (error) throw error;
+        currentUser.extra = newExtra;
+
+        resultEl.innerHTML = '<span style="color:#4ade80">✅ تم ربط الحساب بنجاح</span>';
+        applyRobloxLinkState(robloxData);
+        setTimeout(closeRobloxLinkModal, 1200);
+    } catch (err) {
+        resultEl.innerHTML = '<span style="color:#f87171">❌ تعذّر العثور على الحساب، تأكد من الاسم وحاول تاني</span>';
+    } finally {
+        verifyBtn.disabled = false;
+    }
+};
+
+window.unlinkRoblox = async function(e){
+    e.stopPropagation();
+    if (!currentUser) return;
+    if (!confirm('متأكد إنك عايز تشيل ربط حساب روبلوكس؟')) return;
+
+    const newExtra = { ...(currentUser.extra || {}) };
+    delete newExtra.roblox;
+
+    try {
+        const { error } = await supabase.from('users').update({ extra: newExtra }).eq('id', currentUser.id);
+        if (error) throw error;
+        currentUser.extra = newExtra;
+        applyRobloxLinkState(null);
+    } catch (err) {
+        alert('❌ تعذّر إلغاء الربط، حاول تاني');
+    }
+};
+
+// الترتيب مهم: لازم نجيب اليوزر الحقيقي الأول قبل ما نحمل الإشعارات الشخصية / حالة ربط روبلوكس
 (async () => {
     await initCurrentUser();
+    applyRobloxLinkState(currentUser?.extra?.roblox || null);
     loadStats();
     loadAnnouncement();
-    loadUserPages();
     loadNotifications();
 })();
 
