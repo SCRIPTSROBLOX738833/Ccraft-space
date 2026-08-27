@@ -915,24 +915,62 @@ header { display: none; }
 </div>
 
 <script type="module">
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { guardAgainstBanned } from "./auth-guard.js";
-
-const fc = {
-    apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",
-    authDomain:"ccraft-space-scripts.firebaseapp.com",
-    databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",
-    projectId:"ccraft-space-scripts",
-    storageBucket:"ccraft-space-scripts.firebasestorage.app",
-    messagingSenderId:"816078027492",
-    appId:"1:816078027492:web:6472cce474078fd4d90af1",
-    measurementId:"G-MHDM7YYYBN"
+// ============================================================
+// Supabase بدل Firebase — صفحة index.html
+// ============================================================
+const SUPABASE_URL = 'https://nthqrfsdshsreqdoksyv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_kHd5Y4bBnUDJxCFV-aKg-Q_T9XRJckN';
+const SB_HEADERS = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json'
 };
-const app = getApps().length ? getApp() : initializeApp(fc), db = getDatabase(app), auth = getAuth(app);
-guardAgainstBanned(app);
-let notifUid = null;
+
+// دوال مساعدة محلية لاستعلام Supabase
+async function sbGet(table, params = '') {
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, { headers: SB_HEADERS });
+        if (!res.ok) return [];
+        return await res.json();
+    } catch { return []; }
+}
+
+async function sbGetField(table, id, field) {
+    try {
+        const rows = await sbGet(table, `id=eq.${encodeURIComponent(id)}&select=${field}`);
+        return rows.length ? rows[0][field] : null;
+    } catch { return null; }
+}
+
+async function sbPatch(table, id, data) {
+    try {
+        await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
+            method: 'PATCH',
+            headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+            body: JSON.stringify(data)
+        });
+    } catch { /* تجاهل */ }
+}
+
+async function sbInsert(table, data) {
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+            method: 'POST',
+            headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+            body: JSON.stringify(data)
+        });
+        return res.ok;
+    } catch { return false; }
+}
+
+// مستخدم حالي من localStorage
+let currentUser = null;
+try {
+    const saved = localStorage.getItem('ccraft_user');
+    if (saved) currentUser = JSON.parse(saved);
+} catch { currentUser = null; }
+
+let notifUid = currentUser ? currentUser.uid : null;
 
 (function(){
     const c = document.getElementById('stars');
@@ -974,9 +1012,11 @@ function trackVisitToday(){
 }
 trackVisitToday();
 
-onValue(ref(db, `dailyVisits/${todayKey()}`), snap => {
-    animCount('ls-visitstoday', snap.exists() ? snap.val() : 0);
-});
+// تحميل عدد زيارات اليوم عند بدء التحميل
+(async () => {
+    const rows = await sbGet('daily_visits', `date=eq.${todayKey()}&select=count`);
+    animCount('ls-visitstoday', rows.length ? (rows[0].count || 0) : 0);
+})();
 
 /* ─── إحصائيات: كل قراءة منفصلة عن التانية عشان فشل قراءة واحدة (زي users
    المحمية للأدمن بس) ميوقفش باقي الصفحة عن التحميل ─── */
@@ -984,8 +1024,8 @@ async function loadStats(){
     // السكربتات — عامة دايمًا، ومنها بتتغذى كل أقسام الصفحة الرئيسية
     let scripts = {};
     try{
-        const ss = await get(ref(db,'scripts'));
-        scripts = ss.exists() ? ss.val() : {};
+        const rows = await sbGet('scripts', 'select=*&order=timestamp.desc');
+        rows.forEach(r => { scripts[r.id] = r; });
     }catch(err){
         console.error('تعذر تحميل السكربتات:', err);
     }
@@ -1006,11 +1046,10 @@ async function loadStats(){
     // المستخدمون — محمية (بس للأدمن)، فمحتاجة تتعامل بمفردها
     // ولو المستخدم الحالي مش أدمن هترجع Permission Denied وهنسيب العداد "—"
     try{
-        const us = await get(ref(db,'users'));
-        const users = us.exists() ? us.val() : {};
-        animCount('ls-users', Object.keys(users).length);
-        const newUsersToday = Object.values(users).filter(u => {
-            const t = u.createdAt || u.joinedAt || u.timestamp || 0;
+        const userRows = await sbGet('users', 'select=id,created_at');
+        animCount('ls-users', userRows.length);
+        const newUsersToday = userRows.filter(u => {
+            const t = new Date(u.created_at||0).getTime();
             return t >= todayTs;
         }).length;
         animCount('ls-newusers', newUsersToday);
@@ -1023,16 +1062,22 @@ async function loadStats(){
 
 let _lastOnline = -1;
 
-onValue(ref(db,'presence'), snap => {
-    const realOnline = snap.exists()
-        ? Object.values(snap.val()).filter(p => p.online && Date.now() - p.ts < 60000).length
-        : 0;
-    const total = Math.max(realOnline, 1);
-    if (total !== _lastOnline) {
-        _lastOnline = total;
-        animCount('ls-online', total);
+// تحميل عدد المتصلين من Supabase (presence جدول)
+async function loadOnlineCount(){
+    try {
+        const since = Date.now() - 60000;
+        const rows = await sbGet('presence', `ts=gte.${since}&select=id`);
+        const total = Math.max(rows.length, 1);
+        if (total !== _lastOnline) {
+            _lastOnline = total;
+            animCount('ls-online', total);
+        }
+    } catch {
+        if (_lastOnline < 0) animCount('ls-online', 1);
     }
-});
+}
+loadOnlineCount();
+setInterval(loadOnlineCount, 30000);
 
 function loadFeaturedScripts(scripts){
     const c = document.getElementById('featScripts'); c.innerHTML='';
@@ -1046,21 +1091,20 @@ function loadFeaturedScripts(scripts){
     });
 }
 
-/* ─── سكربت اليوم المميز: بيعتمد على dailyStats/{today}/scripts/{id}/{views,likes} ───
+/* ─── سكربت اليوم المميز: بيعتمد على daily_stats ───
    لازم تسجّل الـ views/likes دول من script.html (وأي صفحة فيها زرار لايك) بنفس المسار،
    وإلا الكارت هيفضل فاضي لغاية ما يبدأ يتسجل نشاط اليوم. */
 async function loadFeaturedToday(scripts){
     const box = document.getElementById('featuredToday'); if(!box) return;
     try{
-        const dsSnap = await get(ref(db, `dailyStats/${todayKey()}/scripts`));
+        const dsRows = await sbGet('daily_stats', `date=eq.${todayKey()}&select=script_id,views,likes&order=views.desc`);
         let bestId = null, bestScore = -1, bestViews = 0, bestLikes = 0;
-        if(dsSnap.exists()){
-            Object.entries(dsSnap.val()).forEach(([id,d]) => {
-                const views = d.views||0, lk = d.likes||0;
-                const score = views + lk*3;
-                if(score > bestScore){ bestScore = score; bestId = id; bestViews = views; bestLikes = lk; }
-            });
-        }
+        dsRows.forEach(d => {
+            const views = d.views||0, lk = d.likes||0;
+            const score = views + lk*3;
+            if(score > bestScore){ bestScore = score; bestId = d.script_id; bestViews = views; bestLikes = lk; }
+        });
+        
         if(!bestId || !scripts[bestId]){
             box.style.cursor = 'default';
             box.onclick = null;
@@ -1097,10 +1141,10 @@ async function loadTopUsers(scripts){
         let av = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#00bcd4);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:0.85rem">${(u.name||'?').charAt(0).toUpperCase()}</div>`;
         if(uid){
             try{
-                // photo/ بس المسموح بيها للعامة في Rules — باقي بيانات users محمية
-                const sn = await get(ref(db,`users/${uid}/photo`));
-                if(sn.exists()){
-                    av = `<img src="${sn.val()}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block">`;
+                // جلب صورة المستخدم من Supabase
+                const photoRows = await sbGet('users', `id=eq.${encodeURIComponent(uid)}&select=photo`);
+                if(photoRows.length && photoRows[0].photo){
+                    av = `<img src="${photoRows[0].photo}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block">`;
                 }
             }catch{}
         }
@@ -1113,10 +1157,9 @@ async function loadTopUsers(scripts){
 
 async function loadAnnouncement(){
     try{
-        const snap = await get(ref(db,'announcements')); if(!snap.exists()) return;
-        const entries = Object.entries(snap.val()).sort((a,b)=>(b[1].timestamp||0)-(a[1].timestamp||0));
-        if(!entries.length) return;
-        const latest = entries[0][1];
+        const rows = await sbGet('announcements', 'select=*&order=timestamp.desc&limit=1');
+        if(!rows.length) return;
+        const latest = rows[0];
         if(Date.now()-(latest.timestamp||0)<7*24*3600*1000){
             document.getElementById('annText').innerText = latest.text;
             document.getElementById('annBanner').classList.add('show');
@@ -1128,18 +1171,20 @@ async function loadAnnouncement(){
 
 async function loadUserPages(){
     try{
-        const snap = await get(ref(db,'userPages'));
         const c = document.getElementById('userPagesGallery');
-        if(!snap.exists()){
+        const rows = await sbGet('user_pages', 'select=*&order=updated_at.desc&limit=8');
+        
+        if(!rows.length){
             c.innerHTML='<div style="color:var(--lo);text-align:center;padding:22px;grid-column:1/-1;font-size:0.78rem">لا توجد صفحات — <a href="page-builder.html" style="color:var(--violet)">كن أول من ينشئ!</a></div>';
             return;
         }
-        const pages = Object.entries(snap.val()).sort((a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0)).slice(0,8);
+        
         c.innerHTML='';
         const TC={dark:'#8b5cf6',space:'#818cf8',ocean:'#00bcd4',sunset:'#f97316',forest:'#4ade80',neon:'#a78bfa'};
-        pages.forEach(([uid,p])=>{
+        rows.forEach(p=>{
+            const uid = p.user_id || p.id;
             const accent = p.accent||TC[p.theme]||'#8b5cf6';
-            const name = (p.name||p.displayName||'مستخدم').replace(/[<>&"]/g,'');
+            const name = (p.name||p.display_name||'مستخدم').replace(/[<>&"]/g,'');
             const card = document.createElement('div'); card.className='page-card';
             card.style.setProperty('--acc', accent);
             card.style.borderColor = accent+'22';
@@ -1171,21 +1216,15 @@ const NOTIF_ICONS = { like:'<i class="fa-solid fa-thumbs-up"></i>', comment:'<i 
 async function loadNotifications(){
     const listEl = document.getElementById('notifList');
     try{
-        const fetches = [get(ref(db,'announcements'))];
-        if(notifUid) fetches.push(get(ref(db,`notifications/${notifUid}`)));
-        const [annSnap, personalSnap] = await Promise.all(fetches);
+        const fetches = [sbGet('announcements', 'select=*&order=timestamp.desc&limit=10')];
+        if(notifUid) fetches.push(sbGet('notifications', `user_id=eq.${encodeURIComponent(notifUid)}&select=*&order=timestamp.desc&limit=25`));
+        const [annRows, personalRows = []] = await Promise.all(fetches);
 
         let items = [];
-        if(annSnap.exists()){
-            items = items.concat(Object.values(annSnap.val()).map(n => ({
-                type: 'announcement', text: n.text||'', timestamp: n.timestamp||0
-            })));
-        }
-        if(personalSnap && personalSnap.exists()){
-            items = items.concat(Object.entries(personalSnap.val()).map(([id,n]) => ({
-                id, type: n.type||'like', text: n.text||'', timestamp: n.timestamp||0, scriptId: n.scriptId||null
-            })));
-        }
+        annRows.forEach(n => items.push({ type: 'announcement', text: n.text||'', timestamp: n.timestamp||0 }));
+        (personalRows||[]).forEach(n => items.push({
+            id: n.id, type: n.type||'like', text: n.text||'', timestamp: n.timestamp||0, scriptId: n.script_id||null
+        }));
 
         if(!items.length){
             listEl.innerHTML = '<div class="notif-empty">لا توجد إشعارات حالياً</div>';
@@ -1240,11 +1279,6 @@ loadStats();
 loadAnnouncement();
 loadUserPages();
 loadNotifications();
-
-onAuthStateChanged(auth, user => {
-    notifUid = user ? user.uid : null;
-    loadNotifications();
-});
 
 (function(){
     const modal = document.getElementById('discordModal');
