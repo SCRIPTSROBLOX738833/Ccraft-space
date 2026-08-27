@@ -416,7 +416,6 @@ body { min-height: 100svh; }
 .sc-stars[data-rated="true"] .sc-star { cursor: default; }
 .sc-stars[data-rated="true"] .sc-star:hover { transform: none; }
 
-/* preview fill on hover, up to the hovered star, only before rating — driven by JS (hover-fill class) so it works correctly regardless of RTL DOM order */
 .sc-star.hover-fill { color: #fbbf24; }
 
 .sc-star.just-rated { animation: starPop 0.4s ease; }
@@ -457,7 +456,6 @@ body { min-height: 100svh; }
 .sc-btn.report { background: rgba(248,113,113,0.06); color: var(--text-muted); border: 1px solid var(--border-color); }
 .sc-btn.report:hover { color: #f87171; border-color: rgba(248,113,113,0.3); }
 
-/* ---- Like button animation: heart pop + burst particles ---- */
 .sc-btn.like .like-icon { transition: transform 0.25s cubic-bezier(.17,.89,.32,1.49); }
 .sc-btn.like.pulse .like-icon { animation: heartPop 0.55s cubic-bezier(.17,.89,.32,1.49); }
 @keyframes heartPop {
@@ -787,19 +785,35 @@ const db = {
 };
 
 // مستخدم حالي — بياخد الـ auth_uid الحقيقي من Supabase Auth session
+// ⚠️ FIX: الكود القديم هنا كان فيه top-level await بيوقف تنفيذ باقي
+// الـ <script type="module"> بالكامل لحد ما يجيب المستخدم من Supabase
+// ويعمل استعلام على جدول users. المشكلة إن "window.addEventListener
+// ('DOMContentLoaded', ...)" (اللي بينادي loadScripts() وبيرسم كل
+// السكربتات) موجود تحت في نفس الملف — فلو انت مسجل دخول، الـ await ده
+// كان بياخد وقت أطول (طلبين شبكة: auth + استعلام users)، فأحيانًا
+// حدث DOMContentLoaded كان بيحصل ويعدي قبل ما السطر بتاع addEventListener
+// حتى يتنفذ، فمفيش حد كان بينادي loadScripts() خالص — الصفحة تفضل فاضية.
+// الحل: نشيل الـ await من أول الملف، ونستخدم onAuthStateChange بشكل غير
+// معطّل (non-blocking) بحيث تحميل السكربتات يبدأ فورًا من غير ما يستنى
+// حاجة، وبيانات المستخدم تتحدث لوحدها لما تجهز.
 let currentUser = null;
-try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-        const { data: row } = await supabase.from('users').select('*').eq('auth_uid', user.id).maybeSingle();
-        currentUser = row ? { uid: row.id, ...row } : null;
+let myUsernameCache = null;
+
+supabase.auth.onAuthStateChange(async (_event, session) => {
+    const authUser = session?.user || null;
+    myUsernameCache = null;
+    if (!authUser) { currentUser = null; return; }
+    try {
+        const { data: row } = await supabase.from('users').select('*').eq('auth_uid', authUser.id).maybeSingle();
+        currentUser = row ? { uid: row.id, ...row } : { uid: authUser.id };
+    } catch {
+        currentUser = { uid: authUser.id };
     }
-} catch { currentUser = null; }
+});
 
 // عنوان الباك إند بتاع Nova AI — نفس السيرفر المستخدم في nova.html
 const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
 
-let myUsernameCache = null;
 async function getMyDisplayName() {
     if (!currentUser) return 'cCraft Space User';
     if (myUsernameCache) return myUsernameCache;
@@ -896,12 +910,6 @@ async function loadScripts() {
     renderScripts(q);
 }
 
-/* ============================================================
-   🗺️ فهرس روابط كامل لكل السكربتات (مش مرتبط بالباجينيشن/الفلاتر)
-   — كل سكربت بياخد <a href="script.html?id=..."> حقيقي هنا، عشان
-   أي زاحف (Googlebot) يلاقي كل السكربتات في نفس صفحة scripts.html
-   من غير ما يحتاج يدوس "عرض المزيد".
-   ============================================================ */
 function renderAllScriptsIndex() {
     const box = document.getElementById('allScriptsIndex');
     const list = document.getElementById('allScriptsLinksList');
@@ -913,11 +921,6 @@ function renderAllScriptsIndex() {
     injectScriptsItemListSchema();
 }
 
-/* ============================================================
-   🚀 JSON-LD ItemList — مش عنصر مرئي، مجرد بيانات منظمة قياسية
-   بتدّي جوجل قائمة صريحة بكل رابط سكربت في الصفحة دفعة واحدة.
-   ده بيسرّع الاكتشاف والفهرسة، ومش له علاقة بإخفاء محتوى عن حد.
-   ============================================================ */
 function injectScriptsItemListSchema() {
     const old = document.getElementById('scriptsItemListSchema');
     if (old) old.remove();
@@ -944,7 +947,6 @@ function getQuery() {
     return new URLSearchParams(location.search).get('search')?.toLowerCase().trim() || '';
 }
 
-// ✅ FIX: "timestamp" -> "created_at", "likes" -> "likes_count"
 function sortScripts(arr) {
     const s = [...arr];
     if (activeSort === '__ai__' && window.__aiScoreMap) {
@@ -961,18 +963,10 @@ function sortScripts(arr) {
     return s;
 }
 
-/* ============================================================
-   🗺️ الماب: مفيش عمود مخصص "map" في سكيما Supabase الجديدة —
-   القيمة القديمة (لو موجودة) محفوظة جوه عمود extra (jsonb).
-   الدالة دي بتدور في المكانين عشان تفضل شغالة أيًا كان مكان التخزين.
-   ============================================================ */
 function getMap(s) {
     return s.map || (s.extra && s.extra.map) || '';
 }
 
-/* ============================================================
-   🏷️ فلتر التاجات الديناميكي
-   ============================================================ */
 function renderTagsFilter() {
     const row = document.getElementById('tagsFilterRow');
     const allTags = new Set();
@@ -1024,19 +1018,13 @@ function renderScripts(query = '') {
     if (activeFilter !== 'all') {
         results = results.filter(s => (s.category||'') === activeFilter);
     }
-    // ✅ FIX: hasKey/key -> has_key
     if (activeKeyFilter === 'yes') results = results.filter(s => s.has_key);
     if (activeKeyFilter === 'no')  results = results.filter(s => !s.has_key);
     if (activeTagFilter) results = results.filter(s => Array.isArray(s.tags) && s.tags.includes(activeTagFilter));
 
     if (query && !filteredIds) {
-        // 🧠 بحث فوري بالكتابة يستخدم نفس محرك التطابق التقريبي/المرادفات
-        // بتاع البحث الذكي، بدل مطابقة نصية بسيطة، فيرتب النتائج
-        // بالأصلح أولاً ويتحمل الأخطاء الإملائية البسيطة كمان.
         const fuzzy = smartSearchLocal(query, results);
         if (fuzzy.length) {
-            // الترتيب الافتراضي وقت البحث هو "الأصلح" — لكن لو المستخدم
-            // اختار ترتيب معيّن يدويًا (غير "الأحدث") بنحترم اختياره
             results = activeSort === 'newest' ? fuzzy : sortScripts(fuzzy);
         } else {
             results = sortScripts(results.filter(s =>
@@ -1055,7 +1043,6 @@ function renderScripts(query = '') {
 
     document.getElementById('resultsCount').innerText = results.length;
 
-    // 🔄 أي تغيير في البحث أو الفلاتر بيرجّع العدد الظاهر لأول 8 من جديد
     currentResults = results;
     visibleCount = PAGE_SIZE;
 
@@ -1082,7 +1069,6 @@ function renderVisibleCards() {
     const slice = currentResults.slice(0, visibleCount);
 
     slice.forEach((s, i) => {
-        // ✅ FIX: s.timestamp -> s.created_at (created_at هو نص ISO من Postgres)
         const createdAtMs = s.created_at ? new Date(s.created_at).getTime() : 0;
         const isNew      = (now - createdAtMs) < 3 * 24 * 3600 * 1000;
         const isAiMatch  = isAiSearch;
@@ -1100,7 +1086,6 @@ function renderVisibleCards() {
         const codeSnippet = escHTML((s.code || '').replace(/\s+/g, ' ').trim().slice(0, 70));
         const titleHTML = lastQuery ? highlightMatch(s.title || 'بدون عنوان', lastQuery) : escHTML(s.title || 'بدون عنوان');
 
-        // ✅ FIX: hasKey/key -> has_key
         const hasKeyFlag = !!s.has_key;
         const keyBadge = hasKeyFlag
             ? `<span class="sc-key-badge">${ic('lock',12)}يتطلب مفتاح</span>`
@@ -1152,8 +1137,6 @@ function renderVisibleCards() {
 
         codeStore.set(s.id, s.code || '');
 
-        // رابط الكارت الكامل (وزر عرض) — رابط <a> حقيقي عشان جوجل يقدر يزحف لصفحة كل سكربت،
-        // مع تسجيل عدد المشاهدات لحظة الضغط قبل ما التنقل يحصل
         card.querySelector('.sc-card-link').addEventListener('click', () => incrementViews(s.id));
         card.querySelector('.sc-btn.view').addEventListener('click', () => incrementViews(s.id));
 
@@ -1188,7 +1171,6 @@ function renderVisibleCards() {
         likeBtn.onclick = async e => {
             e.stopPropagation();
             if (liked || likeBtn.disabled) return;
-            // تحديث اللايكات في Supabase — ✅ FIX: العمود اسمه likes_count مش likes
             const currentLikes = await db.getField('scripts', s.id, 'likes_count');
             const newLikes = (currentLikes || 0) + 1;
             await db.setField('scripts', s.id, 'likes_count', newLikes);
@@ -1198,12 +1180,10 @@ function renderVisibleCards() {
             likeBtn.disabled = true;
             localStorage.setItem(`liked_${s.id}`, 'true');
 
-            // 💥 أنيميشن: نبضة قلب + رشّة جزيئات صغيرة حوالين الزرار
             likeBtn.classList.add('pulse');
             spawnLikeBurst(likeBtn.querySelector('.like-burst'));
             setTimeout(() => likeBtn.classList.remove('pulse'), 600);
 
-            // 🔔 إشعار لصاحب السكربت باللايك (لو المستخدم مسجل دخول) — ✅ FIX: authorUid -> uploader_id
             if (currentUser) {
                 const likerName = await getMyDisplayName();
                 notifyAuthor(s.uploader_id, `${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
@@ -1218,7 +1198,6 @@ function renderVisibleCards() {
         const starsEl = card.querySelector('.sc-stars');
         const starEls = [...starsEl.querySelectorAll('.sc-star')];
 
-        // ⭐ معاينة عند المرور بالماوس: تلوين كل النجوم لحد النجمة اللي تحتها الماوس (يتوقف تلقائيًا بعد التقييم)
         starEls.forEach(star => {
             star.addEventListener('mouseenter', () => {
                 if (starsEl.dataset.rated === 'true') return;
@@ -1235,7 +1214,6 @@ function renderVisibleCards() {
                 e.stopPropagation();
                 if (starsEl.dataset.rated === 'true') return;
                 const val = parseInt(star.dataset.v);
-                // تحديث التقييم في Supabase
                 const curRating = await db.getField('scripts', s.id, 'rating') || 0;
                 const curVotes  = await db.getField('scripts', s.id, 'votes')  || 0;
                 const newR = curRating + val;
@@ -1270,7 +1248,6 @@ function renderVisibleCards() {
     }
 }
 
-// 💥 رشّة جزيئات صغيرة تتفرقع حوالين زرار اللايك لحظة الضغط عليه
 function spawnLikeBurst(container) {
     if (!container) return;
     container.innerHTML = '';
@@ -1298,20 +1275,11 @@ function escHTML(s) {
 
 const UNVERIFIED_WARNING = '--[[\n\tتحذير هذا السكربت ليس تم التحقق منه من قبل cCraft space يرجي الحظر منه\n]]\n\n';
 
-// يضيف تعليق تحذير أعلى الكود إذا كان السكربت غير موثّق — تعليق Lua فقط، لا يؤثر على تشغيل السكربت
 function withCopyWarning(code, verified) {
     if (verified) return code;
     return UNVERIFIED_WARNING + code;
 }
 
-/* ============================================================
-   🔎 محرك المطابقة التقريبية — أقوى من مجرد substring:
-   - تطابق كامل / بداية / احتواء (سريع، وزن عالي)
-   - تطابق على مستوى الكلمات (يدعم ترتيب مختلف للكلمات)
-   - Levenshtein distance محدود لتحمّل الأخطاء الإملائية البسيطة
-     (زي "سكريبت" بدل "سكربت" أو حرف زايد/ناقص)
-   - Subsequence fallback للحالات الصعبة
-   ============================================================ */
 function levenshtein(a, b, maxDist) {
     if (Math.abs(a.length - b.length) > maxDist) return maxDist + 1;
     const dp = Array.from({length: a.length+1}, (_,i)=>[i, ...Array(b.length).fill(0)]);
@@ -1371,13 +1339,6 @@ function normalizeAr(t) {
         .trim();
 }
 
-/* ============================================================
-   🔤 قاموس مرادفات عربي↔إنجليزي لأشهر مصطلحات سكربتات Roblox
-   — بيتطبّق على نص البحث نفسه (مش على عناوين السكربتات) عشان لو
-   حد كتب "سرقة بيض" يتحول لبحث يشمل "steal egg" كمان، فيطابق
-   سكربت اسمه فعليًا "Steal Egg" بالإنجليزي.
-   ده شبكة أمان محلية بس، مش بديل عن فهم Nova AI الدلالي.
-   ============================================================ */
 const SYNONYM_MAP = {
     'سرقة': 'steal', 'سرقه': 'steal', 'اسرق': 'steal',
     'بيض': 'egg', 'بيضة': 'egg', 'بيضه': 'egg',
@@ -1399,8 +1360,6 @@ const SYNONYM_MAP = {
     'قتال': 'fight', 'معركة': 'fight', 'معركه': 'fight'
 };
 
-// بيوسّع نص البحث (query) بس بالمرادفات الإنجليزية، عشان يطابق
-// عناوين إنجليزية زي "Steal Egg" لما حد يكتب "سرقة بيض"
 function expandWithSynonyms(text) {
     if (!text) return text;
     let expanded = text;
@@ -1427,17 +1386,10 @@ function parseIntent(query) {
     return intent;
 }
 
-/* ============================================================
-   🔍 البحث المحلي (يشتغل فورًا مع الكتابة + Fallback لو Nova
-   مش متاح) — بيرجّع مصفوفة النتائج المرتبة بالأصلح أولاً.
-   بياخد `pool` اختياري (مجموعة سكربتات جاهزة بعد الفلاتر) بدل
-   allScripts كاملة، عشان البحث الفوري يحترم الفلاتر النشطة.
-   ============================================================ */
 function smartSearchLocal(query, pool) {
     const source = pool || allScripts;
     if (!query || !source.length) return [];
 
-    // ✅ نوسّع نص البحث نفسه بالمرادفات (سرقة بيض -> سرقة بيض steal egg)
     const qNorm   = expandWithSynonyms(normalizeAr(query));
     const intent  = parseIntent(query);
     const results = [];
@@ -1461,7 +1413,6 @@ function smartSearchLocal(query, pool) {
         if (intent.category && (s.category||'').toLowerCase() === intent.category) score += 30;
         if (intent.map      && map.includes(intent.map))  score += 25;
 
-        // ✅ FIX: s.likes -> s.likes_count, s.timestamp -> s.created_at
         const likes  = s.likes_count || 0;
         const rating = s.votes  ? s.rating / s.votes : 0;
         score += Math.min(15, likes  * 0.3);
@@ -1476,14 +1427,6 @@ function smartSearchLocal(query, pool) {
     return results.sort((a, b) => b._score - a._score);
 }
 
-/* ============================================================
-   🤖 البحث الذكي المدعوم من Nova AI
-   ----------------------------------------------------------------
-   بيبعت طلب البحث + قائمة مختصرة من السكربتات (من غير الكود) لباك
-   إند Nova، والموديل بيرجع الـ IDs المطابقة بأي ترتيب كلمات كتبها
-   المستخدم (مثلاً "سكربت كيبورد" و"كيبورد سكربت" بيدوا نفس النتيجة).
-   لو فشل الاتصال أو حصل rate limit، بيرجع تلقائيًا للبحث المحلي.
-   ============================================================ */
 async function novaSearch(query) {
     const compactList = allScripts.map(s => ({
         id: s.id,
@@ -1510,7 +1453,6 @@ async function novaSearch(query) {
     }
 
     const ids = Array.isArray(data.ids) ? data.ids : [];
-    // نحول الـ ids المرتبة لنفس شكل نتائج البحث المحلي (id + _score) عشان الترتيب يتحافظ عليه
     return ids
         .map(id => allScripts.find(s => s.id === id))
         .filter(Boolean)
@@ -1547,9 +1489,6 @@ async function aiSearch() {
     try {
         results = await novaSearch(query);
 
-        // 🛟 Nova ردت بنجاح لكن ملقتش أي تطابق (ids: []) — قبل ما نستسلم
-        // ونقول "لا يوجد"، نجرب البحث المحلي (اللي بيفهم مرادفات زي
-        // سرقة=steal بيض=egg) كمحاولة أخيرة بدل عرض رسالة سلبية فورًا
         if (results.length === 0) {
             const localResults = smartSearchLocal(query);
             if (localResults.length > 0) {
@@ -1558,7 +1497,6 @@ async function aiSearch() {
             }
         }
     } catch (e) {
-        // فشل الاتصال بـ Nova (رفض، rate limit، أو مفيش إنترنت) -> نرجع للبحث المحلي
         console.error('%c[Nova Search] فشل الاتصال:', 'color:#f87171;font-weight:bold', e);
         usedFallback = true;
         results = smartSearchLocal(query);
@@ -1609,11 +1547,6 @@ window.closeAiBanner = function() {
     renderScripts(document.getElementById('searchScripts').value.toLowerCase());
 };
 
-/* ============================================================
-   💡 اقتراحات فورية (autocomplete) — بتظهر تحت مربع البحث وانت
-   بتكتب، بتاخد أفضل 6 نتائج من نفس محرك المطابقة التقريبية،
-   وتتحكم فيها بالكيبورد (↑ ↓ Enter Esc)
-   ============================================================ */
 const suggestBox = document.getElementById('searchSuggest');
 let suggestIndex = -1;
 let suggestItems = [];
@@ -1719,7 +1652,6 @@ function updateURL(q) {
     history.replaceState(null,'',url);
 }
 
-// ✅ رسم أولي فوري من البيانات الثابتة (لو موجودة) قبل ما Supabase يرد — بيضمن إن الزائر وبوتات الزحف يشوفوا محتوى حقيقي من أول لحظة
 function renderStaticFallback() {
     try {
         const data = window.__SCRIPTS_DATA__;
