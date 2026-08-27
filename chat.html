@@ -17,18 +17,9 @@ html, body {
     padding: 0 !important;
 }
 
-/* No position:fixed and no JS-calculated height here on purpose.
-   Mobile browsers (Chrome/Safari) draw their own toolbar OVER
-   fixed-positioned elements pinned to the screen edge, even when the
-   height math is exactly right — that toolbar can visually cover the
-   bottom of a fixed box with nothing the page can do about it, since
-   it isn't a scrollable overflow, it's a physical viewport overlay.
-   Sticky header/footer inside a normally-scrolling page sidesteps the
-   whole problem: this is genuine scroll, so the browser manages its
-   own UI chrome correctly, and nothing can end up trapped off-screen. */
 body {
-    min-height: 100svh;   /* smallest possible viewport — always visible */
-    min-height: 100dvh;   /* refines to the live viewport where supported */
+    min-height: 100svh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
@@ -157,7 +148,6 @@ body {
     scroll-behavior: smooth;
 }
 
-/* Date separator */
 .date-sep {
     display: flex;
     align-items: center;
@@ -175,7 +165,6 @@ body {
     background: var(--border-color);
 }
 
-/* Message group */
 .msg-group {
     display: flex;
     gap: 8px;
@@ -188,7 +177,6 @@ body {
     flex-direction: row-reverse;
 }
 
-/* Avatar */
 .msg-avatar {
     width: 32px; height: 32px;
     border-radius: 50%;
@@ -208,7 +196,6 @@ body {
 .msg-group.own .msg-avatar { background: var(--accent-gradient); border-color: rgba(139,92,246,0.4); }
 .msg-avatar:hover { transform: scale(1.12); border-color: var(--primary); }
 
-/* Bubble column */
 .msg-col {
     display: flex;
     flex-direction: column;
@@ -219,7 +206,6 @@ body {
 
 .msg-group.own .msg-col { align-items: flex-end; }
 
-/* Username */
 .msg-username {
     font-size: 0.72rem;
     font-weight: 800;
@@ -231,7 +217,6 @@ body {
 .msg-username:hover { text-decoration: underline; }
 .msg-group.own .msg-username { display: none; }
 
-/* Bubble */
 .msg-bubble {
     position: relative;
     padding: 10px 14px;
@@ -243,7 +228,6 @@ body {
     transition: background 0.2s;
 }
 
-/* Others bubble */
 .msg-group:not(.own) .msg-bubble {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -251,7 +235,6 @@ body {
     color: var(--text-main);
 }
 
-/* Own bubble */
 .msg-group.own .msg-bubble {
     background: var(--accent-gradient);
     color: white;
@@ -263,7 +246,6 @@ body {
 
 .bubble-text { white-space: pre-wrap; word-break: break-word; }
 
-/* Sticker bubble — no background/padding, just the image */
 .msg-bubble.sticker-bubble {
     background: none !important;
     border: none !important;
@@ -271,7 +253,6 @@ body {
     padding: 0 !important;
 }
 
-/* Reply preview inside bubble */
 .reply-preview {
     background: rgba(0,0,0,0.15);
     border-right: 3px solid rgba(255,255,255,0.4);
@@ -292,14 +273,12 @@ body {
 .reply-preview .rp-text { color: var(--text-muted); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .msg-group.own .reply-preview .rp-text { color: rgba(255,255,255,0.7); }
 
-/* Edited tag */
 .edited-tag {
     font-size: 0.62rem;
     opacity: 0.6;
     margin-right: 4px;
 }
 
-/* Sent images */
 .msg-image-img {
     display: block;
     max-width: 240px;
@@ -311,7 +290,6 @@ body {
     object-fit: cover;
 }
 
-/* Stickers */
 .msg-sticker-img {
     display: block;
     width: 120px;
@@ -320,7 +298,6 @@ body {
     cursor: pointer;
 }
 
-/* Mentions inside message text */
 .mention {
     color: var(--primary);
     font-weight: 800;
@@ -341,7 +318,6 @@ body {
     box-shadow: 0 0 0 2px rgba(250,204,21,0.65), 0 4px 14px rgba(250,204,21,0.25);
 }
 
-/* @mention autocomplete panel */
 .mention-panel {
     position: absolute;
     bottom: 78px;
@@ -384,7 +360,6 @@ body {
     flex-shrink: 0;
 }
 
-/* Code blocks inside messages */
 .code-block {
     margin: 6px 0;
     border-radius: 12px;
@@ -447,7 +422,6 @@ body {
     white-space: pre;
 }
 
-/* Meta row (time + status) */
 .msg-meta {
     display: flex;
     align-items: center;
@@ -460,7 +434,6 @@ body {
 .msg-time { font-size: 0.65rem; color: var(--text-muted); }
 .msg-read  { font-size: 0.7rem; color: var(--secondary); }
 
-/* Reactions */
 .msg-reactions {
     display: flex;
     flex-wrap: wrap;
@@ -486,7 +459,6 @@ body {
 .reaction-pill.mine  { border-color: var(--primary); background: var(--primary-dim); color: var(--primary); }
 .reaction-pill .rp-count { font-size: 0.7rem; font-weight: 800; }
 
-/* Hover actions (also tap-to-show on mobile via .show class) */
 .msg-actions-hover {
     position: absolute;
     top: -34px;
@@ -526,7 +498,6 @@ body {
 
 .act-btn:hover { background: rgba(139,92,246,0.15); color: var(--text-main); transform: scale(1.15); filter: none; }
 
-/* Emoji picker */
 .emoji-picker {
     position: absolute;
     top: -44px;
@@ -546,7 +517,6 @@ body {
 .emoji-opt { font-size: 1.2rem; cursor: pointer; transition: transform 0.15s; padding: 2px; border-radius: 6px; }
 .emoji-opt:hover { transform: scale(1.35); background: rgba(139,92,246,0.1); }
 
-/* System message */
 .sys-msg {
     text-align: center;
     font-size: 0.72rem;
@@ -722,7 +692,6 @@ body {
 .q-emoji { font-size: 1.4rem; cursor: pointer; transition: transform 0.15s; border-radius: 8px; padding: 3px; }
 .q-emoji:hover { transform: scale(1.3); background: rgba(139,92,246,0.1); }
 
-/* Send button */
 #sendBtn {
     width: 44px; height: 44px;
     border-radius: 50%;
@@ -744,7 +713,6 @@ body {
 #sendBtn:active { transform: scale(0.94); }
 #sendBtn:disabled { opacity: 0.4; transform: none; }
 
-/* Scroll to bottom button */
 #scrollBtn {
     position: fixed;
     bottom: 90px;
@@ -771,7 +739,7 @@ body {
 #scrollBtn.show { display: flex; }
 
 /* ============================================================
-   Image Lightbox (full-screen viewer with pinch/double-tap zoom)
+   Image Lightbox
    ============================================================ */
 
 .lightbox-overlay {
@@ -836,7 +804,7 @@ body {
 
 
 /* ============================================================
-   Sticker Panel (your saved stickers)
+   Sticker Panel
    ============================================================ */
 
 .sticker-panel {
@@ -932,7 +900,7 @@ body {
 
 
 /* ============================================================
-   Chat Settings Modal (message bubble shape — TikTok style)
+   Chat Settings Modal (message bubble shape)
    ============================================================ */
 
 .settings-overlay {
@@ -1029,21 +997,13 @@ body {
 .shape-preview-bubble.p-pill    { border-radius: 999px; }
 .shape-preview-bubble.p-soft    { border-radius: 20px; }
 
-
-/* ============================================================
-   Bubble Shape Variants — applied via body class from settings
-   (default "rounded" needs no class; it's the existing look)
-   ============================================================ */
-
 body.shape-square .msg-bubble { border-radius: 8px !important; }
-
 body.shape-pill .msg-bubble { border-radius: 999px !important; }
-
 body.shape-soft .msg-bubble { border-radius: 20px !important; }
 
 
 /* ============================================================
-   Responsive — phones
+   Responsive
    ============================================================ */
 
 @media (max-width: 600px) {
@@ -1051,7 +1011,6 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
     .back-btn { font-size: 1.1rem; padding: 2px 4px; }
     .ch-icon { width: 36px; height: 36px; font-size: 1.05rem; border-radius: 12px; }
     .ch-name { font-size: 0.88rem; }
-    .ch-online span#onlineCount { }
     #chatBox { padding: 10px 8px; gap: 3px; }
     .msg-col { max-width: 86%; }
     .msg-avatar { width: 28px; height: 28px; }
@@ -1077,7 +1036,6 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
 </head>
 <body>
 
-<!-- Chat Header -->
 <div class="chat-layout">
 
     <div class="chat-header">
@@ -1094,27 +1052,22 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
         </div>
     </div>
 
-    <!-- Messages -->
     <div id="chatBox"></div>
 
-    <!-- Typing -->
     <div id="typingBar"></div>
 
-    <!-- Reply Bar -->
     <div id="replyBar">
         <span>↩️ رد على</span>
         <div class="rb-text" id="replyText">—</div>
         <button class="rb-close" onclick="cancelReply()">✕</button>
     </div>
 
-    <!-- Upload Preview Bar -->
     <div id="uploadBar">
         <img id="uploadPreviewImg" src="" alt="">
         <div class="ub-text" id="uploadText">جاري تجهيز الصورة...</div>
         <button class="ub-close" onclick="cancelUpload()">✕</button>
     </div>
 
-    <!-- Input -->
     <div class="input-area" style="position:relative">
         <div class="quick-emojis" id="quickEmojis"></div>
         <div class="mention-panel" id="mentionPanel"></div>
@@ -1144,10 +1097,8 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
 
 </div>
 
-<!-- Scroll to bottom -->
 <button id="scrollBtn" onclick="scrollToBottom()">⬇️ رسائل جديدة</button>
 
-<!-- Image Lightbox -->
 <div class="lightbox-overlay" id="imgLightbox">
     <button class="lightbox-close" id="lightboxClose" type="button">✕</button>
     <div class="lightbox-stage" id="lightboxStage">
@@ -1156,7 +1107,6 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
     <div class="lightbox-hint">دبل تاب أو إصبعين للتكبير</div>
 </div>
 
-<!-- Chat Settings (bubble shape) -->
 <div class="settings-overlay" id="settingsOverlay">
     <div class="settings-panel">
         <div class="settings-header">
@@ -1169,29 +1119,45 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
 
 
 <script type="module">
-import { get, getApp, getApps, getAuth, getDatabase, initializeApp, onAuthStateChanged, onChildAdded, onValue, push, ref, remove, serverTimestamp, set, update } from "./supabase-config.js";
+/* ============================================================
+   CCRAFT SPACE — Chat (Supabase version)
+   ============================================================
+   ⚠️ ملاحظة مهمة عن الفجوة في السكيما:
+   جدول chat_messages في Supabase (حسب السكيما المتفق عليها) فيه
+   أعمدة: id, firebase_id, user_id, username, text, edited,
+   reply_to, created_at — بس. مفيهوش عمود لنوع الرسالة (صورة/ملصق)
+   ولا عمود reactions، فمفيش مكان نخزن فيه صور/ملصقات/تفاعلات
+   في الشات نفسه دلوقتي. عشان كده:
+   - إرسال نص + رد + تعديل + حذف: شغالين بالكامل.
+   - إرسال صورة/ملصق داخل الشات، والتفاعلات (👍❤️🔥...): متعطّلين
+     مؤقتًا (الزرار موجود بس بينبهك) لحد ما تضيف عمود `extra jsonb`
+     (أو أعمدة type/image_data/reactions) لجدول chat_messages.
+   - مكتبة ملصقاتك الشخصية (Sticker Library) اتخزنت في users.extra.stickers
+     (jsonb) لأن مفيش جدول مخصص ليها، وشغالة حفظ/حذف عادي.
+   - كولداون الإرسال (2.9 ثانية): في Firebase كان بيتفرض من السيرفر
+     عن طريق Rules + كتابة ذرّية. في Supabase من غير trigger/RPC
+     مينفعش نعمل نفس الفرض الذري، فالكولداون هنا **client-side فقط**
+     (نفس وضع حماية السبام اللي كانت موجودة أصلاً كطبقة UX).
+     لو عايز فرض حقيقي من السيرفر لازم Postgres trigger أو RPC function.
+   ============================================================ */
 
+import { supabase } from './supabase-config.js';
 
-
-
-
-
-
-const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const db   = getDatabase(app);
-const auth = getAuth(app);
-
-let currentUser  = null;
-let myUsername   = 'cCraft Space User'; // ✅ اسم المستخدم الحقيقي المحفوظ في البروفايل — مش الإيميل خالص
-let replyTo      = null;  // { key, username, text }
-let editingKey   = null;  // key of message being edited
-let avatarCache  = {};    // uid -> photo dataURL أو null (لو مفيش صورة)
+let currentUser  = null;   // Supabase auth user
+let userRow      = null;   // row from public.users
+let myUserId     = null;   // users.id (uuid) — used as FK
+let myUsername   = 'cCraft Space User';
+let replyTo      = null;
+let editingId    = null;
+let avatarCache  = {};     // users.id -> photo_url (or null)
 let lastDate     = null;
 let typingTimer  = null;
 let atBottom     = true;
-let pendingUpload = null; // { dataURL, type: 'image'|'sticker' }
-let userStickers  = {};   // id -> dataURL, your saved sticker library
-let currentShape  = 'rounded'; // selected message bubble shape
+let pendingUpload = null;  // kept for UI only (image/sticker send disabled — see note above)
+let userStickers  = {};    // id -> dataURL (from users.extra.stickers)
+let currentShape  = 'rounded';
+let presenceChannel = null;
+let typingChannel    = null;
 
 const chatBox    = document.getElementById('chatBox');
 const msgInput   = document.getElementById('msgInput');
@@ -1206,28 +1172,15 @@ const uploadPreviewImg = document.getElementById('uploadPreviewImg');
 const imageInput = document.getElementById('imageInput');
 const stickerInput = document.getElementById('stickerInput');
 const mentionPanel = document.getElementById('mentionPanel');
-let mentionStart = -1; // index of '@' that the current suggestion list refers to
+let mentionStart = -1;
 
 const EMOJIS = ['😂','😍','🔥','👍','💎','🚀','😎','🤩','😭','💀','🥶','🤯','👑','💜','⚡','🎮','🏆','🎯','💯','🌟','❤️','✨','🫡','🤝','🎉'];
-const REACT_EMOJIS = ['👍','❤️','😂','🔥','💎','👑'];
 
-// Max dimensions / quality used for compression
-const IMAGE_MAX_DIM   = 1280;
-const IMAGE_QUALITY   = 0.7;
-const STICKER_MAX_DIM = 300;
-const STICKER_QUALITY = 0.85;
-const MAX_DATA_LENGTH = 900000; // ~ safety cap on the base64 payload size
-const MAX_TEXT_LENGTH = 1500;   // يطابق حد الطول في Firebase Rules
+const MAX_TEXT_LENGTH = 1500;
 
 /* ============================================================
-   Anti-Spam: Send Cooldown
-   ============================================================
-   الحماية الحقيقية اتعملت في Firebase Rules (users/$uid/lastMessageTs
-   لازم يتحدّث في نفس عملية الكتابة، وبفاصل 2.9 ثانية على الأقل بين كل
-   تحديث والتاني — ده بيتفرض من السيرفر نفسه، مش بس من الكود ده، فحتى
-   لو حد بعت طلبات مباشرة لقاعدة البيانات من برّه الموقع، هيترفض).
-   الكود هنا طبقة تجربة استخدام إضافية بس (تعطيل الزرار + عدّاد) عشان
-   المستخدم العادي ياخد فيدباك واضح، مش عشان تمنع سبام متعمّد بمفردها. */
+   Anti-Spam: Send Cooldown (client-side only — see note above)
+   ============================================================ */
 const SEND_COOLDOWN_MS = 2900;
 let lastSendAt = 0;
 let cooldownTimer = null;
@@ -1244,11 +1197,11 @@ function tickCooldown() {
     const remaining = SEND_COOLDOWN_MS - (Date.now() - lastSendAt);
     if (remaining <= 0) {
         sendBtn.disabled = false;
-        if (!editingKey) msgInput.placeholder = originalPlaceholder;
+        if (!editingId) msgInput.placeholder = originalPlaceholder;
         return;
     }
     const secs = (remaining / 1000).toFixed(1);
-    if (!editingKey) msgInput.placeholder = `⏳ استنى ${secs} ثانية قبل الرسالة الجاية...`;
+    if (!editingId) msgInput.placeholder = `⏳ استنى ${secs} ثانية قبل الرسالة الجاية...`;
     cooldownTimer = setTimeout(tickCooldown, 100);
 }
 
@@ -1256,49 +1209,38 @@ function isOnCooldown() {
     return Date.now() - lastSendAt < SEND_COOLDOWN_MS;
 }
 
-// UX-only nicety: warns the user before they send an obviously-spammy message
-// (same character/emoji repeated 8+ times). The 'u' flag matters here — without
-// it "." only matches half of a two-unit emoji like 🔥, so the check silently
-// never fires. NOTE: this is client-side feedback only, not real protection —
-// a modified/forged client could skip it entirely. The actual protection
-// against flooding is the 2.9s server-enforced interval in the Firebase Rules.
 function looksLikeCharSpam(str) {
     return /^(.)\1{7,}$/u.test(str);
 }
 
 
 /* ============================================================
-   Auth
+   Init / Auth
    ============================================================ */
 
-onAuthStateChanged(auth, async user => {
-    if (!user) { alert('يجب تسجيل الدخول'); location.href='login.html'; return; }
+async function init() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { alert('يجب تسجيل الدخول'); location.href = 'login.html'; return; }
     currentUser = user;
 
-    // ✅ اسم المستخدم الحقيقي بيتجاب من البروفايل، مش من الإيميل خالص
-    let hasUsername = false;
-    try {
-        const nameSnap = await get(ref(db, `users/${user.uid}/username`));
-        if (nameSnap.exists() && nameSnap.val()) {
-            myUsername = nameSnap.val();
-            hasUsername = true;
-        }
-    } catch (e) { /* لو التحقق فشل، هنكمل بالاسم الافتراضي */ }
+    const { data: row } = await supabase.from('users').select('*').eq('auth_uid', user.id).maybeSingle();
+    if (!row) { location.href = 'login.html'; return; }
+    userRow = row;
 
-    // 🚧 لسه ما اختارش اسم مستخدم — لازم يختار الأول قبل ما يدخل الشات بأي اسم
-    if (!hasUsername) {
-        location.href = 'profile.html';
-        return;
-    }
+    if (!row.username) { location.href = 'profile.html'; return; }
+    myUsername = row.username;
+    myUserId   = row.id;
+    registerUser(myUserId, myUsername);
 
-    registerUser(user.uid, myUsername);
     buildQuickEmojis();
-    loadChat();
-    trackPresence(user);
-    trackTyping(user);
+    await loadChat();
+    trackPresence();
+    trackTyping();
     loadStickers();
     loadBubbleShape();
-});
+}
+
+init();
 
 
 /* ============================================================
@@ -1337,17 +1279,17 @@ function initialsAvatarHTML(name, size) {
     return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:${size*0.35}px">${initial}</div>`;
 }
 
-async function getAvatar(uid, size = 34, name = '') {
-    if (!uid) return initialsAvatarHTML(name, size);
-    if (avatarCache[uid] !== undefined) {
-        return avatarCache[uid]
-            ? `<img src="${avatarCache[uid]}" alt="" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;display:block">`
+async function getAvatar(userId, size = 34, name = '') {
+    if (!userId) return initialsAvatarHTML(name, size);
+    if (avatarCache[userId] !== undefined) {
+        return avatarCache[userId]
+            ? `<img src="${avatarCache[userId]}" alt="" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;display:block">`
             : initialsAvatarHTML(name, size);
     }
     try {
-        const snap = await get(ref(db, `users/${uid}/photo`));
-        const photo = snap.exists() ? snap.val() : null;
-        avatarCache[uid] = photo;
+        const { data } = await supabase.from('users').select('photo_url').eq('id', userId).maybeSingle();
+        const photo = data ? data.photo_url : null;
+        avatarCache[userId] = photo;
         return photo
             ? `<img src="${photo}" alt="" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;display:block">`
             : initialsAvatarHTML(name, size);
@@ -1361,7 +1303,6 @@ async function getAvatar(uid, size = 34, name = '') {
    Code block + text rendering
    ============================================================ */
 
-// Map common language aliases to a clean display label
 const LANG_LABELS = {
     js:'JavaScript', javascript:'JavaScript', ts:'TypeScript', typescript:'TypeScript',
     py:'Python', python:'Python', html:'HTML', css:'CSS', json:'JSON',
@@ -1371,12 +1312,10 @@ const LANG_LABELS = {
     xml:'XML', yaml:'YAML', yml:'YAML', dart:'Dart', txt:'Text', text:'Text'
 };
 
-// Registry of every username we've ever seen (from messages + presence),
-// used to power @mention autocomplete and to know which @word is a real mention
-const knownUsers = new Map(); // uid -> username
+const knownUsers = new Map(); // users.id -> username
 
-function registerUser(uid, username) {
-    if (uid && username) knownUsers.set(uid, username);
+function registerUser(id, username) {
+    if (id && username) knownUsers.set(id, username);
 }
 
 function escapeRegex(str) {
@@ -1384,13 +1323,12 @@ function escapeRegex(str) {
 }
 
 function linkifyMentions(escapedText) {
-    // escapedText is already HTML-escaped; usernames are plain ASCII so this is safe to run after escaping
     return escapedText.replace(/@([A-Za-z0-9_.\-]+)/g, (full, uname) => {
         let isMe = false, isKnown = false;
-        for (const [uid, name] of knownUsers) {
+        for (const [id, name] of knownUsers) {
             if (name.toLowerCase() === uname.toLowerCase()) {
                 isKnown = true;
-                if (currentUser && uid === currentUser.uid) isMe = true;
+                if (id === myUserId) isMe = true;
             }
         }
         if (!isKnown) return full;
@@ -1424,7 +1362,6 @@ function renderMessageContent(text) {
     return found ? html : linkifyMentions(escapeHTML(text));
 }
 
-// Single delegated listener handles copy buttons for every code block ever rendered
 chatBox.addEventListener('click', async e => {
     const imgEl = e.target.closest('.msg-image-img, .msg-sticker-img');
     if (imgEl) { openLightbox(imgEl.src); return; }
@@ -1436,7 +1373,6 @@ chatBox.addEventListener('click', async e => {
     try {
         await navigator.clipboard.writeText(codeEl.textContent);
     } catch {
-        // fallback for older/insecure contexts
         const ta = document.createElement('textarea');
         ta.value = codeEl.textContent;
         document.body.appendChild(ta);
@@ -1452,117 +1388,108 @@ chatBox.addEventListener('click', async e => {
 
 
 /* ============================================================
-   Load Chat
+   Load Chat (initial fetch + realtime subscription)
    ============================================================ */
 
-function loadChat() {
-    onChildAdded(ref(db, 'chat'), async snapshot => {
-        const msg = snapshot.val();
-        const key = snapshot.key;
-        if (!msg) return;
+async function loadChat() {
+    const { data: rows, error } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .order('created_at', { ascending: true })
+        .limit(200);
 
-        const date    = msg.timestamp ? new Date(msg.timestamp) : new Date();
-        const dateStr = date.toLocaleDateString('ar-EG', { weekday:'long', day:'numeric', month:'long' });
+    if (!error && rows) {
+        for (const msg of rows) await appendMessage(msg);
+        scrollToBottom();
+    }
 
-        if (dateStr !== lastDate) {
-            lastDate = dateStr;
-            const sep = document.createElement('div');
-            sep.className = 'date-sep';
-            sep.textContent = dateStr;
-            chatBox.appendChild(sep);
-        }
-
-        const avatarHTML = await getAvatar(msg.userId, 32, msg.username);
-        const isOwn = msg.userId === currentUser.uid;
-        const time  = date.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
-        registerUser(msg.userId, msg.username);
-
-        const el = document.createElement('div');
-        el.className = `msg-group ${isOwn ? 'own' : ''}`;
-        el.dataset.key = key;
-        el.dataset.uid = msg.userId || '';
-
-        el.innerHTML = buildMessageHTML(msg, key, isOwn, avatarHTML, time);
-        chatBox.appendChild(el);
-
-        attachActions(el, msg, key, isOwn);
-
-        if (atBottom) scrollToBottom();
-        else scrollBtn.classList.add('show');
-    });
-
-    // Listen for updates (edits/reactions)
-    onValue(ref(db, 'chat'), snapshot => {
-        if (!snapshot.exists()) return;
-        snapshot.forEach(child => {
-            const key = child.key;
-            const msg = child.val();
-            const el  = chatBox.querySelector(`[data-key="${key}"]`);
-            if (!el) return;
-            // Update reactions
-            const reactDiv = el.querySelector('.msg-reactions');
-            if (reactDiv) reactDiv.innerHTML = buildReactionsHTML(msg.reactions||{}, key);
-            // Mark edited
-            const editedTag = el.querySelector('.edited-tag');
-            if (editedTag && msg.edited) editedTag.style.display = 'inline';
-            // Update text (re-render so ```code``` blocks stay live after an edit)
-            const textEl = el.querySelector('.bubble-text');
-            if (textEl && msg.type !== 'sticker') textEl.innerHTML = renderMessageContent(msg.text || '');
-        });
-    });
+    supabase
+        .channel('chat_messages-stream')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
+            appendMessage(payload.new).then(() => {
+                if (atBottom) scrollToBottom();
+                else scrollBtn.classList.add('show');
+            });
+        })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_messages' }, payload => {
+            updateMessageEl(payload.new);
+        })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'chat_messages' }, payload => {
+            const el = chatBox.querySelector(`[data-id="${payload.old.id}"]`);
+            if (el) el.remove();
+        })
+        .subscribe();
 }
 
-function buildMessageHTML(msg, key, isOwn, avatarHTML, time) {
-    const replyHTML = msg.replyTo ? `
+async function appendMessage(msg) {
+    const date    = msg.created_at ? new Date(msg.created_at) : new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', { weekday:'long', day:'numeric', month:'long' });
+
+    if (dateStr !== lastDate) {
+        lastDate = dateStr;
+        const sep = document.createElement('div');
+        sep.className = 'date-sep';
+        sep.textContent = dateStr;
+        chatBox.appendChild(sep);
+    }
+
+    const avatarHTML = await getAvatar(msg.user_id, 32, msg.username);
+    const isOwn = msg.user_id === myUserId;
+    const time  = date.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+    registerUser(msg.user_id, msg.username);
+
+    const el = document.createElement('div');
+    el.className = `msg-group ${isOwn ? 'own' : ''}`;
+    el.dataset.id = msg.id;
+    el.dataset.uid = msg.user_id || '';
+
+    el.innerHTML = buildMessageHTML(msg, isOwn, avatarHTML, time);
+    chatBox.appendChild(el);
+
+    attachActions(el, msg, isOwn);
+}
+
+function updateMessageEl(msg) {
+    const el = chatBox.querySelector(`[data-id="${msg.id}"]`);
+    if (!el) return;
+    const editedTag = el.querySelector('.edited-tag');
+    if (editedTag && msg.edited) editedTag.style.display = 'inline';
+    const textEl = el.querySelector('.bubble-text');
+    if (textEl) textEl.innerHTML = renderMessageContent(msg.text || '');
+}
+
+function buildMessageHTML(msg, isOwn, avatarHTML, time) {
+    const replyHTML = msg.reply_to ? `
         <div class="reply-preview">
-            <div class="rp-name">↩️ ${msg.replyTo.username}</div>
-            <div class="rp-text">${escapeHTML(msg.replyTo.text || '')}</div>
+            <div class="rp-name">↩️ ${escapeHTML(msg.reply_to.username || '')}</div>
+            <div class="rp-text">${escapeHTML(msg.reply_to.text || '')}</div>
         </div>
     ` : '';
 
-    const reactionsHTML = buildReactionsHTML(msg.reactions||{}, key);
     const editedHTML = msg.edited ? '<span class="edited-tag">(معدّل)</span>' : '<span class="edited-tag" style="display:none">(معدّل)</span>';
-    const isMedia = msg.type === 'image' || msg.type === 'sticker';
 
     const myUsernameLower = (myUsername || '').toLowerCase();
     const mentionsMe = !isOwn && myUsernameLower && msg.text &&
         new RegExp(`(^|\\s)@${escapeRegex(myUsernameLower)}(\\s|$)`, 'i').test(msg.text + ' ');
 
-    let contentHTML;
-    if (msg.type === 'sticker') {
-        contentHTML = `<img src="${msg.imageData}" class="msg-sticker-img" alt="ملصق">`;
-    } else if (msg.type === 'image') {
-        contentHTML = `
-            ${replyHTML}
-            <img src="${msg.imageData}" class="msg-image-img" alt="صورة">
-            ${msg.text ? `<div class="bubble-text" style="margin-top:8px">${renderMessageContent(msg.text)}</div>` : ''}
-            ${editedHTML}
-        `;
-    } else {
-        contentHTML = `
-            ${replyHTML}
-            <div class="bubble-text">${renderMessageContent(msg.text || '')}</div>
-            ${editedHTML}
-        `;
-    }
+    const contentHTML = `
+        ${replyHTML}
+        <div class="bubble-text">${renderMessageContent(msg.text || '')}</div>
+        ${editedHTML}
+    `;
 
     return `
-        <div class="msg-avatar" onclick="location.href='profile.html?uid=${msg.userId}'">${avatarHTML}</div>
+        <div class="msg-avatar" onclick="location.href='profile.html?uid=${msg.user_id}'">${avatarHTML}</div>
         <div class="msg-col">
-            ${!isOwn ? `<div class="msg-username" onclick="location.href='profile.html?uid=${msg.userId}'">${msg.username || 'cCraft Space User'}</div>` : ''}
-            <div class="msg-bubble ${msg.type === 'sticker' ? 'sticker-bubble' : ''} ${mentionsMe ? 'mention-glow' : ''}">
+            ${!isOwn ? `<div class="msg-username" onclick="location.href='profile.html?uid=${msg.user_id}'">${escapeHTML(msg.username || 'cCraft Space User')}</div>` : ''}
+            <div class="msg-bubble ${mentionsMe ? 'mention-glow' : ''}">
                 <div class="msg-actions-hover">
-                    <div class="emoji-picker" id="ep-${key}">
-                        ${REACT_EMOJIS.map(e=>`<span class="emoji-opt" data-emoji="${e}" data-key="${key}">${e}</span>`).join('')}
-                    </div>
-                    <button class="act-btn react-btn" data-key="${key}" title="تفاعل">😊</button>
-                    <button class="act-btn reply-btn" data-key="${key}" title="رد">↩️</button>
-                    ${isOwn && !isMedia ? `<button class="act-btn edit-btn" data-key="${key}" title="تعديل">✏️</button>` : ''}
-                    ${isOwn ? `<button class="act-btn del-btn" data-key="${key}" title="حذف">🗑️</button>` : ''}
+                    <button class="act-btn reply-btn" data-id="${msg.id}" title="رد">↩️</button>
+                    ${isOwn ? `<button class="act-btn edit-btn" data-id="${msg.id}" title="تعديل">✏️</button>` : ''}
+                    ${isOwn ? `<button class="act-btn del-btn" data-id="${msg.id}" title="حذف">🗑️</button>` : ''}
                 </div>
                 ${contentHTML}
             </div>
-            <div class="msg-reactions">${reactionsHTML}</div>
             <div class="msg-meta">
                 <span class="msg-time">${time}</span>
                 ${isOwn ? '<span class="msg-read">✓✓</span>' : ''}
@@ -1571,69 +1498,29 @@ function buildMessageHTML(msg, key, isOwn, avatarHTML, time) {
     `;
 }
 
-function buildReactionsHTML(reactions, key) {
-    if (!reactions || !Object.keys(reactions).length) return '';
-    const counts = {};
-    const myReacts = new Set();
-    Object.entries(reactions).forEach(([uid, emoji]) => {
-        counts[emoji] = (counts[emoji]||0) + 1;
-        if (uid === currentUser?.uid) myReacts.add(emoji);
-    });
-    return Object.entries(counts).map(([emoji, count]) =>
-        `<span class="reaction-pill ${myReacts.has(emoji)?'mine':''}" data-emoji="${emoji}" data-key="${key}">
-            ${emoji} <span class="rp-count">${count}</span>
-        </span>`
-    ).join('');
-}
-
 
 /* ============================================================
    Attach Actions
    ============================================================ */
 
-function attachActions(el, msg, key, isOwn) {
-    // On touch devices, tapping the bubble toggles the action bar
+function attachActions(el, msg, isOwn) {
     el.querySelector('.msg-bubble')?.addEventListener('click', e => {
         if (e.target.closest('.act-btn') || e.target.closest('.code-copy-btn') || e.target.closest('img')) return;
         el.querySelectorAll('.msg-actions-hover').forEach(bar => bar.classList.toggle('show'));
     });
 
-    // React button
-    el.querySelector('.react-btn')?.addEventListener('click', e => {
-        e.stopPropagation();
-        const picker = document.getElementById(`ep-${key}`);
-        if (picker) picker.classList.toggle('show');
-    });
-
-    // Emoji options
-    el.querySelectorAll('.emoji-opt').forEach(opt => {
-        opt.addEventListener('click', async e => {
-            e.stopPropagation();
-            await toggleReaction(key, opt.dataset.emoji);
-            document.getElementById(`ep-${key}`)?.classList.remove('show');
-        });
-    });
-
-    // Reaction pills (click to toggle)
-    el.querySelector('.msg-reactions')?.addEventListener('click', async e => {
-        const pill = e.target.closest('.reaction-pill');
-        if (pill) await toggleReaction(pill.dataset.key, pill.dataset.emoji);
-    });
-
-    // Reply
     el.querySelector('.reply-btn')?.addEventListener('click', e => {
         e.stopPropagation();
-        const previewText = msg.text || (msg.type === 'image' ? '📷 صورة' : msg.type === 'sticker' ? '🎨 ملصق' : '');
-        replyTo = { key, username: msg.username, text: previewText };
+        const previewText = msg.text || '';
+        replyTo = { id: msg.id, username: msg.username, text: previewText };
         replyBar.style.display = 'flex';
-        replyText.innerHTML = `<strong>${msg.username}</strong>: ${escapeHTML(previewText).slice(0,60)}`;
+        replyText.innerHTML = `<strong>${escapeHTML(msg.username||'')}</strong>: ${escapeHTML(previewText).slice(0,60)}`;
         msgInput.focus();
     });
 
-    // Edit
     el.querySelector('.edit-btn')?.addEventListener('click', e => {
         e.stopPropagation();
-        editingKey   = key;
+        editingId    = msg.id;
         msgInput.value = msg.text || '';
         msgInput.focus();
         msgInput.style.borderColor = 'var(--secondary)';
@@ -1641,165 +1528,13 @@ function attachActions(el, msg, key, isOwn) {
         autoResize();
     });
 
-    // Delete
     el.querySelector('.del-btn')?.addEventListener('click', async e => {
         e.stopPropagation();
         if (!confirm('حذف هذه الرسالة؟')) return;
-        await remove(ref(db, `chat/${key}`));
+        await supabase.from('chat_messages').delete().eq('id', msg.id);
         el.style.cssText += 'opacity:0;transform:scale(0.9);transition:0.3s';
         setTimeout(() => el.remove(), 300);
     });
-
-    // Close emoji picker on outside click
-    document.addEventListener('click', e => {
-        if (!e.target.closest(`#ep-${key}`) && !e.target.closest('.react-btn'))
-            document.getElementById(`ep-${key}`)?.classList.remove('show');
-    }, { once: false });
-}
-
-async function toggleReaction(key, emoji) {
-    if (!currentUser) return;
-    const reactRef = ref(db, `chat/${key}/reactions/${currentUser.uid}`);
-    const snap = await get(reactRef);
-    if (snap.exists() && snap.val() === emoji) {
-        await remove(reactRef); // إلغاء التفاعل
-    } else {
-        await set(reactRef, emoji);
-    }
-}
-
-
-/* ============================================================
-   Image compression (canvas-based, no upload needed elsewhere)
-   ============================================================ */
-
-function compressImageFile(file, { maxDim = 1280, quality = 0.7, mimeType = 'image/jpeg' } = {}) {
-    return new Promise((resolve, reject) => {
-        if (!file || !file.type.startsWith('image/')) { reject(new Error('ملف غير صالح')); return; }
-        const reader = new FileReader();
-        reader.onload = e => {
-            const img = new Image();
-            img.onload = () => {
-                let { width, height } = img;
-                if (width > maxDim || height > maxDim) {
-                    if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
-                    else { width = Math.round(width * maxDim / height); height = maxDim; }
-                }
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                try {
-                    resolve(canvas.toDataURL(mimeType, quality));
-                } catch (err) { reject(err); }
-            };
-            img.onerror = () => reject(new Error('تعذّر تحميل الصورة'));
-            img.src = e.target.result;
-        };
-        reader.onerror = () => reject(new Error('تعذّرت قراءة الملف'));
-        reader.readAsDataURL(file);
-    });
-}
-
-
-/* ============================================================
-   Image / Sticker Sending
-   ============================================================ */
-
-document.getElementById('imageTrigger').onclick = () => imageInput.click();
-
-imageInput.addEventListener('change', async () => {
-    const file = imageInput.files[0];
-    imageInput.value = '';
-    if (!file) return;
-    await prepareUpload(file, 'image');
-});
-
-stickerInput.addEventListener('change', async () => {
-    const file = stickerInput.files[0];
-    stickerInput.value = '';
-    if (!file || !currentUser) return;
-    stickerAddBtn.disabled = true;
-    stickerAddBtn.textContent = '⏳ جاري الحفظ...';
-    try {
-        const dataURL = await compressImageFile(file, {
-            maxDim: STICKER_MAX_DIM,
-            quality: STICKER_QUALITY,
-            mimeType: 'image/webp'
-        });
-        if (dataURL.length > MAX_DATA_LENGTH) {
-            alert('الملصق كبير حتى بعد الضغط، جرّب صورة أصغر.');
-            return;
-        }
-        const newRef = push(ref(db, `users/${currentUser.uid}/stickers`));
-        await set(newRef, dataURL);
-        userStickers[newRef.key] = dataURL;
-        renderStickerPanel();
-    } catch {
-        alert('تعذّر حفظ الملصق');
-    } finally {
-        stickerAddBtn.disabled = false;
-        stickerAddBtn.textContent = '➕ إضافة ملصق';
-    }
-});
-
-async function prepareUpload(file, type) {
-    uploadBar.style.display = 'flex';
-    uploadText.textContent = 'جاري ضغط الصورة...';
-    uploadPreviewImg.src = '';
-    sendBtn.disabled = true;
-    try {
-        const isSticker = type === 'sticker';
-        const dataURL = await compressImageFile(file, {
-            maxDim: isSticker ? STICKER_MAX_DIM : IMAGE_MAX_DIM,
-            quality: isSticker ? STICKER_QUALITY : IMAGE_QUALITY,
-            mimeType: isSticker ? 'image/webp' : 'image/jpeg'
-        });
-        if (dataURL.length > MAX_DATA_LENGTH) {
-            alert('الصورة كبيرة حتى بعد الضغط، جرّب صورة أصغر.');
-            cancelUpload();
-            return;
-        }
-        pendingUpload = { dataURL, type };
-        uploadPreviewImg.src = dataURL;
-        const approxKB = Math.round(dataURL.length * 0.75 / 1024);
-        uploadText.textContent = isSticker
-            ? `ملصق جاهز للإرسال (~${approxKB}kb)`
-            : `صورة جاهزة للإرسال (~${approxKB}kb) — يمكنك إضافة تعليق ثم الإرسال`;
-        msgInput.focus();
-    } catch (err) {
-        alert('تعذّر معالجة الصورة');
-        cancelUpload();
-    } finally {
-        sendBtn.disabled = isOnCooldown();
-    }
-}
-
-function cancelUpload() {
-    pendingUpload = null;
-    uploadBar.style.display = 'none';
-    uploadPreviewImg.src = '';
-}
-
-window.cancelUpload = cancelUpload;
-
-
-/* ============================================================
-   Send Message (Firebase write helper)
-   ============================================================
-   بيكتب الرسالة و users/$uid/lastMessageTs في نفس العملية الذرّية
-   (atomic multi-path update). قواعد الـ Firebase بترفض أي رسالة
-   جديدة إلا لو القيمتين دول متطابقتين وبفاصل 2.9 ثانية عن آخر مرة —
-   فمينفعش حد يبعت رسالة من غير ما "يدفع" الفاصل الزمني ده، حتى لو
-   استخدم استدعاء مباشر لقاعدة البيانات من برّه الصفحة دي. */
-async function sendChatData(data) {
-    const newKey = push(ref(db, 'chat')).key;
-    const updates = {};
-    updates[`chat/${newKey}`] = data;
-    updates[`users/${currentUser.uid}/lastMessageTs`] = data.timestamp;
-    await update(ref(db), updates);
-    return newKey;
 }
 
 
@@ -1809,17 +1544,16 @@ async function sendChatData(data) {
 
 async function sendMessage() {
     const text = msgInput.value.trim();
-    if (!text && !pendingUpload) return;
+    if (!text) return;
     if (!currentUser) return;
 
-    // Editing an existing message isn't a "new message", so it's exempt from the send cooldown
-    if (!editingKey && isOnCooldown()) return;
+    if (!editingId && isOnCooldown()) return;
 
     if (text.length > MAX_TEXT_LENGTH) {
         alert(`الرسالة طويلة أوي (الحد الأقصى ${MAX_TEXT_LENGTH} حرف)`);
         return;
     }
-    if (text && looksLikeCharSpam(text)) {
+    if (looksLikeCharSpam(text)) {
         alert('الرسالة دي شكلها سبام (نفس الحرف متكرر)، غيّرها وابعتها تاني');
         return;
     }
@@ -1827,43 +1561,25 @@ async function sendMessage() {
     sendBtn.disabled = true;
 
     try {
-        if (editingKey) {
-            // تعديل رسالة نصيّة (مش خاضع لكولداون الإرسال)
-            if (text) await update(ref(db, `chat/${editingKey}`), { text, edited: true });
-            editingKey = null;
+        if (editingId) {
+            await supabase.from('chat_messages').update({ text, edited: true }).eq('id', editingId);
+            editingId = null;
             msgInput.style.borderColor = '';
             msgInput.placeholder = originalPlaceholder;
-        } else if (pendingUpload) {
-            const data = {
-                userId:    currentUser.uid,
-                username:  myUsername,
-                type:      pendingUpload.type,
-                imageData: pendingUpload.dataURL,
-                timestamp: Date.now(),
-            };
-            if (pendingUpload.type === 'image' && text) data.text = text;
-            if (replyTo) {
-                data.replyTo = { key: replyTo.key, username: replyTo.username, text: replyTo.text };
-                replyTo = null;
-                replyBar.style.display = 'none';
-            }
-            await sendChatData(data);
-            cancelUpload();
-            startCooldownUI();
         } else {
-            // رسالة نصية جديدة
             const data = {
-                userId:    currentUser.uid,
-                username:  myUsername,
+                user_id:  myUserId,
+                username: myUsername,
                 text,
-                timestamp: Date.now(),
+                edited:   false,
             };
             if (replyTo) {
-                data.replyTo = { key: replyTo.key, username: replyTo.username, text: replyTo.text };
+                data.reply_to = { key: replyTo.id, username: replyTo.username, text: replyTo.text };
                 replyTo = null;
                 replyBar.style.display = 'none';
             }
-            await sendChatData(data);
+            const { error } = await supabase.from('chat_messages').insert(data);
+            if (error) throw error;
             startCooldownUI();
         }
 
@@ -1873,6 +1589,7 @@ async function sendMessage() {
         scrollToBottom();
     } catch (err) {
         console.error('sendMessage failed', err);
+        alert('تعذّر إرسال الرسالة، حاول تاني.');
     } finally {
         if (!isOnCooldown()) sendBtn.disabled = false;
         msgInput.focus();
@@ -1889,8 +1606,21 @@ function cancelReply() {
     replyTo = null;
     replyBar.style.display = 'none';
 }
-
 window.cancelReply = cancelReply;
+
+function cancelUpload() {
+    pendingUpload = null;
+    uploadBar.style.display = 'none';
+    uploadPreviewImg.src = '';
+}
+window.cancelUpload = cancelUpload;
+
+/* Image / sticker send: disabled — see note at top of file about the
+   missing chat_messages columns. Buttons stay visible for UX continuity
+   but explain the situation instead of silently failing. */
+document.getElementById('imageTrigger').onclick = () => {
+    alert('إرسال الصور في الشات محتاج عمود إضافي (extra/type/image_data) في جدول chat_messages لسه متضافش — قريبًا 🙏');
+};
 
 
 /* ============================================================
@@ -1930,7 +1660,7 @@ function updateMentionPanel() {
     if (!m) { mentionPanel.classList.remove('show'); mentionStart = -1; return; }
     const q = m.query.toLowerCase();
     const matches = [...knownUsers.entries()]
-        .filter(([uid, name]) => uid !== currentUser?.uid && name.toLowerCase().includes(q))
+        .filter(([id, name]) => id !== myUserId && name.toLowerCase().includes(q))
         .slice(0, 6);
     if (!matches.length) { mentionPanel.classList.remove('show'); mentionStart = -1; return; }
     mentionStart = m.start;
@@ -1968,49 +1698,76 @@ document.addEventListener('click', e => {
 
 
 /* ============================================================
-   Typing Indicator
+   Typing Indicator — Supabase Realtime Broadcast (no DB writes)
    ============================================================ */
 
+function ensureTypingChannel() {
+    if (typingChannel) return typingChannel;
+    typingChannel = supabase.channel('chat-typing', { config: { broadcast: { self: false } } });
+    typingChannel.on('broadcast', { event: 'typing' }, ({ payload }) => {
+        renderTypers(payload);
+    });
+    typingChannel.subscribe();
+    return typingChannel;
+}
+
+const activeTypers = new Map(); // userId -> { name, ts }
+
+function renderTypers(payload) {
+    if (!payload || payload.userId === myUserId) return;
+    activeTypers.set(payload.userId, { name: payload.name, ts: Date.now() });
+    refreshTypingBar();
+}
+
+function refreshTypingBar() {
+    const now = Date.now();
+    for (const [uid, d] of activeTypers) if (now - d.ts > 4000) activeTypers.delete(uid);
+    const typers = [...activeTypers.values()].map(d => d.name);
+    if (!typers.length) { typingBar.innerHTML = ''; return; }
+    typingBar.innerHTML = `
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+        <span>${typers.join('، ')} ${typers.length===1?'يكتب...':'يكتبون...'}</span>
+    `;
+}
+
+setInterval(refreshTypingBar, 1500);
+
 function handleTyping() {
-    if (!currentUser) return;
-    set(ref(db, `typing/${currentUser.uid}`), { name: myUsername, ts: Date.now() });
+    if (!myUserId) return;
+    ensureTypingChannel().send({ type: 'broadcast', event: 'typing', payload: { userId: myUserId, name: myUsername } });
     clearTimeout(typingTimer);
     typingTimer = setTimeout(clearTyping, 3000);
 }
 
 function clearTyping() {
-    if (!currentUser) return;
-    remove(ref(db, `typing/${currentUser.uid}`));
+    activeTypers.delete(myUserId);
 }
 
-function trackTyping(user) {
-    onValue(ref(db, 'typing'), snap => {
-        if (!snap.exists()) { typingBar.innerHTML=''; return; }
-        const typers = Object.entries(snap.val())
-            .filter(([uid, d]) => uid !== user.uid && Date.now() - d.ts < 4000)
-            .map(([,d]) => d.name);
-        if (!typers.length) { typingBar.innerHTML=''; return; }
-        typingBar.innerHTML = `
-            <div class="typing-dots"><span></span><span></span><span></span></div>
-            <span>${typers.join('، ')} ${typers.length===1?'يكتب...':'يكتبون...'}</span>
-        `;
-    });
+function trackTyping() {
+    ensureTypingChannel();
 }
 
 
 /* ============================================================
-   Online Presence
+   Online Presence — Supabase Realtime Presence
    ============================================================ */
 
-function trackPresence(user) {
-    const presRef = ref(db, `presence/${user.uid}`);
-    set(presRef, { online: true, ts: Date.now(), name: myUsername });
+function trackPresence() {
+    presenceChannel = supabase.channel('chat-presence', { config: { presence: { key: myUserId } } });
 
-    onValue(ref(db, 'presence'), snap => {
-        if (!snap.exists()) { document.getElementById('onlineCount').innerText = '0'; return; }
-        const online = Object.values(snap.val()).filter(p => p.online && Date.now() - p.ts < 60000).length;
-        document.getElementById('onlineCount').innerText = online;
-        Object.entries(snap.val()).forEach(([uid, p]) => registerUser(uid, p.name));
+    presenceChannel.on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        document.getElementById('onlineCount').innerText = Object.keys(state).length;
+        Object.entries(state).forEach(([uid, metas]) => {
+            const meta = metas[0];
+            if (meta?.name) registerUser(uid, meta.name);
+        });
+    });
+
+    presenceChannel.subscribe(async status => {
+        if (status === 'SUBSCRIBED') {
+            await presenceChannel.track({ name: myUsername, ts: Date.now() });
+        }
     });
 }
 
@@ -2024,7 +1781,6 @@ function scrollToBottom() {
     scrollBtn.classList.remove('show');
     atBottom = true;
 }
-
 window.scrollToBottom = scrollToBottom;
 
 window.addEventListener('scroll', () => {
@@ -2072,7 +1828,6 @@ function closeLightbox() {
     imgLightbox.classList.remove('show');
     lightboxImg.src = '';
 }
-
 window.openLightbox = openLightbox;
 
 document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
@@ -2081,7 +1836,6 @@ imgLightbox.addEventListener('click', e => {
     if (e.target === imgLightbox) closeLightbox();
 });
 
-// Double-tap on the image toggles zoom in/out
 lightboxStage.addEventListener('click', e => {
     if (e.target !== lightboxImg) return;
     const now = Date.now();
@@ -2133,21 +1887,56 @@ lightboxStage.addEventListener('touchend', e => {
 
 
 /* ============================================================
-   Sticker Library ("ملصقاتك") — save once, send anytime
+   Sticker Library ("ملصقاتك") — stored in users.extra.stickers
+   (personal save/delete works; SENDING a sticker to chat is
+   disabled — see the note at the top of this file)
    ============================================================ */
 
 const stickerPanel  = document.getElementById('stickerPanel');
 const stickerGrid   = document.getElementById('stickerGrid');
 const stickerAddBtn = document.getElementById('stickerAddBtn');
 
+const STICKER_MAX_DIM = 300;
+const STICKER_QUALITY = 0.85;
+const MAX_DATA_LENGTH = 900000;
+
+function compressImageFile(file, { maxDim = 1280, quality = 0.7, mimeType = 'image/jpeg' } = {}) {
+    return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith('image/')) { reject(new Error('ملف غير صالح')); return; }
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                let { width, height } = img;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+                    else { width = Math.round(width * maxDim / height); height = maxDim; }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                try { resolve(canvas.toDataURL(mimeType, quality)); } catch (err) { reject(err); }
+            };
+            img.onerror = () => reject(new Error('تعذّر تحميل الصورة'));
+            img.src = e.target.result;
+        };
+        reader.onerror = () => reject(new Error('تعذّرت قراءة الملف'));
+        reader.readAsDataURL(file);
+    });
+}
+
 async function loadStickers() {
-    try {
-        const snap = await get(ref(db, `users/${currentUser.uid}/stickers`));
-        userStickers = snap.exists() ? snap.val() : {};
-    } catch {
-        userStickers = {};
-    }
+    userStickers = (userRow.extra && userRow.extra.stickers) ? userRow.extra.stickers : {};
     renderStickerPanel();
+}
+
+async function persistExtra(patch) {
+    const newExtra = { ...(userRow.extra || {}), ...patch };
+    const { error } = await supabase.from('users').update({ extra: newExtra }).eq('id', myUserId);
+    if (!error) userRow.extra = newExtra;
+    return !error;
 }
 
 function renderStickerPanel() {
@@ -2166,7 +1955,7 @@ function renderStickerPanel() {
     stickerGrid.querySelectorAll('.sticker-item').forEach(item => {
         item.addEventListener('click', e => {
             if (e.target.closest('.sticker-del-btn')) return;
-            sendStickerDirect(userStickers[item.dataset.id]);
+            alert('إرسال الملصق في الشات محتاج عمود إضافي في chat_messages لسه متضافش — قريبًا 🙏');
         });
     });
 
@@ -2177,36 +1966,37 @@ function renderStickerPanel() {
             if (!confirm('حذف الملصق ده من ملصقاتك؟')) return;
             delete userStickers[id];
             renderStickerPanel();
-            await remove(ref(db, `users/${currentUser.uid}/stickers/${id}`));
+            await persistExtra({ stickers: userStickers });
         });
     });
 }
 
-async function sendStickerDirect(dataURL) {
-    if (!currentUser || !dataURL) return;
-    if (isOnCooldown()) return; // نفس كولداون الإرسال العادي
-
-    const data = {
-        userId:    currentUser.uid,
-        username:  myUsername,
-        type:      'sticker',
-        imageData: dataURL,
-        timestamp: Date.now(),
-    };
-    if (replyTo) {
-        data.replyTo = { key: replyTo.key, username: replyTo.username, text: replyTo.text };
-        replyTo = null;
-        replyBar.style.display = 'none';
-    }
+stickerInput.addEventListener('change', async () => {
+    const file = stickerInput.files[0];
+    stickerInput.value = '';
+    if (!file || !currentUser) return;
+    stickerAddBtn.disabled = true;
+    stickerAddBtn.textContent = '⏳ جاري الحفظ...';
     try {
-        await sendChatData(data);
-        startCooldownUI();
-        stickerPanel.classList.remove('show');
-        scrollToBottom();
-    } catch (err) {
-        console.error('sendStickerDirect failed', err);
+        const dataURL = await compressImageFile(file, {
+            maxDim: STICKER_MAX_DIM, quality: STICKER_QUALITY, mimeType: 'image/webp'
+        });
+        if (dataURL.length > MAX_DATA_LENGTH) {
+            alert('الملصق كبير حتى بعد الضغط، جرّب صورة أصغر.');
+            return;
+        }
+        const id = 'stk_' + Date.now().toString(36);
+        userStickers[id] = dataURL;
+        const ok = await persistExtra({ stickers: userStickers });
+        if (!ok) { delete userStickers[id]; alert('تعذّر حفظ الملصق'); }
+        renderStickerPanel();
+    } catch {
+        alert('تعذّر حفظ الملصق');
+    } finally {
+        stickerAddBtn.disabled = false;
+        stickerAddBtn.textContent = '➕ إضافة ملصق';
     }
-}
+});
 
 document.getElementById('stickerTrigger').onclick = () => {
     stickerPanel.classList.toggle('show');
@@ -2222,7 +2012,7 @@ document.addEventListener('click', e => {
 
 
 /* ============================================================
-   Chat Settings — message bubble shape (TikTok-style picker)
+   Chat Settings — message bubble shape (stored in users.extra.settings)
    ============================================================ */
 
 const BUBBLE_SHAPES = [
@@ -2241,12 +2031,7 @@ function applyBubbleShape(shape) {
 }
 
 async function loadBubbleShape() {
-    try {
-        const snap = await get(ref(db, `users/${currentUser.uid}/settings/bubbleShape`));
-        currentShape = snap.exists() ? snap.val() : 'rounded';
-    } catch {
-        currentShape = 'rounded';
-    }
+    currentShape = (userRow.extra && userRow.extra.settings && userRow.extra.settings.bubbleShape) || 'rounded';
     applyBubbleShape(currentShape);
     renderShapeGrid();
 }
@@ -2266,9 +2051,8 @@ function renderShapeGrid() {
             applyBubbleShape(shape);
             renderShapeGrid();
             settingsOverlay.classList.remove('show');
-            if (currentUser) {
-                try { await set(ref(db, `users/${currentUser.uid}/settings/bubbleShape`), shape); } catch {}
-            }
+            const settings = { ...((userRow.extra && userRow.extra.settings) || {}), bubbleShape: shape };
+            await persistExtra({ settings });
         });
     });
 }
@@ -2276,11 +2060,9 @@ function renderShapeGrid() {
 document.getElementById('settingsBtn').addEventListener('click', () => {
     settingsOverlay.classList.add('show');
 });
-
 document.getElementById('settingsClose').addEventListener('click', () => {
     settingsOverlay.classList.remove('show');
 });
-
 settingsOverlay.addEventListener('click', e => {
     if (e.target === settingsOverlay) settingsOverlay.classList.remove('show');
 });
