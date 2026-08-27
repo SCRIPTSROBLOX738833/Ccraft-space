@@ -717,7 +717,7 @@ function toggleCodePreview(btn) {
 import { supabase } from "./supabase-config.js";
 
 // ============================================================
-// طبقة تجريد: محاكاة Firebase API باستخدام Supabase
+// طبقة تجريد: استعلامات Supabase مباشرة (بدون محاكاة Firebase)
 // ============================================================
 const SUPABASE_URL = 'https://nthqrfsdshsreqdoksyv.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kHd5Y4bBnUDJxCFV-aKg-Q_T9XRJckN';
@@ -732,7 +732,8 @@ const SB_HEADERS = {
 const db = {
     async getScripts() {
         try {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/scripts?select=*&order=timestamp.desc`, { headers: SB_HEADERS });
+            // ✅ FIX: عمود "timestamp" اتحول لـ "created_at" في Supabase — كان بيفشل الطلب بالكامل ويرجع {} فاضي
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/scripts?select=*&order=created_at.desc`, { headers: SB_HEADERS });
             if (!res.ok) return {};
             const rows = await res.json();
             const obj = {};
@@ -785,11 +786,14 @@ const db = {
     }
 };
 
-// مستخدم حالي (بسيط بدون Firebase Auth)
+// مستخدم حالي — بياخد الـ auth_uid الحقيقي من Supabase Auth session
 let currentUser = null;
 try {
-    const savedUser = localStorage.getItem('ccraft_user');
-    if (savedUser) currentUser = JSON.parse(savedUser);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+        const { data: row } = await supabase.from('users').select('*').eq('auth_uid', user.id).maybeSingle();
+        currentUser = row ? { uid: row.id, ...row } : null;
+    }
 } catch { currentUser = null; }
 
 // عنوان الباك إند بتاع Nova AI — نفس السيرفر المستخدم في nova.html
@@ -799,10 +803,7 @@ let myUsernameCache = null;
 async function getMyDisplayName() {
     if (!currentUser) return 'cCraft Space User';
     if (myUsernameCache) return myUsernameCache;
-    try {
-        const snap = await get(ref(db, `users/${currentUser.uid}/username`));
-        myUsernameCache = (snap.exists() && snap.val()) ? snap.val() : 'cCraft Space User';
-    } catch { myUsernameCache = 'cCraft Space User'; }
+    myUsernameCache = currentUser.username || currentUser.display_name || 'cCraft Space User';
     return myUsernameCache;
 }
 
@@ -943,20 +944,30 @@ function getQuery() {
     return new URLSearchParams(location.search).get('search')?.toLowerCase().trim() || '';
 }
 
+// ✅ FIX: "timestamp" -> "created_at", "likes" -> "likes_count"
 function sortScripts(arr) {
     const s = [...arr];
     if (activeSort === '__ai__' && window.__aiScoreMap) {
         return s.sort((a,b)=>(window.__aiScoreMap[b.id]||0)-(window.__aiScoreMap[a.id]||0));
     }
-    if (activeSort === 'newest')  return s.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    if (activeSort === 'oldest')  return s.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
-    if (activeSort === 'likes')   return s.sort((a,b)=>(b.likes||0)-(a.likes||0));
+    if (activeSort === 'newest')  return s.sort((a,b)=>new Date(b.created_at||0) - new Date(a.created_at||0));
+    if (activeSort === 'oldest')  return s.sort((a,b)=>new Date(a.created_at||0) - new Date(b.created_at||0));
+    if (activeSort === 'likes')   return s.sort((a,b)=>(b.likes_count||0)-(a.likes_count||0));
     if (activeSort === 'rating')  return s.sort((a,b)=>{
         const ra = a.votes ? a.rating/a.votes : 0;
         const rb = b.votes ? b.rating/b.votes : 0;
         return rb - ra;
     });
     return s;
+}
+
+/* ============================================================
+   🗺️ الماب: مفيش عمود مخصص "map" في سكيما Supabase الجديدة —
+   القيمة القديمة (لو موجودة) محفوظة جوه عمود extra (jsonb).
+   الدالة دي بتدور في المكانين عشان تفضل شغالة أيًا كان مكان التخزين.
+   ============================================================ */
+function getMap(s) {
+    return s.map || (s.extra && s.extra.map) || '';
 }
 
 /* ============================================================
@@ -1013,8 +1024,9 @@ function renderScripts(query = '') {
     if (activeFilter !== 'all') {
         results = results.filter(s => (s.category||'') === activeFilter);
     }
-    if (activeKeyFilter === 'yes') results = results.filter(s => s.hasKey || s.key);
-    if (activeKeyFilter === 'no')  results = results.filter(s => !s.hasKey && !s.key);
+    // ✅ FIX: hasKey/key -> has_key
+    if (activeKeyFilter === 'yes') results = results.filter(s => s.has_key);
+    if (activeKeyFilter === 'no')  results = results.filter(s => !s.has_key);
     if (activeTagFilter) results = results.filter(s => Array.isArray(s.tags) && s.tags.includes(activeTagFilter));
 
     if (query && !filteredIds) {
@@ -1030,9 +1042,9 @@ function renderScripts(query = '') {
             results = sortScripts(results.filter(s =>
                 (s.title||'').toLowerCase().includes(query) ||
                 (s.category||'').toLowerCase().includes(query) ||
-                (s.map||'').toLowerCase().includes(query) ||
+                getMap(s).toLowerCase().includes(query) ||
                 (s.description||'').toLowerCase().includes(query) ||
-                (s.author||'').toLowerCase().includes(query) ||
+                (s.author_name||'').toLowerCase().includes(query) ||
                 (Array.isArray(s.tags) ? s.tags.join(' ').toLowerCase() : '').includes(query)
             ));
         }
@@ -1070,11 +1082,14 @@ function renderVisibleCards() {
     const slice = currentResults.slice(0, visibleCount);
 
     slice.forEach((s, i) => {
-        const isNew      = (now - (s.timestamp||0)) < 3 * 24 * 3600 * 1000;
+        // ✅ FIX: s.timestamp -> s.created_at (created_at هو نص ISO من Postgres)
+        const createdAtMs = s.created_at ? new Date(s.created_at).getTime() : 0;
+        const isNew      = (now - createdAtMs) < 3 * 24 * 3600 * 1000;
         const isAiMatch  = isAiSearch;
         const avg    = s.votes ? (s.rating / s.votes) : 0;
         const liked  = !!localStorage.getItem(`liked_${s.id}`);
         const rated  = !!localStorage.getItem(`rated_${s.id}`);
+        const mapVal = getMap(s);
 
         const card = document.createElement('div');
         card.className = 'script-card';
@@ -1085,7 +1100,8 @@ function renderVisibleCards() {
         const codeSnippet = escHTML((s.code || '').replace(/\s+/g, ' ').trim().slice(0, 70));
         const titleHTML = lastQuery ? highlightMatch(s.title || 'بدون عنوان', lastQuery) : escHTML(s.title || 'بدون عنوان');
 
-        const hasKeyFlag = !!(s.hasKey || s.key);
+        // ✅ FIX: hasKey/key -> has_key
+        const hasKeyFlag = !!s.has_key;
         const keyBadge = hasKeyFlag
             ? `<span class="sc-key-badge">${ic('lock',12)}يتطلب مفتاح</span>`
             : `<span class="sc-key-badge" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.25);color:#4ade80">${ic('unlock',12)}بدون مفتاح</span>`;
@@ -1095,24 +1111,24 @@ function renderVisibleCards() {
 
         card.innerHTML = `
             <a href="${scriptUrl}" class="sc-card-link" aria-label="${escHTML(s.title || 'عرض السكربت')}">${escHTML(s.title || 'عرض السكربت')}</a>
-            ${s.image ? `<div style="overflow:hidden;border-radius:20px 20px 0 0"><img class="sc-thumb" src="${s.image}" alt="صورة السكربت" loading="lazy"></div>` : ''}
+            ${s.image_base64 ? `<div style="overflow:hidden;border-radius:20px 20px 0 0"><img class="sc-thumb" src="${s.image_base64}" alt="صورة السكربت" loading="lazy"></div>` : ''}
             <div class="sc-body">
                 <div class="sc-header">
                     <div class="sc-title">${titleHTML}</div>
-                    ${s.verified ? `<span class="sc-verified-badge" title="سكربت موثّق من الإدارة"><svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vg-${escHTML(s.id)}" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vg-${escHTML(s.id)})"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>` : ''}
+                    ${s.is_verified ? `<span class="sc-verified-badge" title="سكربت موثّق من الإدارة"><svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vg-${escHTML(s.id)}" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vg-${escHTML(s.id)})"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>` : ''}
                     ${isAiMatch ? `<span class="sc-ai-badge">${ic('robot',11)}AI</span>` : ''}
                     ${isNew ? `<span class="sc-new-badge">${ic('sparkle',10)}جديد</span>` : ''}
                 </div>
                 <div class="sc-badges">
                     <span class="sc-cat">${ic('folder',12)}${escHTML(s.category || '—')}</span>
-                    ${s.map ? `<span class="sc-map">${ic('map',12)}${escHTML(s.map)}</span>` : ''}
+                    ${mapVal ? `<span class="sc-map">${ic('map',12)}${escHTML(mapVal)}</span>` : ''}
                     ${keyBadge}
                     ${tagBadges}
                 </div>
                 <div class="sc-stats">
-                    <span class="sc-stat">${ic('thumb',13)}<strong>${s.likes||0}</strong></span>
+                    <span class="sc-stat">${ic('thumb',13)}<strong>${s.likes_count||0}</strong></span>
                     <span class="sc-stat">${ic('eye',13)}<strong>${s.views||0}</strong></span>
-                    <span class="sc-stat">${ic('user',13)}${escHTML(s.author||'cCraft Space User')}</span>
+                    <span class="sc-stat">${ic('user',13)}${escHTML(s.author_name||'cCraft Space User')}</span>
                     <span style="margin-right:auto"></span>
                     <div class="sc-stars" data-id="${s.id}" data-rated="${rated}">
                         ${[1,2,3,4,5].map(n=>`<span class="sc-star${n<=Math.round(avg)?' filled':''}" data-v="${n}">${ic('star',15)}</span>`).join('')}
@@ -1127,7 +1143,7 @@ function renderVisibleCards() {
                 <a class="sc-btn view" href="${scriptUrl}" data-id="${s.id}">${ic('eye',14)}عرض</a>
                 <button class="sc-btn copy"   data-id="${s.id}">${ic('copy',14)}نسخ</button>
                 <button class="sc-btn like${liked?' liked':''}" data-id="${s.id}" ${liked?'disabled':''}>
-                    <span class="like-icon">${ic(liked?'heartFill':'heartOutline',14)}</span> <span class="lc">${s.likes||0}</span>
+                    <span class="like-icon">${ic(liked?'heartFill':'heartOutline',14)}</span> <span class="lc">${s.likes_count||0}</span>
                     <span class="like-burst"></span>
                 </button>
                 <button class="sc-btn report" data-id="${s.id}" title="إبلاغ">${ic('flag',14)}</button>
@@ -1147,7 +1163,7 @@ function renderVisibleCards() {
             const id   = btn.dataset.id;
             const raw  = codeStore.get(id) || '';
             if (!raw) { alert('لا يوجد كود لهذا السكربت'); return; }
-            const code = withCopyWarning(raw, !!s.verified);
+            const code = withCopyWarning(raw, !!s.is_verified);
             const restore = () => { btn.innerHTML = `${ic('copy',14)}نسخ`; btn.style.background=''; btn.style.color=''; };
             try {
                 await navigator.clipboard.writeText(code);
@@ -1172,10 +1188,10 @@ function renderVisibleCards() {
         likeBtn.onclick = async e => {
             e.stopPropagation();
             if (liked || likeBtn.disabled) return;
-            // تحديث اللايكات في Supabase
-            const currentLikes = await db.getField('scripts', s.id, 'likes');
+            // تحديث اللايكات في Supabase — ✅ FIX: العمود اسمه likes_count مش likes
+            const currentLikes = await db.getField('scripts', s.id, 'likes_count');
             const newLikes = (currentLikes || 0) + 1;
-            await db.setField('scripts', s.id, 'likes', newLikes);
+            await db.setField('scripts', s.id, 'likes_count', newLikes);
             likeBtn.querySelector('.lc').innerText = newLikes;
             likeBtn.classList.add('liked');
             likeBtn.querySelector('.like-icon').innerHTML = ic('heartFill', 14);
@@ -1187,10 +1203,10 @@ function renderVisibleCards() {
             spawnLikeBurst(likeBtn.querySelector('.like-burst'));
             setTimeout(() => likeBtn.classList.remove('pulse'), 600);
 
-            // 🔔 إشعار لصاحب السكربت باللايك (لو المستخدم مسجل دخول)
+            // 🔔 إشعار لصاحب السكربت باللايك (لو المستخدم مسجل دخول) — ✅ FIX: authorUid -> uploader_id
             if (currentUser) {
                 const likerName = await getMyDisplayName();
-                notifyAuthor(s.authorUid, `${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
+                notifyAuthor(s.uploader_id, `${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
             }
         };
 
@@ -1430,9 +1446,9 @@ function smartSearchLocal(query, pool) {
         let score = 0;
         const title    = normalizeAr(s.title);
         const category = normalizeAr(s.category);
-        const map      = normalizeAr(s.map);
+        const map      = normalizeAr(getMap(s));
         const desc     = normalizeAr(s.description);
-        const author   = normalizeAr(s.author);
+        const author   = normalizeAr(s.author_name);
         const tags     = normalizeAr((s.tags||[]).join(' '));
 
         score += fuzzyScore(title,    qNorm) * 3.0;
@@ -1445,12 +1461,14 @@ function smartSearchLocal(query, pool) {
         if (intent.category && (s.category||'').toLowerCase() === intent.category) score += 30;
         if (intent.map      && map.includes(intent.map))  score += 25;
 
-        const likes  = s.likes  || 0;
+        // ✅ FIX: s.likes -> s.likes_count, s.timestamp -> s.created_at
+        const likes  = s.likes_count || 0;
         const rating = s.votes  ? s.rating / s.votes : 0;
         score += Math.min(15, likes  * 0.3);
         score += Math.min(10, rating * 2);
 
-        if ((Date.now() - (s.timestamp||0)) < 7 * 86400000) score += 5;
+        const createdAtMs = s.created_at ? new Date(s.created_at).getTime() : 0;
+        if ((Date.now() - createdAtMs) < 7 * 86400000) score += 5;
 
         if (score > 8) results.push({ ...s, _score: score });
     }
@@ -1471,7 +1489,7 @@ async function novaSearch(query) {
         id: s.id,
         title: s.title || '',
         category: s.category || '',
-        map: s.map || '',
+        map: getMap(s),
         tags: s.tags || [],
         description: s.description || ''
     }));
