@@ -28,7 +28,6 @@
 }
 .new-post-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
 
-/* ---- Category chips ---- */
 .cat-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
 .cat-chip {
     background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); border-radius: 50px;
@@ -38,7 +37,6 @@
 .cat-chip:hover { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
 .cat-chip.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.4); }
 
-/* ---- Sort tabs ---- */
 .sort-row { display: flex; gap: 6px; margin-bottom: 18px; }
 .sort-btn {
     background: none; border: none; color: var(--text-muted); font-size: 0.8rem; font-weight: 800;
@@ -48,7 +46,6 @@
 .sort-btn:hover { background: rgba(255,255,255,0.04); color: var(--text-main); transform: none; filter: none; }
 .sort-btn.active { background: var(--primary-dim); color: var(--primary); }
 
-/* ---- New post form ---- */
 .new-post-form {
     display: none; background: var(--bg-card); border: 1px solid rgba(139,92,246,0.3);
     border-radius: 18px; padding: 22px; margin-bottom: 20px; animation: fadeIn 0.3s ease both;
@@ -79,7 +76,6 @@
 }
 .form-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ---- Post card (feed) ---- */
 .post-card {
     background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
     padding: 16px 18px; display: flex; gap: 14px; margin-bottom: 12px;
@@ -117,7 +113,6 @@
 .empty-box .ee-icon { font-size: 2.6rem; display: block; margin-bottom: 12px; }
 .loading-box { text-align: center; padding: 60px 20px; color: var(--text-muted); }
 
-/* ---- Post Detail ---- */
 .back-link {
     display: inline-flex; align-items: center; gap: 6px; color: var(--primary); font-size: 0.84rem;
     font-weight: 800; text-decoration: none; margin-bottom: 16px; cursor: pointer;
@@ -136,7 +131,6 @@
 .delete-post-btn { background: none; border: none; color: var(--danger); font-size: 0.76rem; font-weight: 700; cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0; opacity: 0.7; }
 .delete-post-btn:hover { opacity: 1; filter: none; transform: none; }
 
-/* ---- Comments ---- */
 .comments-section { }
 .comments-count-title { font-size: 0.85rem; font-weight: 800; color: var(--text-muted); margin-bottom: 14px; }
 .comment-form { display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-start; }
@@ -203,7 +197,6 @@
         <button class="new-post-btn" id="toggleFormBtn">✍️ منشور جديد</button>
     </div>
 
-    <!-- Feed view -->
     <div id="feedView">
 
         <div class="new-post-form" id="newPostForm">
@@ -251,7 +244,6 @@
         <div id="postsFeed"><div class="loading-box">⏳ جارٍ التحميل...</div></div>
     </div>
 
-    <!-- Detail view -->
     <div id="detailView" style="display:none"></div>
 
 </div>
@@ -259,68 +251,73 @@
 <div class="cm-toast" id="cmToast"></div>
 
 <script type="module">
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, set, push, remove, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-
-const fc = {apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1",measurementId:"G-MHDM7YYYBN"};
-const app  = getApps().length ? getApp() : initializeApp(fc);
-const db   = getDatabase(app);
-const auth = getAuth(app);
+/* ============================================================
+   CCRAFT SPACE — Community (Supabase version)
+   community_posts:    id, firebase_id, author_id, author_name, title,
+                        body, category, comment_count, created_at, extra
+   community_votes:    post_id + user_id (composite PK), value (-1|1), created_at
+   community_comments: id, firebase_id, post_id, author_id, author_name, text, created_at
+   (جداول جديدة — راجع community_tables.sql لإنشائها في Supabase أولًا)
+   ============================================================ */
+import { supabase } from './supabase-config.js';
 
 const CAT_LABELS = { general:'💬 عام', scripts:'📜 سكربتات', apks:'📱 APK', help:'🆘 مساعدة', suggestions:'💡 اقتراحات', bugs:'🐛 مشاكل' };
 
-let currentUser  = null;
-let allPosts     = {};
+let currentUser  = null;   // auth user
+let userRow      = null;   // public.users row
+let allPosts     = [];     // [{...post, score, myVote}]
 let activeCat    = 'all';
 let activeSort   = 'hot';
 const urlParams  = new URLSearchParams(location.search);
 
-/* ---- Toast ---- */
 function toast(msg, dur = 2600) {
     const t = document.getElementById('cmToast');
     t.textContent = msg; t.classList.add('show');
     clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), dur);
 }
 
-/* ---- Helpers ---- */
-function scoreOf(post) {
-    return Object.values(post.votes || {}).reduce((a, b) => a + b, 0);
-}
 function timeAgo(ts) {
-    const s = Math.floor((Date.now() - (ts || 0)) / 1000);
+    const s = Math.floor((Date.now() - new Date(ts || 0).getTime()) / 1000);
     if (s < 60) return 'الآن';
     if (s < 3600) return `منذ ${Math.floor(s/60)} د`;
     if (s < 86400) return `منذ ${Math.floor(s/3600)} س`;
     if (s < 2592000) return `منذ ${Math.floor(s/86400)} يوم`;
     return new Date(ts).toLocaleDateString('ar-EG', { month:'short', day:'numeric' });
 }
+
 function avatarHTML(photo, name) {
     if (photo) return `<img src="${photo}" alt="">`;
     return `<div class="init">${(name || '?').charAt(0).toUpperCase()}</div>`;
 }
-async function getUserBrief(uid) {
-    if (!uid) return { name: 'مجهول', photo: null };
-    const snap = await get(ref(db, `users/${uid}`));
-    const d = snap.exists() ? snap.val() : {};
-    return { name: d.username || (d.email ? d.email.split('@')[0] : 'مجهول'), photo: d.photo || null };
+
+const userBriefCache = {};
+async function getUserBrief(userId) {
+    if (!userId) return { name: 'مجهول', photo: null };
+    if (userBriefCache[userId]) return userBriefCache[userId];
+    const { data } = await supabase.from('users').select('username, photo_url').eq('id', userId).maybeSingle();
+    const brief = { name: (data && data.username) || 'مجهول', photo: (data && data.photo_url) || null };
+    userBriefCache[userId] = brief;
+    return brief;
 }
+
 function escapeHTML(str) {
     return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
-async function addPointsWithLog(uid, amount, type, note) {
-    const cur = await get(ref(db, `users/${uid}/points`));
-    await set(ref(db, `users/${uid}/points`), (cur.exists() ? cur.val() : 0) + amount);
-    await set(ref(db, `users/${uid}/pointsLog/${Date.now()}_${uid.slice(0,4)}`), { type, points: amount, note, timestamp: Date.now() });
-}
 
 /* ---- Auth ---- */
-onAuthStateChanged(auth, async user => {
+async function initAuth() {
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) { location.href = 'login.html'; return; }
     currentUser = user;
+
+    const { data: row } = await supabase.from('users').select('*').eq('auth_uid', user.id).maybeSingle();
+    if (!row) { location.href = 'login.html'; return; }
+    userRow = row;
+
     await loadPosts();
     routeView();
-});
+}
+initAuth();
 
 function routeView() {
     const postId = urlParams.get('post');
@@ -336,8 +333,25 @@ function routeView() {
 }
 
 async function loadPosts() {
-    const snap = await get(ref(db, 'communityPosts'));
-    allPosts = snap.exists() ? snap.val() : {};
+    const { data: posts } = await supabase.from('community_posts').select('*').order('created_at', { ascending: false }).limit(300);
+    const list = posts || [];
+
+    if (list.length) {
+        const ids = list.map(p => p.id);
+        const { data: votes } = await supabase.from('community_votes').select('post_id, user_id, value').in('post_id', ids);
+        const votesByPost = {};
+        (votes || []).forEach(v => {
+            (votesByPost[v.post_id] = votesByPost[v.post_id] || []).push(v);
+        });
+        list.forEach(p => {
+            const vs = votesByPost[p.id] || [];
+            p.score = vs.reduce((a, v) => a + v.value, 0);
+            const mine = vs.find(v => v.user_id === userRow.id);
+            p.myVote = mine ? mine.value : 0;
+        });
+    }
+
+    allPosts = list;
 }
 
 /* ============================================================
@@ -364,13 +378,18 @@ document.getElementById('submitPostBtn').onclick = async () => {
     btn.disabled = true; btn.innerText = '⏳ جارٍ النشر...';
 
     try {
-        const authorName = currentUser.email.split('@')[0];
-        const newRef = push(ref(db, 'communityPosts'));
-        const data = { title, body, category, authorUid: currentUser.uid, authorName, timestamp: Date.now(), commentCount: 0, votes: {} };
-        await set(newRef, data);
-        allPosts[newRef.key] = data;
+        const data = {
+            title, body, category,
+            author_id: userRow.id,
+            author_name: userRow.username || 'مجهول',
+            comment_count: 0,
+        };
+        const { data: inserted, error } = await supabase.from('community_posts').insert(data).select().single();
+        if (error) throw error;
 
-        await addPointsWithLog(currentUser.uid, 3, 'community_post', `منشور جديد: ${title}`);
+        inserted.score = 0;
+        inserted.myVote = 0;
+        allPosts.unshift(inserted);
 
         toast('✅ تم النشر!');
         document.getElementById('postTitle').value = '';
@@ -378,6 +397,7 @@ document.getElementById('submitPostBtn').onclick = async () => {
         document.getElementById('newPostForm').classList.remove('show');
         renderFeed();
     } catch (err) {
+        console.error(err);
         toast('❌ حصل خطأ: ' + err.message);
     } finally {
         btn.disabled = false; btn.innerText = '📤 نشر';
@@ -412,32 +432,31 @@ async function renderFeed() {
     const box = document.getElementById('postsFeed');
     box.innerHTML = '<div class="loading-box">⏳ جارٍ التحميل...</div>';
 
-    let entries = Object.entries(allPosts);
-    if (activeCat !== 'all') entries = entries.filter(([, p]) => p.category === activeCat);
+    let list = allPosts;
+    if (activeCat !== 'all') list = list.filter(p => p.category === activeCat);
 
     if (activeSort === 'new') {
-        entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+        list = [...list].sort((a, b) => new Date(b.created_at||0) - new Date(a.created_at||0));
     } else if (activeSort === 'top') {
-        entries.sort((a, b) => scoreOf(b[1]) - scoreOf(a[1]));
+        list = [...list].sort((a, b) => (b.score||0) - (a.score||0));
     } else {
-        // hot: score / (age_hours + 2)^1.3
-        entries.sort((a, b) => {
-            const ageA = Math.max(1, (Date.now() - (a[1].timestamp||0)) / 3600000);
-            const ageB = Math.max(1, (Date.now() - (b[1].timestamp||0)) / 3600000);
-            return (scoreOf(b[1]) + 1) / Math.pow(ageB + 2, 1.3) - (scoreOf(a[1]) + 1) / Math.pow(ageA + 2, 1.3);
+        list = [...list].sort((a, b) => {
+            const ageA = Math.max(1, (Date.now() - new Date(a.created_at||0).getTime()) / 3600000);
+            const ageB = Math.max(1, (Date.now() - new Date(b.created_at||0).getTime()) / 3600000);
+            return ((b.score||0) + 1) / Math.pow(ageB + 2, 1.3) - ((a.score||0) + 1) / Math.pow(ageA + 2, 1.3);
         });
     }
 
-    if (!entries.length) {
+    if (!list.length) {
         box.innerHTML = `<div class="empty-box"><span class="ee-icon">🗣️</span><h3 style="color:var(--text-main);margin-bottom:8px">لا توجد منشورات هنا</h3><p>كن أول من ينشر في القسم ده!</p></div>`;
         return;
     }
 
     box.innerHTML = '';
-    for (const [id, post] of entries) {
-        const brief = await getUserBrief(post.authorUid);
-        const score = scoreOf(post);
-        const myVote = (post.votes || {})[currentUser.uid] || 0;
+    for (const post of list) {
+        const brief = await getUserBrief(post.author_id);
+        const score = post.score || 0;
+        const myVote = post.myVote || 0;
 
         const card = document.createElement('div');
         card.className = 'post-card';
@@ -452,15 +471,15 @@ async function renderFeed() {
                 <div class="post-title">${escapeHTML(post.title)}</div>
                 <div class="post-snippet">${escapeHTML(post.body)}</div>
                 <div class="post-meta">
-                    <span class="pm-author"><span class="pm-avatar">${avatarHTML(brief.photo, brief.name)}</span> ${brief.name}</span>
-                    <span>🕐 ${timeAgo(post.timestamp)}</span>
-                    <span>💬 ${post.commentCount || 0}</span>
+                    <span class="pm-author"><span class="pm-avatar">${avatarHTML(brief.photo, brief.name)}</span> ${escapeHTML(brief.name)}</span>
+                    <span>🕐 ${timeAgo(post.created_at)}</span>
+                    <span>💬 ${post.comment_count || 0}</span>
                 </div>
             </div>
         `;
-        card.querySelector('.post-body-col').onclick = () => { location.href = `community.html?post=${id}`; };
+        card.querySelector('.post-body-col').onclick = () => { location.href = `community.html?post=${post.id}`; };
         card.querySelectorAll('.vote-btn').forEach(b => {
-            b.onclick = (e) => { e.stopPropagation(); castVote(id, parseInt(b.dataset.dir)); };
+            b.onclick = (e) => { e.stopPropagation(); castVote(post, parseInt(b.dataset.dir)); };
         });
         box.appendChild(card);
     }
@@ -470,18 +489,22 @@ async function renderFeed() {
    Voting
    ============================================================ */
 
-async function castVote(postId, dir) {
-    const post = allPosts[postId]; if (!post) return;
-    if (!post.votes) post.votes = {};
-    const current = post.votes[currentUser.uid] || 0;
-    const newVal = current === dir ? 0 : dir;
+async function castVote(post, dir) {
+    const newVal = post.myVote === dir ? 0 : dir;
 
-    if (newVal === 0) {
-        await remove(ref(db, `communityPosts/${postId}/votes/${currentUser.uid}`));
-        delete post.votes[currentUser.uid];
-    } else {
-        await set(ref(db, `communityPosts/${postId}/votes/${currentUser.uid}`), newVal);
-        post.votes[currentUser.uid] = newVal;
+    try {
+        if (newVal === 0) {
+            await supabase.from('community_votes').delete().eq('post_id', post.id).eq('user_id', userRow.id);
+            post.score -= post.myVote;
+        } else {
+            await supabase.from('community_votes').upsert({ post_id: post.id, user_id: userRow.id, value: newVal });
+            post.score = (post.score || 0) - post.myVote + newVal;
+        }
+        post.myVote = newVal;
+    } catch (err) {
+        console.error(err);
+        toast('❌ حصل خطأ أثناء التصويت');
+        return;
     }
 
     routeView();
@@ -493,17 +516,17 @@ async function castVote(postId, dir) {
 
 async function renderDetail(postId) {
     const box = document.getElementById('detailView');
-    const post = allPosts[postId];
+    const post = allPosts.find(p => p.id === postId);
 
     if (!post) {
         box.innerHTML = `<a class="back-link" href="community.html">← رجوع للمجتمع</a><div class="empty-box"><span class="ee-icon">❓</span><h3 style="color:var(--text-main)">المنشور مش موجود</h3></div>`;
         return;
     }
 
-    const brief = await getUserBrief(post.authorUid);
-    const score = scoreOf(post);
-    const myVote = (post.votes || {})[currentUser.uid] || 0;
-    const isMine = post.authorUid === currentUser.uid;
+    const brief = await getUserBrief(post.author_id);
+    const score = post.score || 0;
+    const myVote = post.myVote || 0;
+    const isMine = post.author_id === userRow.id;
 
     box.innerHTML = `
         <a class="back-link" href="community.html">← رجوع للمجتمع</a>
@@ -514,9 +537,9 @@ async function renderDetail(postId) {
             <div class="pd-meta">
                 <div class="pd-author">
                     <span class="pd-avatar">${avatarHTML(brief.photo, brief.name)}</span>
-                    <span>${brief.name}</span>
+                    <span>${escapeHTML(brief.name)}</span>
                 </div>
-                <span>🕐 ${timeAgo(post.timestamp)}</span>
+                <span>🕐 ${timeAgo(post.created_at)}</span>
                 <div class="pd-vote-row">
                     <button class="vote-btn up ${myVote === 1 ? 'voted' : ''}" id="pdUp">▲</button>
                     <span class="vote-score">${score}</span>
@@ -536,19 +559,19 @@ async function renderDetail(postId) {
         </div>
     `;
 
-    document.getElementById('pdUp').onclick   = async () => { await castVote(postId, 1);  renderDetail(postId); };
-    document.getElementById('pdDown').onclick = async () => { await castVote(postId, -1); renderDetail(postId); };
-    if (isMine) document.getElementById('pdDelete').onclick = () => deletePost(postId);
+    document.getElementById('pdUp').onclick   = async () => { await castVote(post, 1);  renderDetail(postId); };
+    document.getElementById('pdDown').onclick = async () => { await castVote(post, -1); renderDetail(postId); };
+    if (isMine) document.getElementById('pdDelete').onclick = () => deletePost(post);
 
-    document.getElementById('submitCommentBtn').onclick = () => submitComment(postId);
+    document.getElementById('submitCommentBtn').onclick = () => submitComment(post);
 
     await loadComments(postId);
 }
 
-async function deletePost(postId) {
+async function deletePost(post) {
     if (!confirm('حذف هذا المنشور نهائيًا؟ هيتشال مع كل تعليقاته.')) return;
-    await remove(ref(db, `communityPosts/${postId}`));
-    await remove(ref(db, `communityComments/${postId}`));
+    await supabase.from('community_posts').delete().eq('id', post.id); // community_comments بتتشال تلقائيًا (on delete cascade)
+    allPosts = allPosts.filter(p => p.id !== post.id);
     location.href = 'community.html';
 }
 
@@ -558,8 +581,8 @@ async function deletePost(postId) {
 
 async function loadComments(postId) {
     const listBox = document.getElementById('commentsList');
-    const snap = await get(ref(db, `communityComments/${postId}`));
-    const comments = snap.exists() ? Object.entries(snap.val()) : [];
+    const { data } = await supabase.from('community_comments').select('*').eq('post_id', postId).order('created_at', { ascending: true });
+    const comments = data || [];
 
     document.getElementById('commentsCountTitle').innerText = `💬 التعليقات (${comments.length})`;
 
@@ -568,33 +591,30 @@ async function loadComments(postId) {
         return;
     }
 
-    comments.sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0));
     listBox.innerHTML = '';
 
-    for (const [cid, c] of comments) {
-        const brief = await getUserBrief(c.authorUid);
-        const isMine = c.authorUid === currentUser.uid;
+    for (const c of comments) {
+        const brief = await getUserBrief(c.author_id);
+        const isMine = c.author_id === userRow.id;
         const item = document.createElement('div');
         item.className = 'comment-item';
         item.innerHTML = `
             <span class="cm-avatar">${avatarHTML(brief.photo, brief.name)}</span>
             <div class="cm-body">
                 <div class="cm-head">
-                    <span class="cm-name">${brief.name}</span>
-                    <span class="cm-time">${timeAgo(c.timestamp)}</span>
-                    ${isMine ? `<button class="cm-del-btn" data-cid="${cid}">حذف</button>` : ''}
+                    <span class="cm-name">${escapeHTML(brief.name)}</span>
+                    <span class="cm-time">${timeAgo(c.created_at)}</span>
+                    ${isMine ? `<button class="cm-del-btn" data-id="${c.id}">حذف</button>` : ''}
                 </div>
                 <div class="cm-text">${escapeHTML(c.text)}</div>
             </div>
         `;
-        if (isMine) {
-            item.querySelector('.cm-del-btn').onclick = () => deleteComment(postId, cid);
-        }
+        if (isMine) item.querySelector('.cm-del-btn').onclick = () => deleteComment(postId, c.id);
         listBox.appendChild(item);
     }
 }
 
-async function submitComment(postId) {
+async function submitComment(post) {
     const input = document.getElementById('commentInput');
     const text = input.value.trim();
     if (!text) { toast('❌ اكتب تعليق الأول'); return; }
@@ -603,20 +623,21 @@ async function submitComment(postId) {
     btn.disabled = true;
 
     try {
-        const authorName = currentUser.email.split('@')[0];
-        const newRef = push(ref(db, `communityComments/${postId}`));
-        await set(newRef, { text, authorUid: currentUser.uid, authorName, timestamp: Date.now() });
+        await supabase.from('community_comments').insert({
+            post_id: post.id, text,
+            author_id: userRow.id,
+            author_name: userRow.username || 'مجهول',
+        });
 
-        const newCount = (allPosts[postId].commentCount || 0) + 1;
-        await update(ref(db, `communityPosts/${postId}`), { commentCount: newCount });
-        allPosts[postId].commentCount = newCount;
-
-        await addPointsWithLog(currentUser.uid, 1, 'community_comment', 'تعليق في المجتمع');
+        const newCount = (post.comment_count || 0) + 1;
+        await supabase.from('community_posts').update({ comment_count: newCount }).eq('id', post.id);
+        post.comment_count = newCount;
 
         input.value = '';
-        await loadComments(postId);
+        await loadComments(post.id);
         toast('✅ تم إضافة تعليقك');
     } catch (err) {
+        console.error(err);
         toast('❌ حصل خطأ: ' + err.message);
     } finally {
         btn.disabled = false;
@@ -625,10 +646,13 @@ async function submitComment(postId) {
 
 async function deleteComment(postId, cid) {
     if (!confirm('حذف هذا التعليق؟')) return;
-    await remove(ref(db, `communityComments/${postId}/${cid}`));
-    const newCount = Math.max(0, (allPosts[postId].commentCount || 1) - 1);
-    await update(ref(db, `communityPosts/${postId}`), { commentCount: newCount });
-    allPosts[postId].commentCount = newCount;
+    await supabase.from('community_comments').delete().eq('id', cid);
+    const post = allPosts.find(p => p.id === postId);
+    if (post) {
+        const newCount = Math.max(0, (post.comment_count || 1) - 1);
+        await supabase.from('community_posts').update({ comment_count: newCount }).eq('id', postId);
+        post.comment_count = newCount;
+    }
     await loadComments(postId);
 }
 </script>
