@@ -434,31 +434,6 @@ body {
 .msg-time { font-size: 0.65rem; color: var(--text-muted); }
 .msg-read  { font-size: 0.7rem; color: var(--secondary); }
 
-.msg-reactions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 0 4px;
-}
-
-.reaction-pill {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 50px;
-    padding: 3px 8px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--text-muted);
-}
-
-.reaction-pill:hover { border-color: var(--primary); background: var(--primary-dim); transform: scale(1.1); }
-.reaction-pill.mine  { border-color: var(--primary); background: var(--primary-dim); color: var(--primary); }
-.reaction-pill .rp-count { font-size: 0.7rem; font-weight: 800; }
-
 .msg-actions-hover {
     position: absolute;
     top: -34px;
@@ -497,25 +472,6 @@ body {
 }
 
 .act-btn:hover { background: rgba(139,92,246,0.15); color: var(--text-main); transform: scale(1.15); filter: none; }
-
-.emoji-picker {
-    position: absolute;
-    top: -44px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 6px 10px;
-    display: none;
-    gap: 6px;
-    z-index: 20;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    max-width: 90vw;
-    overflow-x: auto;
-}
-
-.emoji-picker.show { display: flex; }
-.emoji-opt { font-size: 1.2rem; cursor: pointer; transition: transform 0.15s; padding: 2px; border-radius: 6px; }
-.emoji-opt:hover { transform: scale(1.35); background: rgba(139,92,246,0.1); }
 
 .sys-msg {
     text-align: center;
@@ -1122,42 +1078,45 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
 /* ============================================================
    CCRAFT SPACE — Chat (Supabase version)
    ============================================================
-   ⚠️ ملاحظة مهمة عن الفجوة في السكيما:
-   جدول chat_messages في Supabase (حسب السكيما المتفق عليها) فيه
-   أعمدة: id, firebase_id, user_id, username, text, edited,
-   reply_to, created_at — بس. مفيهوش عمود لنوع الرسالة (صورة/ملصق)
-   ولا عمود reactions، فمفيش مكان نخزن فيه صور/ملصقات/تفاعلات
-   في الشات نفسه دلوقتي. عشان كده:
-   - إرسال نص + رد + تعديل + حذف: شغالين بالكامل.
-   - إرسال صورة/ملصق داخل الشات، والتفاعلات (👍❤️🔥...): متعطّلين
-     مؤقتًا (الزرار موجود بس بينبهك) لحد ما تضيف عمود `extra jsonb`
-     (أو أعمدة type/image_data/reactions) لجدول chat_messages.
-   - مكتبة ملصقاتك الشخصية (Sticker Library) اتخزنت في users.extra.stickers
-     (jsonb) لأن مفيش جدول مخصص ليها، وشغالة حفظ/حذف عادي.
-   - كولداون الإرسال (2.9 ثانية): في Firebase كان بيتفرض من السيرفر
-     عن طريق Rules + كتابة ذرّية. في Supabase من غير trigger/RPC
-     مينفعش نعمل نفس الفرض الذري، فالكولداون هنا **client-side فقط**
-     (نفس وضع حماية السبام اللي كانت موجودة أصلاً كطبقة UX).
-     لو عايز فرض حقيقي من السيرفر لازم Postgres trigger أو RPC function.
+   قبل استخدام الملف ده، شغّل chat_messages_alter.sql في Supabase
+   SQL Editor مرة واحدة: بيضيف عمودين (type, image_data) لجدول
+   chat_messages، وبيسجّله في publication الـ Realtime.
+
+   ⚠️ إصلاح مشكلة "لازم ريفريش عشان الرسالة تظهر":
+   السبب الأغلب إن جدول chat_messages مش مسجّل في supabase_realtime
+   publication (خطوة لازم تتعمل مرة واحدة من السيرفر، مش من الكود) —
+   موجودة في chat_messages_alter.sql. عشان الشات يفضل شغال حتى لو
+   حصل تأخير في تفعيل الـ Realtime، الكود هنا بيعتمد على طريقتين
+   مع بعض:
+   1) Realtime subscription (فوري لو الجدول مسجّل صح).
+   2) Polling احتياطي كل 3 ثواني (بيجيب أي رسالة جديدة بتاريخ أحدث
+      من آخر رسالة عندك) — فحتى لو الـ Realtime مش شغال، الرسائل
+      هتظهر لوحدها خلال ثواني من غير أي ريفريش يدوي.
+   رسالتك انت نفسك بقيت كمان بتتضاف على طول بعد نجاح الإرسال
+   (مش مستنية الرجوع من السيرفر تاني)، فمعاها مفيش أي تأخير خالص.
    ============================================================ */
 
 import { supabase } from './supabase-config.js';
 
-let currentUser  = null;   // Supabase auth user
-let userRow      = null;   // row from public.users
-let myUserId     = null;   // users.id (uuid) — used as FK
+let currentUser  = null;
+let userRow      = null;
+let myUserId     = null;
 let myUsername   = 'cCraft Space User';
 let replyTo      = null;
 let editingId    = null;
-let avatarCache  = {};     // users.id -> photo_url (or null)
+let avatarCache  = {};
 let lastDate     = null;
 let typingTimer  = null;
 let atBottom     = true;
-let pendingUpload = null;  // kept for UI only (image/sticker send disabled — see note above)
-let userStickers  = {};    // id -> dataURL (from users.extra.stickers)
+let pendingUpload = null;  // { dataURL, type: 'image'|'sticker' }
+let userStickers  = {};
 let currentShape  = 'rounded';
 let presenceChannel = null;
 let typingChannel    = null;
+
+let seenMessageIds = new Set();
+let lastSeenCreatedAt = null;
+let pollTimer = null;
 
 const chatBox    = document.getElementById('chatBox');
 const msgInput   = document.getElementById('msgInput');
@@ -1176,10 +1135,15 @@ let mentionStart = -1;
 
 const EMOJIS = ['😂','😍','🔥','👍','💎','🚀','😎','🤩','😭','💀','🥶','🤯','👑','💜','⚡','🎮','🏆','🎯','💯','🌟','❤️','✨','🫡','🤝','🎉'];
 
-const MAX_TEXT_LENGTH = 1500;
+const MAX_TEXT_LENGTH  = 1500;
+const IMAGE_MAX_DIM    = 1280;
+const IMAGE_QUALITY    = 0.7;
+const STICKER_MAX_DIM  = 300;
+const STICKER_QUALITY  = 0.85;
+const MAX_DATA_LENGTH  = 900000;
 
 /* ============================================================
-   Anti-Spam: Send Cooldown (client-side only — see note above)
+   Anti-Spam: Send Cooldown (client-side only)
    ============================================================ */
 const SEND_COOLDOWN_MS = 2900;
 let lastSendAt = 0;
@@ -1312,7 +1276,7 @@ const LANG_LABELS = {
     xml:'XML', yaml:'YAML', yml:'YAML', dart:'Dart', txt:'Text', text:'Text'
 };
 
-const knownUsers = new Map(); // users.id -> username
+const knownUsers = new Map();
 
 function registerUser(id, username) {
     if (id && username) knownUsers.set(id, username);
@@ -1388,7 +1352,7 @@ chatBox.addEventListener('click', async e => {
 
 
 /* ============================================================
-   Load Chat (initial fetch + realtime subscription)
+   Load Chat (initial fetch + realtime + polling fallback)
    ============================================================ */
 
 async function loadChat() {
@@ -1399,7 +1363,10 @@ async function loadChat() {
         .limit(200);
 
     if (!error && rows) {
-        for (const msg of rows) await appendMessage(msg);
+        for (const msg of rows) {
+            await appendMessage(msg);
+            lastSeenCreatedAt = msg.created_at;
+        }
         scrollToBottom();
     }
 
@@ -1419,9 +1386,34 @@ async function loadChat() {
             if (el) el.remove();
         })
         .subscribe();
+
+    // Polling احتياطي — يضمن وصول الرسائل حتى لو الـ Realtime لسه
+    // متفعلش صح على الجدول (راجع chat_messages_alter.sql)
+    pollTimer = setInterval(pollNewMessages, 3000);
+}
+
+async function pollNewMessages() {
+    let query = supabase.from('chat_messages').select('*').order('created_at', { ascending: true }).limit(50);
+    if (lastSeenCreatedAt) query = query.gt('created_at', lastSeenCreatedAt);
+    const { data, error } = await query;
+    if (error || !data || !data.length) return;
+
+    let appendedAny = false;
+    for (const msg of data) {
+        if (!seenMessageIds.has(msg.id)) appendedAny = true;
+        await appendMessage(msg);
+        lastSeenCreatedAt = msg.created_at;
+    }
+    if (appendedAny) {
+        if (atBottom) scrollToBottom();
+        else scrollBtn.classList.add('show');
+    }
 }
 
 async function appendMessage(msg) {
+    if (seenMessageIds.has(msg.id)) { updateMessageEl(msg); return; }
+    seenMessageIds.add(msg.id);
+
     const date    = msg.created_at ? new Date(msg.created_at) : new Date();
     const dateStr = date.toLocaleDateString('ar-EG', { weekday:'long', day:'numeric', month:'long' });
 
@@ -1450,12 +1442,13 @@ async function appendMessage(msg) {
 }
 
 function updateMessageEl(msg) {
+    seenMessageIds.add(msg.id);
     const el = chatBox.querySelector(`[data-id="${msg.id}"]`);
     if (!el) return;
     const editedTag = el.querySelector('.edited-tag');
     if (editedTag && msg.edited) editedTag.style.display = 'inline';
     const textEl = el.querySelector('.bubble-text');
-    if (textEl) textEl.innerHTML = renderMessageContent(msg.text || '');
+    if (textEl && msg.type !== 'sticker') textEl.innerHTML = renderMessageContent(msg.text || '');
 }
 
 function buildMessageHTML(msg, isOwn, avatarHTML, time) {
@@ -1467,25 +1460,38 @@ function buildMessageHTML(msg, isOwn, avatarHTML, time) {
     ` : '';
 
     const editedHTML = msg.edited ? '<span class="edited-tag">(معدّل)</span>' : '<span class="edited-tag" style="display:none">(معدّل)</span>';
+    const isMedia = msg.type === 'image' || msg.type === 'sticker';
 
     const myUsernameLower = (myUsername || '').toLowerCase();
     const mentionsMe = !isOwn && myUsernameLower && msg.text &&
         new RegExp(`(^|\\s)@${escapeRegex(myUsernameLower)}(\\s|$)`, 'i').test(msg.text + ' ');
 
-    const contentHTML = `
-        ${replyHTML}
-        <div class="bubble-text">${renderMessageContent(msg.text || '')}</div>
-        ${editedHTML}
-    `;
+    let contentHTML;
+    if (msg.type === 'sticker') {
+        contentHTML = `${replyHTML}<img src="${msg.image_data}" class="msg-sticker-img" alt="ملصق">`;
+    } else if (msg.type === 'image') {
+        contentHTML = `
+            ${replyHTML}
+            <img src="${msg.image_data}" class="msg-image-img" alt="صورة">
+            ${msg.text ? `<div class="bubble-text" style="margin-top:8px">${renderMessageContent(msg.text)}</div>` : ''}
+            ${editedHTML}
+        `;
+    } else {
+        contentHTML = `
+            ${replyHTML}
+            <div class="bubble-text">${renderMessageContent(msg.text || '')}</div>
+            ${editedHTML}
+        `;
+    }
 
     return `
         <div class="msg-avatar" onclick="location.href='profile.html?uid=${msg.user_id}'">${avatarHTML}</div>
         <div class="msg-col">
             ${!isOwn ? `<div class="msg-username" onclick="location.href='profile.html?uid=${msg.user_id}'">${escapeHTML(msg.username || 'cCraft Space User')}</div>` : ''}
-            <div class="msg-bubble ${mentionsMe ? 'mention-glow' : ''}">
+            <div class="msg-bubble ${msg.type === 'sticker' ? 'sticker-bubble' : ''} ${mentionsMe ? 'mention-glow' : ''}">
                 <div class="msg-actions-hover">
                     <button class="act-btn reply-btn" data-id="${msg.id}" title="رد">↩️</button>
-                    ${isOwn ? `<button class="act-btn edit-btn" data-id="${msg.id}" title="تعديل">✏️</button>` : ''}
+                    ${isOwn && !isMedia ? `<button class="act-btn edit-btn" data-id="${msg.id}" title="تعديل">✏️</button>` : ''}
                     ${isOwn ? `<button class="act-btn del-btn" data-id="${msg.id}" title="حذف">🗑️</button>` : ''}
                 </div>
                 ${contentHTML}
@@ -1511,7 +1517,7 @@ function attachActions(el, msg, isOwn) {
 
     el.querySelector('.reply-btn')?.addEventListener('click', e => {
         e.stopPropagation();
-        const previewText = msg.text || '';
+        const previewText = msg.text || (msg.type === 'image' ? '📷 صورة' : msg.type === 'sticker' ? '🎨 ملصق' : '');
         replyTo = { id: msg.id, username: msg.username, text: previewText };
         replyBar.style.display = 'flex';
         replyText.innerHTML = `<strong>${escapeHTML(msg.username||'')}</strong>: ${escapeHTML(previewText).slice(0,60)}`;
@@ -1544,7 +1550,7 @@ function attachActions(el, msg, isOwn) {
 
 async function sendMessage() {
     const text = msgInput.value.trim();
-    if (!text) return;
+    if (!text && !pendingUpload) return;
     if (!currentUser) return;
 
     if (!editingId && isOnCooldown()) return;
@@ -1553,7 +1559,7 @@ async function sendMessage() {
         alert(`الرسالة طويلة أوي (الحد الأقصى ${MAX_TEXT_LENGTH} حرف)`);
         return;
     }
-    if (looksLikeCharSpam(text)) {
+    if (text && looksLikeCharSpam(text)) {
         alert('الرسالة دي شكلها سبام (نفس الحرف متكرر)، غيّرها وابعتها تاني');
         return;
     }
@@ -1562,10 +1568,30 @@ async function sendMessage() {
 
     try {
         if (editingId) {
-            await supabase.from('chat_messages').update({ text, edited: true }).eq('id', editingId);
+            if (text) await supabase.from('chat_messages').update({ text, edited: true }).eq('id', editingId);
             editingId = null;
             msgInput.style.borderColor = '';
             msgInput.placeholder = originalPlaceholder;
+        } else if (pendingUpload) {
+            const data = {
+                user_id:   myUserId,
+                username:  myUsername,
+                type:      pendingUpload.type,
+                image_data: pendingUpload.dataURL,
+                edited:    false,
+            };
+            if (pendingUpload.type === 'image' && text) data.text = text;
+            if (replyTo) {
+                data.reply_to = { key: replyTo.id, username: replyTo.username, text: replyTo.text };
+                replyTo = null;
+                replyBar.style.display = 'none';
+            }
+            const { data: inserted, error } = await supabase.from('chat_messages').insert(data).select().single();
+            if (error) throw error;
+            await appendMessage(inserted);   // إضافة فورية من غير استنى الـ Realtime
+            lastSeenCreatedAt = inserted.created_at;
+            cancelUpload();
+            startCooldownUI();
         } else {
             const data = {
                 user_id:  myUserId,
@@ -1578,8 +1604,10 @@ async function sendMessage() {
                 replyTo = null;
                 replyBar.style.display = 'none';
             }
-            const { error } = await supabase.from('chat_messages').insert(data);
+            const { data: inserted, error } = await supabase.from('chat_messages').insert(data).select().single();
             if (error) throw error;
+            await appendMessage(inserted);   // إضافة فورية من غير استنى الـ Realtime
+            lastSeenCreatedAt = inserted.created_at;
             startCooldownUI();
         }
 
@@ -1615,12 +1643,83 @@ function cancelUpload() {
 }
 window.cancelUpload = cancelUpload;
 
-/* Image / sticker send: disabled — see note at top of file about the
-   missing chat_messages columns. Buttons stay visible for UX continuity
-   but explain the situation instead of silently failing. */
-document.getElementById('imageTrigger').onclick = () => {
-    alert('إرسال الصور في الشات محتاج عمود إضافي (extra/type/image_data) في جدول chat_messages لسه متضافش — قريبًا 🙏');
-};
+
+/* ============================================================
+   Image compression (canvas-based)
+   ============================================================ */
+
+function compressImageFile(file, { maxDim = 1280, quality = 0.7, mimeType = 'image/jpeg' } = {}) {
+    return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith('image/')) { reject(new Error('ملف غير صالح')); return; }
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                let { width, height } = img;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+                    else { width = Math.round(width * maxDim / height); height = maxDim; }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                try { resolve(canvas.toDataURL(mimeType, quality)); } catch (err) { reject(err); }
+            };
+            img.onerror = () => reject(new Error('تعذّر تحميل الصورة'));
+            img.src = e.target.result;
+        };
+        reader.onerror = () => reject(new Error('تعذّرت قراءة الملف'));
+        reader.readAsDataURL(file);
+    });
+}
+
+
+/* ============================================================
+   Image sending (from input/gallery)
+   ============================================================ */
+
+document.getElementById('imageTrigger').onclick = () => imageInput.click();
+
+imageInput.addEventListener('change', async () => {
+    const file = imageInput.files[0];
+    imageInput.value = '';
+    if (!file) return;
+    await prepareUpload(file, 'image');
+});
+
+async function prepareUpload(file, type) {
+    uploadBar.style.display = 'flex';
+    uploadText.textContent = 'جاري ضغط الصورة...';
+    uploadPreviewImg.src = '';
+    sendBtn.disabled = true;
+    try {
+        const isSticker = type === 'sticker';
+        const dataURL = await compressImageFile(file, {
+            maxDim: isSticker ? STICKER_MAX_DIM : IMAGE_MAX_DIM,
+            quality: isSticker ? STICKER_QUALITY : IMAGE_QUALITY,
+            mimeType: isSticker ? 'image/webp' : 'image/jpeg'
+        });
+        if (dataURL.length > MAX_DATA_LENGTH) {
+            alert('الصورة كبيرة حتى بعد الضغط، جرّب صورة أصغر.');
+            cancelUpload();
+            return;
+        }
+        pendingUpload = { dataURL, type };
+        uploadPreviewImg.src = dataURL;
+        const approxKB = Math.round(dataURL.length * 0.75 / 1024);
+        uploadText.textContent = isSticker
+            ? `ملصق جاهز للإرسال (~${approxKB}kb)`
+            : `صورة جاهزة للإرسال (~${approxKB}kb) — يمكنك إضافة تعليق ثم الإرسال`;
+        msgInput.focus();
+    } catch (err) {
+        alert('تعذّر معالجة الصورة');
+        cancelUpload();
+    } finally {
+        sendBtn.disabled = isOnCooldown();
+    }
+}
 
 
 /* ============================================================
@@ -1711,7 +1810,7 @@ function ensureTypingChannel() {
     return typingChannel;
 }
 
-const activeTypers = new Map(); // userId -> { name, ts }
+const activeTypers = new Map();
 
 function renderTypers(payload) {
     if (!payload || payload.userId === myUserId) return;
@@ -1888,44 +1987,11 @@ lightboxStage.addEventListener('touchend', e => {
 
 /* ============================================================
    Sticker Library ("ملصقاتك") — stored in users.extra.stickers
-   (personal save/delete works; SENDING a sticker to chat is
-   disabled — see the note at the top of this file)
    ============================================================ */
 
 const stickerPanel  = document.getElementById('stickerPanel');
 const stickerGrid   = document.getElementById('stickerGrid');
 const stickerAddBtn = document.getElementById('stickerAddBtn');
-
-const STICKER_MAX_DIM = 300;
-const STICKER_QUALITY = 0.85;
-const MAX_DATA_LENGTH = 900000;
-
-function compressImageFile(file, { maxDim = 1280, quality = 0.7, mimeType = 'image/jpeg' } = {}) {
-    return new Promise((resolve, reject) => {
-        if (!file || !file.type.startsWith('image/')) { reject(new Error('ملف غير صالح')); return; }
-        const reader = new FileReader();
-        reader.onload = e => {
-            const img = new Image();
-            img.onload = () => {
-                let { width, height } = img;
-                if (width > maxDim || height > maxDim) {
-                    if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
-                    else { width = Math.round(width * maxDim / height); height = maxDim; }
-                }
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                try { resolve(canvas.toDataURL(mimeType, quality)); } catch (err) { reject(err); }
-            };
-            img.onerror = () => reject(new Error('تعذّر تحميل الصورة'));
-            img.src = e.target.result;
-        };
-        reader.onerror = () => reject(new Error('تعذّرت قراءة الملف'));
-        reader.readAsDataURL(file);
-    });
-}
 
 async function loadStickers() {
     userStickers = (userRow.extra && userRow.extra.stickers) ? userRow.extra.stickers : {};
@@ -1955,7 +2021,7 @@ function renderStickerPanel() {
     stickerGrid.querySelectorAll('.sticker-item').forEach(item => {
         item.addEventListener('click', e => {
             if (e.target.closest('.sticker-del-btn')) return;
-            alert('إرسال الملصق في الشات محتاج عمود إضافي في chat_messages لسه متضافش — قريبًا 🙏');
+            sendStickerDirect(userStickers[item.dataset.id]);
         });
     });
 
@@ -1997,6 +2063,36 @@ stickerInput.addEventListener('change', async () => {
         stickerAddBtn.textContent = '➕ إضافة ملصق';
     }
 });
+
+async function sendStickerDirect(dataURL) {
+    if (!currentUser || !dataURL) return;
+    if (isOnCooldown()) return;
+
+    const data = {
+        user_id:    myUserId,
+        username:   myUsername,
+        type:       'sticker',
+        image_data: dataURL,
+        edited:     false,
+    };
+    if (replyTo) {
+        data.reply_to = { key: replyTo.id, username: replyTo.username, text: replyTo.text };
+        replyTo = null;
+        replyBar.style.display = 'none';
+    }
+    try {
+        const { data: inserted, error } = await supabase.from('chat_messages').insert(data).select().single();
+        if (error) throw error;
+        await appendMessage(inserted);
+        lastSeenCreatedAt = inserted.created_at;
+        startCooldownUI();
+        stickerPanel.classList.remove('show');
+        scrollToBottom();
+    } catch (err) {
+        console.error('sendStickerDirect failed', err);
+        alert('تعذّر إرسال الملصق، حاول تاني.');
+    }
+}
 
 document.getElementById('stickerTrigger').onclick = () => {
     stickerPanel.classList.toggle('show');
