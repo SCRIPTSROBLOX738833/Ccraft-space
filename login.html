@@ -37,6 +37,12 @@
         color: #c62828;
         display: block !important;
     }
+    .login-hint {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 12px;
+        line-height: 1.7;
+    }
 </style>
 </head>
 <body>
@@ -49,6 +55,11 @@
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" width="18">
         تسجيل الدخول عبر جوجل
     </button>
+
+    <p class="login-hint">
+        أول ما تسجّل دخول هتحتاج تختار اسم مستخدم فريد — حسابك ما يتفعّلش
+        على الموقع غير بعد اختيار الاسم.
+    </p>
 
     <p id="msg"></p>
     <button id="privacy" class="nav-button" onclick="location.href='privacy.html'">سياسة الخصوصية</button>
@@ -75,21 +86,35 @@ function showMessage(text, isError = true) {
     msg.style.display = "block";
 }
 
-// بيدوّر على صف اليوزر في جدول users:
-// 1) الأول بالـ auth_uid (لو سبق وربطناه)
-// 2) لو مفيش، بالإيميل (يوزر قديم من Firebase لسه معملش لينك)
-// 3) لو مفيش خالص، معناه يوزر جديد كليًا
-async function findOrLinkUserRow(user) {
-    // محاولة 1: auth_uid
+/* ============================================================
+   أي اسم فاضي، أو لسه على الافتراضي "cCraft Space User" (بأي شكل
+   كتابة)، بيتعامل معاه كـ "لسه مفيش اسم حقيقي" — بيمنع اعتبار
+   الحساب مكتمل لحد ما يختار اسم فعلي في profile.html.
+   ============================================================ */
+function isPlaceholderName(name) {
+    return !name || !name.trim() || /^c?craft\s*space\s*user/i.test(name.trim());
+}
+
+/* ============================================================
+   بيدوّر بس — مفيش أي insert هنا خالص. إنشاء صف اليوزر في جدول
+   users بيحصل حصريًا في profile.html، وبس بعد ما يختار اسم مستخدم
+   صحيح ومتاح. ده يضمن إن محدش يقدر يكون "له حساب فعّال" من غير
+   ما يحط اسم — ولو حصلت أي محاولة تلاعب/ثغرة تتخطى الخطوة دي،
+   النتيجة العملية إنه مفيش صف اتعمل من الأساس، يعني مفيش بيانات
+   زي الإيميل مخزّنة أصلًا عشان تتسرب.
+   ============================================================ */
+async function findExistingRow(user) {
+    // محاولة 1: صف مربوط فعليًا بالـ auth_uid بتاعي
     let { data: row } = await supabase
         .from("users")
         .select("id, is_banned, username")
         .eq("auth_uid", user.id)
         .maybeSingle();
-
     if (row) return row;
 
-    // محاولة 2: نفس الإيميل (يوزر قديم من Firebase)
+    // محاولة 2: يوزر قديم من Firebase بنفس الإيميل لسه معملوش لينك —
+    // ده بس *مطابقة*، مش تخزين إيميل جديد؛ الإيميل ده أصلًا موجود
+    // من الهجرة القديمة مش بيتضاف دلوقتي.
     if (user.email) {
         const { data: byEmail } = await supabase
             .from("users")
@@ -99,30 +124,12 @@ async function findOrLinkUserRow(user) {
             .maybeSingle();
 
         if (byEmail) {
-            // اربطه دلوقتي بالـ auth_uid الجديد
-            await supabase
-                .from("users")
-                .update({ auth_uid: user.id })
-                .eq("id", byEmail.id);
+            await supabase.from("users").update({ auth_uid: user.id }).eq("id", byEmail.id);
             return byEmail;
         }
     }
 
-    // يوزر جديد تمامًا: نعمله صف جديد
-    const { data: created, error } = await supabase
-        .from("users")
-        .insert({
-            auth_uid: user.id,
-            email: user.email,
-            display_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
-            photo_url: user.user_metadata?.avatar_url || null,
-            last_login: new Date().toISOString(),
-        })
-        .select("id, is_banned, username")
-        .single();
-
-    if (error) throw error;
-    return created;
+    return null; // حساب جديد كليًا — لسه مفيش صف
 }
 
 async function handleUser(user) {
@@ -132,7 +139,7 @@ async function handleUser(user) {
     }
 
     try {
-        const row = await findOrLinkUserRow(user);
+        const row = await findExistingRow(user);
 
         if (row?.is_banned === true) {
             await supabase.auth.signOut();
@@ -141,35 +148,36 @@ async function handleUser(user) {
             return;
         }
 
-        localStorage.setItem("currentUser", user.id);
-
-        // تحديث بيانات آخر دخول + الصورة/الاسم (من غير ما نلمس username)
-        await supabase.from("users").update({
-            display_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
-            photo_url: user.user_metadata?.avatar_url || null,
-            last_login: new Date().toISOString(),
-        }).eq("id", row.id);
-
-        const hasUsername = !!row?.username;
-
-        if (!hasUsername) {
+        // مفيش صف خالص، أو الصف موجود بس من غير اسم مستخدم حقيقي —
+        // في الحالتين لازم يكمّل خطوة اختيار الاسم في profile.html
+        // قبل ما نعتبر حسابه "متعمل" فعليًا على الموقع.
+        if (!row || isPlaceholderName(row.username)) {
             redirecting = true;
             location.href = "profile.html";
             return;
         }
 
-        showLoggedInView(user);
+        localStorage.setItem("currentUser", user.id);
+
+        // بنحدّث آخر دخول بس — من غير ما نلمس الإيميل أو الصورة أو
+        // الاسم، عشان بيانات اليوزر تفضل تحت تحكمه هو بس من صفحة
+        // البروفايل (ده كان بيسبب مشكلة إن صورة البروفايل ترجع
+        // لصورة جوجل تلقائيًا مع كل تسجيل دخول).
+        await supabase.from("users").update({
+            last_login: new Date().toISOString(),
+        }).eq("id", row.id);
+
+        showLoggedInView(row.username);
     } catch (e) {
         console.error(e);
         showMessage("حصل خطأ أثناء تسجيل الدخول، جرب تاني.");
     }
 }
 
-function showLoggedInView(user){
+function showLoggedInView(username){
     if (redirecting) return;
-    const name = user.user_metadata?.full_name || user.user_metadata?.name || "مجهول";
     authContainer.innerHTML = `
-        <h2>مرحبا بك ${name}!</h2>
+        <h2>مرحبا بك ${username}!</h2>
         <button id="logoutBtn">تسجيل خروج</button>
         <button onclick="location.href='index.html'">الصفحة الرئيسية</button>
     `;
