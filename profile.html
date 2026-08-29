@@ -378,14 +378,35 @@
 <script type="module">
 import { supabase } from "./supabase-config.js";
 
+/* ============================================================
+   ملاحظات مهمة على التعديلات:
+   1) الحساب (صف users) بقى بيتعمل حصريًا هنا، وبس بعد ما اليوزر
+      يختار اسم مستخدم صحيح ومتاح — مش لحظة تسجيل الدخول. لو حد
+      قفل التاب أو سايب الخطوة دي، مفيش صف اتعمل أصلًا، يعني مفيش
+      بيانات (زي الإيميل) اتخزنت من الأساس.
+   2) مفيش تخزين لإيميل جديد أبدًا هنا — عمود email بيتحدث بس لو
+      كان موجود قبل كده من الهجرة القديمة (مطابقة، مش كتابة).
+   3) صورة البروفايل بقت تحت تحكم اليوزر بالكامل (رفع يدوي أو
+      "استخدام صورة روبلوكس") — مفيش أي كود بيحطلها صورة جوجل
+      تلقائيًا، فمش هترجع تتغير لوحدها بعد كل تسجيل دخول.
+   ============================================================ */
+
 const urlParams = new URLSearchParams(window.location.search);
 const targetProfileId = urlParams.get('uid'); // ده uuid صف users مش auth id
 let currentAuthUser = null;   // كائن Supabase Auth (session.user)
-let currentUserRow = null;    // صف users بتاع اليوزر الحالي
+let currentUserRow = null;    // صف users بتاع اليوزر الحالي (null لحد ما يتعمل)
+let needsRowInsert = false;   // true = لسه مفيش صف، الحفظ هيعمل insert مش update
+let forceUsernameSetup = false;
 const ANON_NAME = 'مجهول';
 
 const AVATAR_MAX_DIM = 320;
 const AVATAR_QUALITY = 0.75;
+
+/* أي اسم فاضي أو لسه على الافتراضي "cCraft Space User" بيتعامل معاه
+   كـ "لسه مفيش اسم حقيقي" */
+function isPlaceholderName(name) {
+    return !name || !name.trim() || /^c?craft\s*space\s*user/i.test(name.trim());
+}
 
 // ============================================================
 // أدوات مساعدة عامة
@@ -454,7 +475,8 @@ async function patchUserExtra(userRowId, patch) {
 }
 
 // ============================================================
-// رفع صورة البروفايل
+// رفع صورة البروفايل — الطريقة الوحيدة اللي بتغيّر photo_url غير
+// ربط روبلوكس (useRobloxAvatar)؛ الاتنين أفعال مقصودة من اليوزر نفسه
 // ============================================================
 function enableAvatarEditing(userRowId, name) {
     const wrap = document.getElementById('avatarWrap');
@@ -489,13 +511,13 @@ function enableAvatarEditing(userRowId, name) {
 // اسم المستخدم (username) — التفرد بيتحقق مباشرة على عمود users.username
 // ============================================================
 const COOLDOWN_DAYS = 7, USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/;
-let checkTimeout = null, nameIsValid = false, forceUsernameSetup = false;
+let checkTimeout = null, nameIsValid = false;
 
 window.openModal = function (forced) {
     if (forced) {
         forceUsernameSetup = true;
-        document.getElementById('usernameModalTitle').innerText = '🎉 اختر اسم مستخدم';
-        document.getElementById('usernameModalSub').innerText = 'قبل ما تكمل، اختر اسم مستخدم يظهر في البروفايل والسكربتات والشات بدل بريدك الإلكتروني.';
+        document.getElementById('usernameModalTitle').innerText = '🎉 خطوة أخيرة لإنشاء حسابك';
+        document.getElementById('usernameModalSub').innerText = 'اختر اسم مستخدم فريد يظهر بدل بريدك الإلكتروني في البروفايل والسكربتات والشات. حسابك لسه ما اتعملش فعليًا غير بعد ما تحفظ اسم هنا.';
         document.getElementById('usernameCancelBtn').style.display = 'none';
     } else {
         forceUsernameSetup = false;
@@ -545,29 +567,62 @@ async function checkUsernameAvailable(name) {
 }
 
 window.saveUsername = async function () {
-    if (!nameIsValid || !currentUserRow) return;
+    if (!nameIsValid || !currentAuthUser) return;
     const newName = document.getElementById('usernameInput').value.trim();
     if (!newName || !USERNAME_REGEX.test(newName)) return;
+
     const wasForced = forceUsernameSetup;
-    const lastChangeIso = currentUserRow.extra?.usernameChangedAt || null;
-    if (!wasForced && lastChangeIso) {
-        const days = (Date.now() - new Date(lastChangeIso).getTime()) / (1000 * 60 * 60 * 24);
-        if (days < COOLDOWN_DAYS) { alert(`⏳ انتظر ${Math.ceil(COOLDOWN_DAYS - days)} يوم`); return; }
+    if (!wasForced && currentUserRow) {
+        const lastChangeIso = currentUserRow.extra?.usernameChangedAt || null;
+        if (lastChangeIso) {
+            const days = (Date.now() - new Date(lastChangeIso).getTime()) / (1000 * 60 * 60 * 24);
+            if (days < COOLDOWN_DAYS) { alert(`⏳ انتظر ${Math.ceil(COOLDOWN_DAYS - days)} يوم`); return; }
+        }
     }
+
     const btn = document.getElementById('saveNameBtn'); btn.disabled = true; btn.innerText = '⏳ جارٍ الحفظ...';
     try {
-        const nowIso = new Date().toISOString();
-        const newExtra = { ...(currentUserRow.extra || {}), usernameChangedAt: nowIso };
-        const { error } = await supabase.from('users').update({ username: newName, extra: newExtra }).eq('id', currentUserRow.id);
-        if (error) throw error;
-        currentUserRow.username = newName;
-        currentUserRow.extra = newExtra;
+        if (needsRowInsert) {
+            // إنشاء الحساب لأول مرة فعليًا — من غير تخزين إيميل ولا صورة جوجل تلقائيًا
+            const { data: created, error } = await supabase
+                .from('users')
+                .insert({
+                    auth_uid: currentAuthUser.id,
+                    username: newName,
+                    last_login: new Date().toISOString(),
+                })
+                .select('*')
+                .single();
+            if (error) throw error;
+            currentUserRow = created;
+            needsRowInsert = false;
+        } else if (currentUserRow) {
+            const nowIso = new Date().toISOString();
+            const newExtra = { ...(currentUserRow.extra || {}), usernameChangedAt: nowIso };
+            const { error } = await supabase.from('users').update({ username: newName, extra: newExtra }).eq('id', currentUserRow.id);
+            if (error) throw error;
+            currentUserRow.username = newName;
+            currentUserRow.extra = newExtra;
+        }
+
         document.getElementById('username').innerText = newName;
-        updateLastChangeLabel(nowIso);
+        updateLastChangeLabel(currentUserRow.extra?.usernameChangedAt || null);
         forceUsernameSetup = false;
         closeModalForce();
-        showToast('✅ تم تغيير اسم المستخدم!');
-    } catch (e) { alert('❌ خطأ: ' + e.message); btn.disabled = false; btn.innerText = '💾 حفظ'; }
+        showToast(wasForced ? '🎉 تم إنشاء حسابك بنجاح!' : '✅ تم تغيير اسم المستخدم!');
+
+        if (wasForced) {
+            await loadMyProfile(currentUserRow, currentAuthUser);
+        }
+    } catch (e) {
+        if (e && e.code === '23505') {
+            setCheckState('err', '❌ الاسم اتاخد للتو، جرّب اسماً آخر', '❌', 'taken');
+            btn.disabled = false; btn.innerText = '💾 حفظ';
+        } else {
+            alert('❌ خطأ: ' + e.message);
+            btn.disabled = false; btn.innerText = '💾 حفظ';
+        }
+    }
 };
 
 function closeModalForce() {
@@ -917,14 +972,47 @@ async function boot(authUser) {
 
     if (targetProfileId) {
         await loadOtherProfile(targetProfileId);
-    } else if (authUser) {
-        const { data: row } = await supabase.from('users').select('*').eq('auth_uid', authUser.id).maybeSingle();
-        if (!row) { location.href = 'login.html'; return; }
+        return;
+    }
+
+    if (!authUser) { location.href = 'login.html'; return; }
+
+    // 1) صف موجود مربوط فعليًا بالـ auth_uid بتاعي؟
+    let { data: row } = await supabase.from('users').select('*').eq('auth_uid', authUser.id).maybeSingle();
+
+    // 2) لو مفيش، جرب أربطه بصف قديم بنفس الإيميل (يوزر Firebase قديم
+    //    لسه معملوش لينك) — ده مطابقة بس، مش تخزين إيميل جديد
+    if (!row && authUser.email) {
+        const { data: byEmail } = await supabase
+            .from('users').select('*').eq('email', authUser.email).is('auth_uid', null).maybeSingle();
+        if (byEmail) {
+            await supabase.from('users').update({ auth_uid: authUser.id }).eq('id', byEmail.id);
+            row = { ...byEmail, auth_uid: authUser.id };
+        }
+    }
+
+    if (row && row.is_banned) {
+        await supabase.auth.signOut();
+        alert('🚫 حسابك محظور من CCRAFT SPACE.');
+        location.href = 'login.html';
+        return;
+    }
+
+    if (row && !isPlaceholderName(row.username)) {
         currentUserRow = row;
         await loadMyProfile(row, authUser);
-    } else {
-        location.href = 'login.html';
+        return;
     }
+
+    // مفيش صف خالص، أو الصف موجود بس من غير اسم مستخدم حقيقي —
+    // في الحالتين اليوزر لازم يختار اسم الأول؛ لو مفيش صف، هيتعمل
+    // بس لما يحفظ اسم صحيح (مش قبل كده خالص).
+    currentUserRow = row || null;
+    needsRowInsert = !row;
+    document.getElementById('username').innerText = 'حساب جديد';
+    document.getElementById('editNameBtn').style.display = 'none';
+    document.getElementById('profileActions').innerHTML = '';
+    openModal(true);
 }
 
 async function loadMyProfile(row, authUser) {
@@ -958,8 +1046,6 @@ async function loadMyProfile(row, authUser) {
 
     await loadScriptsAndStats(row.id, true);
     await loadPoints(row.id);
-
-    if (!row.username) openModal(true);
 }
 
 async function loadOtherProfile(rowId) {
