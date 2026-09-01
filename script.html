@@ -1,1237 +1,1622 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>عرض السكربت | CCRAFT SPACE</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<script>(function(s){s.dataset.zone='11585956',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCRAFT SPACE | قائمة سكربتات Roblox</title>
+  <meta name="application-name" content="CCRAFT SPACE">
+  <meta name="description" content="CCRAFT SPACE — أفضل منصة عربية لسكربتات Roblox.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://ccraftspace.ddnsking.com/scripts.html">
+  <meta property="og:site_name" content="CCRAFT SPACE">
+  <meta property="og:title"     content="CCRAFT SPACE | قائمة سكربتات Roblox">
+  <meta property="og:image"     content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:secure_url" content="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <meta property="og:image:width"  content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:type"  content="website">
+  <meta property="og:url"   content="https://ccraftspace.ddnsking.com/scripts.html">
+  <link rel="icon"            type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="shortcut icon"   type="image/jpeg" href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="apple-touch-icon"                  href="https://ccraftspace.ddnsking.com/cCraft.jpg">
+  <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"CCRAFT SPACE",
+   "url":"https://ccraftspace.ddnsking.com/","image":"https://ccraftspace.ddnsking.com/cCraft.jpg"}
+  </script>
+  <script type="module" src="presence.js"></script>
+  <script>(function(s){s.dataset.zone='11585956',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 <style>
-:root {
-    --glow-purple: rgba(139, 92, 246, 0.35);
-    --glow-cyan:   rgba(0, 242, 254, 0.25);
-    --code-bg:     #050810;
-    --card-depth:  rgba(6, 8, 20, 0.6);
+
+body { min-height: 100svh; }
+
+.scripts-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    overflow-x: hidden;
 }
-body {
-    background:
-        radial-gradient(ellipse 80% 50% at 10% 10%, rgba(139,92,246,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 90% 80%, rgba(0,242,254,0.04) 0%, transparent 60%),
-        var(--bg-base, #09090f);
-    min-height: 100svh;
+
+.page-hero {
+    padding: 28px 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
 }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes riseUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-@keyframes slideDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
-@keyframes commentSlide { from { opacity:0; transform:translateX(10px); } to { opacity:1; transform:translateX(0); } }
-@keyframes scaleIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
-.script-layout { max-width: 960px; margin: 0 auto; padding: 18px 20px 80px; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start; }
-.script-main { min-width: 0; }
-.script-crumb { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #45455f; margin-bottom: 14px; font-weight: 700; }
-.script-crumb a { color: #7c6fff; text-decoration: none; }
-.script-crumb a:hover { color: #a78bfa; }
-.script-image-wrap { display: none; margin-bottom: 18px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(139,92,246,0.2); position: relative; animation: slideDown 0.5s cubic-bezier(0.22,1,0.36,1) both; box-shadow: 0 16px 44px rgba(0,0,0,0.5); }
-.script-image-wrap.show { display: block; }
-.script-image-wrap img { width: 100%; max-height: 280px; object-fit: cover; display: block; transition: transform 0.5s cubic-bezier(0.22,1,0.36,1); }
-.script-image-wrap:hover img { transform: scale(1.03); }
-.script-image-wrap::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(to top, rgba(9,9,15,0.85) 0%, transparent 100%); pointer-events: none; }
-.img-expand-btn { position: absolute; bottom: 12px; left: 16px; z-index: 2; background: rgba(9,9,15,0.7); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 5px 13px; font-size: 0.7rem; font-weight: 800; font-family: 'Tajawal', sans-serif; margin: 0; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.2s ease; }
-.img-expand-btn:hover { background: rgba(139,92,246,0.7); border-color: rgba(139,92,246,0.5); color: white; transform: none; filter: none; }
-.lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94); backdrop-filter: blur(20px); z-index: 900; align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.25s ease; }
-.lightbox.open { display: flex; }
-.lightbox img { max-width: min(100%, 900px); max-height: 88vh; border-radius: 16px; box-shadow: 0 0 0 1px rgba(139,92,246,0.3), 0 40px 80px rgba(0,0,0,0.9); animation: scaleIn 0.3s cubic-bezier(0.22,1,0.36,1); }
-.lightbox-close { position: absolute; top: 18px; right: 18px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; cursor: pointer; margin: 0; transition: all 0.2s; }
-.lightbox-close:hover { background: rgba(248,113,113,0.25); border-color: rgba(248,113,113,0.4); transform: none; filter: none; }
-.script-hero { background: linear-gradient(145deg, rgba(16,18,32,0.95) 0%, rgba(12,12,24,0.9) 100%); border: 1px solid rgba(139,92,246,0.18); border-radius: 20px; padding: 24px 24px 20px; margin-bottom: 14px; position: relative; overflow: hidden; animation: riseUp 0.45s cubic-bezier(0.22,1,0.36,1) both; box-shadow: 0 8px 28px rgba(0,0,0,0.3); }
-.script-hero::before { content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: linear-gradient(to bottom, #8b5cf6, #00f2fe); box-shadow: 0 0 20px rgba(139,92,246,0.5); }
-.hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 0.68rem; font-weight: 900; color: #a78bfa; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; position: relative; z-index: 1; }
-.script-title { font-size: clamp(1.3rem, 3.2vw, 1.85rem); font-weight: 900; color: #f0f0ff; margin-bottom: 16px; line-height: 1.3; letter-spacing: -0.01em; position: relative; z-index: 1; }
-.author-row { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; cursor: pointer; width: fit-content; position: relative; z-index: 1; padding: 5px 12px 5px 6px; border-radius: 50px; transition: background 0.2s; }
-.author-row:hover { background: rgba(139,92,246,0.08); }
-.author-row:hover .author-name { color: #a78bfa; }
-.author-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.3); flex-shrink: 0; background-color: #0a0a14; overflow: hidden; color: #ffffff; font-weight: 900; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
-.author-row:hover .author-avatar { border-color: #8b5cf6; box-shadow: 0 0 16px rgba(139,92,246,0.4); }
-.author-name { font-size: 0.87rem; font-weight: 800; color: #d4d4f0; transition: color 0.2s; }
-.author-date { font-size: 0.68rem; color: #5a5a78; margin-top: 1px; }
-.tags-row { display: flex; gap: 6px; flex-wrap: wrap; position: relative; z-index: 1; }
-.tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 50px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.2px; transition: all 0.2s; }
-.tag-cat { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); }
-.tag-cat:hover { background: rgba(139,92,246,0.2); }
-.tag-map { background: rgba(0,242,254,0.07); color: #00d9e8; border: 1px solid rgba(0,242,254,0.2); }
-.tag-map:hover { background: rgba(0,242,254,0.14); }
-.tag-nomap { background: rgba(255,255,255,0.04); color: #55556a; border: 1px solid rgba(255,255,255,0.07); }
-.tag-verified { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
-.tag-unverified { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
-.key-banner { display: none; background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.04)); border: 1px solid rgba(251,191,36,0.35); border-radius: 16px; padding: 14px 18px; margin-bottom: 14px; align-items: center; gap: 12px; flex-wrap: wrap; animation: riseUp 0.45s 0.05s cubic-bezier(0.22,1,0.36,1) both; }
-.key-banner.show { display: flex; }
-#keyCard[style] { display: flex !important; align-items: center; gap: 12px; flex-wrap: wrap; }
-.kb-icon { font-size: 1.4rem; flex-shrink: 0; }
-.kb-text { flex: 1; min-width: 160px; }
-.kb-title { font-size: 0.82rem; font-weight: 900; color: #fbbf24; margin-bottom: 2px; }
-.kb-sub { font-size: 0.72rem; color: #b5a06a; }
-.kb-value { background: rgba(0,0,0,0.3); border: 1px solid rgba(251,191,36,0.3); border-radius: 10px; padding: 8px 14px; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #8be9fd; direction: ltr; }
-.unverified-banner { display: none; background: linear-gradient(135deg, rgba(248,113,113,0.1), rgba(239,68,68,0.04)); border: 1px solid rgba(248,113,113,0.3); border-radius: 16px; padding: 12px 18px; margin-bottom: 14px; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.78rem; color: #fca5a5; animation: riseUp 0.45s 0.03s cubic-bezier(0.22,1,0.36,1) both; }
-.unverified-banner.show { display: flex; }
-.code-card { background: var(--code-bg); border: 1px solid rgba(139,92,246,0.15); border-radius: 20px; overflow: hidden; margin-bottom: 14px; animation: riseUp 0.45s 0.08s cubic-bezier(0.22,1,0.36,1) both; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-.code-header { display: flex; align-items: center; gap: 12px; padding: 11px 18px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.04); }
-.ch-dots { display: flex; gap: 7px; align-items: center; }
-.ch-dot { width: 11px; height: 11px; border-radius: 50%; }
-.ch-dot:nth-child(1) { background: #ff5f57; }
-.ch-dot:nth-child(2) { background: #febc2e; }
-.ch-dot:nth-child(3) { background: #28c840; }
-.ch-label { font-size: 0.72rem; color: #3a3a55; font-family: 'Fira Code', monospace; margin: 0 auto; display: flex; align-items: center; gap: 8px; }
-.ch-lines { color: #2a2a40; }
-.copy-inline { background: rgba(139,92,246,0.1); color: #7c6fff; border: 1px solid rgba(139,92,246,0.22); border-radius: 7px; padding: 4px 12px; font-size: 0.7rem; font-weight: 800; cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0; transition: all 0.2s; }
-.copy-inline:hover { background: rgba(139,92,246,0.25); color: #a78bfa; transform: none; filter: none; }
-.copy-inline.copied { background: rgba(34,197,94,0.12); color: #4ade80; border-color: rgba(34,197,94,0.3); }
-#code { background: transparent !important; margin: 0; border: none; padding: 20px 22px; color: #8be9fd; font-family: 'Fira Code', monospace; font-size: 0.83rem; line-height: 1.85; direction: ltr; text-align: left; overflow-x: auto; white-space: pre-wrap; max-height: 420px; overflow-y: auto; tab-size: 4; }
-#code::-webkit-scrollbar { width: 5px; height: 5px; }
-#code::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
-#code::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
-.ad-slot { display: block; text-align: center; font-size: 0.7rem; font-weight: 700; color: #45455f; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.06); border-radius: 12px; padding: 8px; margin-bottom: 14px; text-decoration: none; transition: all 0.2s; }
-.ad-slot:hover { color: #7c6fff; border-color: rgba(139,92,246,0.25); }
-.desc-card { background: linear-gradient(145deg, rgba(14,16,30,0.9), rgba(10,12,22,0.8)); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; animation: riseUp 0.45s 0.12s cubic-bezier(0.22,1,0.36,1) both; }
-.section-label { font-size: 0.65rem; font-weight: 800; color: #3d3d56; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-.section-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.05); }
-#description { color: #b0b0cc; font-size: 0.9rem; line-height: 1.8; margin: 0; }
-.action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; animation: riseUp 0.45s 0.16s cubic-bezier(0.22,1,0.36,1) both; }
-.action-row button { border-radius: 13px; padding: 12px 20px; font-size: 0.85rem; font-weight: 800; margin: 0; cursor: pointer; font-family: 'Tajawal', sans-serif; transition: all 0.2s cubic-bezier(0.22,1,0.36,1); }
-#copyBtn { order: 1; flex: 2; min-width: 180px; background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; box-shadow: 0 4px 18px rgba(124,58,237,0.35); }
-#copyBtn:hover { background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 6px 24px rgba(124,58,237,0.5); transform: translateY(-2px); }
-#copyBtn:active { transform: scale(0.98); }
-#rawBtn { order: 2; background: rgba(0,242,254,0.06); color: #00d9e8; border: 1px solid rgba(0,242,254,0.18); }
-#rawBtn:hover { background: rgba(0,242,254,0.12); border-color: rgba(0,242,254,0.35); transform: translateY(-2px); filter: none; }
-#reportBtn { order: 3; background: rgba(248,113,113,0.06); color: #f87171; border: 1px solid rgba(248,113,113,0.15); }
-#reportBtn:hover { background: rgba(248,113,113,0.14); border-color: rgba(248,113,113,0.35); transform: translateY(-2px); filter: none; }
-.comments-card { background: linear-gradient(160deg, rgba(14,16,30,0.95) 0%, rgba(10,12,24,0.9) 100%); border: 1px solid rgba(255,255,255,0.06); border-radius: 22px; padding: 22px; animation: riseUp 0.45s 0.2s cubic-bezier(0.22,1,0.36,1) both; }
-.comments-head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-.comments-head .ch-title { font-size: 0.95rem; font-weight: 900; color: #f0f0ff; display: flex; align-items: center; gap: 8px; }
-.comments-head .ch-title::before { content: '💬'; font-size: 1.05rem; }
-.comments-head::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
 
-.comment-input-wrap { display: flex; gap: 10px; align-items: flex-start; background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 20px; transition: border-color 0.2s, box-shadow 0.2s; }
-.comment-input-wrap:focus-within { border-color: rgba(139,92,246,0.4); box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
-.cw-avatar { width: 38px; height: 38px; border-radius: 50%; flex: 0 0 38px; overflow: hidden; background: linear-gradient(135deg,#8b5cf6,#00bcd4); color: #fff; font-weight: 900; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; }
-.cw-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.cw-body { flex: 1; min-width: 0; }
-#commentInput { width: 100%; background: transparent; border: none; outline: none; color: #e5e5f5; font-family: 'Tajawal', sans-serif; font-size: 0.92rem; margin: 0; direction: rtl; padding: 8px 2px; }
-#commentInput::placeholder { color: #45455f; }
-.cw-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
-.comment-count-hint { font-size: 0.68rem; color: #45455f; font-family: 'Fira Code', monospace; }
-#submitComment { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; border-radius: 10px; padding: 8px 20px; font-size: 0.82rem; font-weight: 800; font-family: 'Tajawal', sans-serif; cursor: pointer; margin: 0; white-space: nowrap; transition: all 0.2s; box-shadow: 0 4px 14px rgba(124,58,237,0.3); }
-#submitComment:hover { background: linear-gradient(135deg, #8b5cf6, #6d28d9); transform: translateY(-1px); filter: none; }
-#submitComment:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-#comments { display: flex; flex-direction: column; gap: 10px; }
-.cmt-row { position: relative; display: flex; gap: 12px; padding: 14px 16px 14px 14px; border-radius: 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); transition: border-color 0.2s, transform 0.2s; animation: commentSlide 0.3s ease both; overflow: hidden; }
-.cmt-row::before { content: ''; position: absolute; top: 0; right: 0; width: 3px; height: 100%; background: linear-gradient(to bottom, #8b5cf6, #00f2fe); opacity: 0.6; }
-.cmt-row:hover { border-color: rgba(139,92,246,0.25); transform: translateX(-2px); }
-.cmt-pic { width: 42px; height: 42px; border-radius: 12px; flex: 0 0 42px; overflow: hidden; background: linear-gradient(135deg,#8b5cf6,#00bcd4); color: #ffffff; font-weight: 900; font-size: 1.05rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.cmt-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.cmt-main { flex: 1; min-width: 0; }
-.cmt-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 5px; }
-.cmt-user { font-size: 0.86rem; font-weight: 900; color: #e5e5f5; cursor: pointer; }
-.cmt-user:hover { color: #a78bfa; }
-.cmt-when { font-size: 0.68rem; color: #45455f; }
-.cmt-del { margin-right: auto; background: none; border: none; color: #f87171; cursor: pointer; font-size: 0.68rem; font-weight: 700; font-family: 'Tajawal', sans-serif; padding: 2px 6px; opacity: 0.5; transition: opacity 0.15s; flex-shrink: 0; }
-.cmt-del:hover { opacity: 1; }
-.cmt-msg { font-size: 0.89rem; color: #c4c4dc; line-height: 1.7; word-break: break-word; margin: 0; }
-
-.cmt-actions { display: flex; align-items: center; gap: 8px; margin-top: 9px; flex-wrap: wrap; }
-.cmt-vote, .cmt-reply-toggle { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #8a8aa8; border-radius: 8px; padding: 5px 11px; font-size: 0.74rem; font-weight: 800; cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0; transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; }
-.cmt-vote:hover, .cmt-reply-toggle:hover { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.3); color: #c4b5fd; transform: none; filter: none; }
-.cmt-vote.voted { background: rgba(139,92,246,0.18); border-color: rgba(139,92,246,0.4); color: #c4b5fd; }
-.cmt-reply-toggle { color: #00d9e8; border-color: rgba(0,217,232,0.18); background: rgba(0,217,232,0.05); }
-.cmt-reply-toggle:hover { background: rgba(0,217,232,0.14); border-color: rgba(0,217,232,0.35); color: #6ee7f0; }
-
-.reply-box { display: none; gap: 8px; margin-top: 10px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 8px; }
-.reply-box input { flex: 1; background: transparent; border: none; outline: none; color: #e5e5f5; font-family: 'Tajawal', sans-serif; font-size: 0.85rem; padding: 6px 8px; direction: rtl; }
-.reply-box input::placeholder { color: #45455f; }
-.reply-box button { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; border-radius: 8px; padding: 7px 16px; font-size: 0.76rem; font-weight: 800; font-family: 'Tajawal', sans-serif; cursor: pointer; margin: 0; white-space: nowrap; transition: all 0.2s; }
-.reply-box button:hover { background: linear-gradient(135deg, #8b5cf6, #6d28d9); transform: none; filter: none; }
-.reply-box button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.replies-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-right: 16px; border-right: 2px solid rgba(139,92,246,0.15); }
-.reply-row { display: flex; gap: 10px; }
-.reply-pic { width: 30px; height: 30px; border-radius: 10px; flex: 0 0 30px; overflow: hidden; background: linear-gradient(135deg,#8b5cf6,#00bcd4); color: #fff; font-weight: 900; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.reply-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.reply-main { flex: 1; min-width: 0; }
-.reply-main .cmt-msg { font-size: 0.83rem; }
-.reply-main .cmt-user { font-size: 0.8rem; }
-
-.sort-wrap { position: relative; }
-.sort-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #8a8aa8; border-radius: 9px; padding: 6px 13px; font-size: 0.73rem; font-weight: 800; cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0; transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; }
-.sort-btn:hover { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.25); color: #c4b5fd; transform: none; filter: none; }
-.sort-btn #sortLabel { color: #a78bfa; }
-.sort-menu { display: none; position: absolute; top: calc(100% + 6px); left: 0; background: #11111f; border: 1px solid rgba(139,92,246,0.2); border-radius: 12px; padding: 6px; min-width: 150px; z-index: 5; box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
-.sort-menu.open { display: block; }
-.sort-menu button { display: block; width: 100%; text-align: right; background: none; border: none; color: #c4c4dc; padding: 8px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 700; font-family: 'Tajawal', sans-serif; cursor: pointer; margin: 0; transition: all 0.15s; }
-.sort-menu button:hover { background: rgba(139,92,246,0.15); color: #a78bfa; transform: none; filter: none; }
-
-.no-comments { text-align: center; padding: 34px 20px; color: #383854; font-size: 0.85rem; }
-.no-comments .nc-icon { font-size: 2.2rem; display: block; margin-bottom: 10px; }
-
-.cmt-load-more { display: block; margin: 10px auto 2px; background: rgba(139,92,246,0.08); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); border-radius: 50px; padding: 8px 22px; font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
-.cmt-load-more:hover { background: rgba(139,92,246,0.16); transform: none; filter: none; }
-
-@media (max-width: 740px) {
-    .cmt-pic { width: 34px; height: 34px; flex-basis: 34px; font-size: 0.85rem; }
-    .cmt-user { font-size: 0.86rem; }
-    .cmt-when { font-size: 0.68rem; }
-    .cmt-msg { font-size: 0.9rem; line-height: 1.75; }
-    .replies-list { padding-right: 10px; }
-    .reply-box { flex-direction: column; }
-    .reply-box button { width: 100%; }
+.page-hero h1 {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.script-sidebar { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 90px; }
-.sidebar-thumb { display: none; border-radius: 16px; overflow: hidden; border: 1px solid rgba(139,92,246,0.18); cursor: pointer; box-shadow: 0 6px 24px rgba(0,0,0,0.3); transition: all 0.25s; }
-.sidebar-thumb.show { display: block; animation: riseUp 0.45s ease both; }
-.sidebar-thumb img { width: 100%; display: block; max-height: 140px; object-fit: cover; transition: transform 0.3s; }
-.sidebar-thumb:hover { border-color: rgba(139,92,246,0.4); }
-.sidebar-thumb:hover img { transform: scale(1.06); }
-.side-card { background: linear-gradient(145deg, rgba(14,16,30,0.95), rgba(10,12,24,0.9)); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; transition: border-color 0.2s; animation: riseUp 0.45s ease both; overflow: hidden; }
-.side-card:hover { border-color: rgba(139,92,246,0.18); }
-.side-section { padding: 18px; text-align: center; }
-.side-section + .side-section { border-top: 1px solid rgba(255,255,255,0.05); }
-.mcs-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
-.mcs-label { font-size: 0.6rem; font-weight: 800; color: #35355a; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 4px; }
-.mcs-name { font-size: 0.95rem; font-weight: 900; color: #00d9e8; }
-.mcs-name.muted { color: #3d3d5a; font-size: 0.82rem; font-weight: 700; }
-.stats-side-label { font-size: 0.6rem; font-weight: 800; color: #35355a; text-transform: uppercase; letter-spacing: 1.3px; margin-bottom: 10px; text-align: right; }
-.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.82rem; }
-.stat-row:last-child { border-bottom: none; }
-.sr-label { color: #44445a; }
-.sr-val { font-weight: 800; color: #d0d0ee; font-variant-numeric: tabular-nums; }
-.like-btn-inline { display: flex; align-items: center; gap: 6px; background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.15); border-radius: 8px; padding: 5px 12px; color: #f87171; font-size: 0.77rem; font-weight: 800; cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0; width: 100%; justify-content: center; margin-top: 10px; transition: all 0.2s; }
-.like-btn-inline:hover { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.3); transform: none; filter: none; }
-.like-btn-inline.liked { background: rgba(248,113,113,0.2); color: #fca5a5; cursor: default; }
-.author-card-side { text-align: center; cursor: pointer; }
-.author-card-side:hover { background: rgba(139,92,246,0.03); }
-.acs-avatar { width: 62px; height: 62px; border-radius: 50%; border: 2px solid rgba(139,92,246,0.25); margin: 0 auto 10px; background-color: #0a0a14; overflow: hidden; color: #ffffff; font-weight: 900; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
-.author-card-side:hover .acs-avatar { border-color: #8b5cf6; box-shadow: 0 0 20px rgba(139,92,246,0.3); }
-.acs-name { font-size: 0.92rem; font-weight: 900; color: #d0d0ee; margin-bottom: 3px; }
-.acs-label { font-size: 0.65rem; color: #35355a; text-transform: uppercase; letter-spacing: 1px; }
-.acs-btn { background: rgba(139,92,246,0.1); color: #8b7fff; border: 1px solid rgba(139,92,246,0.22); border-radius: 50px; padding: 6px 16px; font-size: 0.73rem; font-weight: 800; font-family: 'Tajawal', sans-serif; cursor: pointer; margin-top: 10px; transition: all 0.2s; display: inline-block; }
-.acs-btn:hover { background: rgba(139,92,246,0.22); color: #c4b5fd; transform: none; filter: none; }
-@media (max-width: 740px) {
-    .script-layout { grid-template-columns: 1fr; padding: 14px 14px 60px; }
-    .script-sidebar { position: static; order: -1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .sidebar-thumb { grid-column: 1 / -1; }
-    .author-card-side { grid-column: 1 / -1; }
-    .comment-input-wrap { flex-direction: column; padding: 10px; }
-    #commentInput { width: 100%; }
-    #submitComment { width: 100%; padding: 10px; }
-    .action-row { gap: 7px; }
-    .action-row button { flex: 1 1 100%; padding: 12px 14px; font-size: 0.82rem; }
-    #copyBtn { flex: 1 1 100%; }
+
+.page-hero h1 svg { flex-shrink: 0; }
+
+.scripts-count-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 7px 16px;
+    font-size: 0.82rem; color: var(--text-muted); font-weight: 700;
 }
+
+.scripts-count-pill .scp-num {
+    font-weight: 900; color: var(--primary); font-size: 0.95rem;
+}
+
+.search-section { margin-bottom: 22px; }
+
+.search-wrap {
+    position: relative;
+    margin-bottom: 14px;
+}
+
+.search-wrap .search-icon {
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem; pointer-events: none;
+    color: var(--text-muted);
+    display: flex;
+}
+
+#searchScripts {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 14px 48px 14px 140px;
+    color: var(--text-main);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: var(--transition);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    direction: rtl;
+    box-sizing: border-box;
+}
+
+#searchScripts:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.15), 0 2px 10px rgba(0,0,0,0.2);
+}
+
+#searchScripts::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+.ai-search-btn {
+    position: absolute; left: 8px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--accent-gradient);
+    color: white; border: none;
+    border-radius: 12px; padding: 8px 14px;
+    font-size: 0.75rem; font-weight: 800;
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    margin: 0; transition: var(--transition);
+    display: flex; align-items: center; gap: 5px;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(139,92,246,0.35);
+}
+
+.ai-search-btn:hover { transform: translateY(-50%) scale(1.04); filter: brightness(1.1); }
+.ai-search-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: translateY(-50%); }
+.ai-search-btn svg { flex-shrink: 0; }
+.ai-search-btn .spin { animation: iconSpin 0.9s linear infinite; }
+
+@keyframes iconSpin { to { transform: rotate(360deg); } }
+
+.ai-result-banner {
+    display: none;
+    background: rgba(139,92,246,0.07);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 10px; padding: 7px 14px;
+    margin-bottom: 12px;
+    font-size: 0.76rem; color: var(--text-muted);
+    animation: fadeIn 0.3s ease both;
+    line-height: 1.5;
+}
+
+.ai-result-banner.show { display: flex; align-items: center; gap: 8px; }
+.aib-icon { font-size: 0.9rem; flex-shrink: 0; display: flex; color: var(--primary); }
+.aib-text { flex: 1; }
+.aib-text strong { color: var(--text-main); }
+.aib-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; margin: 0; font-size: 0.85rem; flex-shrink: 0; opacity: 0.6; display: flex; }
+.aib-close:hover { color: var(--danger); opacity: 1; transform: none; filter: none; }
+
+.filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-label {
+    font-size: 0.72rem; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+}
+
+.filter-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 7px 16px;
+    font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    margin: 0; transition: var(--transition); white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+
+.filter-btn svg { flex-shrink: 0; }
+
+.filter-btn:hover  { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
+.filter-btn.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.4); }
+
+.sort-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; flex-wrap: wrap;
+}
+
+.sort-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; }
+
+.sort-select {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 10px; padding: 7px 12px;
+    color: var(--text-main); font-family: 'Tajawal', sans-serif;
+    font-size: 0.8rem; outline: none; cursor: pointer;
+}
+
+.results-info {
+    font-size: 0.78rem; color: var(--text-muted);
+    margin-right: auto;
+    display: inline-flex; align-items: center; gap: 5px;
+}
+
+.results-info span { color: var(--primary); font-weight: 800; }
+
+.scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.sc-thumb {
+    width: 100%; height: 140px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--border-color);
+    transition: transform 0.3s ease;
+}
+
+.script-card:hover .sc-thumb { transform: scale(1.04); }
+
+.script-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 0;
+    overflow: hidden;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease both;
+    position: relative;
+    cursor: pointer;
+}
+
+.script-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+
+.script-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.script-card:hover::before { opacity: 1; }
+.script-card[data-cat="game"]  .sc-top-bar,
+.script-card[data-cat="game"]::before  { background: linear-gradient(90deg, #4ade80, #22c55e); }
+.script-card[data-cat="admin"] .sc-top-bar,
+.script-card[data-cat="admin"]::before { background: linear-gradient(90deg, #f87171, #ef4444); }
+.script-card[data-cat="ai"]    .sc-top-bar,
+.script-card[data-cat="ai"]::before    { background: linear-gradient(90deg, #a78bfa, #8b5cf6); }
+.script-card::before                   { background: var(--accent-gradient); }
+
+.sc-card-link {
+    position: absolute; inset: 0; z-index: 1;
+    text-indent: -9999px; overflow: hidden;
+}
+.sc-body, .sc-footer { position: relative; z-index: 2; }
+
+.sc-body { padding: 20px 20px 16px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+.sc-header { display: flex; align-items: flex-start; gap: 10px; }
+.sc-verified-badge { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.sc-verified-badge svg { display: block; }
+
+.sc-title {
+    font-size: 1rem; font-weight: 900; color: var(--text-main);
+    flex: 1; line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sc-title mark { background: rgba(139,92,246,0.25); color: #c084fc; border-radius: 3px; padding: 0 2px; }
+
+.sc-new-badge {
+    background: var(--accent-gradient); color: white;
+    font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
+    border-radius: 50px; flex-shrink: 0; align-self: flex-start;
+    margin-top: 2px;
+    display: inline-flex; align-items: center; gap: 3px;
+}
+
+.sc-ai-badge {
+    background: linear-gradient(135deg,rgba(139,92,246,0.2),rgba(0,242,254,0.12));
+    border: 1px solid rgba(139,92,246,0.35); color: #a78bfa;
+    font-size: 0.58rem; font-weight: 900; padding: 3px 8px;
+    border-radius: 50px; flex-shrink: 0; align-self: flex-start;
+    margin-top: 2px;
+    display: inline-flex; align-items: center; gap: 3px;
+}
+
+.sc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.sc-cat {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--primary-dim); color: #b48bf8;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-map {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(0,242,254,0.08); border: 1px solid rgba(0,242,254,0.2);
+    color: var(--secondary);
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-key-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3);
+    color: #fbbf24;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-tag-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(0,242,254,0.08); border: 1px solid rgba(0,242,254,0.2);
+    color: #67e8f9;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 800;
+}
+
+.sc-code-snippet {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(139,92,246,0.15);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.72rem;
+    color: #8be9fd;
+    direction: ltr;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sc-code-snippet svg { flex-shrink: 0; color: #8b5cf6; }
+
+.sc-preview-btn {
+    background: rgba(0,242,254,0.08);
+    border: 1px solid rgba(0,242,254,0.2);
+    color: var(--secondary);
+    border-radius: 10px;
+    padding: 7px 14px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    margin: 0;
+    transition: var(--transition);
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+
+.sc-preview-btn:hover { background: rgba(0,242,254,0.16); transform: none; filter: none; }
+.sc-preview-btn svg { transition: transform 0.25s ease; }
+.sc-preview-btn.open svg { transform: rotate(180deg); }
+
+.sc-code-full {
+    display: none;
+    background: #050810;
+    border: 1px solid rgba(139,92,246,0.15);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 0;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.76rem;
+    line-height: 1.7;
+    color: #8be9fd;
+    direction: ltr;
+    text-align: left;
+    white-space: pre-wrap;
+    max-height: 260px;
+    overflow-y: auto;
+    cursor: text;
+}
+
+.sc-code-full.open { display: block; animation: fadeIn 0.25s ease both; }
+
+.sc-code-full::-webkit-scrollbar { width: 5px; }
+.sc-code-full::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+.sc-code-full::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+
+.sc-stats {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.78rem; color: var(--text-muted);
+}
+
+.sc-stat { display: flex; align-items: center; gap: 4px; }
+.sc-stat svg { flex-shrink: 0; }
+
+.sc-stars { display: flex; align-items: center; gap: 2px; }
+
+.sc-star {
+    cursor: pointer; display: flex; padding: 1px;
+    color: #3a3a4a;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.sc-star svg { display: block; }
+.sc-star:hover { transform: scale(1.22); }
+.sc-star.filled { color: #fbbf24; }
+.sc-stars[data-rated="true"] .sc-star { cursor: default; }
+.sc-stars[data-rated="true"] .sc-star:hover { transform: none; }
+
+.sc-star.hover-fill { color: #fbbf24; }
+
+.sc-star.just-rated { animation: starPop 0.4s ease; }
+@keyframes starPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.5) rotate(-8deg); }
+    100% { transform: scale(1); }
+}
+
+.sc-avg { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; margin-right: 2px; }
+.sc-avg strong { color: var(--text-main); }
+
+.sc-footer {
+    display: flex; gap: 8px; padding: 12px 20px 16px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    flex-wrap: wrap;
+}
+
+.sc-btn {
+    flex: 1; min-width: 80px;
+    padding: 9px 12px; border-radius: 12px;
+    font-size: 0.78rem; font-weight: 800;
+    border: none; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; margin: 0;
+    transition: var(--transition); display: flex;
+    align-items: center; justify-content: center; gap: 5px;
+    white-space: nowrap;
+}
+
+.sc-btn svg { flex-shrink: 0; }
+.sc-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.sc-btn:active { transform: scale(0.96); }
+
+.sc-btn.view { background: var(--accent-gradient); color: white; box-shadow: 0 4px 12px rgba(139,92,246,0.3); text-decoration: none; }
+.sc-btn.copy { background: rgba(0,242,254,0.1); color: var(--secondary); border: 1px solid rgba(0,242,254,0.2); }
+.sc-btn.like { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); position: relative; overflow: visible; }
+.sc-btn.like.liked  { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.3); }
+.sc-btn.report { background: rgba(248,113,113,0.06); color: var(--text-muted); border: 1px solid var(--border-color); }
+.sc-btn.report:hover { color: #f87171; border-color: rgba(248,113,113,0.3); }
+
+.sc-btn.like .like-icon { transition: transform 0.25s cubic-bezier(.17,.89,.32,1.49); }
+.sc-btn.like.pulse .like-icon { animation: heartPop 0.55s cubic-bezier(.17,.89,.32,1.49); }
+@keyframes heartPop {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(0.72); }
+    60%  { transform: scale(1.45); }
+    100% { transform: scale(1); }
+}
+
+.like-burst {
+    position: absolute; inset: 0; pointer-events: none; overflow: visible;
+}
+.like-burst span {
+    position: absolute; top: 50%; left: 50%; width: 5px; height: 5px;
+    border-radius: 50%; background: #f87171;
+    animation: burstFly 0.6s ease-out forwards;
+}
+@keyframes burstFly {
+    0%   { opacity: 1; transform: translate(-50%,-50%) scale(1) translate(0,0); }
+    100% { opacity: 0; transform: translate(-50%,-50%) scale(0.3) translate(var(--bx), var(--by)); }
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center; padding: 60px 20px;
+    color: var(--text-muted);
+    animation: fadeIn 0.4s ease both;
+}
+
+.empty-state .es-icon { display: flex; justify-content: center; margin-bottom: 14px; color: var(--text-muted); opacity: 0.5; }
+.empty-state h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+.empty-state p  { font-size: 0.88rem; line-height: 1.7; }
+
+.loading-grid {
+    grid-column: 1 / -1;
+    display: flex; flex-direction: column; gap: 12px;
+}
+
+.skeleton {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 20px; padding: 20px; height: 180px;
+    animation: shimmer 1.5s ease infinite;
+}
+
+@keyframes shimmer {
+    0%,100% { opacity: 1; } 50% { opacity: 0.5; }
+}
+
+.ai-thinking {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 12px;
+    justify-content: center; padding: 40px;
+    color: var(--text-muted); font-size: 0.9rem;
+    font-weight: 700; animation: fadeIn 0.3s ease both;
+}
+
+.ai-dots { display: flex; gap: 5px; }
+.ai-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); animation: adb 1.2s ease infinite; }
+.ai-dots span:nth-child(2){animation-delay:.2s} .ai-dots span:nth-child(3){animation-delay:.4s}
+@keyframes adb { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-7px);opacity:1} }
+
+.all-scripts-index {
+    margin-top: 40px; padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+.asi-title {
+    font-size: 0.8rem; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer; user-select: none;
+    list-style: none;
+    display: flex; align-items: center; gap: 6px;
+}
+.asi-title::-webkit-details-marker { display: none; }
+.asi-title::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-right: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+    transform: rotate(-45deg);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+.all-scripts-index[open] .asi-title::before { transform: rotate(45deg); }
+.asi-title:hover { color: var(--text-main); }
+.asi-links {
+    display: flex; flex-wrap: wrap; gap: 6px 14px;
+    max-width: 100%;
+    min-width: 0;
+    margin-top: 14px;
+}
+.asi-links a {
+    font-size: 0.76rem; color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: 1px dotted transparent;
+    transition: var(--transition);
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+}
+.asi-links a:hover { color: var(--primary); border-bottom-color: var(--primary); }
+
+.search-suggest {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0; left: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+    overflow: hidden;
+    z-index: 20;
+    display: none;
+}
+.search-suggest.show { display: block; animation: fadeIn 0.15s ease both; }
+.ss-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    font-size: 0.84rem; color: var(--text-muted);
+    cursor: pointer; transition: var(--transition);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.ss-item:last-child { border-bottom: none; }
+.ss-item:hover, .ss-item.active { background: rgba(139,92,246,0.08); color: var(--text-main); }
+.ss-item svg { flex-shrink: 0; color: var(--text-muted); }
+.ss-item b { color: var(--text-main); font-weight: 800; }
+.ss-item .ss-meta { margin-right: auto; font-size: 0.68rem; color: var(--text-muted); opacity: 0.7; }
+.ss-item mark { background: rgba(139,92,246,0.25); color: #c084fc; border-radius: 3px; padding: 0 2px; }
+
+@media (max-width: 640px) {
+    .scripts-grid { grid-template-columns: 1fr; }
+    #searchScripts { padding-left: 110px; }
+    .ai-search-btn span { display: none; }
+    .ai-search-btn { padding: 8px 10px; }
+    .page-hero { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
 </style>
 </head>
-<body data-script-id="">
-
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <button class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">✕</button>
-    <img id="lightboxImg" src="" alt="صورة السكربت" onclick="event.stopPropagation()">
-</div>
+  
+<body>
 
 <header>
-    <button onclick="location.href='scripts.html'">📜 قائمة السكربتات</button>
-    <button class="nav-button" onclick="location.href='index.html'">العودة للرئيسية</button>
+  <button onclick="location.href='publish.html'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-left:5px"><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>نشر سكربت</button>
+  <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
-<div class="script-layout">
-    <div class="script-main">
+<script>
+function toggleCodePreview(btn) {
+    const card = btn.closest('.script-card');
+    const full = card.querySelector('.sc-code-full');
+    if (!full) return;
+    const willOpen = !full.classList.contains('open');
+    full.classList.toggle('open');
+    btn.classList.toggle('open', willOpen);
+    const label = btn.querySelector('.spb-label');
+    if (label) label.textContent = willOpen ? 'إخفاء الكود' : 'معاينة سريعة';
+}
+</script>
 
-        <div class="script-crumb">
-            <a href="scripts.html">📜 السكربتات</a> ← عرض سكربت
+<div class="scripts-page">
+
+    <div class="page-hero">
+        <h1>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
+            قائمة السكربتات
+        </h1>
+        <div class="scripts-count-pill">
+            إجمالي السكربتات: <span class="scp-num" id="scriptCount">—</span>
+        </div>
+    </div>
+
+    <div class="search-section">
+
+        <div class="search-wrap">
+            <span class="search-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></span>
+            <input type="text" id="searchScripts" placeholder="ابحث عن اسم سكربت، قسم، ماب، أو تاج..." autocomplete="off">
+            <button class="ai-search-btn" id="aiSearchBtn" title="بحث ذكي بواسطة Nova AI">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/><circle cx="9" cy="14" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.2" fill="currentColor" stroke="none"/><path d="M2 13h2M20 13h2"/></svg>
+                <span>بحث ذكي</span>
+            </button>
+            <div class="search-suggest" id="searchSuggest"></div>
         </div>
 
-        <div class="script-image-wrap" id="scriptImageWrap">
-            <img id="scriptImage" src="" alt="صورة السكربت">
-            <button class="img-expand-btn" onclick="openLightbox()">🔍 تكبير</button>
+        <div class="ai-result-banner" id="aiBanner">
+            <span class="aib-icon" id="aibIcon"></span>
+            <div class="aib-text" id="aiBannerText">—</div>
+            <button class="aib-close" onclick="closeAiBanner()" aria-label="إغلاق"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
         </div>
 
-        <div class="script-hero">
-            <div class="hero-eyebrow">📜 سكربت Roblox</div>
-            <h1 class="script-title" id="title">⏳ جارٍ التحميل...</h1>
-            <div class="author-row" id="authorRow">
-                <div class="author-avatar" id="authorAvatarInline"></div>
-                <div>
-                    <div class="author-name" id="authorName">—</div>
-                    <div class="author-date" id="scriptDate">—</div>
-                </div>
-            </div>
-            <div class="tags-row" id="tagsRow"></div>
+        <div class="filter-row">
+            <span class="filter-label">القسم:</span>
+            <button class="filter-btn active" data-cat="all"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.9-5 4.8 1.3 6.9L12 17.6 5.9 20.9 7.2 14l-5-4.8 6.9-.9z"/></svg>الكل</button>
+            <button class="filter-btn" data-cat="game"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10v4M5 12h4"/><circle cx="16" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="18.5" cy="13" r="1" fill="currentColor" stroke="none"/></svg>Game</button>
+            <button class="filter-btn" data-cat="admin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3.5v6c0 5-3.4 8.4-8 10.5-4.6-2.1-8-5.5-8-10.5v-6z"/></svg>Admin</button>
+            <button class="filter-btn" data-cat="ai"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/><circle cx="9" cy="14" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.2" fill="currentColor" stroke="none"/><path d="M2 13h2M20 13h2"/></svg>AI &amp; NPCs</button>
+            <button class="filter-btn" data-cat="سكربت من الادارة"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 3 5-7 5 7 4-3-2 11H5z"/></svg>من الإدارة</button>
+            <span class="filter-label" style="margin-right:auto"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M19 4l2 2"/></svg>المفتاح:</span>
+            <button class="filter-btn active" data-key="all">الكل</button>
+            <button class="filter-btn" data-key="yes"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>بمفتاح</button>
+            <button class="filter-btn" data-key="no"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7-2.6"/></svg>بدون مفتاح</button>
         </div>
 
-        <div class="unverified-banner" id="unverifiedBanner">
-            <span>⚠️</span>
-            <span>هذا السكربت <strong>غير موثّق</strong> من إدارة CCRAFT SPACE — تعامل معه بحذر، وسيُضاف تحذير تلقائي أعلى الكود عند نسخه.</span>
-        </div>
+        <div class="sort-row" id="tagsFilterRow" style="display:none;flex-wrap:wrap"></div>
 
-        <div class="key-banner" id="keyCard">
-            <span class="kb-icon">🔑</span>
-            <div class="kb-text">
-                <div class="kb-title">السكربت ده يحتاج مفتاح تشغيل</div>
-                <div class="kb-sub">انسخ المفتاح تحت وحطّه في نافذة السكربت قبل ما يشتغل</div>
-            </div>
-            <code class="kb-value" id="keyValue">—</code>
-            <button id="copyKeyBtn" class="copy-inline">📋 نسخ المفتاح</button>
-        </div>
-
-        <div class="code-card">
-            <div class="code-header">
-                <div class="ch-dots">
-                    <div class="ch-dot"></div>
-                    <div class="ch-dot"></div>
-                    <div class="ch-dot"></div>
-                </div>
-                <span class="ch-label">script.lua <span class="ch-lines">· <span id="codeLineCount">0</span> سطر</span></span>
-                <button class="copy-inline" id="copyInline">📋 نسخ</button>
-            </div>
-            <pre id="code">-- جارٍ التحميل...</pre>
-        </div>
-
-        <a class="ad-slot" href="https://omg10.com/4/11458024" target="_blank" rel="noopener">إعلان</a>
-
-        <div class="desc-card">
-            <h3 class="section-label">📝 الوصف</h3>
-            <p id="description" style="color:#6a6a88;font-style:italic">جارٍ التحميل...</p>
-        </div>
-
-        <div class="action-row">
-            <button id="copyBtn">📋 نسخ السكربت</button>
-            <button id="rawBtn">📄 Raw</button>
-            <button id="reportBtn">🚩 إبلاغ</button>
-        </div>
-
-        <div class="comments-card">
-            <div class="comments-head">
-                <span class="ch-title">التعليقات <span id="commentBadge">0</span></span>
-                <div class="sort-wrap">
-                    <button type="button" class="sort-btn" id="sortBtn">☰ ترتيب: <span id="sortLabel">الأحدث</span></button>
-                    <div class="sort-menu" id="sortMenu">
-                        <button type="button" data-sort="new">🆕 الأحدث</button>
-                        <button type="button" data-sort="old">🕰️ الأقدم</button>
-                        <button type="button" data-sort="top">🔥 الأكثر إعجابًا</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="comment-input-wrap">
-                <div class="cw-avatar" id="cwAvatar">؟</div>
-                <div class="cw-body">
-                    <input type="text" id="commentInput" maxlength="300" placeholder="شاركنا رأيك في هذا السكربت...">
-                    <div class="cw-footer">
-                        <span class="comment-count-hint"><span id="commentCharCount">0</span>/300</span>
-                        <button id="submitComment">إرسال ↵</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="comments">
-                <div class="no-comments" id="noComments">
-                    <span class="nc-icon">💬</span>
-                    كن أول من يعلّق على هذا السكربت!
-                </div>
-            </div>
-            <button type="button" class="cmt-load-more" id="cmtLoadMore" style="display:none">⬇️ عرض المزيد</button>
+        <div class="sort-row">
+            <span class="sort-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></svg>ترتيب:</span>
+            <select class="sort-select" id="sortSelect">
+                <option value="newest">الأحدث أولاً</option>
+                <option value="oldest">الأقدم أولاً</option>
+                <option value="likes">الأكثر إعجاباً</option>
+                <option value="rating">الأعلى تقييماً</option>
+            </select>
+            <span class="results-info">عرض <span id="resultsCount">—</span> سكربت</span>
         </div>
 
     </div>
 
-    <aside class="script-sidebar">
+    <div class="scripts-grid" id="scriptsList">
+    </div>
+    <div style="text-align:center;margin-top:18px">
+        <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s">عرض المزيد</button>
+    </div>
 
-        <div class="sidebar-thumb" id="sidebarThumb">
-            <img id="sideThumbImg" src="" alt="صورة السكربت">
-        </div>
+    <details class="all-scripts-index" id="allScriptsIndex" style="display:none">
+        <summary class="asi-title">فهرس كل السكربتات (اضغط للعرض)</summary>
+        <div class="asi-links" id="allScriptsLinksList"></div>
+    </details>
 
-        <div class="side-card">
-            <div class="side-section" id="mapCardSide">
-                <span class="mcs-icon">⏳</span>
-                <div class="mcs-label">الماب</div>
-                <div class="mcs-name muted">جارٍ التحميل...</div>
-            </div>
-            <div class="side-section" style="text-align:right">
-                <div class="stats-side-label">📊 إحصائيات</div>
-                <div class="stat-row">
-                    <span class="sr-label">👍 اللايكات</span>
-                    <span class="sr-val" id="st-likes">—</span>
-                </div>
-                <div class="stat-row">
-                    <span class="sr-label">⭐ التقييم</span>
-                    <span class="sr-val" id="st-rating">—</span>
-                </div>
-                <div class="stat-row">
-                    <span class="sr-label">💬 التعليقات</span>
-                    <span class="sr-val" id="st-comments">0</span>
-                </div>
-                <button class="like-btn-inline" id="likeBtn">❤️ إضافة لايك</button>
-            </div>
-        </div>
-
-        <div class="side-card author-card-side" id="authorCardSide">
-            <div class="side-section">
-                <div class="acs-avatar" id="authorAvatarSide"></div>
-                <div class="acs-name"  id="acName">—</div>
-                <div class="acs-label">المؤلف</div>
-                <button class="acs-btn" id="viewProfileBtn">👤 عرض البروفايل</button>
-            </div>
-        </div>
-
-    </aside>
 </div>
 
 <script src="scripts-data.js"></script>
-<script>
-// ⚠️ هذا الجزء يعرض بيانات مبدئية (SEO/Pre-render) من window.__SCRIPTS_DATA__ اللي بييجي من scripts-data.js.
-// اتحدّث عشان يقرأ أسماء الأعمدة الجديدة بتاعة Supabase، مع fallback لأسماء Firebase القديمة
-// لحد ما ملف scripts-data.js نفسه (خارج نطاق الصفحة دي) يتحدّث هو كمان لنفس الأسماء الجديدة.
-(function () {
-    try {
-        const params   = new URLSearchParams(window.location.search);
-        const id       = document.body.dataset.scriptId || params.get('id');
-        const data     = window.__SCRIPTS_DATA__ && id ? window.__SCRIPTS_DATA__[id] : null;
-        if (!data) return;
-
-        const extra = data.extra || {};
-        const isVerified = data.is_verified ?? data.verified;
-        const authorName = data.author_name ?? data.author;
-        const imageVal   = data.image_base64 ?? data.image;
-        const likesVal   = data.likes_count ?? data.likes;
-        const hasKeyVal  = data.has_key ?? data.hasKey;
-        const mapVal     = data.map ?? extra.map;
-        const keyVal     = data.key ?? extra.key;
-
-        document.title = `${data.title} | CCRAFT SPACE`;
-
-        const titleEl = document.getElementById('title');
-        if (titleEl) titleEl.innerText = data.title;
-
-        const codeEl = document.getElementById('code');
-        if (codeEl) codeEl.innerText = data.code || '-- لا يوجد كود';
-        const lcEl = document.getElementById('codeLineCount');
-        if (lcEl) lcEl.innerText = data.code ? data.code.split('\n').length : 0;
-
-        const descEl = document.getElementById('description');
-        if (descEl) {
-            descEl.innerText = data.description || 'لا يوجد وصف';
-            descEl.style.color = data.description ? '#b0b0cc' : '#44445a';
-            descEl.style.fontStyle = data.description ? 'normal' : 'italic';
-        }
-
-        if (keyVal) {
-            const keyCard  = document.getElementById('keyCard');
-            const keyValue = document.getElementById('keyValue');
-            if (keyCard && keyValue) {
-                keyValue.innerText = keyVal;
-                keyCard.style.display = 'block';
-                const copyBtn = document.getElementById('copyKeyBtn');
-                if (copyBtn) {
-                    copyBtn.onclick = () => {
-                        navigator.clipboard.writeText(keyVal).then(() => {
-                            const orig = copyBtn.innerText;
-                            copyBtn.innerText = '✅ تم النسخ';
-                            setTimeout(() => { copyBtn.innerText = orig; }, 2000);
-                        });
-                    };
-                }
-            }
-        }
-
-        if (!isVerified) {
-            const ub = document.getElementById('unverifiedBanner');
-            if (ub) ub.classList.add('show');
-        }
-
-        const tagsRow = document.getElementById('tagsRow');
-        if (tagsRow) {
-            const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            tagsRow.innerHTML = isVerified
-                ? `<span class="tag tag-verified"><svg width="13" height="13" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:-2px;margin-left:4px"><defs><linearGradient id="vgSingle" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vgSingle)"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>موثّق من الإدارة</span>`
-                : `<span class="tag tag-unverified">⚠️ غير موثّق</span>`;
-            tagsRow.innerHTML += `<span class="tag tag-cat">📁 ${esc(data.category||'—')}</span>`;
-            tagsRow.innerHTML += mapVal
-                ? `<span class="tag tag-map">🗺️ ${esc(mapVal)}</span>`
-                : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
-            tagsRow.innerHTML += (hasKeyVal || keyVal)
-                ? `<span class="tag" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">🔒 يتطلب مفتاح</span>`
-                : `<span class="tag" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>`;
-            if (Array.isArray(data.tags)) {
-                tagsRow.innerHTML += data.tags.map(t => `<span class="tag tag-map">#${esc(t)}</span>`).join('');
-            }
-        }
-
-        const authorNameEl = document.getElementById('authorName');
-        if (authorNameEl) authorNameEl.innerText = authorName || 'cCraft Space User';
-        const acNameEl = document.getElementById('acName');
-        if (acNameEl) acNameEl.innerText = authorName || 'cCraft Space User';
-
-        const mapCard = document.getElementById('mapCardSide');
-        if (mapCard) {
-            const MAP_ICONS = {
-                'Adopt Me':'🏡','Bloxburg':'🏗️','Brookhaven':'🌆','Arsenal':'🔫',
-                'Bedwars':'🛏️','Murder Mystery 2':'🔪','Jailbreak':'🚔',
-                'Pet Simulator X':'🐾','Doors':'🚪','Da Hood':'🏙️',
-                'Anime Fighting Sim':'⚔️','Tower of Hell':'🗼',
-            };
-            const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            if (mapVal) {
-                const icon = MAP_ICONS[mapVal] || '🗺️';
-                mapCard.innerHTML = `<span class="mcs-icon">${icon}</span><div class="mcs-label">مخصص لماب</div><div class="mcs-name">${esc(mapVal)}</div>`;
-                mapCard.style.borderColor = 'rgba(0,242,254,0.18)';
-                mapCard.style.boxShadow   = '0 0 20px rgba(0,242,254,0.05)';
-            } else {
-                mapCard.innerHTML = `<span class="mcs-icon">🌐</span><div class="mcs-label">الماب</div><div class="mcs-name muted">يعمل على أي لعبة</div>`;
-            }
-        }
-
-        if (imageVal) {
-            const img = document.getElementById('scriptImage');
-            const wrap = document.getElementById('scriptImageWrap');
-            if (img && wrap) { img.src = imageVal; wrap.classList.add('show'); }
-            const sideImg = document.getElementById('sideThumbImg');
-            const sideWrap = document.getElementById('sidebarThumb');
-            if (sideImg && sideWrap) { sideImg.src = imageVal; sideWrap.classList.add('show'); }
-        }
-
-        const stLikes = document.getElementById('st-likes');
-        if (stLikes) stLikes.innerText = likesVal || 0;
-        const stRating = document.getElementById('st-rating');
-        if (stRating) {
-            const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
-            stRating.innerText = avg === '—' ? '—' : `${avg} ⭐`;
-        }
-    } catch (e) {
-        console.warn('static data injection skipped:', e);
-    }
-})();
-</script>
-
 <script type="module">
 import { supabase } from "./supabase-config.js";
-import { guardAgainstBanned } from "./auth-guard.js";
 
-// ⚠️ اتفترض إن guardAgainstBanned بقت بتاخد Supabase session من نفسها من غير باراميتر
-// (مفيش app زي Firebase بعد كده) — لو التوقيع الحقيقي مختلف قوللي أظبطها.
-guardAgainstBanned();
+const SUPABASE_URL = 'https://nthqrfsdshsreqdoksyv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_kHd5Y4bBnUDJxCFV-aKg-Q_T9XRJckN';
+const SB_HEADERS = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+};
 
-const params    = new URLSearchParams(window.location.search);
-const scriptId  = document.body.dataset.scriptId || params.get('id');
-
-let currentAuthUser = null;   // Supabase Auth user (currentAuthUser.id = auth_uid)
-let currentUserRow  = null;   // صف من جدول users (currentUserRow.id = uuid داخلي يُستخدم كـ FK)
-let scriptRow = null;
-let scriptVerified = false;
-let scriptUploaderId = null;  // uploader_id (uuid داخلي في users)
-let scriptTitleForNotif = 'سكربت';
-let hasLiked = false;
-
-const UNVERIFIED_WARNING = '--[[\n\tتحذير هذا السكربت ليس تم التحقق منه من قبل cCraft space يرجي الحظر منه\n]]\n\n';
-
-function withCopyWarning(code) {
-    return scriptVerified ? code : (UNVERIFIED_WARNING + code);
-}
-
-async function refreshCurrentUser() {
-    const { data: { user } } = await supabase.auth.getUser();
-    currentAuthUser = user || null;
-    if (currentAuthUser) {
-        const { data } = await supabase
-            .from('users')
-            .select('*')
-            .eq('auth_uid', currentAuthUser.id)
-            .maybeSingle();
-        currentUserRow = data || null;
-    } else {
-        currentUserRow = null;
+const db = {
+    async getScripts() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/scripts?select=*&order=created_at.desc`, { headers: SB_HEADERS });
+            if (!res.ok) return {};
+            const rows = await res.json();
+            const obj = {};
+            rows.forEach(r => { obj[r.id] = r; });
+            return obj;
+        } catch { return {}; }
+    },
+    async getField(table, id, field) {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}&select=${field}`, { headers: SB_HEADERS });
+            if (!res.ok) return null;
+            const rows = await res.json();
+            return rows.length ? rows[0][field] : null;
+        } catch { return null; }
+    },
+    async setField(table, id, field, value) {
+        try {
+            await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
+                method: 'PATCH',
+                headers: SB_HEADERS,
+                body: JSON.stringify({ [field]: value })
+            });
+        } catch { /* تجاهل */ }
+    },
+    async getUnsafeNames() {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/unsafe_scripts?select=original_name`, { headers: SB_HEADERS });
+            if (!res.ok) return [];
+            const rows = await res.json();
+            return rows.map(r => r.original_name);
+        } catch { return []; }
+    },
+    // ✅ FIX: يقرا من public_profiles (View آمن) بدل users مباشرة
+    async getUserName(uid) {
+        try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/public_profiles?id=eq.${encodeURIComponent(uid)}&select=username`, { headers: SB_HEADERS });
+            if (!res.ok) return null;
+            const rows = await res.json();
+            return rows.length ? rows[0].username : null;
+        } catch { return null; }
+    },
+    async pushNotification(authorUid, data) {
+        try {
+            const id = 'n_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7);
+            await fetch(`${SUPABASE_URL}/rest/v1/notifications`, {
+                method: 'POST',
+                headers: SB_HEADERS,
+                body: JSON.stringify({ id, user_id: authorUid, ...data })
+            });
+        } catch { /* تجاهل */ }
     }
-}
+};
 
-// ✅ اسم العرض الحقيقي للمستخدم الحالي (username المحفوظ في البروفايل) — مش الإيميل ولا جزء منه
-function getMyDisplayName() {
-    if (!currentUserRow) return 'cCraft Space User';
-    return currentUserRow.username || currentUserRow.display_name || 'cCraft Space User';
-}
+let currentUser = null;
+let myUsernameCache = null;
 
-// 🔔 إرسال إشعار (لايك/تعليق/رد) — ما بيبعتش لنفس الشخص لو هو صاحب السكربت/التعليق
-async function notifyUser(recipientUserId, type, text) {
-    if (!recipientUserId || !currentUserRow || recipientUserId === currentUserRow.id) return;
+supabase.auth.onAuthStateChange(async (_event, session) => {
+    const authUser = session?.user || null;
+    myUsernameCache = null;
+    if (!authUser) { currentUser = null; return; }
     try {
-        await supabase.from('notifications').insert({
-            user_id: recipientUserId,
-            type,
-            text,
-            script_id: scriptId,
-            read: false,
-        });
-    } catch (e) { /* فشل الإشعار مش لازم يوقف باقي العملية */ }
+        const { data: row } = await supabase.from('users').select('*').eq('auth_uid', authUser.id).maybeSingle();
+        currentUser = row ? { uid: row.id, ...row } : { uid: authUser.id };
+    } catch {
+        currentUser = { uid: authUser.id };
+    }
+});
+
+const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
+
+async function getMyDisplayName() {
+    if (!currentUser) return 'cCraft Space User';
+    if (myUsernameCache) return myUsernameCache;
+    myUsernameCache = currentUser.username || currentUser.display_name || 'cCraft Space User';
+    return myUsernameCache;
 }
 
-window.openLightbox = function() {
-    document.getElementById('lightboxImg').src = document.getElementById('scriptImage').src;
-    document.getElementById('lightbox').classList.add('open');
-    document.body.style.overflow = 'hidden';
+const ICONS = {
+    thumb:   '<path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/><path d="M7 10l4-7a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 1.94 2.5l-1.6 6A2 2 0 0 1 16.9 21H7"/>',
+    eye:     '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/>',
+    user:    '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/>',
+    folder:  '<path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8A2 2 0 0 1 21 9.5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    map:     '<path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/>',
+    code:    '<path d="M9 6L3 12l6 6M15 6l6 6-6 6"/>',
+    sparkle: '<path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6z"/>',
+    robot:   '<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/><circle cx="9" cy="14" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.2" fill="currentColor" stroke="none"/><path d="M2 13h2M20 13h2"/>',
+    heartOutline: '<path d="M12 20.5s-7.5-4.6-10-9.3C.4 8 2 4.5 5.6 4c2.1-.3 4 .7 6.4 3.1C14.4 4.7 16.3 3.7 18.4 4 22 4.5 23.6 8 22 11.2c-2.5 4.7-10 9.3-10 9.3z"/>',
+    heartFill:    '<path d="M12 20.5s-7.5-4.6-10-9.3C.4 8 2 4.5 5.6 4c2.1-.3 4 .7 6.4 3.1C14.4 4.7 16.3 3.7 18.4 4 22 4.5 23.6 8 22 11.2c-2.5 4.7-10 9.3-10 9.3z" fill="currentColor"/>',
+    flag:    '<path d="M5 21V4"/><path d="M5 4h13l-3 4.5L18 13H5"/>',
+    copy:    '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+    check:   '<path d="M20 6L9 17l-5-5"/>',
+    lock:    '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    unlock:  '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7-2.6"/>',
+    warning: '<path d="M12 3L2 20h20z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.7" fill="currentColor" stroke="none"/>',
+    search:  '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>',
+    star:    '<path d="M12 2.5l2.9 6.3 6.9.9-5 4.8 1.3 6.9L12 17.6 5.9 20.9 7.2 14l-5-4.8 6.9-.9z"/>',
+    hash:    '<path d="M5 9h14M5 15h14M10 3L8 21M16 3l-2 18"/>',
+    clock:   '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    chevronDown: '<path d="M6 9l6 6 6-6"/>',
 };
+function ic(name, size=14, cls='') {
+    const body = ICONS[name] || '';
+    return `<svg class="${cls}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+}
 
-window.closeLightbox = function() {
-    document.getElementById('lightbox').classList.remove('open');
-    document.body.style.overflow = '';
-};
+document.getElementById('aibIcon').innerHTML = ic('robot', 15);
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+function notifyAuthor(authorUid, text) {
+    if (!authorUid || !currentUser || authorUid === currentUser.uid) return;
+    db.pushNotification(authorUid, { type: 'like', text, timestamp: Date.now() });
+}
 
-// ✅ applyAvatar بيعرض صورة معروفة (photo_url من users أو author_avatar المخزّن على التعليق) مع fallback لحرف الاسم
-function applyAvatar(el, photoUrl, fallbackName) {
-    if (!el) return;
-    el.innerHTML = '';
-    el.textContent = '';
+let allScripts   = [];
+let filteredIds  = null;
+let activeFilter = 'all';
+let activeSort   = 'newest';
+let activeKeyFilter = 'all';
+let activeTagFilter = null;
 
-    if (!photoUrl) {
-        el.textContent = (fallbackName || '؟').charAt(0).toUpperCase();
+const codeStore = new Map();
+
+async function incrementViews(id) {
+    try {
+        const current = await db.getField('scripts', id, 'views');
+        const newViews = (current || 0) + 1;
+        await db.setField('scripts', id, 'views', newViews);
+    } catch { /* تجاهل */ }
+}
+
+let unsafeNameSet = new Set();
+
+function normalizeScriptName(name) {
+    return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+async function loadUnsafeNames() {
+    try {
+        const names = await db.getUnsafeNames();
+        unsafeNameSet = new Set(names.map(n => normalizeScriptName(n)));
+    } catch { unsafeNameSet = new Set(); }
+}
+
+async function loadScripts() {
+    await loadUnsafeNames();
+    const data = await db.getScripts();
+
+    allScripts = Object.entries(data)
+        .map(([id,s]) => ({id,...s}))
+        .filter(s => s.id && s.title && s.title.trim())
+        .filter(s => !unsafeNameSet.has(normalizeScriptName(s.title)));
+    document.getElementById('scriptCount').innerText = allScripts.length;
+
+    renderTagsFilter();
+    renderAllScriptsIndex();
+
+    const q = getQuery();
+    renderScripts(q);
+}
+
+function renderAllScriptsIndex() {
+    const box = document.getElementById('allScriptsIndex');
+    const list = document.getElementById('allScriptsLinksList');
+    if (!allScripts.length) { box.style.display = 'none'; return; }
+    list.innerHTML = allScripts
+        .map(s => `<a href="script.html?id=${encodeURIComponent(s.id)}">${escHTML(s.title || 'سكربت')}</a>`)
+        .join('');
+    box.style.display = 'block';
+    injectScriptsItemListSchema();
+}
+
+function injectScriptsItemListSchema() {
+    const old = document.getElementById('scriptsItemListSchema');
+    if (old) old.remove();
+
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": allScripts.map((s, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "url": `https://ccraftspace.ddnsking.com/script.html?id=${encodeURIComponent(s.id)}`,
+            "name": s.title || 'سكربت'
+        }))
+    };
+
+    const tag = document.createElement('script');
+    tag.type = 'application/ld+json';
+    tag.id = 'scriptsItemListSchema';
+    tag.textContent = JSON.stringify(schema);
+    document.head.appendChild(tag);
+}
+
+function getQuery() {
+    return new URLSearchParams(location.search).get('search')?.toLowerCase().trim() || '';
+}
+
+function sortScripts(arr) {
+    const s = [...arr];
+    if (activeSort === '__ai__' && window.__aiScoreMap) {
+        return s.sort((a,b)=>(window.__aiScoreMap[b.id]||0)-(window.__aiScoreMap[a.id]||0));
+    }
+    if (activeSort === 'newest')  return s.sort((a,b)=>new Date(b.created_at||0) - new Date(a.created_at||0));
+    if (activeSort === 'oldest')  return s.sort((a,b)=>new Date(a.created_at||0) - new Date(b.created_at||0));
+    if (activeSort === 'likes')   return s.sort((a,b)=>(b.likes_count||0)-(a.likes_count||0));
+    if (activeSort === 'rating')  return s.sort((a,b)=>{
+        const ra = a.votes ? a.rating/a.votes : 0;
+        const rb = b.votes ? b.rating/b.votes : 0;
+        return rb - ra;
+    });
+    return s;
+}
+
+function getMap(s) {
+    return s.map || (s.extra && s.extra.map) || '';
+}
+
+function renderTagsFilter() {
+    const row = document.getElementById('tagsFilterRow');
+    const allTags = new Set();
+    allScripts.forEach(s => (s.tags||[]).forEach(t => allTags.add(t)));
+    if (!allTags.size) { row.style.display = 'none'; return; }
+    row.style.display = 'flex';
+    row.innerHTML = `<span class="sort-label">${ic('hash',13)}تاجات:</span>` +
+        [...allTags].map(t => `<button type="button" class="filter-btn" data-tag="${escHTML(t)}">#${escHTML(t)}</button>`).join('');
+    row.querySelectorAll('[data-tag]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const t = btn.dataset.tag;
+            if (activeTagFilter === t) {
+                activeTagFilter = null;
+                btn.classList.remove('active');
+            } else {
+                row.querySelectorAll('[data-tag]').forEach(b => b.classList.remove('active'));
+                activeTagFilter = t;
+                btn.classList.add('active');
+            }
+            renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+        });
+    });
+}
+
+document.querySelectorAll('[data-key]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-key]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeKeyFilter = btn.dataset.key;
+        renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+    });
+});
+
+const PAGE_SIZE = 8;
+let visibleCount = PAGE_SIZE;
+let currentResults = [];
+let lastQuery = '';
+
+function renderScripts(query = '') {
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = '';
+    lastQuery = query;
+
+    let results = allScripts;
+
+    if (filteredIds) {
+        results = results.filter(s => filteredIds.includes(s.id));
+    }
+    if (activeFilter !== 'all') {
+        results = results.filter(s => (s.category||'') === activeFilter);
+    }
+    if (activeKeyFilter === 'yes') results = results.filter(s => s.has_key);
+    if (activeKeyFilter === 'no')  results = results.filter(s => !s.has_key);
+    if (activeTagFilter) results = results.filter(s => Array.isArray(s.tags) && s.tags.includes(activeTagFilter));
+
+    if (query && !filteredIds) {
+        const fuzzy = smartSearchLocal(query, results);
+        if (fuzzy.length) {
+            results = activeSort === 'newest' ? fuzzy : sortScripts(fuzzy);
+        } else {
+            results = sortScripts(results.filter(s =>
+                (s.title||'').toLowerCase().includes(query) ||
+                (s.category||'').toLowerCase().includes(query) ||
+                getMap(s).toLowerCase().includes(query) ||
+                (s.description||'').toLowerCase().includes(query) ||
+                (s.author_name||'').toLowerCase().includes(query) ||
+                (Array.isArray(s.tags) ? s.tags.join(' ').toLowerCase() : '').includes(query)
+            ));
+        }
+    } else if (!filteredIds) {
+        results = sortScripts(results);
+    }
+    if (filteredIds) results = sortScripts(results);
+
+    document.getElementById('resultsCount').innerText = results.length;
+
+    currentResults = results;
+    visibleCount = PAGE_SIZE;
+
+    if (!results.length) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <span class="es-icon">${ic('search',44)}</span>
+                <h3>لا توجد نتائج</h3>
+                <p>جرّب كلمات مختلفة أو استخدم البحث الذكي ${ic('robot',13)}</p>
+            </div>`;
+        document.getElementById('loadMoreBtn').style.display = 'none';
         return;
     }
 
-    const img = document.createElement('img');
-    img.src = photoUrl;
-    img.alt = '';
-    img.loading = 'lazy';
-    img.referrerPolicy = 'no-referrer';
-    img.style.setProperty('width', '100%', 'important');
-    img.style.setProperty('height', '100%', 'important');
-    img.style.setProperty('max-width', 'none', 'important');
-    img.style.setProperty('object-fit', 'cover', 'important');
-    img.style.setProperty('object-position', 'center', 'important');
-    img.style.setProperty('display', 'block', 'important');
-    img.onerror = () => {
-        img.remove();
-        el.textContent = (fallbackName || '؟').charAt(0).toUpperCase();
-    };
-    el.appendChild(img);
+    renderVisibleCards();
 }
+
+function renderVisibleCards() {
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = '';
+
+    const now = Date.now();
+    const isAiSearch = !!filteredIds;
+    const slice = currentResults.slice(0, visibleCount);
+
+    slice.forEach((s, i) => {
+        const createdAtMs = s.created_at ? new Date(s.created_at).getTime() : 0;
+        const isNew      = (now - createdAtMs) < 3 * 24 * 3600 * 1000;
+        const isAiMatch  = isAiSearch;
+        const avg    = s.votes ? (s.rating / s.votes) : 0;
+        const liked  = !!localStorage.getItem(`liked_${s.id}`);
+        const rated  = !!localStorage.getItem(`rated_${s.id}`);
+        const mapVal = getMap(s);
+
+        const card = document.createElement('div');
+        card.className = 'script-card';
+        card.dataset.cat = s.category || 'other';
+        card.style.animationDelay = `${Math.min(i * 0.04, 0.4)}s`;
+
+        const codeFull = escHTML(s.code || '-- لا يوجد كود');
+        const codeSnippet = escHTML((s.code || '').replace(/\s+/g, ' ').trim().slice(0, 70));
+        const titleHTML = lastQuery ? highlightMatch(s.title || 'بدون عنوان', lastQuery) : escHTML(s.title || 'بدون عنوان');
+
+        const hasKeyFlag = !!s.has_key;
+        const keyBadge = hasKeyFlag
+            ? `<span class="sc-key-badge">${ic('lock',12)}يتطلب مفتاح</span>`
+            : `<span class="sc-key-badge" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.25);color:#4ade80">${ic('unlock',12)}بدون مفتاح</span>`;
+        const tagBadges = (s.tags||[]).map(t => `<span class="sc-tag-badge">#${escHTML(t)}</span>`).join('');
+
+        const scriptUrl = `script.html?id=${encodeURIComponent(s.id)}`;
+
+        card.innerHTML = `
+            <a href="${scriptUrl}" class="sc-card-link" aria-label="${escHTML(s.title || 'عرض السكربت')}">${escHTML(s.title || 'عرض السكربت')}</a>
+            ${s.image_base64 ? `<div style="overflow:hidden;border-radius:20px 20px 0 0"><img class="sc-thumb" src="${s.image_base64}" alt="صورة السكربت" loading="lazy"></div>` : ''}
+            <div class="sc-body">
+                <div class="sc-header">
+                    <div class="sc-title">${titleHTML}</div>
+                    ${s.is_verified ? `<span class="sc-verified-badge" title="سكربت موثّق من الإدارة"><svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vg-${escHTML(s.id)}" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vg-${escHTML(s.id)})"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span>` : ''}
+                    ${isAiMatch ? `<span class="sc-ai-badge">${ic('robot',11)}AI</span>` : ''}
+                    ${isNew ? `<span class="sc-new-badge">${ic('sparkle',10)}جديد</span>` : ''}
+                </div>
+                <div class="sc-badges">
+                    <span class="sc-cat">${ic('folder',12)}${escHTML(s.category || '—')}</span>
+                    ${mapVal ? `<span class="sc-map">${ic('map',12)}${escHTML(mapVal)}</span>` : ''}
+                    ${keyBadge}
+                    ${tagBadges}
+                </div>
+                <div class="sc-stats">
+                    <span class="sc-stat">${ic('thumb',13)}<strong>${s.likes_count||0}</strong></span>
+                    <span class="sc-stat">${ic('eye',13)}<strong>${s.views||0}</strong></span>
+                    <span class="sc-stat">${ic('user',13)}${escHTML(s.author_name||'cCraft Space User')}</span>
+                    <span style="margin-right:auto"></span>
+                    <div class="sc-stars" data-id="${s.id}" data-rated="${rated}">
+                        ${[1,2,3,4,5].map(n=>`<span class="sc-star${n<=Math.round(avg)?' filled':''}" data-v="${n}">${ic('star',15)}</span>`).join('')}
+                        <span class="sc-avg">${s.votes ? `<strong>${avg.toFixed(1)}</strong> (${s.votes})` : '—'}</span>
+                    </div>
+                </div>
+                <div class="sc-code-snippet">${ic('code',13)}${codeSnippet}${(s.code || '').length > 70 ? '…' : ''}</div>
+                <button type="button" class="sc-preview-btn" onclick="event.stopPropagation(); toggleCodePreview(this)">${ic('eye',13)}<span class="spb-label">معاينة سريعة</span></button>
+                <pre class="sc-code-full" onclick="event.stopPropagation()">${codeFull}</pre>
+            </div>
+            <div class="sc-footer">
+                <a class="sc-btn view" href="${scriptUrl}" data-id="${s.id}">${ic('eye',14)}عرض</a>
+                <button class="sc-btn copy"   data-id="${s.id}">${ic('copy',14)}نسخ</button>
+                <button class="sc-btn like${liked?' liked':''}" data-id="${s.id}" ${liked?'disabled':''}>
+                    <span class="like-icon">${ic(liked?'heartFill':'heartOutline',14)}</span> <span class="lc">${s.likes_count||0}</span>
+                    <span class="like-burst"></span>
+                </button>
+                <button class="sc-btn report" data-id="${s.id}" title="إبلاغ">${ic('flag',14)}</button>
+            </div>
+        `;
+
+        codeStore.set(s.id, s.code || '');
+
+        card.querySelector('.sc-card-link').addEventListener('click', () => incrementViews(s.id));
+        card.querySelector('.sc-btn.view').addEventListener('click', () => incrementViews(s.id));
+
+        card.querySelector('.sc-btn.copy').onclick = async e => {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            const id   = btn.dataset.id;
+            const raw  = codeStore.get(id) || '';
+            if (!raw) { alert('لا يوجد كود لهذا السكربت'); return; }
+            const code = withCopyWarning(raw, !!s.is_verified);
+            const restore = () => { btn.innerHTML = `${ic('copy',14)}نسخ`; btn.style.background=''; btn.style.color=''; };
+            try {
+                await navigator.clipboard.writeText(code);
+                btn.innerHTML = `${ic('check',14)}تم النسخ`;
+                btn.style.background = 'rgba(74,222,128,0.15)';
+                btn.style.color = 'var(--success)';
+                setTimeout(restore, 2200);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = code;
+                ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                btn.innerHTML = `${ic('check',14)}تم`;
+                setTimeout(restore, 2000);
+            }
+        };
+
+        const likeBtn = card.querySelector('.sc-btn.like');
+        likeBtn.onclick = async e => {
+            e.stopPropagation();
+            if (liked || likeBtn.disabled) return;
+            const currentLikes = await db.getField('scripts', s.id, 'likes_count');
+            const newLikes = (currentLikes || 0) + 1;
+            await db.setField('scripts', s.id, 'likes_count', newLikes);
+            likeBtn.querySelector('.lc').innerText = newLikes;
+            likeBtn.classList.add('liked');
+            likeBtn.querySelector('.like-icon').innerHTML = ic('heartFill', 14);
+            likeBtn.disabled = true;
+            localStorage.setItem(`liked_${s.id}`, 'true');
+
+            likeBtn.classList.add('pulse');
+            spawnLikeBurst(likeBtn.querySelector('.like-burst'));
+            setTimeout(() => likeBtn.classList.remove('pulse'), 600);
+
+            if (currentUser) {
+                const likerName = await getMyDisplayName();
+                notifyAuthor(s.uploader_id, `${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
+            }
+        };
+
+        card.querySelector('.sc-btn.report').onclick = e => {
+            e.stopPropagation();
+            location.href = `report.html?id=${s.id}`;
+        };
+
+        const starsEl = card.querySelector('.sc-stars');
+        const starEls = [...starsEl.querySelectorAll('.sc-star')];
+
+        starEls.forEach(star => {
+            star.addEventListener('mouseenter', () => {
+                if (starsEl.dataset.rated === 'true') return;
+                const v = parseInt(star.dataset.v);
+                starEls.forEach(st => st.classList.toggle('hover-fill', parseInt(st.dataset.v) <= v));
+            });
+        });
+        starsEl.addEventListener('mouseleave', () => {
+            starEls.forEach(st => st.classList.remove('hover-fill'));
+        });
+
+        starEls.forEach(star => {
+            star.addEventListener('click', async e => {
+                e.stopPropagation();
+                if (starsEl.dataset.rated === 'true') return;
+                const val = parseInt(star.dataset.v);
+                const curRating = await db.getField('scripts', s.id, 'rating') || 0;
+                const curVotes  = await db.getField('scripts', s.id, 'votes')  || 0;
+                const newR = curRating + val;
+                const newV = curVotes + 1;
+                await fetch(`${SUPABASE_URL}/rest/v1/scripts?id=eq.${encodeURIComponent(s.id)}`, {
+                    method: 'PATCH',
+                    headers: SB_HEADERS,
+                    body: JSON.stringify({ rating: newR, votes: newV })
+                });
+                localStorage.setItem(`rated_${s.id}`, 'true');
+                starsEl.dataset.rated = 'true';
+                const newAvg = newR / newV;
+                starsEl.querySelectorAll('.sc-star').forEach((st,idx) => {
+                    st.classList.toggle('filled', idx+1 <= Math.round(newAvg));
+                    if (idx+1 <= val) { st.classList.add('just-rated'); setTimeout(()=>st.classList.remove('just-rated'), 450); }
+                });
+                starsEl.querySelector('.sc-avg').innerHTML = `<strong>${newAvg.toFixed(1)}</strong> (${newV})`;
+            });
+        });
+
+        list.appendChild(card);
+    });
+
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (visibleCount < currentResults.length) {
+        loadMoreBtn.style.display = 'inline-flex';
+        loadMoreBtn.style.alignItems = 'center';
+        loadMoreBtn.style.gap = '6px';
+        loadMoreBtn.innerHTML = `${ic('chevronDown',13)}عرض المزيد (${currentResults.length - visibleCount} متبقي)`;
+    } else {
+        loadMoreBtn.style.display = 'none';
+    }
+}
+
+function spawnLikeBurst(container) {
+    if (!container) return;
+    container.innerHTML = '';
+    const n = 8;
+    for (let i = 0; i < n; i++) {
+        const p = document.createElement('span');
+        const angle = (Math.PI * 2 * i) / n + (Math.random()*0.4-0.2);
+        const dist  = 13 + Math.random()*7;
+        p.style.setProperty('--bx', `${Math.cos(angle)*dist}px`);
+        p.style.setProperty('--by', `${Math.sin(angle)*dist}px`);
+        p.style.background = i % 2 ? '#f87171' : '#fb923c';
+        container.appendChild(p);
+    }
+    setTimeout(() => { container.innerHTML = ''; }, 650);
+}
+
+document.getElementById('loadMoreBtn').addEventListener('click', () => {
+    visibleCount += PAGE_SIZE;
+    renderVisibleCards();
+});
 
 function escHTML(s) {
     return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-const MAP_ICONS = {
-    'Adopt Me':'🏡','Bloxburg':'🏗️','Brookhaven':'🌆','Arsenal':'🔫',
-    'Bedwars':'🛏️','Murder Mystery 2':'🔪','Jailbreak':'🚔',
-    'Pet Simulator X':'🐾','Doors':'🚪','Da Hood':'🏙️',
-    'Anime Fighting Sim':'⚔️','Tower of Hell':'🗼',
+const UNVERIFIED_WARNING = '--[[\n\tتحذير هذا السكربت ليس تم التحقق منه من قبل cCraft space يرجي الحظر منه\n]]\n\n';
+
+function withCopyWarning(code, verified) {
+    if (verified) return code;
+    return UNVERIFIED_WARNING + code;
+}
+
+function levenshtein(a, b, maxDist) {
+    if (Math.abs(a.length - b.length) > maxDist) return maxDist + 1;
+    const dp = Array.from({length: a.length+1}, (_,i)=>[i, ...Array(b.length).fill(0)]);
+    for (let j=0;j<=b.length;j++) dp[0][j]=j;
+    for (let i=1;i<=a.length;i++) {
+        let rowMin = Infinity;
+        for (let j=1;j<=b.length;j++) {
+            const cost = a[i-1]===b[j-1] ? 0 : 1;
+            dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost);
+            rowMin = Math.min(rowMin, dp[i][j]);
+        }
+        if (rowMin > maxDist) return maxDist + 1;
+    }
+    return dp[a.length][b.length];
+}
+
+function fuzzyScore(text, query) {
+    if (!text || !query) return 0;
+    text  = text.toLowerCase().trim();
+    query = query.toLowerCase().trim();
+
+    if (text === query)            return 100;
+    if (text.startsWith(query))    return 90;
+    if (text.includes(query))      return 80;
+
+    const tWords = text.split(/\s+/);
+    const qWords = query.split(/\s+/);
+    let wordScore = 0;
+    for (const qw of qWords) {
+        if (tWords.some(tw => tw === qw))          wordScore += 20;
+        else if (tWords.some(tw => tw.includes(qw))) wordScore += 12;
+        else if (tWords.some(tw => qw.includes(tw) && tw.length > 2)) wordScore += 6;
+        else if (qw.length >= 3 && tWords.some(tw => tw.length >= 3 && levenshtein(tw, qw, 2) <= (qw.length>=6?2:1))) wordScore += 10;
+    }
+    if (wordScore > 0) return Math.min(70, wordScore);
+
+    if (query.length >= 3) {
+        const dist = levenshtein(text.slice(0, query.length+2), query, 2);
+        if (dist <= 2) return Math.max(35, 55 - dist*10);
+    }
+
+    let qi = 0;
+    for (let ti = 0; ti < text.length && qi < query.length; ti++) {
+        if (text[ti] === query[qi]) qi++;
+    }
+    if (qi === query.length) return Math.max(5, Math.round(40 * qi / text.length));
+
+    return 0;
+}
+
+function normalizeAr(t) {
+    return (t||'')
+        .replace(/[أإآ]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .toLowerCase()
+        .trim();
+}
+
+const SYNONYM_MAP = {
+    'سرقة': 'steal', 'سرقه': 'steal', 'اسرق': 'steal',
+    'بيض': 'egg', 'بيضة': 'egg', 'بيضه': 'egg',
+    'سرعة': 'speed', 'سرعه': 'speed',
+    'طيران': 'fly', 'طير': 'fly',
+    'قفز': 'jump',
+    'قتل': 'kill',
+    'اموال': 'money', 'فلوس': 'money', 'كاش': 'cash',
+    'مفاتيح': 'keys', 'مفتاح': 'key',
+    'زومبي': 'zombie',
+    'وحش': 'monster',
+    'قوة': 'strength', 'قوه': 'strength',
+    'اسلحة': 'weapons', 'سلاح': 'weapon',
+    'حماية': 'admin', 'ادمن': 'admin',
+    'لانهائي': 'infinite',
+    'اوتو': 'auto', 'تلقائي': 'auto',
+    'فارم': 'farm', 'زراعة': 'farm', 'زراعه': 'farm',
+    'كنز': 'treasure',
+    'قتال': 'fight', 'معركة': 'fight', 'معركه': 'fight'
 };
 
-supabase.auth.onAuthStateChange(async () => {
-    await refreshCurrentUser();
-    refreshCommentBoxAvatar();
-    renderComments();
-    refreshLikeButtonState();
-});
-
-init();
-
-async function init() {
-    await refreshCurrentUser();
-    await loadScript();
+function expandWithSynonyms(text) {
+    if (!text) return text;
+    let expanded = text;
+    for (const [ar, en] of Object.entries(SYNONYM_MAP)) {
+        if (text.includes(ar)) expanded += ' ' + en;
+    }
+    return expanded;
 }
 
-async function loadScript() {
-    if (!scriptId) {
-        location.href = 'scripts.html';
-        return;
+function parseIntent(query) {
+    const q = query.toLowerCase();
+    const intent = { category: null, map: null, feature: null };
+
+    if (/game|جيم|لعب|سبيد|speed/.test(q))            intent.category = 'game';
+    if (/admin|ادمن|أدمن/.test(q))                      intent.category = 'admin';
+    if (/ai|ذكاء|npc/.test(q))                          intent.category = 'ai';
+
+    const maps = ['jailbreak','adopt me','bloxburg','arsenal','bedwars','doors',
+                  'da hood','brookhaven','pet sim','murder mystery'];
+    for (const m of maps) {
+        if (q.includes(m)) { intent.map = m; break; }
     }
 
-    const { data, error } = await supabase
-        .from('scripts')
-        .select('*')
-        .eq('id', scriptId)
-        .maybeSingle();
-
-    if (error || !data) {
-        document.getElementById('title').innerText = "❌ هذا السكربت غير موجود";
-        return;
-    }
-    scriptRow = data;
-    scriptVerified = !!data.is_verified;
-    scriptUploaderId = data.uploader_id || null;
-    scriptTitleForNotif = data.title || 'سكربت';
-
-    // ⚠️ "الماب" والمفتاح الفعلي (نص المفتاح، مش has_key بس) مفيهمش عمود مخصص في جدول scripts —
-    // بنقراهم من extra jsonb. لو اتضح إنهم اتخزنوا في مكان تاني وقت الـ migration، قوللي أظبط السطرين دول.
-    const extra = data.extra || {};
-    const mapName = extra.map || null;
-    const keyValue = extra.key || null;
-
-    document.getElementById('title').innerText       = data.title;
-    document.title = `${data.title} | CCRAFT SPACE`;
-    document.getElementById('code').innerText        = data.code;
-    document.getElementById('codeLineCount').innerText = data.code ? data.code.split('\n').length : 0;
-    document.getElementById('description').innerText = data.description || "لا يوجد وصف";
-    document.getElementById('description').style.color = data.description ? '#b0b0cc' : '#44445a';
-    document.getElementById('description').style.fontStyle = data.description ? 'normal' : 'italic';
-
-    document.getElementById('unverifiedBanner').classList.toggle('show', !scriptVerified);
-
-    if (keyValue) {
-        const keyCard  = document.getElementById('keyCard');
-        const keyValueEl = document.getElementById('keyValue');
-        keyValueEl.innerText = keyValue;
-        keyCard.style.display = 'block';
-        document.getElementById('copyKeyBtn').onclick = () => {
-            navigator.clipboard.writeText(keyValue).then(() => {
-                const btn = document.getElementById('copyKeyBtn');
-                const orig = btn.innerText;
-                btn.innerText = '✅ تم النسخ';
-                setTimeout(() => { btn.innerText = orig; }, 2000);
-            });
-        };
-    }
-
-    if (data.image_base64) {
-        document.getElementById('scriptImage').src     = data.image_base64;
-        document.getElementById('scriptImageWrap').classList.add('show');
-        document.getElementById('sideThumbImg').src    = data.image_base64;
-        document.getElementById('sidebarThumb').classList.add('show');
-        document.getElementById('sidebarThumb').onclick = openLightbox;
-    }
-
-    const date = data.created_at
-        ? new Date(data.created_at).toLocaleDateString('ar-EG', {year:'numeric',month:'long',day:'numeric'})
-        : '—';
-    document.getElementById('scriptDate').innerText = `نُشر في ${date}`;
-
-    const authorName = data.author_name || 'cCraft Space User';
-    document.getElementById('authorName').innerText = authorName;
-    document.getElementById('acName').innerText     = authorName;
-
-    // صورة صاحب السكربت من جدول users (photo_url) عن طريق uploader_id
-    let authorPhoto = null;
-    if (scriptUploaderId) {
-        const { data: authorRow } = await supabase
-            .from('users')
-            .select('photo_url')
-            .eq('id', scriptUploaderId)
-            .maybeSingle();
-        authorPhoto = authorRow?.photo_url || null;
-    }
-    applyAvatar(document.getElementById('authorAvatarInline'), authorPhoto, authorName);
-    applyAvatar(document.getElementById('authorAvatarSide'), authorPhoto, authorName);
-
-    const goProfile = () => { if (scriptUploaderId) location.href = `profile.html?uid=${scriptUploaderId}`; };
-    document.getElementById('authorRow').onclick      = goProfile;
-    document.getElementById('authorCardSide').onclick = goProfile;
-    document.getElementById('viewProfileBtn').onclick = e => { e.stopPropagation(); goProfile(); };
-
-    const tagsRow = document.getElementById('tagsRow');
-    tagsRow.innerHTML = scriptVerified
-        ? `<span class="tag tag-verified"><svg width="13" height="13" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:-2px;margin-left:4px"><defs><linearGradient id="vgSingle" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#00f2fe"/></linearGradient></defs><path d="M12 0l2.39 1.7 2.92-.2 1.29 2.6 2.6 1.29-.2 2.92L22.7 10.5 21 12l1.7 2.39-.2 2.92-2.6 1.29-1.29 2.6-2.92-.2L12 24l-2.39-1.7-2.92.2-1.29-2.6-2.6-1.29.2-2.92L1.3 13.5 3 12 1.3 9.61l.2-2.92 2.6-1.29 1.29-2.6 2.92.2L12 0z" fill="url(#vgSingle)"/><path d="M17 8.5l-6.2 7-3.3-3.2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>موثّق من الإدارة</span>`
-        : `<span class="tag tag-unverified">⚠️ غير موثّق</span>`;
-    tagsRow.innerHTML += `<span class="tag tag-cat">📁 ${escHTML(data.category||'—')}</span>`;
-    tagsRow.innerHTML += mapName
-        ? `<span class="tag tag-map">🗺️ ${escHTML(mapName)}</span>`
-        : `<span class="tag tag-nomap">🌐 ليس لماب محدد</span>`;
-    tagsRow.innerHTML += data.has_key
-        ? `<span class="tag" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">🔒 يتطلب مفتاح</span>`
-        : `<span class="tag" style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.25);color:#4ade80">🔓 بدون مفتاح</span>`;
-    if (Array.isArray(data.tags)) {
-        tagsRow.innerHTML += data.tags.map(t => `<span class="tag tag-map">#${escHTML(t)}</span>`).join('');
-    }
-
-    const mapCard = document.getElementById('mapCardSide');
-    if (mapName) {
-        const icon = MAP_ICONS[mapName] || '🗺️';
-        mapCard.innerHTML = `
-            <span class="mcs-icon">${icon}</span>
-            <div class="mcs-label">مخصص لماب</div>
-            <div class="mcs-name">${escHTML(mapName)}</div>
-        `;
-        mapCard.style.borderColor = 'rgba(0,242,254,0.18)';
-        mapCard.style.boxShadow   = '0 0 20px rgba(0,242,254,0.05)';
-    } else {
-        mapCard.innerHTML = `
-            <span class="mcs-icon">🌐</span>
-            <div class="mcs-label">الماب</div>
-            <div class="mcs-name muted">يعمل على أي لعبة</div>
-        `;
-    }
-
-    document.getElementById('st-likes').innerText = data.likes_count || 0;
-    const avg = data.votes ? (data.rating / data.votes).toFixed(1) : '—';
-    document.getElementById('st-rating').innerText = avg === '—' ? '—' : `${avg} ⭐`;
-
-    await refreshLikeButtonState();
-    document.getElementById('likeBtn').addEventListener('click', onLikeClick);
-
-    loadComments();
-    subscribeToComments();
+    return intent;
 }
 
-// ✅ بدل localStorage القديم، دلوقتي بنتحقق من script_likes (script_id + user_id) عشان
-// اللايك يفضل مربوط باليوزر الحقيقي مش بالمتصفح بس
-async function refreshLikeButtonState() {
-    const likeBtn = document.getElementById('likeBtn');
-    hasLiked = false;
-    if (currentUserRow && scriptId) {
-        const { data } = await supabase
-            .from('script_likes')
-            .select('script_id')
-            .eq('script_id', scriptId)
-            .eq('user_id', currentUserRow.id)
-            .maybeSingle();
-        hasLiked = !!data;
+function smartSearchLocal(query, pool) {
+    const source = pool || allScripts;
+    if (!query || !source.length) return [];
+
+    const qNorm   = expandWithSynonyms(normalizeAr(query));
+    const intent  = parseIntent(query);
+    const results = [];
+
+    for (const s of source) {
+        let score = 0;
+        const title    = normalizeAr(s.title);
+        const category = normalizeAr(s.category);
+        const map      = normalizeAr(getMap(s));
+        const desc     = normalizeAr(s.description);
+        const author   = normalizeAr(s.author_name);
+        const tags     = normalizeAr((s.tags||[]).join(' '));
+
+        score += fuzzyScore(title,    qNorm) * 3.0;
+        score += fuzzyScore(category, qNorm) * 1.5;
+        score += fuzzyScore(map,      qNorm) * 2.0;
+        score += fuzzyScore(desc,     qNorm) * 1.0;
+        score += fuzzyScore(author,   qNorm) * 0.5;
+        score += fuzzyScore(tags,     qNorm) * 1.5;
+
+        if (intent.category && (s.category||'').toLowerCase() === intent.category) score += 30;
+        if (intent.map      && map.includes(intent.map))  score += 25;
+
+        const likes  = s.likes_count || 0;
+        const rating = s.votes  ? s.rating / s.votes : 0;
+        score += Math.min(15, likes  * 0.3);
+        score += Math.min(10, rating * 2);
+
+        const createdAtMs = s.created_at ? new Date(s.created_at).getTime() : 0;
+        if ((Date.now() - createdAtMs) < 7 * 86400000) score += 5;
+
+        if (score > 8) results.push({ ...s, _score: score });
     }
-    if (hasLiked) {
-        likeBtn.classList.add('liked');
-        likeBtn.innerText = '❤️ أعجبك';
-        likeBtn.disabled = true;
-    } else {
-        likeBtn.classList.remove('liked');
-        likeBtn.innerText = '❤️ إضافة لايك';
-        likeBtn.disabled = false;
-    }
+
+    return results.sort((a, b) => b._score - a._score);
 }
 
-async function onLikeClick() {
-    if (!currentUserRow) { alert("يجب تسجيل الدخول لإضافة لايك"); location.href = "login.html"; return; }
-    if (hasLiked) return;
+async function novaSearch(query) {
+    const compactList = allScripts.map(s => ({
+        id: s.id,
+        title: s.title || '',
+        category: s.category || '',
+        map: getMap(s),
+        tags: s.tags || [],
+        description: s.description || ''
+    }));
 
-    const likeBtn = document.getElementById('likeBtn');
-    likeBtn.disabled = true;
-
-    const { error: insertError } = await supabase
-        .from('script_likes')
-        .insert({ script_id: scriptId, user_id: currentUserRow.id });
-    if (insertError) { likeBtn.disabled = false; return; }
-
-    const newVal = (scriptRow.likes_count || 0) + 1;
-    scriptRow.likes_count = newVal;
-    await supabase.from('scripts').update({ likes_count: newVal }).eq('id', scriptId);
-
-    hasLiked = true;
-    likeBtn.classList.add('liked');
-    likeBtn.innerText = '❤️ أعجبك';
-    document.getElementById('st-likes').innerText = newVal;
-
-    notifyUser(scriptUploaderId, 'like', `👍 ${getMyDisplayName()} أعجب بسكربتك: ${scriptTitleForNotif}`);
-}
-
-const COMMENTS_PAGE_SIZE = 5;
-let commentsVisible = COMMENTS_PAGE_SIZE;
-let topLevelComments = [];        // تعليقات رئيسية (parent_comment_id فاضي)
-let repliesByParent = {};         // { parentId: [ردود] }
-let commentSort = 'new'; // new | old | top
-
-function timeAgoAr(ts) {
-    const diff = Date.now() - new Date(ts).getTime();
-    const m = Math.floor(diff/60000), h = Math.floor(diff/3600000), d = Math.floor(diff/86400000);
-    if (d > 0) return `منذ ${d} يوم`;
-    if (h > 0) return `منذ ${h} ساعة`;
-    if (m > 0) return `منذ ${m} دقيقة`;
-    return 'الآن';
-}
-
-// ✅ جدول comments بقى flat مع parent_comment_id (FK ذاتي) بدل التعشيش (nesting) بتاع Firebase،
-// فبنقسّم الداتا هنا: تعليقات رئيسية + ردود متجمعة حسب الأب
-async function loadComments() {
-    const { data, error } = await supabase
-        .from('comments')
-        .select('*')
-        .eq('script_id', scriptId)
-        .order('created_at', { ascending: true });
-
-    if (error || !data) return;
-
-    topLevelComments = data.filter(c => !c.parent_comment_id);
-    repliesByParent = {};
-    data.filter(c => c.parent_comment_id).forEach(r => {
-        (repliesByParent[r.parent_comment_id] ||= []).push(r);
+    const res = await fetch(`${NOVA_URL}/ai-search-scripts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, scripts: compactList })
     });
 
-    renderComments();
-}
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
 
-function subscribeToComments() {
-    supabase
-        .channel(`comments-${scriptId}`)
-        .on('postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'comments', filter: `script_id=eq.${scriptId}` },
-            payload => {
-                const row = payload.new;
-                if (row.parent_comment_id) {
-                    (repliesByParent[row.parent_comment_id] ||= []).push(row);
-                } else {
-                    if (topLevelComments.some(c => c.id === row.id)) return;
-                    topLevelComments.push(row);
-                    commentsVisible++; // تعليق جديد لازم يظهر فورًا من غير ما يستنى "عرض المزيد"
-                }
-                renderComments();
-            })
-        .subscribe();
-}
-
-function countAllComments() {
-    return topLevelComments.reduce((sum, c) => sum + 1 + (repliesByParent[c.id]?.length || 0), 0);
-}
-
-function sortComments(list) {
-    const arr = [...list];
-    if (commentSort === 'old') arr.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-    else if (commentSort === 'top') arr.sort((a,b) => ((b.likes_count||0)-(b.dislikes_count||0)) - ((a.likes_count||0)-(a.dislikes_count||0)));
-    else arr.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-    return arr;
-}
-
-function buildAvatarEl(userId, name, photoUrl, sizeClass) {
-    const pic = document.createElement('div');
-    pic.className = sizeClass;
-    pic.onclick = () => { if (userId) location.href = `profile.html?uid=${userId}`; };
-    applyAvatar(pic, photoUrl, name);
-    return pic;
-}
-
-function commentVoteKey(id) { return `cvote_${scriptId}_${id}`; }
-
-// ⚠️ مفيش جدول لتتبع "مين عمل لايك على أي تعليق" في السكيما الحالية (بعكس script_likes للسكربتات)
-// فلسه بنعتمد على localStorage لمنع التصويت المتكرر من نفس المتصفح — نفس القيد اللي كان موجود قبل كده
-async function voteComment(id, type) {
-    const storageKey = commentVoteKey(id);
-    const existing = localStorage.getItem(storageKey);
-    if (existing) return; // صوّت قبل كده على الموضوع ده
-
-    const field = type === 'like' ? 'likes_count' : 'dislikes_count';
-    const { data: row } = await supabase.from('comments').select(field).eq('id', id).maybeSingle();
-    const newVal = (row?.[field] || 0) + 1;
-    await supabase.from('comments').update({ [field]: newVal }).eq('id', id);
-    localStorage.setItem(storageKey, type);
-    return newVal;
-}
-
-function renderComments() {
-    const commentsDiv = document.getElementById('comments');
-    const loadMoreBtn = document.getElementById('cmtLoadMore');
-    const sorted = sortComments(topLevelComments);
-    const totalCount = countAllComments();
-
-    document.getElementById('commentBadge').innerText = totalCount;
-    document.getElementById('st-comments').innerText  = totalCount;
-
-    if (!sorted.length) {
-        commentsDiv.innerHTML = `<div class="no-comments" id="noComments"><span class="nc-icon">💬</span>كن أول من يعلّق على هذا السكربت!</div>`;
-        loadMoreBtn.style.display = 'none';
-        return;
+    if (data.error === 'rate_limited') {
+        throw new Error('rate_limited');
     }
 
-    commentsDiv.innerHTML = '';
-    sorted.slice(0, commentsVisible).forEach(c => {
-        commentsDiv.appendChild(buildCommentRow(c));
-    });
-
-    if (commentsVisible < sorted.length) {
-        loadMoreBtn.style.display = 'inline-block';
-        loadMoreBtn.innerText = `⬇️ عرض المزيد (${sorted.length - commentsVisible} متبقي)`;
-    } else {
-        loadMoreBtn.style.display = 'none';
-    }
+    const ids = Array.isArray(data.ids) ? data.ids : [];
+    return ids
+        .map(id => allScripts.find(s => s.id === id))
+        .filter(Boolean)
+        .map((s, idx) => ({ ...s, _score: ids.length - idx }));
 }
 
-function buildCommentRow(c) {
-    const canDelete = currentUserRow && c.user_id === currentUserRow.id;
-    const votedAs = localStorage.getItem(commentVoteKey(c.id));
-
-    const row = document.createElement('div');
-    row.className = 'cmt-row';
-
-    const pic = buildAvatarEl(c.user_id, c.author_name, c.author_avatar, 'cmt-pic');
-    row.appendChild(pic);
-
-    const main = document.createElement('div');
-    main.className = 'cmt-main';
-
-    const head = document.createElement('div');
-    head.className = 'cmt-head';
-
-    const userEl = document.createElement('span');
-    userEl.className = 'cmt-user';
-    userEl.textContent = c.author_name || 'cCraft Space User';
-    userEl.onclick = () => { if (c.user_id) location.href = `profile.html?uid=${c.user_id}`; };
-    head.appendChild(userEl);
-
-    const whenEl = document.createElement('span');
-    whenEl.className = 'cmt-when';
-    whenEl.textContent = c.created_at ? timeAgoAr(c.created_at) : '';
-    head.appendChild(whenEl);
-
-    if (canDelete) {
-        const delBtn = document.createElement('button');
-        delBtn.className = 'cmt-del';
-        delBtn.textContent = '🗑️ حذف';
-        delBtn.onclick = async e => {
-            e.stopPropagation();
-            if (!confirm('متأكد إنك عايز تحذف تعليقك؟')) return;
-            await supabase.from('comments').delete().eq('id', c.id);
-            topLevelComments = topLevelComments.filter(x => x.id !== c.id);
-            delete repliesByParent[c.id];
-            renderComments();
-        };
-        head.appendChild(delBtn);
-    }
-
-    const msgEl = document.createElement('p');
-    msgEl.className = 'cmt-msg';
-    msgEl.textContent = c.text;
-
-    const actions = document.createElement('div');
-    actions.className = 'cmt-actions';
-
-    const likeBtn = document.createElement('button');
-    likeBtn.className = 'cmt-vote' + (votedAs === 'like' ? ' voted' : '');
-    likeBtn.innerHTML = `👍 <span>${c.likes_count || 0}</span>`;
-    likeBtn.onclick = async () => {
-        if (!currentUserRow) { alert('يجب تسجيل الدخول'); location.href = 'login.html'; return; }
-        const nv = await voteComment(c.id, 'like');
-        if (nv !== undefined) { c.likes_count = nv; renderComments(); }
-    };
-
-    const dislikeBtn = document.createElement('button');
-    dislikeBtn.className = 'cmt-vote' + (votedAs === 'dislike' ? ' voted' : '');
-    dislikeBtn.innerHTML = `👎 <span>${c.dislikes_count || 0}</span>`;
-    dislikeBtn.onclick = async () => {
-        if (!currentUserRow) { alert('يجب تسجيل الدخول'); location.href = 'login.html'; return; }
-        const nv = await voteComment(c.id, 'dislike');
-        if (nv !== undefined) { c.dislikes_count = nv; renderComments(); }
-    };
-
-    const replyBtn = document.createElement('button');
-    replyBtn.className = 'cmt-reply-toggle';
-    replyBtn.innerHTML = `↩️ رد`;
-
-    actions.appendChild(likeBtn);
-    actions.appendChild(dislikeBtn);
-    actions.appendChild(replyBtn);
-
-    const replyBox = document.createElement('div');
-    replyBox.className = 'reply-box';
-    replyBox.style.display = 'none';
-    const replyInput = document.createElement('input');
-    replyInput.type = 'text';
-    replyInput.maxLength = 300;
-    replyInput.placeholder = `الرد على ${c.author_name || 'cCraft Space User'}...`;
-    const replySend = document.createElement('button');
-    replySend.textContent = 'إرسال';
-    replyBox.appendChild(replyInput);
-    replyBox.appendChild(replySend);
-
-    replyBtn.onclick = () => {
-        if (!currentUserRow) { alert('يجب تسجيل الدخول للرد'); location.href = 'login.html'; return; }
-        replyBox.style.display = replyBox.style.display === 'none' ? 'flex' : 'none';
-        if (replyBox.style.display === 'flex') replyInput.focus();
-    };
-
-    async function sendReply() {
-        const text = replyInput.value.trim();
-        if (!text) return;
-        if (text.length > 300) { alert('الرد طويل جدًا (الحد الأقصى 300 حرف)'); return; }
-        replySend.disabled = true;
-        const replierName = getMyDisplayName();
-        const replyData = {
-            script_id: scriptId,
-            parent_comment_id: c.id,
-            user_id: currentUserRow.id,
-            author_name: replierName,
-            author_avatar: currentUserRow.photo_url || null,
-            text,
-        };
-        try {
-            const { data: inserted, error } = await supabase.from('comments').insert(replyData).select().maybeSingle();
-            if (error) throw error;
-            notifyUser(c.user_id, 'reply', `↩️ ${replierName} ردّ على تعليقك في سكربت: ${scriptTitleForNotif}`);
-            (repliesByParent[c.id] ||= []).push(inserted);
-            replyInput.value = '';
-            replyBox.style.display = 'none';
-            renderComments();
-        } catch (e) {
-            alert('❌ تعذّر إرسال الرد، حاول تاني');
-        } finally {
-            replySend.disabled = false;
-        }
-    }
-    replySend.onclick = sendReply;
-    replyInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendReply(); });
-
-    main.appendChild(head);
-    main.appendChild(msgEl);
-    main.appendChild(actions);
-    main.appendChild(replyBox);
-
-    const replies = repliesByParent[c.id];
-    if (replies && replies.length) {
-        const repliesWrap = document.createElement('div');
-        repliesWrap.className = 'replies-list';
-        [...replies]
-            .sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
-            .forEach(r => repliesWrap.appendChild(buildReplyRow(c, r)));
-        main.appendChild(repliesWrap);
-    }
-
-    row.appendChild(main);
-    return row;
+function highlightMatch(text, query) {
+    if (!query || !text) return escHTML(text);
+    const safe = escHTML(text);
+    const words = query.trim().split(/\s+/).filter(w => w.length >= 2).map(w => w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+    if (!words.length) return safe;
+    const re = new RegExp(`(${words.join('|')})`, 'gi');
+    return safe.replace(re, '<mark>$1</mark>');
 }
 
-function buildReplyRow(parentComment, r) {
-    const canDelete = currentUserRow && r.user_id === currentUserRow.id;
+async function aiSearch() {
+    const query = document.getElementById('searchScripts').value.trim();
+    if (!query) return;
+    hideSuggestions();
 
-    const row = document.createElement('div');
-    row.className = 'reply-row';
-
-    const pic = buildAvatarEl(r.user_id, r.author_name, r.author_avatar, 'reply-pic');
-    row.appendChild(pic);
-
-    const main = document.createElement('div');
-    main.className = 'reply-main';
-
-    const head = document.createElement('div');
-    head.className = 'cmt-head';
-
-    const userEl = document.createElement('span');
-    userEl.className = 'cmt-user';
-    userEl.textContent = r.author_name || 'cCraft Space User';
-    userEl.onclick = () => { if (r.user_id) location.href = `profile.html?uid=${r.user_id}`; };
-    head.appendChild(userEl);
-
-    const whenEl = document.createElement('span');
-    whenEl.className = 'cmt-when';
-    whenEl.textContent = r.created_at ? timeAgoAr(r.created_at) : '';
-    head.appendChild(whenEl);
-
-    if (canDelete) {
-        const delBtn = document.createElement('button');
-        delBtn.className = 'cmt-del';
-        delBtn.textContent = '🗑️ حذف';
-        delBtn.onclick = async e => {
-            e.stopPropagation();
-            if (!confirm('متأكد إنك عايز تحذف ردك؟')) return;
-            await supabase.from('comments').delete().eq('id', r.id);
-            repliesByParent[parentComment.id] = (repliesByParent[parentComment.id]||[]).filter(x => x.id !== r.id);
-            renderComments();
-        };
-        head.appendChild(delBtn);
-    }
-
-    const msgEl = document.createElement('p');
-    msgEl.className = 'cmt-msg';
-    msgEl.textContent = r.text;
-
-    main.appendChild(head);
-    main.appendChild(msgEl);
-    row.appendChild(main);
-    return row;
-}
-
-document.getElementById('cmtLoadMore').addEventListener('click', () => {
-    commentsVisible += COMMENTS_PAGE_SIZE;
-    renderComments();
-});
-
-const commentInputEl = document.getElementById('commentInput');
-const commentCharCountEl = document.getElementById('commentCharCount');
-const cwAvatarEl = document.getElementById('cwAvatar');
-
-commentInputEl.addEventListener('input', () => {
-    commentCharCountEl.innerText = commentInputEl.value.length;
-});
-
-function refreshCommentBoxAvatar() {
-    if (!currentUserRow) { cwAvatarEl.innerHTML = ''; cwAvatarEl.textContent = '؟'; return; }
-    applyAvatar(cwAvatarEl, currentUserRow.photo_url, getMyDisplayName());
-}
-
-document.getElementById('submitComment').addEventListener('click', async () => {
-    if (!currentUserRow) { alert("يجب تسجيل الدخول للتعليق"); location.href = "login.html"; return; }
-
-    const inp  = commentInputEl;
-    const text = inp.value.trim();
-    if (!text) return;
-    if (text.length > 300) { alert('التعليق طويل جدًا (الحد الأقصى 300 حرف)'); return; }
-
-    const btn = document.getElementById('submitComment');
+    const btn = document.getElementById('aiSearchBtn');
     btn.disabled = true;
-    btn.innerText = '⏳';
+    btn.innerHTML = `${ic('robot',15,'spin')}<span>جاري البحث</span>`;
 
-    const commenterName = getMyDisplayName();
+    const list = document.getElementById('scriptsList');
+    list.innerHTML = `<div class="ai-thinking">
+        <div class="ai-dots"><span></span><span></span><span></span></div>
+        <span>Nova بتحلل البحث...</span>
+    </div>`;
 
-    const commentData = {
-        script_id: scriptId,
-        parent_comment_id: null,
-        user_id: currentUserRow.id,
-        author_name: commenterName,
-        author_avatar: currentUserRow.photo_url || null,
-        text,
-        likes_count: 0,
-        dislikes_count: 0,
-    };
+    let results = [];
+    let usedFallback = false;
 
     try {
-        const { error } = await supabase.from('comments').insert(commentData);
-        if (error) throw error;
-        notifyUser(scriptUploaderId, 'comment', `💬 ${commenterName} علّق على سكربتك: ${scriptTitleForNotif}`);
-        inp.value = '';
-        commentCharCountEl.innerText = '0';
+        results = await novaSearch(query);
+
+        if (results.length === 0) {
+            const localResults = smartSearchLocal(query);
+            if (localResults.length > 0) {
+                results = localResults;
+                usedFallback = true;
+            }
+        }
     } catch (e) {
-        alert('❌ تعذّر إرسال التعليق، حاول تاني');
-    } finally {
-        btn.disabled = false;
-        btn.innerText = 'إرسال ↵';
+        usedFallback = true;
+        results = smartSearchLocal(query);
+    }
+
+    if (results.length > 0) {
+        filteredIds = results.map(s => s.id);
+        const scoreMap = Object.fromEntries(results.map(s => [s.id, s._score]));
+
+        const savedSort = activeSort;
+        activeSort = '__ai__';
+        window.__aiScoreMap = scoreMap;
+
+        const intent = parseIntent(query);
+        let bannerMsg = usedFallback
+            ? `<strong>${results.length}</strong> نتيجة (بحث محلي احتياطي)`
+            : `<strong>${results.length}</strong> نتيجة من Nova AI`;
+        if (intent.map)      bannerMsg += ` · ماب: ${intent.map}`;
+        if (intent.category) bannerMsg += ` · قسم: ${intent.category}`;
+
+        document.getElementById('aibIcon').innerHTML = ic('robot', 15);
+        showAiBanner(bannerMsg);
+        renderScripts(query);
+
+        activeSort = savedSort;
+        delete window.__aiScoreMap;
+
+    } else {
+        filteredIds = null;
+        document.getElementById('aibIcon').innerHTML = ic('warning', 15);
+        showAiBanner(`لا نتائج لـ "${escHTML(query)}" — عارض الكل`);
+        renderScripts('');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = `${ic('robot',15)}<span>بحث ذكي</span>`;
+}
+
+function showAiBanner(html) {
+    const banner = document.getElementById('aiBanner');
+    document.getElementById('aiBannerText').innerHTML = html;
+    banner.classList.add('show');
+}
+
+window.closeAiBanner = function() {
+    document.getElementById('aiBanner').classList.remove('show');
+    filteredIds = null;
+    renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+};
+
+const suggestBox = document.getElementById('searchSuggest');
+let suggestIndex = -1;
+let suggestItems = [];
+
+function hideSuggestions() {
+    suggestBox.classList.remove('show');
+    suggestBox.innerHTML = '';
+    suggestIndex = -1;
+    suggestItems = [];
+}
+
+function renderSuggestions(query) {
+    if (!query) { hideSuggestions(); return; }
+    const results = smartSearchLocal(query).slice(0, 6);
+    if (!results.length) { hideSuggestions(); return; }
+
+    suggestItems = results;
+    suggestIndex = -1;
+    suggestBox.innerHTML = results.map((s, i) => `
+        <div class="ss-item" data-i="${i}">
+            ${ic('search',14)}
+            <span>${highlightMatch(s.title || 'سكربت', query)}</span>
+            <span class="ss-meta">${escHTML(s.category||'')}</span>
+        </div>`).join('');
+    suggestBox.classList.add('show');
+
+    suggestBox.querySelectorAll('.ss-item').forEach(item => {
+        item.addEventListener('click', () => selectSuggestion(parseInt(item.dataset.i)));
+    });
+}
+
+function selectSuggestion(i) {
+    const s = suggestItems[i];
+    if (!s) return;
+    const input = document.getElementById('searchScripts');
+    input.value = s.title || '';
+    updateURL(input.value.toLowerCase());
+    hideSuggestions();
+    filteredIds = null;
+    renderScripts(input.value.toLowerCase());
+}
+
+document.getElementById('searchScripts').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    updateURL(q);
+    if (!q) { filteredIds = null; closeAiBanner(); hideSuggestions(); renderScripts(''); return; }
+    renderScripts(q);
+    renderSuggestions(q);
+});
+
+document.getElementById('searchScripts').addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' && suggestItems.length) {
+        e.preventDefault();
+        suggestIndex = Math.min(suggestIndex + 1, suggestItems.length - 1);
+        updateSuggestHighlight();
+    } else if (e.key === 'ArrowUp' && suggestItems.length) {
+        e.preventDefault();
+        suggestIndex = Math.max(suggestIndex - 1, -1);
+        updateSuggestHighlight();
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (suggestIndex >= 0 && suggestItems[suggestIndex]) {
+            selectSuggestion(suggestIndex);
+        } else {
+            aiSearch();
+        }
+    } else if (e.key === 'Escape') {
+        hideSuggestions();
     }
 });
 
-commentInputEl.addEventListener('keypress', e => {
-    if (e.key === 'Enter') document.getElementById('submitComment').click();
+function updateSuggestHighlight() {
+    suggestBox.querySelectorAll('.ss-item').forEach((el, i) => {
+        el.classList.toggle('active', i === suggestIndex);
+    });
+    const active = suggestBox.querySelector('.ss-item.active');
+    if (active) active.scrollIntoView({ block: 'nearest' });
+}
+
+document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) hideSuggestions();
 });
 
-const sortBtn  = document.getElementById('sortBtn');
-const sortMenu = document.getElementById('sortMenu');
-const sortLabel = document.getElementById('sortLabel');
-const SORT_LABELS = { new: 'الأحدث', old: 'الأقدم', top: 'الأكثر إعجابًا' };
+document.getElementById('aiSearchBtn').addEventListener('click', aiSearch);
 
-if (sortBtn) {
-    sortBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        sortMenu.classList.toggle('open');
+document.querySelectorAll('.filter-btn[data-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn[data-cat]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.cat;
+        renderScripts(document.getElementById('searchScripts').value.toLowerCase());
     });
-    document.addEventListener('click', () => sortMenu.classList.remove('open'));
-    sortMenu.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            commentSort = btn.dataset.sort;
-            sortLabel.innerText = SORT_LABELS[commentSort];
-            sortMenu.classList.remove('open');
-            renderComments();
-        });
-    });
+});
+
+document.getElementById('sortSelect').addEventListener('change', e => {
+    activeSort = e.target.value;
+    renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+});
+
+function updateURL(q) {
+    const url = new URL(location.href);
+    q ? url.searchParams.set('search',q) : url.searchParams.delete('search');
+    history.replaceState(null,'',url);
 }
 
-function copyCode() {
-    const code = withCopyWarning(document.getElementById('code').innerText);
-    navigator.clipboard.writeText(code).then(() => {
-        ['copyInline','copyBtn'].forEach(id => {
-            const btn = document.getElementById(id);
-            const orig = btn.innerText;
-            btn.innerText = '✅ تم';
-            if (id === 'copyInline') btn.classList.add('copied');
-            setTimeout(() => {
-                btn.innerText = orig;
-                btn.classList.remove('copied');
-            }, 2000);
-        });
-    });
+function renderStaticFallback() {
+    try {
+        const data = window.__SCRIPTS_DATA__;
+        if (!data) return;
+        allScripts = Object.entries(data)
+            .map(([id,s]) => ({id,...s}))
+            .filter(s => s.id && s.title && s.title.trim());
+        document.getElementById('scriptCount').innerText = allScripts.length;
+        renderAllScriptsIndex();
+        renderScripts(getQuery());
+    } catch (e) { /* أي خطأ هنا لا يوقف تحميل الصفحة — Supabase هيكمل عادي بعد كده */ }
 }
 
-document.getElementById('copyBtn').addEventListener('click',    copyCode);
-document.getElementById('copyInline').addEventListener('click', copyCode);
-document.getElementById('rawBtn').addEventListener('click',     () => { if (!currentUserRow) { alert("يجب تسجيل الدخول"); location.href="login.html"; return; } location.href = `raw.html?id=${scriptId}`; });
-document.getElementById('reportBtn').addEventListener('click',  () => location.href = `report.html?id=${scriptId}`);
+window.addEventListener('DOMContentLoaded', () => {
+    const q = new URLSearchParams(location.search).get('search') || '';
+    if (q) document.getElementById('searchScripts').value = q;
+    renderStaticFallback();
+    loadScripts();
+});
+
 </script>
 </body>
 </html>
