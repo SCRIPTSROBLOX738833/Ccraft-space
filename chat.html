@@ -7,10 +7,6 @@
 <link rel="stylesheet" href="styles.css">
 <style>
 
-/* ============================================================
-   Chat Page Layout — Full Screen (Mobile Fixed)
-   ============================================================ */
-
 html, body {
     height: auto;
     margin: 0 !important;
@@ -36,11 +32,6 @@ body {
     min-height: 100svh;
     min-height: 100dvh;
 }
-
-
-/* ============================================================
-   Chat Header Bar
-   ============================================================ */
 
 .chat-header {
     display: flex;
@@ -132,11 +123,6 @@ body {
 }
 
 .ch-online .dot { width:6px;height:6px;border-radius:50%;background:var(--success); }
-
-
-/* ============================================================
-   Messages Area
-   ============================================================ */
 
 #chatBox {
     flex: 1;
@@ -481,11 +467,6 @@ body {
     font-weight: 700;
 }
 
-
-/* ============================================================
-   Reply Bar (above input)
-   ============================================================ */
-
 #replyBar {
     display: none;
     align-items: center;
@@ -501,11 +482,6 @@ body {
 .rb-text strong { color: var(--primary); }
 .rb-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; margin: 0; padding: 0; }
 .rb-close:hover { color: var(--danger); filter: none; transform: none; }
-
-
-/* ============================================================
-   Upload Preview Bar (image about to be sent)
-   ============================================================ */
 
 #uploadBar {
     display: none;
@@ -523,11 +499,6 @@ body {
 .ub-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; margin: 0; padding: 0; }
 .ub-close:hover { color: var(--danger); filter: none; transform: none; }
 
-
-/* ============================================================
-   Typing Indicator
-   ============================================================ */
-
 #typingBar {
     padding: 4px 20px;
     font-size: 0.75rem;
@@ -544,11 +515,6 @@ body {
 .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
 .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes tdot { 0%,60%,100%{opacity:0.3;transform:translateY(0)} 30%{opacity:1;transform:translateY(-4px)} }
-
-
-/* ============================================================
-   Input Area
-   ============================================================ */
 
 .input-area {
     display: flex;
@@ -694,10 +660,6 @@ body {
 
 #scrollBtn.show { display: flex; }
 
-/* ============================================================
-   Image Lightbox
-   ============================================================ */
-
 .lightbox-overlay {
     position: fixed;
     inset: 0;
@@ -757,11 +719,6 @@ body {
     width: 100%;
     pointer-events: none;
 }
-
-
-/* ============================================================
-   Sticker Panel
-   ============================================================ */
 
 .sticker-panel {
     position: absolute;
@@ -853,11 +810,6 @@ body {
     padding: 20px 4px;
     line-height: 1.7;
 }
-
-
-/* ============================================================
-   Chat Settings Modal (message bubble shape)
-   ============================================================ */
 
 .settings-overlay {
     position: fixed;
@@ -956,11 +908,6 @@ body {
 body.shape-square .msg-bubble { border-radius: 8px !important; }
 body.shape-pill .msg-bubble { border-radius: 999px !important; }
 body.shape-soft .msg-bubble { border-radius: 20px !important; }
-
-
-/* ============================================================
-   Responsive
-   ============================================================ */
 
 @media (max-width: 600px) {
     .chat-header { padding: 10px 12px; gap: 8px; }
@@ -1075,27 +1022,6 @@ body.shape-soft .msg-bubble { border-radius: 20px !important; }
 
 
 <script type="module">
-/* ============================================================
-   CCRAFT SPACE — Chat (Supabase version)
-   ============================================================
-   قبل استخدام الملف ده، شغّل chat_messages_alter.sql في Supabase
-   SQL Editor مرة واحدة: بيضيف عمودين (type, image_data) لجدول
-   chat_messages، وبيسجّله في publication الـ Realtime.
-
-   ⚠️ إصلاح مشكلة "لازم ريفريش عشان الرسالة تظهر":
-   السبب الأغلب إن جدول chat_messages مش مسجّل في supabase_realtime
-   publication (خطوة لازم تتعمل مرة واحدة من السيرفر، مش من الكود) —
-   موجودة في chat_messages_alter.sql. عشان الشات يفضل شغال حتى لو
-   حصل تأخير في تفعيل الـ Realtime، الكود هنا بيعتمد على طريقتين
-   مع بعض:
-   1) Realtime subscription (فوري لو الجدول مسجّل صح).
-   2) Polling احتياطي كل 3 ثواني (بيجيب أي رسالة جديدة بتاريخ أحدث
-      من آخر رسالة عندك) — فحتى لو الـ Realtime مش شغال، الرسائل
-      هتظهر لوحدها خلال ثواني من غير أي ريفريش يدوي.
-   رسالتك انت نفسك بقيت كمان بتتضاف على طول بعد نجاح الإرسال
-   (مش مستنية الرجوع من السيرفر تاني)، فمعاها مفيش أي تأخير خالص.
-   ============================================================ */
-
 import { supabase } from './supabase-config.js';
 
 let currentUser  = null;
@@ -1108,7 +1034,7 @@ let avatarCache  = {};
 let lastDate     = null;
 let typingTimer  = null;
 let atBottom     = true;
-let pendingUpload = null;  // { dataURL, type: 'image'|'sticker' }
+let pendingUpload = null;
 let userStickers  = {};
 let currentShape  = 'rounded';
 let presenceChannel = null;
@@ -1142,9 +1068,6 @@ const STICKER_MAX_DIM  = 300;
 const STICKER_QUALITY  = 0.85;
 const MAX_DATA_LENGTH  = 900000;
 
-/* ============================================================
-   Anti-Spam: Send Cooldown (client-side only)
-   ============================================================ */
 const SEND_COOLDOWN_MS = 2900;
 let lastSendAt = 0;
 let cooldownTimer = null;
@@ -1177,11 +1100,6 @@ function looksLikeCharSpam(str) {
     return /^(.)\1{7,}$/u.test(str);
 }
 
-
-/* ============================================================
-   Init / Auth
-   ============================================================ */
-
 async function init() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { alert('يجب تسجيل الدخول'); location.href = 'login.html'; return; }
@@ -1206,11 +1124,6 @@ async function init() {
 
 init();
 
-
-/* ============================================================
-   Quick Emoji Panel
-   ============================================================ */
-
 function buildQuickEmojis() {
     const panel = document.getElementById('quickEmojis');
     panel.innerHTML = EMOJIS.map(e => `<span class="q-emoji">${e}</span>`).join('');
@@ -1233,16 +1146,14 @@ document.addEventListener('click', e => {
         document.getElementById('quickEmojis').classList.remove('show');
 });
 
-
-/* ============================================================
-   Avatar Helper
-   ============================================================ */
-
 function initialsAvatarHTML(name, size) {
     const initial = (name || '?').charAt(0).toUpperCase();
     return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:${size*0.35}px">${initial}</div>`;
 }
 
+// ✅ FIX: يقرا من public_profiles (View آمن) بدل users مباشرة —
+// كان بيرجع فاضي دايمًا لأي حد مش صاحب الصف بسبب RLS، فالصورة كانت
+// دايمًا بتقع على initials حتى لو اليوزر عنده صورة فعلية
 async function getAvatar(userId, size = 34, name = '') {
     if (!userId) return initialsAvatarHTML(name, size);
     if (avatarCache[userId] !== undefined) {
@@ -1251,7 +1162,7 @@ async function getAvatar(userId, size = 34, name = '') {
             : initialsAvatarHTML(name, size);
     }
     try {
-        const { data } = await supabase.from('users').select('photo_url').eq('id', userId).maybeSingle();
+        const { data } = await supabase.from('public_profiles').select('photo_url').eq('id', userId).maybeSingle();
         const photo = data ? data.photo_url : null;
         avatarCache[userId] = photo;
         return photo
@@ -1261,11 +1172,6 @@ async function getAvatar(userId, size = 34, name = '') {
         return initialsAvatarHTML(name, size);
     }
 }
-
-
-/* ============================================================
-   Code block + text rendering
-   ============================================================ */
 
 const LANG_LABELS = {
     js:'JavaScript', javascript:'JavaScript', ts:'TypeScript', typescript:'TypeScript',
@@ -1350,11 +1256,6 @@ chatBox.addEventListener('click', async e => {
     setTimeout(() => { btn.textContent = old; btn.classList.remove('copied'); }, 1500);
 });
 
-
-/* ============================================================
-   Load Chat (initial fetch + realtime + polling fallback)
-   ============================================================ */
-
 async function loadChat() {
     const { data: rows, error } = await supabase
         .from('chat_messages')
@@ -1387,8 +1288,6 @@ async function loadChat() {
         })
         .subscribe();
 
-    // Polling احتياطي — يضمن وصول الرسائل حتى لو الـ Realtime لسه
-    // متفعلش صح على الجدول (راجع chat_messages_alter.sql)
     pollTimer = setInterval(pollNewMessages, 3000);
 }
 
@@ -1504,11 +1403,6 @@ function buildMessageHTML(msg, isOwn, avatarHTML, time) {
     `;
 }
 
-
-/* ============================================================
-   Attach Actions
-   ============================================================ */
-
 function attachActions(el, msg, isOwn) {
     el.querySelector('.msg-bubble')?.addEventListener('click', e => {
         if (e.target.closest('.act-btn') || e.target.closest('.code-copy-btn') || e.target.closest('img')) return;
@@ -1542,11 +1436,6 @@ function attachActions(el, msg, isOwn) {
         setTimeout(() => el.remove(), 300);
     });
 }
-
-
-/* ============================================================
-   Send Message
-   ============================================================ */
 
 async function sendMessage() {
     const text = msgInput.value.trim();
@@ -1588,7 +1477,7 @@ async function sendMessage() {
             }
             const { data: inserted, error } = await supabase.from('chat_messages').insert(data).select().single();
             if (error) throw error;
-            await appendMessage(inserted);   // إضافة فورية من غير استنى الـ Realtime
+            await appendMessage(inserted);
             lastSeenCreatedAt = inserted.created_at;
             cancelUpload();
             startCooldownUI();
@@ -1606,7 +1495,7 @@ async function sendMessage() {
             }
             const { data: inserted, error } = await supabase.from('chat_messages').insert(data).select().single();
             if (error) throw error;
-            await appendMessage(inserted);   // إضافة فورية من غير استنى الـ Realtime
+            await appendMessage(inserted);
             lastSeenCreatedAt = inserted.created_at;
             startCooldownUI();
         }
@@ -1643,11 +1532,6 @@ function cancelUpload() {
 }
 window.cancelUpload = cancelUpload;
 
-
-/* ============================================================
-   Image compression (canvas-based)
-   ============================================================ */
-
 function compressImageFile(file, { maxDim = 1280, quality = 0.7, mimeType = 'image/jpeg' } = {}) {
     return new Promise((resolve, reject) => {
         if (!file || !file.type.startsWith('image/')) { reject(new Error('ملف غير صالح')); return; }
@@ -1674,11 +1558,6 @@ function compressImageFile(file, { maxDim = 1280, quality = 0.7, mimeType = 'ima
         reader.readAsDataURL(file);
     });
 }
-
-
-/* ============================================================
-   Image sending (from input/gallery)
-   ============================================================ */
 
 document.getElementById('imageTrigger').onclick = () => imageInput.click();
 
@@ -1721,11 +1600,6 @@ async function prepareUpload(file, type) {
     }
 }
 
-
-/* ============================================================
-   Auto Resize Textarea
-   ============================================================ */
-
 function autoResize() {
     msgInput.style.height = 'auto';
     msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
@@ -1739,11 +1613,6 @@ msgInput.addEventListener('input', () => {
 
 msgInput.addEventListener('keyup', updateMentionPanel);
 msgInput.addEventListener('click', updateMentionPanel);
-
-
-/* ============================================================
-   @Mention Autocomplete
-   ============================================================ */
 
 function getMentionQuery() {
     const val = msgInput.value;
@@ -1795,11 +1664,6 @@ document.addEventListener('click', e => {
         mentionPanel.classList.remove('show');
 });
 
-
-/* ============================================================
-   Typing Indicator — Supabase Realtime Broadcast (no DB writes)
-   ============================================================ */
-
 function ensureTypingChannel() {
     if (typingChannel) return typingChannel;
     typingChannel = supabase.channel('chat-typing', { config: { broadcast: { self: false } } });
@@ -1846,11 +1710,6 @@ function trackTyping() {
     ensureTypingChannel();
 }
 
-
-/* ============================================================
-   Online Presence — Supabase Realtime Presence
-   ============================================================ */
-
 function trackPresence() {
     presenceChannel = supabase.channel('chat-presence', { config: { presence: { key: myUserId } } });
 
@@ -1870,11 +1729,6 @@ function trackPresence() {
     });
 }
 
-
-/* ============================================================
-   Scroll
-   ============================================================ */
-
 function scrollToBottom() {
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'auto' });
     scrollBtn.classList.remove('show');
@@ -1888,11 +1742,6 @@ window.addEventListener('scroll', () => {
     atBottom = document.documentElement.scrollHeight - scrollBottom < threshold;
     if (atBottom) scrollBtn.classList.remove('show');
 });
-
-
-/* ============================================================
-   Image Lightbox (pinch-to-zoom + double-tap zoom + pan)
-   ============================================================ */
 
 const imgLightbox   = document.getElementById('imgLightbox');
 const lightboxImg   = document.getElementById('lightboxImg');
@@ -1983,11 +1832,6 @@ lightboxStage.addEventListener('touchend', e => {
         if (lbScale <= 1.02) resetLightboxTransform();
     }
 }, { passive: true });
-
-
-/* ============================================================
-   Sticker Library ("ملصقاتك") — stored in users.extra.stickers
-   ============================================================ */
 
 const stickerPanel  = document.getElementById('stickerPanel');
 const stickerGrid   = document.getElementById('stickerGrid');
@@ -2106,11 +1950,6 @@ document.addEventListener('click', e => {
         stickerPanel.classList.remove('show');
 });
 
-
-/* ============================================================
-   Chat Settings — message bubble shape (stored in users.extra.settings)
-   ============================================================ */
-
 const BUBBLE_SHAPES = [
     { id: 'rounded', label: 'دائري (افتراضي)' },
     { id: 'square',  label: 'مربّع' },
@@ -2162,11 +2001,6 @@ document.getElementById('settingsClose').addEventListener('click', () => {
 settingsOverlay.addEventListener('click', e => {
     if (e.target === settingsOverlay) settingsOverlay.classList.remove('show');
 });
-
-
-/* ============================================================
-   Helpers
-   ============================================================ */
 
 function escapeHTML(str) {
     return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
