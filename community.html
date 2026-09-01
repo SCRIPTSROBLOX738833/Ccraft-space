@@ -251,21 +251,13 @@
 <div class="cm-toast" id="cmToast"></div>
 
 <script type="module">
-/* ============================================================
-   CCRAFT SPACE — Community (Supabase version)
-   community_posts:    id, firebase_id, author_id, author_name, title,
-                        body, category, comment_count, created_at, extra
-   community_votes:    post_id + user_id (composite PK), value (-1|1), created_at
-   community_comments: id, firebase_id, post_id, author_id, author_name, text, created_at
-   (جداول جديدة — راجع community_tables.sql لإنشائها في Supabase أولًا)
-   ============================================================ */
 import { supabase } from './supabase-config.js';
 
 const CAT_LABELS = { general:'💬 عام', scripts:'📜 سكربتات', apks:'📱 APK', help:'🆘 مساعدة', suggestions:'💡 اقتراحات', bugs:'🐛 مشاكل' };
 
-let currentUser  = null;   // auth user
-let userRow      = null;   // public.users row
-let allPosts     = [];     // [{...post, score, myVote}]
+let currentUser  = null;
+let userRow      = null;
+let allPosts     = [];
 let activeCat    = 'all';
 let activeSort   = 'hot';
 const urlParams  = new URLSearchParams(location.search);
@@ -291,10 +283,12 @@ function avatarHTML(photo, name) {
 }
 
 const userBriefCache = {};
+// ✅ FIX: يقرا من public_profiles (View آمن) بدل users مباشرة —
+// كان بيرجع فاضي دايمًا لأي حد مش صاحب الصف، فكل الأسماء كانت تظهر "مجهول"
 async function getUserBrief(userId) {
     if (!userId) return { name: 'مجهول', photo: null };
     if (userBriefCache[userId]) return userBriefCache[userId];
-    const { data } = await supabase.from('users').select('username, photo_url').eq('id', userId).maybeSingle();
+    const { data } = await supabase.from('public_profiles').select('username, photo_url').eq('id', userId).maybeSingle();
     const brief = { name: (data && data.username) || 'مجهول', photo: (data && data.photo_url) || null };
     userBriefCache[userId] = brief;
     return brief;
@@ -304,7 +298,6 @@ function escapeHTML(str) {
     return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-/* ---- Auth ---- */
 async function initAuth() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { location.href = 'login.html'; return; }
@@ -354,10 +347,6 @@ async function loadPosts() {
     allPosts = list;
 }
 
-/* ============================================================
-   New Post Form
-   ============================================================ */
-
 document.getElementById('toggleFormBtn').onclick = () => {
     document.getElementById('newPostForm').classList.toggle('show');
 };
@@ -404,10 +393,6 @@ document.getElementById('submitPostBtn').onclick = async () => {
     }
 };
 
-/* ============================================================
-   Category & Sort filters
-   ============================================================ */
-
 document.getElementById('catRow').addEventListener('click', e => {
     const chip = e.target.closest('.cat-chip'); if (!chip) return;
     document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
@@ -423,10 +408,6 @@ document.getElementById('sortRow').addEventListener('click', e => {
     activeSort = btn.dataset.sort;
     renderFeed();
 });
-
-/* ============================================================
-   Feed
-   ============================================================ */
 
 async function renderFeed() {
     const box = document.getElementById('postsFeed');
@@ -485,10 +466,6 @@ async function renderFeed() {
     }
 }
 
-/* ============================================================
-   Voting
-   ============================================================ */
-
 async function castVote(post, dir) {
     const newVal = post.myVote === dir ? 0 : dir;
 
@@ -509,10 +486,6 @@ async function castVote(post, dir) {
 
     routeView();
 }
-
-/* ============================================================
-   Post Detail
-   ============================================================ */
 
 async function renderDetail(postId) {
     const box = document.getElementById('detailView');
@@ -570,14 +543,10 @@ async function renderDetail(postId) {
 
 async function deletePost(post) {
     if (!confirm('حذف هذا المنشور نهائيًا؟ هيتشال مع كل تعليقاته.')) return;
-    await supabase.from('community_posts').delete().eq('id', post.id); // community_comments بتتشال تلقائيًا (on delete cascade)
+    await supabase.from('community_posts').delete().eq('id', post.id);
     allPosts = allPosts.filter(p => p.id !== post.id);
     location.href = 'community.html';
 }
-
-/* ============================================================
-   Comments
-   ============================================================ */
 
 async function loadComments(postId) {
     const listBox = document.getElementById('commentsList');
