@@ -7,9 +7,6 @@
   <meta name="application-name" content="CCRAFT SPACE">
   <meta name="description" content="CCRAFT SPACE — أفضل منصة عربية لسكربتات Roblox.">
   <meta name="robots" content="index, follow">
-<div class="gcse-search"></div>
-	
-<div class="gcse-search"></div>
   <link rel="canonical" href="https://ccraftspace.ddnsking.com/scripts.html">
   <meta property="og:site_name" content="CCRAFT SPACE">
   <meta property="og:title"     content="CCRAFT SPACE | قائمة سكربتات Roblox">
@@ -30,7 +27,6 @@
   <script type="module" src="presence.js"></script>
   <script>(function(s){s.dataset.zone='11585956',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
-	
 <style>
 
 body { min-height: 100svh; }
@@ -256,7 +252,6 @@ body { min-height: 100svh; }
 .script-card[data-cat="ai"]::before    { background: linear-gradient(90deg, #a78bfa, #8b5cf6); }
 .script-card::before                   { background: var(--accent-gradient); }
 
-/* ---- Crawlable full-card link overlay ---- */
 .sc-card-link {
     position: absolute; inset: 0; z-index: 1;
     text-indent: -9999px; overflow: hidden;
@@ -401,7 +396,6 @@ body { min-height: 100svh; }
 .sc-stat { display: flex; align-items: center; gap: 4px; }
 .sc-stat svg { flex-shrink: 0; }
 
-/* ---- Rating stars: clear fill state + hover preview + submit pulse ---- */
 .sc-stars { display: flex; align-items: center; gap: 2px; }
 
 .sc-star {
@@ -559,7 +553,6 @@ body { min-height: 100svh; }
 }
 .asi-links a:hover { color: var(--primary); border-bottom-color: var(--primary); }
 
-/* ---- Live search suggestions dropdown ---- */
 .search-suggest {
     position: absolute;
     top: calc(100% + 6px);
@@ -606,7 +599,6 @@ body { min-height: 100svh; }
 </header>
 
 <script>
-// دالة عامة لفتح/قفل معاينة الكود الكاملة جوه الكارت (بتشتغل على الكروت الثابتة والحية)
 function toggleCodePreview(btn) {
     const card = btn.closest('.script-card');
     const full = card.querySelector('.sc-code-full');
@@ -621,8 +613,6 @@ function toggleCodePreview(btn) {
 
 <div class="scripts-page">
 
-
-    <!-- Page Hero -->
     <div class="page-hero">
         <h1>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
@@ -633,10 +623,8 @@ function toggleCodePreview(btn) {
         </div>
     </div>
 
-    <!-- Search & Filters -->
     <div class="search-section">
 
-        <!-- Search Box -->
         <div class="search-wrap">
             <span class="search-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></span>
             <input type="text" id="searchScripts" placeholder="ابحث عن اسم سكربت، قسم، ماب، أو تاج..." autocomplete="off">
@@ -647,14 +635,12 @@ function toggleCodePreview(btn) {
             <div class="search-suggest" id="searchSuggest"></div>
         </div>
 
-        <!-- AI Banner -->
         <div class="ai-result-banner" id="aiBanner">
             <span class="aib-icon" id="aibIcon"></span>
             <div class="aib-text" id="aiBannerText">—</div>
             <button class="aib-close" onclick="closeAiBanner()" aria-label="إغلاق"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
         </div>
 
-        <!-- Filters -->
         <div class="filter-row">
             <span class="filter-label">القسم:</span>
             <button class="filter-btn active" data-cat="all"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.9-5 4.8 1.3 6.9L12 17.6 5.9 20.9 7.2 14l-5-4.8 6.9-.9z"/></svg>الكل</button>
@@ -668,10 +654,8 @@ function toggleCodePreview(btn) {
             <button class="filter-btn" data-key="no"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7-2.6"/></svg>بدون مفتاح</button>
         </div>
 
-        <!-- تاجات ديناميكية -->
         <div class="sort-row" id="tagsFilterRow" style="display:none;flex-wrap:wrap"></div>
 
-        <!-- Sort & Count -->
         <div class="sort-row">
             <span class="sort-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></svg>ترتيب:</span>
             <select class="sort-select" id="sortSelect">
@@ -685,38 +669,23 @@ function toggleCodePreview(btn) {
 
     </div>
 
+    <div class="scripts-grid" id="scriptsList">
+    </div>
+    <div style="text-align:center;margin-top:18px">
+        <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s">عرض المزيد</button>
+    </div>
 
-	
-    <!-- Scripts Grid -->
-<div class="scripts-grid" id="scriptsList">
-</div>
-<div style="text-align:center;margin-top:18px">
-    <button type="button" id="loadMoreBtn" style="display:none;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:11px 28px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.88rem;cursor:pointer;margin:0;transition:all 0.2s">عرض المزيد</button>
-</div>
-
-<!-- ============================================================
-     🗺️ فهرس كامل لكل السكربتات — روابط <a href> حقيقية لكل سكربت
-     دفعة واحدة (مش بس أول 8 زي كروت العرض المقسّمة بصفحات).
-     الهدف: لما جوجل يزحف scripts.html، يلاقي رابط حقيقي لكل سكربت
-     في نفس الصفحة من غير ما يحتاج يدوس "عرض المزيد" (زرار JS مش
-     بيتبعوش الزاحف). العرض بسيط ومضغوط، مفيد كمرجع سريع للزوار
-     كمان مش مخفي بصريًا.
-     ============================================================ -->
-<details class="all-scripts-index" id="allScriptsIndex" style="display:none">
-    <summary class="asi-title">فهرس كل السكربتات (اضغط للعرض)</summary>
-    <div class="asi-links" id="allScriptsLinksList"></div>
-</details>
+    <details class="all-scripts-index" id="allScriptsIndex" style="display:none">
+        <summary class="asi-title">فهرس كل السكربتات (اضغط للعرض)</summary>
+        <div class="asi-links" id="allScriptsLinksList"></div>
+    </details>
 
 </div>
 
-<!-- بيانات ثابتة مولّدة تلقائيًا (كل السكربتات) — بتتحمّل فورًا قبل Firebase، لصالح السيو والزوار من غير جافاسكريبت كامل -->
 <script src="scripts-data.js"></script>
 <script type="module">
 import { supabase } from "./supabase-config.js";
 
-// ============================================================
-// طبقة تجريد: استعلامات Supabase مباشرة (بدون محاكاة Firebase)
-// ============================================================
 const SUPABASE_URL = 'https://nthqrfsdshsreqdoksyv.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kHd5Y4bBnUDJxCFV-aKg-Q_T9XRJckN';
 const SB_HEADERS = {
@@ -726,11 +695,9 @@ const SB_HEADERS = {
     'Prefer': 'return=representation'
 };
 
-// دوال مساعدة لـ Supabase تحاكي Firebase
 const db = {
     async getScripts() {
         try {
-            // ✅ FIX: عمود "timestamp" اتحول لـ "created_at" في Supabase — كان بيفشل الطلب بالكامل ويرجع {} فاضي
             const res = await fetch(`${SUPABASE_URL}/rest/v1/scripts?select=*&order=created_at.desc`, { headers: SB_HEADERS });
             if (!res.ok) return {};
             const rows = await res.json();
@@ -764,9 +731,10 @@ const db = {
             return rows.map(r => r.original_name);
         } catch { return []; }
     },
+    // ✅ FIX: يقرا من public_profiles (View آمن) بدل users مباشرة
     async getUserName(uid) {
         try {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${encodeURIComponent(uid)}&select=username`, { headers: SB_HEADERS });
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/public_profiles?id=eq.${encodeURIComponent(uid)}&select=username`, { headers: SB_HEADERS });
             if (!res.ok) return null;
             const rows = await res.json();
             return rows.length ? rows[0].username : null;
@@ -784,18 +752,6 @@ const db = {
     }
 };
 
-// مستخدم حالي — بياخد الـ auth_uid الحقيقي من Supabase Auth session
-// ⚠️ FIX: الكود القديم هنا كان فيه top-level await بيوقف تنفيذ باقي
-// الـ <script type="module"> بالكامل لحد ما يجيب المستخدم من Supabase
-// ويعمل استعلام على جدول users. المشكلة إن "window.addEventListener
-// ('DOMContentLoaded', ...)" (اللي بينادي loadScripts() وبيرسم كل
-// السكربتات) موجود تحت في نفس الملف — فلو انت مسجل دخول، الـ await ده
-// كان بياخد وقت أطول (طلبين شبكة: auth + استعلام users)، فأحيانًا
-// حدث DOMContentLoaded كان بيحصل ويعدي قبل ما السطر بتاع addEventListener
-// حتى يتنفذ، فمفيش حد كان بينادي loadScripts() خالص — الصفحة تفضل فاضية.
-// الحل: نشيل الـ await من أول الملف، ونستخدم onAuthStateChange بشكل غير
-// معطّل (non-blocking) بحيث تحميل السكربتات يبدأ فورًا من غير ما يستنى
-// حاجة، وبيانات المستخدم تتحدث لوحدها لما تجهز.
 let currentUser = null;
 let myUsernameCache = null;
 
@@ -811,7 +767,6 @@ supabase.auth.onAuthStateChange(async (_event, session) => {
     }
 });
 
-// عنوان الباك إند بتاع Nova AI — نفس السيرفر المستخدم في nova.html
 const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
 
 async function getMyDisplayName() {
@@ -821,11 +776,6 @@ async function getMyDisplayName() {
     return myUsernameCache;
 }
 
-/* ============================================================
-   🎨 مكتبة أيقونات SVG خفيفة (بديل الإيموجيز) — كل أيقونة
-   عبارة عن سطر واحد نظيف بنفس نمط الخط (stroke) ومتناسقة مع
-   هوية الموقع البنفسجي/السماوي.
-   ============================================================ */
 const ICONS = {
     thumb:   '<path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/><path d="M7 10l4-7a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 1.94 2.5l-1.6 6A2 2 0 0 1 16.9 21H7"/>',
     eye:     '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/>',
@@ -856,7 +806,6 @@ function ic(name, size=14, cls='') {
 
 document.getElementById('aibIcon').innerHTML = ic('robot', 15);
 
-// 🔔 إرسال إشعار لصاحب السكربت (لايك) — ما بيبعتش لنفسه
 function notifyAuthor(authorUid, text) {
     if (!authorUid || !currentUser || authorUid === currentUser.uid) return;
     db.pushNotification(authorUid, { type: 'like', text, timestamp: Date.now() });
@@ -894,13 +843,12 @@ async function loadUnsafeNames() {
 
 async function loadScripts() {
     await loadUnsafeNames();
-    // تحميل السكربتات من Supabase
     const data = await db.getScripts();
 
     allScripts = Object.entries(data)
         .map(([id,s]) => ({id,...s}))
-        .filter(s => s.id && s.title && s.title.trim()) // ✅ استبعاد السجلات التالفة
-        .filter(s => !unsafeNameSet.has(normalizeScriptName(s.title))); // 🚫 إخفاء السكربتات المُحذّر منها
+        .filter(s => s.id && s.title && s.title.trim())
+        .filter(s => !unsafeNameSet.has(normalizeScriptName(s.title)));
     document.getElementById('scriptCount').innerText = allScripts.length;
 
     renderTagsFilter();
@@ -1445,8 +1393,6 @@ async function novaSearch(query) {
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    console.log('%c[Nova Search] الرد الخام:', 'color:#8b5cf6;font-weight:bold', data);
-    console.log('%c[Nova Search] عدد السكربتات المرسلة:', 'color:#8b5cf6;font-weight:bold', compactList.length);
 
     if (data.error === 'rate_limited') {
         throw new Error('rate_limited');
@@ -1497,7 +1443,6 @@ async function aiSearch() {
             }
         }
     } catch (e) {
-        console.error('%c[Nova Search] فشل الاتصال:', 'color:#f87171;font-weight:bold', e);
         usedFallback = true;
         results = smartSearchLocal(query);
     }
