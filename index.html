@@ -15,7 +15,7 @@
     
     <link rel="icon" type="image/jpeg" href="cCraft.jpg">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500;600;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Grand+Hotel&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -134,24 +134,24 @@ header { display: none; }
 }
 
 .hero-title {
-    font-family: 'Orbitron', 'Tajawal', sans-serif;
-    font-size: clamp(2.4rem, 8vw, 4.2rem);
-    font-weight: 900;
-    line-height: 1.15;
+    font-family: 'Grand Hotel', cursive;
+    font-size: clamp(3rem, 10vw, 5.2rem);
+    font-weight: 400;
+    line-height: 1.2;
     margin-bottom: 10px;
     position: relative; z-index: 1;
     animation: fadeUp 0.7s 0.2s ease both;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
 }
 
 .title-cc {
-    background: linear-gradient(135deg, #a78bfa 0%, #00f2fe 50%, #f472b6 100%);
+    background: linear-gradient(135deg, #c4b5fd 0%, #a5b4fc 50%, #f0abfc 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 18px rgba(139,92,246,0.45));
+    text-shadow: 0 0 24px rgba(196,181,253,0.18);
 }
 .title-raft {
-    color: rgba(240,240,255,0.92);
-    text-shadow: 0 0 22px rgba(0,242,254,0.25);
+    color: rgba(230,230,245,0.82);
+    text-shadow: 0 0 18px rgba(165,180,252,0.12);
 }
 
 .hero-badge {
@@ -201,12 +201,12 @@ header { display: none; }
 }
 
 .sb-val {
-    font-family: 'Fira Code', 'Tajawal', monospace;
-    font-weight: 700; font-size: 0.95rem;
-    letter-spacing: 0.3px;
-    background: linear-gradient(135deg, #a78bfa, #67e8f9);
+    font-family: 'Space Grotesk', 'Tajawal', sans-serif;
+    font-weight: 600; font-size: 0.98rem;
+    letter-spacing: 0.2px;
+    background: linear-gradient(135deg, #c4b5fd, #a5f3fc);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 10px rgba(139,92,246,0.35));
+    text-shadow: 0 0 8px rgba(196,181,253,0.15);
 }
 
 .live-dot {
@@ -1088,7 +1088,7 @@ async function loadFeaturedScripts() {
     try {
         const { data, error } = await supabase
             .from('scripts')
-            .select('id, title, category, game_name, likes_count') // ASSUMPTION
+            .select('id, title, category, tags, likes_count, views')
             .order('created_at', { ascending: false })
             .limit(6);
 
@@ -1099,16 +1099,19 @@ async function loadFeaturedScripts() {
             return;
         }
 
-        grid.innerHTML = data.map(s => `
+        grid.innerHTML = data.map(s => {
+            const firstTag = Array.isArray(s.tags) && s.tags.length ? s.tags[0] : null;
+            return `
             <div class="feat-card" onclick="location.href='script.html?id=${s.id}'">
                 <div class="fc-title">${escapeHtml(s.title || 'بدون اسم')}</div>
                 <div class="fc-meta">
                     ${s.category ? `<span class="fc-cat">${escapeHtml(s.category)}</span>` : ''}
-                    ${s.game_name ? `<span class="fc-map">${escapeHtml(s.game_name)}</span>` : ''}
+                    ${firstTag ? `<span class="fc-map">${escapeHtml(String(firstTag))}</span>` : ''}
                     <span class="fc-stat"><i class="fa-solid fa-thumbs-up"></i> ${s.likes_count || 0}</span>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
     } catch (e) {
         console.error('loadFeaturedScripts error:', e);
         grid.innerHTML = `<div style="color:var(--lo);text-align:center;padding:28px;grid-column:1/-1;font-size:0.82rem">تعذّر تحميل السكربتات</div>`;
@@ -1122,7 +1125,7 @@ async function loadFeaturedToday() {
     try {
         const { data, error } = await supabase
             .from('scripts')
-            .select('id, title, category, game_name, likes_count')
+            .select('id, title, category, tags, likes_count, views')
             .gte('created_at', new Date(startOfTodayTs()).toISOString())
             .order('likes_count', { ascending: false })
             .limit(1)
@@ -1135,11 +1138,12 @@ async function loadFeaturedToday() {
             return;
         }
 
+        const firstTag = Array.isArray(data.tags) && data.tags.length ? data.tags[0] : null;
         box.innerHTML = `
             <div class="fc-title">${escapeHtml(data.title || 'بدون اسم')}</div>
             <div class="fc-meta">
                 ${data.category ? `<span class="fc-cat">${escapeHtml(data.category)}</span>` : ''}
-                ${data.game_name ? `<span class="fc-map">${escapeHtml(data.game_name)}</span>` : ''}
+                ${firstTag ? `<span class="fc-map">${escapeHtml(String(firstTag))}</span>` : ''}
                 <span class="fc-stat"><i class="fa-solid fa-thumbs-up"></i> ${data.likes_count || 0}</span>
             </div>
         `;
