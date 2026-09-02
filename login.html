@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+)<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -7,23 +7,29 @@
 <title>تسجيل الدخول أو إنشاء حساب</title>
 <style>
     #googleLoginBtn {
-        background-color: #fff;
-        color: #757575;
-        border: 1px solid #ddd;
-        padding: 10px 20px;
-        border-radius: 4px;
+        background: linear-gradient(135deg, #7c3aed, #4f46e5);
+        color: #ffffff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
         font-weight: bold;
+        font-size: 15px;
         margin-top: 10px;
         width: 100%;
-        transition: background-color 0.3s;
+        transition: opacity 0.3s;
     }
     #googleLoginBtn:hover {
-        background-color: #f8f9fa;
+        opacity: 0.9;
+    }
+    #googleLoginBtn svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
     }
     #msg {
         margin-top: 15px;
@@ -52,8 +58,12 @@
     <p>هذه الصفحة خاصة بحسابات موقع CCRAFT SPACE فقط</p>
 
     <button id="googleLoginBtn">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" width="18">
-        تسجيل الدخول عبر جوجل
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#ffffff"/>
+            <path d="M2 17L12 22L22 17" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        الدخول بحساب Google
     </button>
 
     <p class="login-hint">
@@ -86,25 +96,11 @@ function showMessage(text, isError = true) {
     msg.style.display = "block";
 }
 
-/* ============================================================
-   أي اسم فاضي، أو لسه على الافتراضي "cCraft Space User" (بأي شكل
-   كتابة)، بيتعامل معاه كـ "لسه مفيش اسم حقيقي" — بيمنع اعتبار
-   الحساب مكتمل لحد ما يختار اسم فعلي في profile.html.
-   ============================================================ */
 function isPlaceholderName(name) {
     return !name || !name.trim() || /^c?craft\s*space\s*user/i.test(name.trim());
 }
 
-/* ============================================================
-   بيدوّر بس — مفيش أي insert هنا خالص. إنشاء صف اليوزر في جدول
-   users بيحصل حصريًا في profile.html، وبس بعد ما يختار اسم مستخدم
-   صحيح ومتاح. ده يضمن إن محدش يقدر يكون "له حساب فعّال" من غير
-   ما يحط اسم — ولو حصلت أي محاولة تلاعب/ثغرة تتخطى الخطوة دي،
-   النتيجة العملية إنه مفيش صف اتعمل من الأساس، يعني مفيش بيانات
-   زي الإيميل مخزّنة أصلًا عشان تتسرب.
-   ============================================================ */
 async function findExistingRow(user) {
-    // محاولة 1: صف مربوط فعليًا بالـ auth_uid بتاعي
     let { data: row } = await supabase
         .from("users")
         .select("id, is_banned, username")
@@ -112,9 +108,6 @@ async function findExistingRow(user) {
         .maybeSingle();
     if (row) return row;
 
-    // محاولة 2: يوزر قديم من Firebase بنفس الإيميل لسه معملوش لينك —
-    // ده بس *مطابقة*، مش تخزين إيميل جديد؛ الإيميل ده أصلًا موجود
-    // من الهجرة القديمة مش بيتضاف دلوقتي.
     if (user.email) {
         const { data: byEmail } = await supabase
             .from("users")
@@ -129,7 +122,7 @@ async function findExistingRow(user) {
         }
     }
 
-    return null; // حساب جديد كليًا — لسه مفيش صف
+    return null;
 }
 
 async function handleUser(user) {
@@ -148,9 +141,6 @@ async function handleUser(user) {
             return;
         }
 
-        // مفيش صف خالص، أو الصف موجود بس من غير اسم مستخدم حقيقي —
-        // في الحالتين لازم يكمّل خطوة اختيار الاسم في profile.html
-        // قبل ما نعتبر حسابه "متعمل" فعليًا على الموقع.
         if (!row || isPlaceholderName(row.username)) {
             redirecting = true;
             location.href = "profile.html";
@@ -159,10 +149,6 @@ async function handleUser(user) {
 
         localStorage.setItem("currentUser", user.id);
 
-        // بنحدّث آخر دخول بس — من غير ما نلمس الإيميل أو الصورة أو
-        // الاسم، عشان بيانات اليوزر تفضل تحت تحكمه هو بس من صفحة
-        // البروفايل (ده كان بيسبب مشكلة إن صورة البروفايل ترجع
-        // لصورة جوجل تلقائيًا مع كل تسجيل دخول).
         await supabase.from("users").update({
             last_login: new Date().toISOString(),
         }).eq("id", row.id);
