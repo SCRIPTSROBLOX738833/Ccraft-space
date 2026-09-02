@@ -1053,13 +1053,12 @@ async function loadStats() {
         animCount(document.getElementById('ls-newscripts'), newScriptsToday || 0);
         animCount(document.getElementById('ls-newusers'), newUsersToday || 0);
 
-        // ASSUMPTION: daily_visits table keyed by day_key
         const { data: visitRow } = await supabase
             .from('daily_visits')
-            .select('visits')
-            .eq('day_key', todayKey())
+            .select('count')
+            .eq('visit_date', todayKey())
             .maybeSingle();
-        animCount(document.getElementById('ls-visitstoday'), visitRow?.visits || 0);
+        animCount(document.getElementById('ls-visitstoday'), visitRow?.count || 0);
 
         loadOnlineCount();
         loadFeaturedScripts();
@@ -1396,6 +1395,7 @@ function escapeHtml(str) {
     await initCurrentUser();
     loadAnnouncement();
     loadStats();
+    trackVisitToday();
     heartbeatPresence();
     setInterval(loadOnlineCount, 30000);
     setInterval(heartbeatPresence, 60000);
