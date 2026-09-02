@@ -1286,7 +1286,12 @@ function applyRobloxLinkState() {
         linkedBadge.style.display = 'flex';
         if (linkedName) linkedName.textContent = roblox.username;
         if (linkedAvatar) {
-            linkedAvatar.src = roblox.avatarUrl && roblox.avatarUrl.trim() ? roblox.avatarUrl : 'cCraft.jpg';
+            // /lookup's avatarUrl field isn't reliably populated by the backend — the actual
+            // working avatar image comes from a separate endpoint keyed by roblox userId,
+            // same as profile.html's "استخدمها كصورة بروفايل" button uses.
+            linkedAvatar.src = roblox.userId
+                ? `${ROBLOX_LOOKUP_BASE}/avatar/${roblox.userId}`
+                : (roblox.avatarUrl && roblox.avatarUrl.trim() ? roblox.avatarUrl : 'cCraft.jpg');
         }
     } else {
         linkBtn.style.display = 'inline-flex';
