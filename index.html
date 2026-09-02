@@ -15,7 +15,7 @@
     
     <link rel="icon" type="image/jpeg" href="cCraft.jpg">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Fira+Code:wght@400;500;600;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
 
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -134,17 +134,25 @@ header { display: none; }
 }
 
 .hero-title {
+    font-family: 'Orbitron', 'Tajawal', sans-serif;
     font-size: clamp(2.4rem, 8vw, 4.2rem);
     font-weight: 900;
     line-height: 1.15;
     margin-bottom: 10px;
     position: relative; z-index: 1;
     animation: fadeUp 0.7s 0.2s ease both;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
 }
 
-.title-cc { background: linear-gradient(135deg, #a78bfa 0%, #00f2fe 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.title-raft { color: rgba(240,240,255,0.9); }
+.title-cc {
+    background: linear-gradient(135deg, #a78bfa 0%, #00f2fe 50%, #f472b6 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 18px rgba(139,92,246,0.45));
+}
+.title-raft {
+    color: rgba(240,240,255,0.92);
+    text-shadow: 0 0 22px rgba(0,242,254,0.25);
+}
 
 .hero-badge {
     display: inline-flex; align-items: center; gap: 6px;
@@ -193,9 +201,12 @@ header { display: none; }
 }
 
 .sb-val {
-    font-weight: 900; font-size: 0.92rem;
+    font-family: 'Fira Code', 'Tajawal', monospace;
+    font-weight: 700; font-size: 0.95rem;
+    letter-spacing: 0.3px;
     background: linear-gradient(135deg, #a78bfa, #67e8f9);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(139,92,246,0.35));
 }
 
 .live-dot {
@@ -750,8 +761,10 @@ header { display: none; }
     border:1px solid rgba(139,92,246,0.3);border-radius:50px;padding:5px 6px 5px 12px;
     box-shadow:0 6px 18px rgba(0,0,0,0.35);">
     <span style="font-weight:800;font-size:0.78rem;color:#f0f0ff;" id="rlLinkedName"></span>
-    <img id="rlLinkedAvatar" src="" alt="" style="width:30px;height:30px;border-radius:50%;
-      object-fit:cover;border:2px solid rgba(139,92,246,0.4);">
+    <img id="rlLinkedAvatar" src="" alt="" referrerpolicy="no-referrer"
+      onerror="this.onerror=null;this.src='cCraft.jpg';"
+      style="width:30px;height:30px;border-radius:50%;
+      object-fit:cover;border:2px solid rgba(139,92,246,0.4);background:#131628;">
     <button type="button" onclick="unlinkRoblox(event)" title="حذف الربط" style="background:rgba(248,113,113,0.15);
       border:1px solid rgba(248,113,113,0.35);border-radius:50%;width:20px;height:20px;
       color:#f87171;font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
@@ -960,16 +973,45 @@ async function trackVisitToday() {
     }
 }
 
+// ---------- current user's own profile (allowed by RLS: auth_uid = auth.uid()) ----------
+// Reads roblox_username / roblox_avatar_url from `users` directly since this is the
+// session owner's own row. auth.getSession() only returns auth metadata, NOT these
+// custom columns, so without this fetch the Roblox badge/avatar never shows on reload.
+async function loadCurrentUserProfile() {
+    if (!currentUser) return;
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .select('roblox_username, roblox_user_id, roblox_avatar_url')
+            .eq('auth_uid', currentUser.id)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+            currentUser.roblox_username = data.roblox_username || null;
+            currentUser.roblox_user_id = data.roblox_user_id || null;
+            currentUser.roblox_avatar_url = data.roblox_avatar_url || null;
+        }
+    } catch (e) {
+        console.error('loadCurrentUserProfile error:', e);
+    }
+}
+
 // ---------- init current user (session) ----------
 async function initCurrentUser() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
         currentUser = session.user;
         notifUid = session.user.id;
+        await loadCurrentUserProfile();
     }
-    supabase.auth.onAuthStateChange((_event, session) => {
+    applyRobloxLinkState();
+
+    supabase.auth.onAuthStateChange(async (_event, session) => {
         currentUser = session?.user ?? null;
         notifUid = session?.user?.id ?? null;
+        if (currentUser) await loadCurrentUserProfile();
         if (notifUid) loadNotifications();
         applyRobloxLinkState();
     });
@@ -978,14 +1020,18 @@ async function initCurrentUser() {
 // ---------- stats bar ----------
 async function loadStats() {
     try {
+        // NOTE: counting from `public_profiles` (not `users` directly), because RLS on
+        // `users` limits each session to seeing only its own row, which made the
+        // exact-count queries below always resolve to 1. `public_profiles` is a view
+        // that's readable by everyone and reflects the real total.
         const [{ count: scriptsCount }, { count: usersCount }, { data: likesData },
                { count: newScriptsToday }, { count: newUsersToday }] = await Promise.all([
             supabase.from('scripts').select('*', { count: 'exact', head: true }),
-            supabase.from('users').select('*', { count: 'exact', head: true }),
+            supabase.from('public_profiles').select('*', { count: 'exact', head: true }),
             supabase.from('scripts').select('likes_count'), // ASSUMPTION: column name
             supabase.from('scripts').select('*', { count: 'exact', head: true })
                 .gte('created_at', new Date(startOfTodayTs()).toISOString()),
-            supabase.from('users').select('*', { count: 'exact', head: true })
+            supabase.from('public_profiles').select('*', { count: 'exact', head: true })
                 .gte('created_at', new Date(startOfTodayTs()).toISOString()),
         ]);
 
@@ -1104,10 +1150,11 @@ async function loadFeaturedToday() {
 }
 
 // ---------- top users (kept for parity, no homepage container found) ----------
+// Reads from `public_profiles` since this lists OTHER users, not just the session owner.
 async function loadTopUsers() {
     try {
         await supabase
-            .from('users')
+            .from('public_profiles')
             .select('id, username, points') // ASSUMPTION
             .order('points', { ascending: false })
             .limit(10);
@@ -1217,13 +1264,17 @@ function applyRobloxLinkState() {
     const linkedAvatar = document.getElementById('rlLinkedAvatar');
     if (!linkBtn || !linkedBadge) return;
 
-    // ASSUMPTION: users table has roblox_username / roblox_avatar_url columns
+    // roblox_username / roblox_avatar_url are populated onto currentUser via
+    // loadCurrentUserProfile() (fetched from `users`, the session owner's own row).
     const robloxUsername = currentUser?.roblox_username;
     if (currentUser && robloxUsername) {
         linkBtn.style.display = 'none';
         linkedBadge.style.display = 'flex';
         if (linkedName) linkedName.textContent = robloxUsername;
-        if (linkedAvatar) linkedAvatar.src = currentUser.roblox_avatar_url || '';
+        if (linkedAvatar) {
+            const avatarUrl = currentUser.roblox_avatar_url;
+            linkedAvatar.src = avatarUrl && avatarUrl.trim() ? avatarUrl : 'cCraft.jpg';
+        }
     } else {
         linkBtn.style.display = 'inline-flex';
         linkedBadge.style.display = 'none';
@@ -1257,19 +1308,24 @@ window.verifyRobloxLink = async function () {
             return;
         }
 
+        // Accept a couple of possible key shapes from the lookup API so the avatar
+        // doesn't silently end up null if the backend key differs (avatarUrl vs avatar_url vs avatar).
+        const avatarUrl = data.avatarUrl || data.avatar_url || data.avatar || null;
+
         const { error } = await supabase
             .from('users')
             .update({
                 roblox_username: data.name,
                 roblox_user_id: data.id,
-                roblox_avatar_url: data.avatarUrl || null,
+                roblox_avatar_url: avatarUrl,
             })
             .eq('auth_uid', currentUser.id);
 
         if (error) throw error;
 
         currentUser.roblox_username = data.name;
-        currentUser.roblox_avatar_url = data.avatarUrl || null;
+        currentUser.roblox_user_id = data.id;
+        currentUser.roblox_avatar_url = avatarUrl;
         applyRobloxLinkState();
         closeRobloxLinkModal();
     } catch (e) {
@@ -1290,6 +1346,7 @@ window.unlinkRoblox = async function (event) {
         if (error) throw error;
 
         currentUser.roblox_username = null;
+        currentUser.roblox_user_id = null;
         currentUser.roblox_avatar_url = null;
         applyRobloxLinkState();
     } catch (e) {
