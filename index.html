@@ -1071,15 +1071,19 @@ async function loadStats() {
 }
 
 // ---------- online count (presence table) ----------
+// Real schema: presence(id text, ts bigint) — ts is an epoch-ms timestamp, not a
+// timestamptz `last_seen` column, so the gte comparison needs a plain number, not
+// an ISO string.
 let _lastOnline = -1;
 async function loadOnlineCount() {
     try {
-        // ASSUMPTION: presence table, last_seen column, online = seen in last 2 min
-        const cutoff = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-        const { count } = await supabase
+        const cutoff = Date.now() - 2 * 60 * 1000;
+        const { count, error } = await supabase
             .from('presence')
             .select('*', { count: 'exact', head: true })
-            .gte('last_seen', cutoff);
+            .gte('ts', cutoff);
+
+        if (error) throw error;
 
         const el = document.getElementById('ls-online');
         if (el && count !== _lastOnline) {
@@ -1088,6 +1092,18 @@ async function loadOnlineCount() {
         }
     } catch (e) {
         console.error('loadOnlineCount error:', e);
+    }
+}
+
+// Keeps this browser's presence row alive so it counts toward "online" for
+// everyone else. presence_upsert_own / presence_update_own RLS policies allow
+// the session owner to write only their own row (id = current_user_row_id()).
+async function heartbeatPresence() {
+    if (!currentUser?.rowId) return;
+    try {
+        await supabase.from('presence').upsert({ id: currentUser.rowId, ts: Date.now() });
+    } catch (e) {
+        console.error('heartbeatPresence error:', e);
     }
 }
 
@@ -1380,7 +1396,9 @@ function escapeHtml(str) {
     await initCurrentUser();
     loadAnnouncement();
     loadStats();
+    heartbeatPresence();
     setInterval(loadOnlineCount, 30000);
+    setInterval(heartbeatPresence, 60000);
 })();
 </script>
 
