@@ -974,28 +974,38 @@ async function trackVisitToday() {
 }
 
 // ---------- current user's own profile (allowed by RLS: auth_uid = auth.uid()) ----------
-// Reads roblox_username / roblox_avatar_url from `users` directly since this is the
-// session owner's own row. auth.getSession() only returns auth metadata, NOT these
-// custom columns, so without this fetch the Roblox badge/avatar never shows on reload.
+// Reads `extra` from `users` directly since this is the session owner's own row.
+// Roblox link data lives inside extra.roblox (jsonb) — same schema profile.html uses —
+// NOT in flat columns. auth.getSession() only returns auth metadata, so without this
+// fetch the Roblox badge/avatar never shows on reload.
 async function loadCurrentUserProfile() {
     if (!currentUser) return;
     try {
         const { data, error } = await supabase
             .from('users')
-            .select('roblox_username, roblox_user_id, roblox_avatar_url')
+            .select('id, extra')
             .eq('auth_uid', currentUser.id)
             .maybeSingle();
 
         if (error) throw error;
 
         if (data) {
-            currentUser.roblox_username = data.roblox_username || null;
-            currentUser.roblox_user_id = data.roblox_user_id || null;
-            currentUser.roblox_avatar_url = data.roblox_avatar_url || null;
+            currentUser.rowId = data.id;
+            currentUser.extra = data.extra || {};
+            currentUser.roblox = data.extra?.roblox || null;
         }
     } catch (e) {
         console.error('loadCurrentUserProfile error:', e);
     }
+}
+
+// Reads users.extra, merges the patch, writes it back. Mirrors profile.html's helper
+// so both pages share the exact same storage shape for extra.roblox / extra.tiktok / etc.
+async function patchUserExtra(userRowId, patch) {
+    const { data: row } = await supabase.from('users').select('extra').eq('id', userRowId).maybeSingle();
+    const extra = { ...(row?.extra || {}), ...patch };
+    await supabase.from('users').update({ extra }).eq('id', userRowId);
+    return extra;
 }
 
 // ---------- init current user (session) ----------
@@ -1268,16 +1278,15 @@ function applyRobloxLinkState() {
     const linkedAvatar = document.getElementById('rlLinkedAvatar');
     if (!linkBtn || !linkedBadge) return;
 
-    // roblox_username / roblox_avatar_url are populated onto currentUser via
-    // loadCurrentUserProfile() (fetched from `users`, the session owner's own row).
-    const robloxUsername = currentUser?.roblox_username;
-    if (currentUser && robloxUsername) {
+    // currentUser.roblox is populated by loadCurrentUserProfile() from users.extra.roblox
+    // (same shape profile.html writes: {userId, username, avatarUrl, linkedAt}).
+    const roblox = currentUser?.roblox;
+    if (currentUser && roblox && roblox.username) {
         linkBtn.style.display = 'none';
         linkedBadge.style.display = 'flex';
-        if (linkedName) linkedName.textContent = robloxUsername;
+        if (linkedName) linkedName.textContent = roblox.username;
         if (linkedAvatar) {
-            const avatarUrl = currentUser.roblox_avatar_url;
-            linkedAvatar.src = avatarUrl && avatarUrl.trim() ? avatarUrl : 'cCraft.jpg';
+            linkedAvatar.src = roblox.avatarUrl && roblox.avatarUrl.trim() ? roblox.avatarUrl : 'cCraft.jpg';
         }
     } else {
         linkBtn.style.display = 'inline-flex';
@@ -1302,36 +1311,39 @@ window.verifyRobloxLink = async function () {
     const resultBox = document.getElementById('rlResult');
     const username = input?.value.trim();
     if (!username) return;
+    if (!currentUser?.rowId) {
+        resultBox.textContent = 'تعذّر تحديد حسابك، حاول تسجل الدخول تاني.';
+        return;
+    }
 
     resultBox.textContent = 'جارٍ التحقق...';
     try {
-        const res = await fetch(`${ROBLOX_LOOKUP_BASE}/roblox-lookup?username=${encodeURIComponent(username)}`);
+        // Same endpoint + payload shape as profile.html (POST /lookup, not GET /roblox-lookup)
+        const res = await fetch(`${ROBLOX_LOOKUP_BASE}/lookup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+        });
         const data = await res.json();
-        if (!res.ok || !data?.id) {
-            resultBox.textContent = 'لم يتم العثور على مستخدم بهذا الاسم.';
+        if (!data.success) {
+            resultBox.textContent = data.message || 'لم يتم العثور على مستخدم بهذا الاسم.';
             return;
         }
 
-        // Accept a couple of possible key shapes from the lookup API so the avatar
-        // doesn't silently end up null if the backend key differs (avatarUrl vs avatar_url vs avatar).
-        const avatarUrl = data.avatarUrl || data.avatar_url || data.avatar || null;
+        const robloxData = {
+            userId: data.userId,
+            username: data.username,
+            avatarUrl: data.avatarUrl || null,
+            linkedAt: Date.now(),
+        };
 
-        const { error } = await supabase
-            .from('users')
-            .update({
-                roblox_username: data.name,
-                roblox_user_id: data.id,
-                roblox_avatar_url: avatarUrl,
-            })
-            .eq('auth_uid', currentUser.id);
-
-        if (error) throw error;
-
-        currentUser.roblox_username = data.name;
-        currentUser.roblox_user_id = data.id;
-        currentUser.roblox_avatar_url = avatarUrl;
+        // Roblox link data lives in users.extra.roblox (jsonb) — same shape/helper as profile.html
+        const extra = await patchUserExtra(currentUser.rowId, { roblox: robloxData });
+        currentUser.extra = extra;
+        currentUser.roblox = robloxData;
         applyRobloxLinkState();
         closeRobloxLinkModal();
+        resultBox.textContent = '';
     } catch (e) {
         console.error('verifyRobloxLink error:', e);
         resultBox.textContent = 'حدث خطأ أثناء الربط، حاول مرة أخرى.';
@@ -1340,18 +1352,11 @@ window.verifyRobloxLink = async function () {
 
 window.unlinkRoblox = async function (event) {
     event.stopPropagation();
-    if (!currentUser) return;
+    if (!currentUser?.rowId) return;
     try {
-        const { error } = await supabase
-            .from('users')
-            .update({ roblox_username: null, roblox_user_id: null, roblox_avatar_url: null })
-            .eq('auth_uid', currentUser.id);
-
-        if (error) throw error;
-
-        currentUser.roblox_username = null;
-        currentUser.roblox_user_id = null;
-        currentUser.roblox_avatar_url = null;
+        const extra = await patchUserExtra(currentUser.rowId, { roblox: null });
+        currentUser.extra = extra;
+        currentUser.roblox = null;
         applyRobloxLinkState();
     } catch (e) {
         console.error('unlinkRoblox error:', e);
