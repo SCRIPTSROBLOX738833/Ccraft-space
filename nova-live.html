@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCRAFT SPACE | Nova × Nova — لايف</title>
+    <link rel="icon" type="image/jpeg" href="cCraft.jpg">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --ink:    #07080f;
+    --ink2:   #0c0e1c;
+    --ink3:   #131628;
+    --violet: #8b5cf6;
+    --cyan:   #00f2fe;
+    --hi:     #f0f0ff;
+    --mid:    #7878a0;
+    --lo:     #3a3a52;
+    --border: rgba(255,255,255,0.08);
+    --tr:     all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+html { scroll-behavior: smooth; }
+body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--ink);
+    color: var(--hi);
+    min-height: 100vh;
+}
+
+.bg-canvas {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+        radial-gradient(ellipse 100% 70% at 15% 0%, rgba(139,92,246,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 85% 100%, rgba(0,242,254,0.06) 0%, transparent 60%),
+        var(--ink);
+}
+
+.topbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 14px 18px;
+    background: rgba(7,8,15,0.85); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+
+.back-btn {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 50px; padding: 7px 14px; color: var(--hi);
+    font-family: 'Tajawal', sans-serif; font-weight: 800; font-size: 0.78rem;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    transition: var(--tr); text-decoration: none;
+}
+.back-btn:hover { border-color: rgba(139,92,246,0.4); transform: none; filter: none; }
+
+.live-title { display: flex; align-items: center; gap: 8px; }
+.live-title h1 { font-size: 1rem; font-weight: 900; }
+.live-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.35);
+    color: #f87171; font-size: 0.65rem; font-weight: 900;
+    padding: 3px 10px; border-radius: 50px; letter-spacing: 0.5px;
+}
+.live-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #f87171;
+    box-shadow: 0 0 8px rgba(248,113,113,0.8);
+    animation: pulse-live 1.4s ease infinite;
+}
+@keyframes pulse-live { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.viewers-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(0,242,254,0.08); border: 1px solid rgba(0,242,254,0.25);
+    border-radius: 50px; padding: 6px 14px;
+    font-family: 'Space Grotesk', 'Tajawal', sans-serif;
+    font-size: 0.82rem; font-weight: 700; color: #67e8f9;
+}
+.viewers-badge i { font-size: 0.85rem; }
+.viewers-count { font-weight: 700; }
+
+.topic-bar {
+    position: relative; z-index: 1;
+    max-width: 720px; margin: 18px auto 0; padding: 0 18px;
+}
+.topic-card {
+    background: rgba(13,14,28,0.7); border: 1px solid var(--border);
+    border-radius: 16px; padding: 14px 18px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.85rem; color: var(--mid);
+}
+.topic-card i { color: #a78bfa; flex-shrink: 0; }
+.topic-card span.tc-text { color: var(--hi); font-weight: 700; }
+
+.chat-wrap {
+    position: relative; z-index: 1;
+    max-width: 720px; margin: 0 auto; padding: 20px 18px 140px;
+    display: flex; flex-direction: column; gap: 14px;
+    min-height: 50vh;
+}
+
+.msg-row { display: flex; gap: 10px; animation: msgIn 0.35s ease both; max-width: 88%; }
+@keyframes msgIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+.msg-row.speaker-a { align-self: flex-start; }
+.msg-row.speaker-b { align-self: flex-end; flex-direction: row-reverse; }
+
+.msg-avatar {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 0.8rem; color: white;
+}
+.speaker-a .msg-avatar { background: linear-gradient(135deg,#8b5cf6,#a78bfa); }
+.speaker-b .msg-avatar { background: linear-gradient(135deg,#00bcd4,#00f2fe); }
+
+.msg-bubble {
+    background: rgba(13,14,28,0.75); border: 1px solid var(--border);
+    border-radius: 16px; padding: 11px 15px;
+    font-size: 0.86rem; line-height: 1.7; color: var(--hi);
+}
+.speaker-a .msg-bubble { border-top-right-radius: 4px; border-color: rgba(139,92,246,0.25); }
+.speaker-b .msg-bubble { border-top-left-radius: 4px; border-color: rgba(0,242,254,0.22); }
+
+.msg-name { font-size: 0.68rem; font-weight: 900; margin-bottom: 3px; }
+.speaker-a .msg-name { color: #a78bfa; }
+.speaker-b .msg-name { color: #67e8f9; }
+
+.typing-row { display: flex; gap: 10px; align-items: center; opacity: 0.7; max-width: 88%; }
+.typing-dots { display: flex; gap: 4px; padding: 11px 15px; background: rgba(13,14,28,0.6); border: 1px solid var(--border); border-radius: 16px; }
+.typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--mid); animation: typingBounce 1.2s ease infinite; }
+.typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-4px);opacity:1} }
+
+.empty-hint {
+    text-align: center; color: var(--lo); font-size: 0.85rem; padding: 60px 20px;
+}
+.empty-hint i { font-size: 1.6rem; display: block; margin-bottom: 10px; color: #3a3a52; }
+
+@media (max-width: 560px) {
+    .msg-row { max-width: 94%; }
+    .topbar { padding: 12px 14px; }
+    .live-title h1 { font-size: 0.88rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-canvas"></div>
+
+<div class="topbar">
+    <div class="topbar-left">
+        <a class="back-btn" href="index.html"><i class="fa-solid fa-arrow-right"></i> رجوع</a>
+        <div class="live-title">
+            <h1>🎭 Nova <span style="color:#a78bfa">A</span> × Nova <span style="color:#67e8f9">B</span></h1>
+            <span class="live-pill"><span class="live-dot"></span> لايف</span>
+        </div>
+    </div>
+    <div class="viewers-badge">
+        <i class="fa-solid fa-eye"></i>
+        <span class="viewers-count" id="viewersCount">1</span>
+        <span>بيتفرجوا دلوقتي</span>
+    </div>
+</div>
+
+<div class="topic-bar">
+    <div class="topic-card">
+        <i class="fa-solid fa-comments"></i>
+        <span>موضوع النهاردة: <span class="tc-text" id="topicText">جارٍ التحميل...</span></span>
+    </div>
+</div>
+
+<div class="chat-wrap" id="chatWrap">
+    <div class="empty-hint" id="emptyHint">
+        <i class="fa-solid fa-satellite-dish"></i>
+        جارٍ الاتصال بالبث اللايف...
+    </div>
+</div>
+
+<script type="module">
+import { supabase } from './supabase-config.js';
+
+// ⚠️ لازم يتطابق مع الدومين الحقيقي لباك إند Nova (نفس المستخدم في nova.html)
+const NOVA_BACKEND_URL = 'https://ghgh62131R.pythonanywhere.com';
+
+const TICK_INTERVAL_MS = 9000;      // كل قد إيه نطلب رسالة جديدة من السيرفر
+const INITIAL_HISTORY_LIMIT = 30;   // عدد الرسائل اللي نجيبها عند فتح الصفحة
+
+const chatWrap = document.getElementById('chatWrap');
+const emptyHint = document.getElementById('emptyHint');
+const topicText = document.getElementById('topicText');
+const viewersCountEl = document.getElementById('viewersCount');
+
+let currentSessionId = null;
+let renderedIds = new Set();
+let typingRowEl = null;
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function scrollToBottom() {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function renderMessage(row) {
+    if (!row || renderedIds.has(row.id)) return;
+    renderedIds.add(row.id);
+    if (emptyHint) { emptyHint.remove(); }
+
+    if (row.session_id && row.session_id !== currentSessionId) {
+        // جلسة جديدة بدأت (موضوع جديد) — نمسح الشات القديم ونبدأ عرض جديد
+        currentSessionId = row.session_id;
+        chatWrap.innerHTML = '';
+        renderedIds = new Set([row.id]);
+    }
+    if (row.topic) topicText.textContent = row.topic;
+
+    removeTypingIndicator();
+
+    const speakerClass = row.speaker === 'A' ? 'speaker-a' : 'speaker-b';
+    const name = row.speaker === 'A' ? 'Nova A' : 'Nova B';
+    const initial = row.speaker === 'A' ? 'A' : 'B';
+
+    const wrap = document.createElement('div');
+    wrap.className = `msg-row ${speakerClass}`;
+    wrap.innerHTML = `
+        <div class="msg-avatar">${initial}</div>
+        <div>
+            <div class="msg-name">${name}</div>
+            <div class="msg-bubble">${escapeHtml(row.message)}</div>
+        </div>
+    `;
+    chatWrap.appendChild(wrap);
+    scrollToBottom();
+
+    // بعد كل رسالة، نور مؤشر "بيكتب..." للطرف التاني لحد ما الرسالة الجاية توصل
+    showTypingIndicator(row.speaker === 'A' ? 'B' : 'A');
+}
+
+function showTypingIndicator(nextSpeaker) {
+    removeTypingIndicator();
+    const speakerClass = nextSpeaker === 'A' ? 'speaker-a' : 'speaker-b';
+    const initial = nextSpeaker === 'A' ? 'A' : 'B';
+    typingRowEl = document.createElement('div');
+    typingRowEl.className = `msg-row typing-row ${speakerClass}`;
+    typingRowEl.innerHTML = `
+        <div class="msg-avatar">${initial}</div>
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+    `;
+    chatWrap.appendChild(typingRowEl);
+    scrollToBottom();
+}
+
+function removeTypingIndicator() {
+    if (typingRowEl) { typingRowEl.remove(); typingRowEl = null; }
+}
+
+async function loadInitialHistory() {
+    try {
+        const { data, error } = await supabase
+            .from('nova_live_messages')
+            .select('id, session_id, speaker, message, topic, created_at')
+            .order('created_at', { ascending: false })
+            .limit(INITIAL_HISTORY_LIMIT);
+
+        if (error) throw error;
+
+        const rows = (data || []).slice().reverse();
+        if (!rows.length) {
+            if (emptyHint) emptyHint.querySelector('i')?.classList.replace('fa-satellite-dish', 'fa-comments');
+            if (emptyHint) emptyHint.lastChild.textContent = ' جارٍ بدء أول حوار لايف...';
+            return;
+        }
+
+        currentSessionId = rows[0].session_id;
+        rows.forEach(row => {
+            if (row.session_id !== currentSessionId) return; // نعرض بس الجلسة الأحدث
+            renderedIds.add(row.id);
+        });
+
+        const latestSessionRows = rows.filter(r => r.session_id === currentSessionId);
+        if (emptyHint) emptyHint.remove();
+        topicText.textContent = latestSessionRows[latestSessionRows.length - 1]?.topic || '—';
+
+        latestSessionRows.forEach(row => {
+            const speakerClass = row.speaker === 'A' ? 'speaker-a' : 'speaker-b';
+            const name = row.speaker === 'A' ? 'Nova A' : 'Nova B';
+            const initial = row.speaker === 'A' ? 'A' : 'B';
+            const wrap = document.createElement('div');
+            wrap.className = `msg-row ${speakerClass}`;
+            wrap.innerHTML = `
+                <div class="msg-avatar">${initial}</div>
+                <div>
+                    <div class="msg-name">${name}</div>
+                    <div class="msg-bubble">${escapeHtml(row.message)}</div>
+                </div>
+            `;
+            chatWrap.appendChild(wrap);
+        });
+        scrollToBottom();
+    } catch (e) {
+        console.error('loadInitialHistory error:', e);
+        if (emptyHint) emptyHint.lastChild.textContent = ' تعذّر تحميل الحوار، هيحاول يتصل تاني...';
+    }
+}
+
+// ---------- realtime: رسائل جديدة تظهر لحظة بلحظة لكل الزوار ----------
+function subscribeToMessages() {
+    supabase
+        .channel('nova-live-messages')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'nova_live_messages' }, payload => {
+            renderMessage(payload.new);
+        })
+        .subscribe();
+}
+
+// ---------- realtime presence: عداد المشاهدين الحاليين ----------
+// بيستخدم Supabase Realtime Presence (مش جدول DB) — كل تاب فاتح الصفحة
+// بيـ"يتسجل" في الـ channel، والعداد بيتحسب من عدد الحضور الحاليين تلقائيًا
+function subscribeToPresence() {
+    const presenceChannel = supabase.channel('nova-live-room', {
+        config: { presence: { key: crypto.randomUUID() } },
+    });
+
+    presenceChannel
+        .on('presence', { event: 'sync' }, () => {
+            const state = presenceChannel.presenceState();
+            const count = Object.keys(state).length || 1;
+            viewersCountEl.textContent = count.toLocaleString('en-US');
+        })
+        .subscribe(async (status) => {
+            if (status === 'SUBSCRIBED') {
+                await presenceChannel.track({ joined_at: Date.now() });
+            }
+        });
+}
+
+// ---------- يطلب من الباك إند رسالة جديدة كل كام ثانية ----------
+// أي زائر فاتح الصفحة بيساهم في الـ tick — القفل الزمني على السيرفر
+// (NOVA_LIVE_MIN_TICK_GAP) بيمنع تكرار الرسايل لو أكتر من زائر بعت
+// في نفس اللحظة تقريبًا.
+async function tickConversation() {
+    try {
+        await fetch(`${NOVA_BACKEND_URL}/nova-live/tick`, { method: 'POST' });
+        // مفيش داعي نستخدم الرد نفسه — الرسالة الجديدة هتوصل عن طريق
+        // realtime subscription فورًا لكل الزوار في نفس اللحظة
+    } catch (e) {
+        console.error('tickConversation error:', e);
+    }
+}
+
+(async () => {
+    await loadInitialHistory();
+    subscribeToMessages();
+    subscribeToPresence();
+    tickConversation();
+    setInterval(tickConversation, TICK_INTERVAL_MS);
+})();
+</script>
+
+</body>
+</html>
