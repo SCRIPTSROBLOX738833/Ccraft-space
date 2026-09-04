@@ -171,6 +171,29 @@ header { display: none; }
     animation: fadeUp 0.7s 0.4s ease both;
 }
 
+.nova-live-entry {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(0,242,254,0.08));
+    border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 50px; padding: 9px 18px;
+    color: var(--hi); text-decoration: none;
+    font-size: 0.82rem; font-weight: 800;
+    margin: 0 auto 28px; position: relative; z-index: 1;
+    animation: fadeUp 0.7s 0.4s ease both;
+    transition: var(--tr);
+    box-shadow: 0 6px 20px rgba(139,92,246,0.15);
+}
+.nova-live-entry:hover {
+    transform: translateY(-2px);
+    border-color: rgba(139,92,246,0.55);
+    box-shadow: 0 10px 28px rgba(139,92,246,0.25);
+}
+.nle-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #f87171; box-shadow: 0 0 8px rgba(248,113,113,0.8);
+    animation: live-pulse 1.5s ease infinite; flex-shrink: 0;
+}
+
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -796,7 +819,11 @@ header { display: none; }
         <span class="title-cc">CCRAFT</span><span class="title-raft"> SPACE</span>
     </h1>
 
-    <p class="hero-sub"><i class="fa-solid fa-bolt"></i></p>
+    <a href="nova-live.html" class="nova-live-entry">
+        <span class="nle-dot"></span>
+        <i class="fa-solid fa-comments"></i>
+        <span>Nova A × Nova B — لايف دلوقتي</span>
+    </a>
 
     <div class="stats-bar">
         <div class="sb-item"><div class="live-dot"></div> <span>مباشر</span></div>
