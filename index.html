@@ -846,13 +846,13 @@ header { display: none; }
         <button class="nav-btn c-pink"    onclick="location.href='chat.html'"><span class="nb-icon"><i class="fa-solid fa-comments"></i></span><span class="nb-label">شات </span></button>
         <button class="nav-btn c-purple"  onclick="location.href='hacks.html'">     <span class="nb-icon"><i class="fa-solid fa-bolt"></i></span><span class="nb-label">هاكات</span></button>
 
+        <div class="nav-group-label"><span><i class="fa-solid fa-clapperboard"></i> الشروحات</span></div>
+        <button class="nav-btn c-teal"    onclick="location.href='tutorials.html'"> <span class="nav-btn-badge">جديد</span><span class="nb-icon"><i class="fa-solid fa-clapperboard"></i></span><span class="nb-label">الشروحات</span></button>
+        <button class="nav-btn c-cyan"    onclick="location.href='publish-tutorial.html'"><span class="nav-btn-badge">جديد</span><span class="nb-icon"><i class="fa-solid fa-video"></i></span><span class="nb-label">نشر شرح</span></button>
+
         <div class="nav-group-label"><span><i class="fa-solid fa-code"></i> أدوات مطورين</span></div>
         <button class="nav-btn c-cyan"    onclick="location.href='editor.html'">    <span class="nb-icon"><i class="fa-solid fa-code"></i></span><span class="nb-label">محرر الأكواد</span></button>
         <button class="nav-btn c-teal"    onclick="location.href='api.html'">       <span class="nb-icon"><i class="fa-solid fa-key"></i></span><span class="nb-label">واجهة API</span></button>
-
-        <div class="nav-group-label"><span><i class="fa-solid fa-coins"></i> التبادل</span></div>
-        <button class="nav-btn c-market"  onclick="location.href='market.html'">   <span class="nav-btn-badge">جديد</span><span class="nb-icon"><i class="fa-solid fa-cart-shopping"></i></span><span class="nb-label">سوق التبادل</span></button>
-        <button class="nav-btn c-partner" onclick="location.href='partners.html'"> <span class="nav-btn-badge">جديد</span><span class="nb-icon"><i class="fa-solid fa-handshake"></i></span><span class="nb-label">شركاء التبادل</span></button>
 
         <div class="nav-group-label"><span><i class="fa-solid fa-users"></i> المجتمع</span></div>
         <button class="nav-btn c-gold"    onclick="location.href='leaderboard.html'"><span class="nb-icon"><i class="fa-solid fa-trophy"></i></span><span class="nb-label">ليدربورد</span></button>
@@ -860,7 +860,6 @@ header { display: none; }
 
         <div class="nav-group-label"><span><i class="fa-solid fa-screwdriver-wrench"></i> أدوات</span></div>
         <button class="nav-btn c-cyan"    onclick="location.href='nova.html'">      <span class="nb-icon"><i class="fa-solid fa-robot"></i></span><span class="nb-label">NOVA AI</span></button>
-        <button class="nav-btn c-apk"     onclick="location.href='apks.html'">      <span class="nav-btn-badge">جديد</span><span class="nb-icon"><i class="fa-solid fa-mobile-screen-button"></i></span><span class="nb-label">APK موديفايد</span></button>
         
         <div class="nav-group-label"><span><i class="fa-solid fa-user"></i> حسابك</span></div>
         <button class="nav-btn c-violet"  onclick="location.href='profile.html'">   <span class="nb-icon"><i class="fa-solid fa-user"></i></span><span class="nb-label">بروفايلي</span></button>
@@ -1036,19 +1035,27 @@ async function patchUserExtra(userRowId, patch) {
 }
 
 // ---------- init current user (session) ----------
+// ⚠️ FIX: notifUid لازم يكون الـ id الداخلي بتاع صف اليوزر في جدول users
+// (زي ما notifications.user_id بيتخزن فعليًا في scripts.html عبر pushNotification)
+// مش الـ auth UID بتاع Supabase Auth (session.user.id) — دول قيمتين مختلفتين تمامًا،
+// فالاستعلام كان بيدوّر بقيمة غلط ومكانش بيرجّع أي إشعارات خالص.
 async function initCurrentUser() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
         currentUser = session.user;
-        notifUid = session.user.id;
         await loadCurrentUserProfile();
+        notifUid = currentUser.rowId || null;
+        if (notifUid) loadNotifications();
     }
     applyRobloxLinkState();
 
     supabase.auth.onAuthStateChange(async (_event, session) => {
         currentUser = session?.user ?? null;
-        notifUid = session?.user?.id ?? null;
-        if (currentUser) await loadCurrentUserProfile();
+        notifUid = null;
+        if (currentUser) {
+            await loadCurrentUserProfile();
+            notifUid = currentUser.rowId || null;
+        }
         if (notifUid) loadNotifications();
         applyRobloxLinkState();
     });
