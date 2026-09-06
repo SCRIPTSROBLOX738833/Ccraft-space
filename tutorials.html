@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCRAFT SPACE | الشروحات</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+
+body { min-height: 100svh; }
+
+.tut-page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+}
+
+.page-hero {
+    padding: 28px 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
+}
+
+.page-hero h1 {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 900;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.tut-count-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 7px 16px;
+    font-size: 0.82rem; color: var(--text-muted); font-weight: 700;
+}
+.tut-count-pill span { font-weight: 900; color: var(--primary); font-size: 0.95rem; }
+
+.cat-filter-row {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;
+}
+.cat-filter-btn {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border-color);
+    border-radius: 50px; padding: 8px 18px; font-size: 0.8rem; font-weight: 700;
+    color: var(--text-muted); cursor: pointer; font-family: 'Tajawal', sans-serif;
+    margin: 0; transition: var(--transition); white-space: nowrap;
+}
+.cat-filter-btn:hover  { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
+.cat-filter-btn.active { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.4); }
+
+.tut-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.tut-card {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 18px; overflow: hidden; cursor: pointer;
+    transition: var(--transition); animation: fadeIn 0.4s ease both;
+}
+.tut-card:hover {
+    border-color: var(--border-hover); transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+
+.tut-thumb-wrap { position: relative; }
+.tut-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+.tut-play-overlay {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.15); transition: background 0.2s;
+}
+.tut-card:hover .tut-play-overlay { background: rgba(0,0,0,0.35); }
+.tut-play-icon {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+}
+.tut-play-icon svg { margin-right: -2px; }
+
+.tut-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+.tut-cat-badge {
+    align-self: flex-start;
+    background: var(--primary-dim); color: #b48bf8;
+    padding: 3px 10px; border-radius: 50px; font-size: 0.68rem; font-weight: 800;
+}
+.tut-title {
+    font-size: 0.92rem; font-weight: 800; color: var(--text-main); line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tut-desc {
+    font-size: 0.76rem; color: var(--text-muted); line-height: 1.6;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tut-meta { display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+.empty-state {
+    grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);
+}
+.empty-state h3 { font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+
+/* ---- Video modal ---- */
+.video-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center; padding: 20px;
+}
+.video-modal-overlay.open { display: flex; }
+.video-modal-box {
+    width: 100%; max-width: 780px; background: var(--bg-card);
+    border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden;
+    animation: fadeIn 0.3s ease both;
+}
+.video-modal-frame-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: black; }
+.video-modal-frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-modal-info { padding: 18px 20px; }
+.video-modal-info h3 { font-size: 1.05rem; font-weight: 900; color: var(--text-main); margin-bottom: 6px; }
+.video-modal-info p  { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 10px; }
+.video-modal-meta { display: flex; align-items: center; gap: 12px; font-size: 0.78rem; color: var(--text-muted); }
+.video-modal-close {
+    position: absolute; top: 10px; left: 10px; z-index: 2;
+    background: rgba(0,0,0,0.6); border: none; color: white;
+    width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+    font-size: 1.1rem; display: flex; align-items: center; justify-content: center; margin: 0;
+}
+
+@media (max-width: 640px) {
+    .tut-grid { grid-template-columns: 1fr; }
+    .page-hero { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+  </style>
+</head>
+<body>
+
+<header>
+  <button onclick="location.href='publish-tutorial.html'">🎬 نشر شرح</button>
+  <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
+</header>
+
+<div class="tut-page">
+
+    <div class="page-hero">
+        <h1>🎬 الشروحات</h1>
+        <div class="tut-count-pill">إجمالي الشروحات: <span id="tutCount">—</span></div>
+    </div>
+
+    <div class="cat-filter-row" id="catFilterRow">
+        <button class="cat-filter-btn active" data-cat="all">الكل</button>
+    </div>
+
+    <div class="tut-grid" id="tutGrid">
+        <div class="empty-state"><h3>جارٍ التحميل...</h3></div>
+    </div>
+
+</div>
+
+<!-- Video Modal -->
+<div class="video-modal-overlay" id="videoModal">
+    <div class="video-modal-box">
+        <div class="video-modal-frame-wrap">
+            <button class="video-modal-close" onclick="closeVideoModal()">✕</button>
+            <iframe id="videoFrame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="video-modal-info">
+            <h3 id="videoModalTitle">—</h3>
+            <p id="videoModalDesc">—</p>
+            <div class="video-modal-meta">
+                <span id="videoModalCat">—</span>
+                <span>·</span>
+                <span id="videoModalAuthor">—</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { supabase } from "./supabase-config.js";
+
+let allTutorials = [];
+let categories   = [];
+let activeCat    = 'all';
+
+function escHTML(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function loadCategories() {
+    try {
+        const { data, error } = await supabase.from('tutorial_categories').select('id, name').order('name');
+        if (error) throw error;
+        categories = data || [];
+        renderCategoryFilters();
+    } catch (e) {
+        console.error('loadCategories error:', e);
+    }
+}
+
+function renderCategoryFilters() {
+    const row = document.getElementById('catFilterRow');
+    row.innerHTML = `<button class="cat-filter-btn${activeCat==='all'?' active':''}" data-cat="all">الكل</button>` +
+        categories.map(c => `<button class="cat-filter-btn${activeCat===c.id?' active':''}" data-cat="${c.id}">${escHTML(c.name)}</button>`).join('');
+    row.querySelectorAll('.cat-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            activeCat = btn.dataset.cat;
+            renderCategoryFilters();
+            renderTutorials();
+        });
+    });
+}
+
+async function loadTutorials() {
+    try {
+        const { data, error } = await supabase
+            .from('tutorials')
+            .select('id, category_id, youtube_id, title, description, thumbnail_url, author_name, views, created_at')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        allTutorials = data || [];
+        document.getElementById('tutCount').innerText = allTutorials.length;
+        renderTutorials();
+    } catch (e) {
+        console.error('loadTutorials error:', e);
+        document.getElementById('tutGrid').innerHTML = `<div class="empty-state"><h3>تعذّر تحميل الشروحات</h3></div>`;
+    }
+}
+
+function catName(id) {
+    const c = categories.find(c => c.id === id);
+    return c ? c.name : '—';
+}
+
+function renderTutorials() {
+    const grid = document.getElementById('tutGrid');
+    const list = activeCat === 'all' ? allTutorials : allTutorials.filter(t => t.category_id === activeCat);
+
+    if (!list.length) {
+        grid.innerHTML = `<div class="empty-state"><h3>مفيش شروحات في القسم ده لسه</h3><p>كن أول واحد ينشر شرح!</p></div>`;
+        return;
+    }
+
+    grid.innerHTML = list.map(t => `
+        <div class="tut-card" data-id="${t.id}">
+            <div class="tut-thumb-wrap">
+                <img class="tut-thumb" src="${t.thumbnail_url || `https://img.youtube.com/vi/${t.youtube_id}/hqdefault.jpg`}" alt="${escHTML(t.title)}" loading="lazy">
+                <div class="tut-play-overlay">
+                    <div class="tut-play-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#111"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="tut-body">
+                <span class="tut-cat-badge">${escHTML(catName(t.category_id))}</span>
+                <div class="tut-title">${escHTML(t.title)}</div>
+                <div class="tut-desc">${escHTML(t.description || '')}</div>
+                <div class="tut-meta">
+                    <span>👤 ${escHTML(t.author_name || 'cCraft Space User')}</span>
+                    <span>·</span>
+                    <span>👁️ ${t.views || 0}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    grid.querySelectorAll('.tut-card').forEach(card => {
+        card.addEventListener('click', () => openVideoModal(card.dataset.id));
+    });
+}
+
+async function openVideoModal(id) {
+    const t = allTutorials.find(t => t.id === id);
+    if (!t) return;
+
+    document.getElementById('videoFrame').src = `https://www.youtube.com/embed/${t.youtube_id}?autoplay=1`;
+    document.getElementById('videoModalTitle').innerText = t.title || '';
+    document.getElementById('videoModalDesc').innerText  = t.description || '';
+    document.getElementById('videoModalCat').innerText   = catName(t.category_id);
+    document.getElementById('videoModalAuthor').innerText = `👤 ${t.author_name || 'cCraft Space User'}`;
+    document.getElementById('videoModal').classList.add('open');
+
+    // زيادة عداد المشاهدات (best effort — تجاهل أي خطأ)
+    try {
+        await supabase.from('tutorials').update({ views: (t.views || 0) + 1 }).eq('id', t.id);
+        t.views = (t.views || 0) + 1;
+    } catch (e) { /* تجاهل */ }
+}
+
+window.closeVideoModal = function () {
+    document.getElementById('videoModal').classList.remove('open');
+    document.getElementById('videoFrame').src = ''; // يوقف تشغيل الفيديو
+};
+document.getElementById('videoModal').addEventListener('click', e => {
+    if (e.target.id === 'videoModal') closeVideoModal();
+});
+
+(async () => {
+    await loadCategories();
+    await loadTutorials();
+})();
+</script>
+</body>
+</html>
