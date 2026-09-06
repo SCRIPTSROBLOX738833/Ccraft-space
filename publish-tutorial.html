@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نشر شرح | CCRAFT SPACE</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+
+    #authNotice { max-width: 800px; margin: 40px auto; padding: 0 24px; display: none; }
+
+    .notice-card {
+        background: var(--bg-card); border: 1px solid rgba(139,92,246,0.3);
+        border-radius: 20px; padding: 40px 32px; text-align: center;
+        animation: fadeIn 0.5s ease both;
+    }
+    .notice-card .n-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
+    .notice-card h2 { font-size: 1.4rem; font-weight: 900; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+    .notice-card p  { color: var(--text-muted); margin-bottom: 24px; font-size: 0.95rem; line-height: 1.7; }
+    .notice-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .notice-btns button { background: var(--accent-gradient); color: white; border: none; border-radius: var(--radius-btn); padding: 13px 28px; box-shadow: 0 8px 20px rgba(139,92,246,0.3); }
+    .notice-btns .ghost { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); box-shadow: none; }
+
+    #successBadge { display: none; max-width: 800px; margin: 0 auto 24px; padding: 0 24px; }
+    .badge-earned {
+        background: linear-gradient(135deg,rgba(74,222,128,0.1) 0%,rgba(59,130,246,0.05) 100%);
+        border: 1px solid rgba(74,222,128,0.3); border-radius: 16px;
+        padding: 16px 22px; display: flex; align-items: center; gap: 14px;
+        margin-bottom: 10px; animation: fadeIn 0.4s ease both;
+    }
+    .badge-earned .be-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .badge-earned .be-text h4 { font-size: 0.9rem; font-weight: 800; color: var(--success); margin-bottom: 2px; }
+    .badge-earned .be-text p  { font-size: 0.78rem; color: var(--text-muted); margin: 0; }
+
+    #userInfo { display: none; max-width: 800px; margin: 0 auto 20px; padding: 0 24px; }
+    .user-bar { display: flex; align-items: center; gap: 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px 18px; }
+    .ub-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; font-size: 0.9rem; flex-shrink: 0; }
+    .ub-name  { font-weight: 800; font-size: 0.9rem; }
+
+    .form-section {
+        background: var(--bg-card); border: 1px solid var(--border-color);
+        border-radius: 18px; padding: 22px 20px; margin-bottom: 16px;
+    }
+    .fs-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .fs-num {
+        flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+        background: var(--primary-dim); color: var(--primary);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 0.82rem;
+    }
+    .fs-title { font-weight: 900; font-size: 0.95rem; color: var(--text-main); }
+    .fs-sub { font-size: 0.76rem; color: var(--text-muted); margin-right: 38px; margin-top: -12px; margin-bottom: 14px; }
+    .key-optional-tag {
+        background: rgba(255,255,255,0.06); color: var(--text-muted);
+        font-size: 0.65rem; font-weight: 800; padding: 2px 10px;
+        border-radius: 50px; border: 1px solid var(--border-color);
+    }
+
+    /* ---- YouTube link + preview ---- */
+    .yt-preview {
+        display: none; margin-top: 12px;
+        border: 1px solid var(--border-color); border-radius: 14px;
+        overflow: hidden; background: rgba(0,0,0,0.25);
+    }
+    .yt-preview.show { display: block; animation: fadeIn 0.3s ease both; }
+    .yt-preview img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; }
+    .yt-status { font-size: 0.78rem; font-weight: 700; margin-top: 8px; min-height: 18px; }
+    .yt-status.ok  { color: var(--success); }
+    .yt-status.err { color: var(--danger); }
+
+    /* ---- Category picker ---- */
+    .cat-picker { display: flex; flex-direction: column; gap: 10px; }
+    .cat-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cat-chip {
+        background: rgba(255,255,255,0.04); border: 1px solid var(--border-color);
+        border-radius: 50px; padding: 8px 16px; font-size: 0.82rem; font-weight: 700;
+        color: var(--text-muted); cursor: pointer; font-family: 'Tajawal', sans-serif;
+        margin: 0; transition: var(--transition);
+    }
+    .cat-chip:hover { border-color: var(--border-hover); color: var(--text-main); transform: none; filter: none; }
+    .cat-chip.selected { background: var(--primary-dim); color: var(--primary); border-color: rgba(139,92,246,0.5); }
+    .cat-new-row { display: flex; gap: 10px; align-items: center; }
+    .cat-new-row input { flex: 1; margin: 0; border-radius: 14px; padding: 12px 18px; font-size: 0.88rem; }
+    .no-map-btn { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); border-radius: var(--radius-btn); padding: 10px 20px; font-size: 0.85rem; font-family: 'Tajawal', sans-serif; font-weight: 700; cursor: pointer; transition: var(--transition); margin: 0; white-space: nowrap; }
+    .no-map-btn:hover { transform: translateY(-2px); filter: none; }
+    .cat-hint { font-size: 0.72rem; color: var(--text-muted); opacity: 0.75; }
+
+    /* ---- Cover image (optional override of youtube thumbnail) ---- */
+    .upload-zone {
+        border: 2px dashed var(--border-color); border-radius: 16px;
+        padding: 24px 20px; text-align: center; cursor: pointer;
+        transition: var(--transition); position: relative; overflow: hidden;
+        background: rgba(255,255,255,0.02);
+    }
+    .upload-zone:hover { border-color: var(--primary); background: rgba(139,92,246,0.05); }
+    .upload-zone.has-image { border-style: solid; border-color: rgba(139,92,246,0.4); padding: 0; }
+    .uz-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+    .uz-text { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
+    .uz-sub  { font-size: 0.7rem; color: var(--text-muted); opacity: 0.7; }
+    #coverInput { display: none; }
+    #coverPreview { width: 100%; max-height: 220px; object-fit: cover; display: none; }
+    .image-overlay {
+        display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.5);
+        border-radius: 14px; align-items: center; justify-content: center; gap: 10px;
+    }
+    .upload-zone.has-image:hover .image-overlay { display: flex; }
+    .img-ov-btn {
+        background: var(--bg-card); border: 1px solid var(--border-color);
+        border-radius: 10px; padding: 8px 16px; font-size: 0.78rem; font-weight: 800;
+        color: var(--text-main); cursor: pointer; font-family: 'Tajawal', sans-serif; margin: 0;
+    }
+    .img-ov-btn.del { color: var(--danger); border-color: rgba(248,113,113,0.3); }
+
+    #publishBtn { margin-top: 4px; }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <button onclick="location.href='tutorials.html'">🎬 صفحة الشروحات</button>
+  <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
+</header>
+
+<div id="authNotice">
+    <div class="notice-card">
+        <span class="n-icon">🔐</span>
+        <h2>محتاج تسجّل دخول الأول</h2>
+        <p>عشان تنشر شرح ويظهر باسمك،<br>لازم يكون عندك حساب على CCRAFT SPACE.</p>
+        <div class="notice-btns">
+            <button onclick="location.href='login.html'">🚀 تسجيل الدخول</button>
+            <button class="ghost" onclick="location.href='index.html'">رجوع للرئيسية</button>
+        </div>
+    </div>
+</div>
+
+<div id="userInfo">
+    <div class="user-bar">
+        <div class="ub-avatar" id="ubAvatar">أ</div>
+        <div class="ub-name" id="ubName">—</div>
+    </div>
+</div>
+
+<div id="successBadge"></div>
+
+<main id="publishMain" style="display:none;max-width:800px;margin:0 auto;padding:0 24px 80px">
+  <h1 style="margin-bottom:20px">🎬 نشر شرح جديد</h1>
+
+  <form id="publishForm">
+
+    <!-- 1️⃣ رابط اليوتيوب -->
+    <div class="form-section">
+        <div class="fs-head"><span class="fs-num">1</span><span class="fs-title">رابط فيديو اليوتيوب</span></div>
+        <div class="fs-sub">الصق رابط الفيديو، وهنجيب صورة الغلاف تلقائيًا</div>
+
+        <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." required style="direction:ltr;text-align:left">
+        <div class="yt-status" id="ytStatus"></div>
+        <div class="yt-preview" id="ytPreview"><img id="ytThumb" alt="معاينة الفيديو"></div>
+    </div>
+
+    <!-- 2️⃣ معلومات الشرح -->
+    <div class="form-section">
+        <div class="fs-head"><span class="fs-num">2</span><span class="fs-title">معلومات الشرح</span></div>
+        <div class="fs-sub">اكتب عنوان ووصف واضحين لبيوضحوا الفيديو بيشرح إيه بالظبط</div>
+
+        <input type="text" id="tutorialTitle" placeholder="مثال: إزاي تعمل مفتاح هاك (Key System) خطوة بخطوة" required style="margin-bottom:12px">
+        <textarea id="tutorialDescription" placeholder="مثال: في الفيديو ده هتتعلم إزاي تعمل نظام مفتاح لأي سكربت..." rows="3" required></textarea>
+    </div>
+
+    <!-- 3️⃣ القسم -->
+    <div class="form-section">
+        <div class="fs-head"><span class="fs-num">3</span><span class="fs-title">القسم</span></div>
+        <div class="fs-sub">اختار قسم موجود، أو أضف قسم جديد لو مش لاقي المناسب</div>
+
+        <div class="cat-picker">
+            <div class="cat-grid" id="catGrid">
+                <span style="color:var(--text-muted);font-size:0.8rem">جارٍ تحميل الأقسام...</span>
+            </div>
+            <div class="cat-new-row">
+                <input type="text" id="newCatInput" placeholder="اسم قسم جديد (مثال: مفتاح أي سكربت)...">
+                <button type="button" class="no-map-btn" id="addCatBtn">➕ إضافة قسم</button>
+            </div>
+            <div class="cat-hint">أي حد يقدر يضيف قسم جديد — هيظهر لكل الزوار على طول.</div>
+        </div>
+    </div>
+
+    <!-- 4️⃣ صورة غلاف مخصصة (اختياري) -->
+    <div class="form-section">
+        <div class="fs-head"><span class="fs-num">4</span><span class="fs-title">صورة غلاف مخصصة</span> <span class="key-optional-tag">اختياري</span></div>
+        <div class="fs-sub">لو سبتها فاضية، هنستخدم صورة الفيديو من يوتيوب تلقائيًا</div>
+
+        <div class="upload-zone" id="uploadZone">
+            <img id="coverPreview" alt="معاينة الغلاف">
+            <div class="image-overlay" id="imageOverlay">
+                <button class="img-ov-btn" type="button" onclick="triggerUpload(event)">🔄 تغيير</button>
+                <button class="img-ov-btn del" type="button" onclick="removeCover(event)">🗑️ حذف</button>
+            </div>
+            <div id="uploadPlaceholder">
+                <span class="uz-icon">🖼️</span>
+                <div class="uz-text">اسحب صورة هنا أو اضغط للاختيار</div>
+                <div class="uz-sub">PNG، JPG، WebP — حد أقصى 12 ميجا</div>
+            </div>
+        </div>
+        <input type="file" id="coverInput" accept="image/png,image/jpeg,image/webp">
+    </div>
+
+    <button type="button" id="publishBtn">📤 نشر الشرح</button>
+  </form>
+</main>
+
+<script type="module">
+  import { supabase } from "./supabase-config.js";
+  import { guardAgainstBanned } from "./auth-guard.js";
+
+  guardAgainstBanned(supabase);
+
+  let currentUser = null;
+  let dbUser      = null;
+  let myUsername  = 'cCraft Space User';
+  let categories  = [];
+  let selectedCategoryId = null;
+  let coverBase64 = null;
+  let youtubeId   = null;
+
+  const TARGET_WIDTH = 800;
+  const JPEG_QUALITY = 0.82;
+  const MAX_SIZE_BYTES = 12 * 1024 * 1024;
+
+  function showLoggedOut(){
+    document.getElementById('authNotice').style.display  = 'block';
+    document.getElementById('publishMain').style.display = 'none';
+    document.getElementById('userInfo').style.display    = 'none';
+  }
+
+  async function initAuth(){
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { showLoggedOut(); return; }
+    currentUser = user;
+
+    const { data: row, error } = await supabase.from('users').select('*').eq('auth_uid', user.id).maybeSingle();
+    if (error || !row || !row.username) { showLoggedOut(); return; }
+
+    dbUser = row;
+    myUsername = row.username;
+
+    document.getElementById('ubAvatar').innerText = myUsername.charAt(0).toUpperCase();
+    document.getElementById('ubName').innerText   = myUsername;
+    document.getElementById('userInfo').style.display    = 'block';
+    document.getElementById('publishMain').style.display = 'block';
+    document.getElementById('authNotice').style.display  = 'none';
+
+    loadCategories();
+  }
+  initAuth();
+  supabase.auth.onAuthStateChange(() => { initAuth(); });
+
+  /* ---------- YouTube link parsing ---------- */
+  const YT_REGEX = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
+  function extractYoutubeId(url) {
+    const m = (url || '').match(YT_REGEX);
+    return m ? m[1] : null;
+  }
+
+  const ytStatus  = document.getElementById('ytStatus');
+  const ytPreview = document.getElementById('ytPreview');
+  const ytThumb   = document.getElementById('ytThumb');
+
+  document.getElementById('youtubeUrl').addEventListener('input', e => {
+    const id = extractYoutubeId(e.target.value.trim());
+    youtubeId = id;
+    if (!id) {
+        ytStatus.textContent = e.target.value.trim() ? '⚠️ رابط يوتيوب مش واضح — تأكد إنه رابط فيديو صحيح' : '';
+        ytStatus.className = 'yt-status err';
+        ytPreview.classList.remove('show');
+        return;
+    }
+    ytStatus.textContent = '✅ تم التعرف على الفيديو';
+    ytStatus.className = 'yt-status ok';
+    ytThumb.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    ytPreview.classList.add('show');
+  });
+
+  /* ---------- الأقسام ---------- */
+  const catGrid     = document.getElementById('catGrid');
+  const newCatInput = document.getElementById('newCatInput');
+  const addCatBtn   = document.getElementById('addCatBtn');
+
+  async function loadCategories() {
+    try {
+        const { data, error } = await supabase
+            .from('tutorial_categories')
+            .select('id, name')
+            .order('name', { ascending: true });
+        if (error) throw error;
+        categories = data || [];
+        renderCategories();
+    } catch (e) {
+        console.error('loadCategories error:', e);
+        catGrid.innerHTML = `<span style="color:var(--danger);font-size:0.8rem">تعذّر تحميل الأقسام</span>`;
+    }
+  }
+
+  function escP(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderCategories() {
+    if (!categories.length) {
+        catGrid.innerHTML = `<span style="color:var(--text-muted);font-size:0.8rem">مفيش أقسام لسه — أضف أول قسم تحت</span>`;
+        return;
+    }
+    catGrid.innerHTML = categories.map(c =>
+        `<button type="button" class="cat-chip${c.id === selectedCategoryId ? ' selected' : ''}" data-id="${c.id}">${escP(c.name)}</button>`
+    ).join('');
+    catGrid.querySelectorAll('.cat-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedCategoryId = btn.dataset.id;
+            renderCategories();
+        });
+    });
+  }
+
+  addCatBtn.addEventListener('click', async () => {
+    const name = newCatInput.value.trim();
+    if (!name) return;
+    if (!currentUser) { location.href = 'login.html'; return; }
+
+    // لو القسم موجود بالفعل بنفس الاسم، اختاره بدل ما نكرره
+    const existing = categories.find(c => c.name.trim().toLowerCase() === name.toLowerCase());
+    if (existing) {
+        selectedCategoryId = existing.id;
+        newCatInput.value = '';
+        renderCategories();
+        return;
+    }
+
+    addCatBtn.disabled = true;
+    addCatBtn.textContent = '⏳ جارٍ الإضافة...';
+    try {
+        const { data, error } = await supabase
+            .from('tutorial_categories')
+            .insert({ name, created_by: dbUser.id })
+            .select('id, name')
+            .single();
+        if (error) throw error;
+        categories.push(data);
+        selectedCategoryId = data.id;
+        newCatInput.value = '';
+        renderCategories();
+    } catch (e) {
+        console.error('addCategory error:', e);
+        alert('❌ تعذّر إضافة القسم، حاول تاني');
+    } finally {
+        addCatBtn.disabled = false;
+        addCatBtn.textContent = '➕ إضافة قسم';
+    }
+  });
+
+  newCatInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); addCatBtn.click(); }
+  });
+
+  /* ---------- صورة الغلاف ---------- */
+  const uploadZone     = document.getElementById('uploadZone');
+  const coverInput     = document.getElementById('coverInput');
+  const coverPreview   = document.getElementById('coverPreview');
+  const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+
+  uploadZone.addEventListener('click', () => {
+    if (!uploadZone.classList.contains('has-image')) coverInput.click();
+  });
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) processCover(file);
+  });
+  coverInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) processCover(file);
+  });
+
+  window.triggerUpload = e => { e.stopPropagation(); coverInput.click(); };
+  window.removeCover = e => {
+    e.stopPropagation();
+    coverBase64 = null;
+    coverPreview.src = '';
+    coverPreview.style.display = 'none';
+    uploadPlaceholder.style.display = 'block';
+    uploadZone.classList.remove('has-image');
+    coverInput.value = '';
+  };
+
+  async function processCover(file) {
+    if (!file.type.startsWith('image/')) { alert('❌ الملف المختار ليس صورة'); return; }
+    if (file.size > MAX_SIZE_BYTES) { alert('❌ الصورة أكبر من 12 ميجا'); return; }
+    try {
+        const compressed = await compressImage(file);
+        coverBase64 = compressed;
+        coverPreview.src = compressed;
+        coverPreview.style.display = 'block';
+        uploadPlaceholder.style.display = 'none';
+        uploadZone.classList.add('has-image');
+    } catch (e) {
+        alert('❌ حدث خطأ أثناء معالجة الصورة');
+    }
+  }
+
+  function compressImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let { width, height } = img;
+                if (width > TARGET_WIDTH) { height = Math.round(height * TARGET_WIDTH / width); width = TARGET_WIDTH; }
+                canvas.width = width; canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+  }
+
+  /* ---------- نشر الشرح ---------- */
+  document.getElementById('publishBtn').addEventListener('click', async () => {
+    if (!currentUser || !dbUser) { location.href = 'login.html'; return; }
+
+    const title       = document.getElementById('tutorialTitle').value.trim();
+    const description = document.getElementById('tutorialDescription').value.trim();
+    const url         = document.getElementById('youtubeUrl').value.trim();
+
+    if (!youtubeId) { alert('⚠️ حط رابط يوتيوب صحيح الأول'); return; }
+    if (!title || !description) { alert('مطلوب كل الحقول!'); return; }
+    if (!selectedCategoryId) { alert('⚠️ اختار قسم أو أضف قسم جديد'); return; }
+
+    const btn = document.getElementById('publishBtn');
+    btn.disabled = true;
+    btn.innerText = '⏳ جارٍ النشر...';
+
+    const thumbnailUrl = coverBase64 || `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+
+    try {
+        const { error } = await supabase.from('tutorials').insert({
+            category_id:   selectedCategoryId,
+            youtube_url:   url,
+            youtube_id:    youtubeId,
+            title,
+            description,
+            thumbnail_url: thumbnailUrl,
+            uploader_id:   dbUser.id,
+            author_name:   myUsername,
+            views:         0,
+            likes_count:   0,
+        });
+        if (error) throw error;
+
+        const c = document.getElementById('successBadge');
+        c.style.display = 'block';
+        c.innerHTML = `<div class="badge-earned"><div class="be-icon">✅</div><div class="be-text"><h4>تم نشر الشرح بنجاح!</h4><p>ظهر في صفحة الشروحات على طول</p></div></div>`;
+        c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        document.getElementById('publishForm').reset();
+        removeCover({ stopPropagation: () => {} });
+        ytPreview.classList.remove('show');
+        ytStatus.textContent = '';
+        youtubeId = null;
+        selectedCategoryId = null;
+        renderCategories();
+    } catch (e) {
+        console.error('publish tutorial error:', e);
+        alert('❌ حصل خطأ أثناء النشر، حاول تاني.');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = '📤 نشر الشرح';
+    }
+  });
+</script>
+</body>
+</html>
