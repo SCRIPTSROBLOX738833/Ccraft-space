@@ -41,6 +41,64 @@
     .ub-badge { margin-right: auto; background: var(--primary-dim); color: var(--primary); font-size: 0.72rem; font-weight: 800; padding: 4px 12px; border-radius: 50px; }
     .ub-badge.auto-verify { background: rgba(0,242,254,0.1); color: #67e8f9; }
 
+    /* ============================================================
+         📘 دليل النشر السريع — عشان اللي مش فاهم يبدأ منين
+         ============================================================ */
+    #quickGuide { display: none; max-width: 800px; margin: 0 auto 22px; padding: 0 24px; }
+    .guide-card {
+        background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(0,242,254,0.05));
+        border: 1px solid rgba(139,92,246,0.25);
+        border-radius: 18px; padding: 20px 22px;
+        animation: fadeIn 0.4s ease both;
+    }
+    .guide-card summary {
+        cursor: pointer; list-style: none; user-select: none;
+        display: flex; align-items: center; gap: 10px;
+        font-weight: 900; font-size: 0.95rem; color: var(--text-main);
+    }
+    .guide-card summary::-webkit-details-marker { display: none; }
+    .guide-card summary::before {
+        content: '▾'; color: #a78bfa; font-size: 0.8rem;
+        transition: transform 0.2s ease;
+    }
+    .guide-card[open] summary::before { transform: rotate(-90deg); }
+    .guide-steps {
+        display: flex; flex-direction: column; gap: 12px;
+        margin-top: 16px; padding-top: 16px;
+        border-top: 1px solid rgba(139,92,246,0.15);
+    }
+    .guide-step { display: flex; gap: 12px; align-items: flex-start; }
+    .guide-step .gs-num {
+        flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+        background: var(--accent-gradient); color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 0.8rem;
+    }
+    .guide-step .gs-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; }
+    .guide-step .gs-text strong { color: var(--text-main); }
+
+    /* ============================================================
+         🔢 أقسام الفورم المرقّمة — عشان النشر يبقى خطوات واضحة
+         ============================================================ */
+    .form-section {
+        background: var(--bg-card); border: 1px solid var(--border-color);
+        border-radius: 18px; padding: 22px 20px; margin-bottom: 16px;
+    }
+    .fs-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .fs-num {
+        flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+        background: var(--primary-dim); color: var(--primary);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 0.82rem;
+    }
+    .fs-title { font-weight: 900; font-size: 0.95rem; color: var(--text-main); }
+    .fs-sub { font-size: 0.76rem; color: var(--text-muted); margin-right: 38px; margin-top: -12px; margin-bottom: 14px; }
+    .fs-optional-note {
+        background: rgba(255,255,255,0.04); border-radius: 10px;
+        padding: 6px 12px; font-size: 0.72rem; color: var(--text-muted);
+        margin-right: 38px; margin-bottom: 14px; display: inline-block;
+    }
+
     /* ---- Image Upload ---- */
     .image-upload-section {
         margin-top: 4px;
@@ -171,6 +229,8 @@
     /* ---- Add tag button ---- */
     #addTagBtn { white-space: nowrap; padding: 10px 18px; }
 
+    #publishBtn { margin-top: 4px; }
+
   </style>
 <script src="https://www.google.com/recaptcha/api.js?render=6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7"></script>
 </head>
@@ -203,6 +263,29 @@
     </div>
 </div>
 
+<!-- ============================================================
+     📘 دليل سريع لأي حد أول مرة ينشر سكربت
+     ============================================================ -->
+<div id="quickGuide">
+    <details class="guide-card" open>
+        <summary>📘 مش فاهم تنشر إزاي؟ اضغط هنا (3 خطوات بس)</summary>
+        <div class="guide-steps">
+            <div class="guide-step">
+                <span class="gs-num">1</span>
+                <span class="gs-text"><strong>الصق كود السكربت</strong> اللي عملته أو نزّلته، واكتب له عنوان واضح ووصف بسيط بيقول هو بيعمل إيه.</span>
+            </div>
+            <div class="guide-step">
+                <span class="gs-num">2</span>
+                <span class="gs-text"><strong>اختار القسم</strong> اللي يناسب السكربت (Game / Admin / AI)، وممكن كمان تختار الماب لو السكربت مخصص للعبة معينة.</span>
+            </div>
+            <div class="guide-step">
+                <span class="gs-num">3</span>
+                <span class="gs-text"><strong>اضغط "نشر السكربت"</strong> في آخر الصفحة. باقي الحقول (المفتاح، التاجات، الصورة) اختيارية بالكامل — تقدر تسيبها فاضية وتنشر على طول.</span>
+            </div>
+        </div>
+    </details>
+</div>
+
 <div id="successBadge"></div>
 
 <main id="publishMain" style="display:none">
@@ -210,104 +293,122 @@
 
   <form id="publishForm">
 
-    <input    type="text" id="scriptTitle"       placeholder="عنوان السكربت" required>
-    <textarea             id="scriptCode"        placeholder="كود السكربت هنا..." rows="6" required></textarea>
-    <textarea             id="scriptDescription" placeholder="اكتب وصف للسكربت..." rows="3" required></textarea>
-
-    <select id="category" required>
-      <option value="">اختر القسم</option>
-      <option value="game">Game Scripts</option>
-      <option value="admin">Admin Scripts</option>
-      <option value="ai">AI & NPCs</option>
-    </select>
-
     <!-- ============================================================
-         🔑 المفتاح
+         1️⃣ معلومات السكربت الأساسية (مطلوبة)
          ============================================================ -->
-    <div class="key-section">
-        <label class="key-label">🔑 هل السكربت يحتاج مفتاح (Key)؟</label>
-        <div class="map-toggle-row">
-            <button type="button" class="no-map-btn active" id="noKeyBtn">🔓 لا، بدون مفتاح</button>
-            <button type="button" class="no-map-btn" id="yesKeyBtn">🔒 نعم، يحتاج مفتاح</button>
-        </div>
-        <input type="text" id="scriptKey" placeholder="اكتب المفتاح هنا (اختياري)..." style="display:none">
-        <div class="key-hint">لو فعّلت "نعم" هيظهر بادج 🔒 على السكربت في كل مكان، وتقدر كمان تكتب المفتاح نفسه لو حابب.</div>
+    <div class="form-section">
+        <div class="fs-head"><span class="fs-num">1</span><span class="fs-title">معلومات السكربت الأساسية</span></div>
+        <div class="fs-sub">دي المعلومات اللي هتظهر لكل زوار الموقع في قائمة السكربتات</div>
+
+        <input    type="text" id="scriptTitle"       placeholder="مثال: سكربت سرعة ونط لا نهائي" required style="margin-bottom:12px">
+        <textarea             id="scriptDescription" placeholder="مثال: سكربت بيدي سرعة عالية ونط لا نهائي، شغال على كل الماps..." rows="3" required style="margin-bottom:12px"></textarea>
+
+        <select id="category" required>
+          <option value="">اختر القسم</option>
+          <option value="game">Game Scripts</option>
+          <option value="admin">Admin Scripts</option>
+          <option value="ai">AI & NPCs</option>
+        </select>
     </div>
 
     <!-- ============================================================
-         🏷️ تاجات السكربت
+         2️⃣ الكود نفسه (مطلوب)
          ============================================================ -->
-    <div class="key-section">
-        <label class="key-label">🏷️ تاجات السكربت <span class="key-optional-tag">اختياري</span></label>
-        <div class="custom-map-row">
-            <input type="text" id="tagInput" placeholder="اكتب تاج واضغط Enter أو دوس إضافة (مثال: ESP، سرعة، مجاني)...">
-            <button type="button" class="no-map-btn" id="addTagBtn">➕ إضافة</button>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px" id="tagsPreview"></div>
-        <div class="key-hint">التاجات بتساعد الزوار يلاقوا سكربتك بسهولة بالبحث والفلترة.</div>
+    <div class="form-section">
+        <div class="fs-head"><span class="fs-num">2</span><span class="fs-title">كود السكربت</span></div>
+        <div class="fs-sub">الصق الكود كامل زي ما هو — من غير ما تغيّر فيه حاجة</div>
+
+        <textarea id="scriptCode" placeholder="-- الصق كود اللوكال سكربت هنا كامل" rows="8" required></textarea>
     </div>
 
     <!-- ============================================================
-         🖼️ صورة السكربت
+         3️⃣ تفاصيل إضافية (كلها اختيارية — ممكن تتخطاها)
          ============================================================ -->
-    <div class="image-upload-section">
-        <label class="image-upload-label">🖼️ صورة السكربت (اختياري — حد أقصى 12 ميجا)</label>
+    <div class="form-section">
+        <div class="fs-head"><span class="fs-num">3</span><span class="fs-title">تفاصيل إضافية</span></div>
+        <div class="fs-optional-note">✨ كل الحقول تحت دي اختيارية — ممكن تسيبها فاضية وتنشر على طول</div>
 
-        <div class="upload-zone" id="uploadZone">
-            <img id="imagePreview" alt="معاينة الصورة">
-            <div class="image-overlay" id="imageOverlay">
-                <button class="img-ov-btn" onclick="triggerUpload(event)">🔄 تغيير</button>
-                <button class="img-ov-btn del" onclick="removeImage(event)">🗑️ حذف</button>
-            </div>
-            <div id="uploadPlaceholder">
-                <span class="uz-icon">🖼️</span>
-                <div class="uz-text">اسحب الصورة هنا أو اضغط للاختيار</div>
-                <div class="uz-sub">PNG، JPG، WebP</div>
-                <div class="uz-limit">الحد الأقصى: 12 ميجابايت</div>
-            </div>
-        </div>
-
-        <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp,image/gif">
-
-        <div class="img-status" id="imgStatus"></div>
-        <div class="compress-progress" id="compressProgress">
-            <div class="cp-bar" id="cpBar"></div>
-        </div>
-    </div>
-
-    <!-- ============================================================
-         🗺️ اختيار الماب
-         ============================================================ -->
-    <div style="margin-top:4px">
-        <label style="display:block;color:var(--text-muted);font-size:0.85rem;font-weight:700;margin-bottom:10px">
-            🗺️ الماب المخصص للسكربت
-        </label>
-
-        <div class="map-section">
+        <!-- 🔑 المفتاح -->
+        <div class="key-section" style="margin-bottom:18px">
+            <label class="key-label">🔑 هل السكربت يحتاج مفتاح (Key)؟</label>
             <div class="map-toggle-row">
-                <button type="button" class="no-map-btn active" id="noMapBtn">🌐 ليس لماب محدد</button>
-                <span style="color:var(--text-muted);font-size:0.78rem">أو اختر ماب من الأسفل</span>
+                <button type="button" class="no-map-btn active" id="noKeyBtn">🔓 لا، بدون مفتاح</button>
+                <button type="button" class="no-map-btn" id="yesKeyBtn">🔒 نعم، يحتاج مفتاح</button>
             </div>
-            <div class="map-grid" id="mapGrid">
-                <div class="map-card" data-map="Adopt Me"><span class="map-icon">🏡</span>Adopt Me</div>
-                <div class="map-card" data-map="Bloxburg"><span class="map-icon">🏗️</span>Bloxburg</div>
-                <div class="map-card" data-map="Brookhaven"><span class="map-icon">🌆</span>Brookhaven</div>
-                <div class="map-card" data-map="Arsenal"><span class="map-icon">🔫</span>Arsenal</div>
-                <div class="map-card" data-map="Bedwars"><span class="map-icon">🛏️</span>Bedwars</div>
-                <div class="map-card" data-map="Murder Mystery 2"><span class="map-icon">🔪</span>MM2</div>
-                <div class="map-card" data-map="Jailbreak"><span class="map-icon">🚔</span>Jailbreak</div>
-                <div class="map-card" data-map="Pet Simulator X"><span class="map-icon">🐾</span>Pet Sim X</div>
-                <div class="map-card" data-map="Doors"><span class="map-icon">🚪</span>Doors</div>
-                <div class="map-card" data-map="Da Hood"><span class="map-icon">🏙️</span>Da Hood</div>
-                <div class="map-card" data-map="Anime Fighting Sim"><span class="map-icon">⚔️</span>Anime Fight</div>
-                <div class="map-card" data-map="Tower of Hell"><span class="map-icon">🗼</span>Tower of Hell</div>
-            </div>
+            <input type="text" id="scriptKey" placeholder="اكتب المفتاح هنا (اختياري)..." style="display:none">
+            <div class="key-hint">المفتاح هو كود بيطلبه السكربت قبل ما يشتغل (زي اشتراك في قناة أو رابط لينكفيز). لو سكربتك من غير مفتاح، سيب الاختيار "بدون مفتاح".</div>
+        </div>
+
+        <!-- 🏷️ التاجات -->
+        <div class="key-section" style="margin-bottom:18px">
+            <label class="key-label">🏷️ تاجات السكربت <span class="key-optional-tag">اختياري</span></label>
             <div class="custom-map-row">
-                <input type="text" id="customMap" placeholder="أو اكتب اسم الماب يدوياً...">
+                <input type="text" id="tagInput" placeholder="اكتب تاج واضغط Enter (مثال: ESP، سرعة، مجاني)...">
+                <button type="button" class="no-map-btn" id="addTagBtn">➕ إضافة</button>
             </div>
-            <div class="map-preview" id="mapPreview">
-                <span class="mp-icon">🗺️</span>
-                <span id="mapPreviewText">—</span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px" id="tagsPreview"></div>
+            <div class="key-hint">التاجات بتساعد الزوار يلاقوا سكربتك بسهولة بالبحث والفلترة.</div>
+        </div>
+
+        <!-- 🖼️ الصورة -->
+        <div class="image-upload-section" style="margin-bottom:18px">
+            <label class="image-upload-label">🖼️ صورة السكربت <span class="key-optional-tag">اختياري — حد أقصى 12 ميجا</span></label>
+
+            <div class="upload-zone" id="uploadZone">
+                <img id="imagePreview" alt="معاينة الصورة">
+                <div class="image-overlay" id="imageOverlay">
+                    <button class="img-ov-btn" onclick="triggerUpload(event)">🔄 تغيير</button>
+                    <button class="img-ov-btn del" onclick="removeImage(event)">🗑️ حذف</button>
+                </div>
+                <div id="uploadPlaceholder">
+                    <span class="uz-icon">🖼️</span>
+                    <div class="uz-text">اسحب الصورة هنا أو اضغط للاختيار</div>
+                    <div class="uz-sub">PNG، JPG، WebP</div>
+                    <div class="uz-limit">الحد الأقصى: 12 ميجابايت</div>
+                </div>
+            </div>
+
+            <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp,image/gif">
+
+            <div class="img-status" id="imgStatus"></div>
+            <div class="compress-progress" id="compressProgress">
+                <div class="cp-bar" id="cpBar"></div>
+            </div>
+        </div>
+
+        <!-- 🗺️ الماب -->
+        <div>
+            <label style="display:block;color:var(--text-muted);font-size:0.85rem;font-weight:700;margin-bottom:10px">
+                🗺️ الماب المخصص للسكربت <span class="key-optional-tag">اختياري</span>
+            </label>
+
+            <div class="map-section">
+                <div class="map-toggle-row">
+                    <button type="button" class="no-map-btn active" id="noMapBtn">🌐 ليس لماب محدد</button>
+                    <span style="color:var(--text-muted);font-size:0.78rem">أو اختر ماب من الأسفل</span>
+                </div>
+                <!-- قائمة الألعاب الأكثر شهرة حاليًا في Roblox (2026) -->
+                <div class="map-grid" id="mapGrid">
+                    <div class="map-card" data-map="Brookhaven RP"><span class="map-icon">🌆</span>Brookhaven</div>
+                    <div class="map-card" data-map="Adopt Me"><span class="map-icon">🏡</span>Adopt Me</div>
+                    <div class="map-card" data-map="Blox Fruits"><span class="map-icon">🍈</span>Blox Fruits</div>
+                    <div class="map-card" data-map="Grow a Garden"><span class="map-icon">🌱</span>Grow a Garden</div>
+                    <div class="map-card" data-map="Steal a Brainrot"><span class="map-icon">🧠</span>Steal a Brainrot</div>
+                    <div class="map-card" data-map="99 Nights in the Forest"><span class="map-icon">🌲</span>99 Nights</div>
+                    <div class="map-card" data-map="RIVALS"><span class="map-icon">🔫</span>RIVALS</div>
+                    <div class="map-card" data-map="Murder Mystery 2"><span class="map-icon">🔪</span>MM2</div>
+                    <div class="map-card" data-map="Jujutsu Shenanigans"><span class="map-icon">⚔️</span>Jujutsu Shenanigans</div>
+                    <div class="map-card" data-map="Fish It!"><span class="map-icon">🎣</span>Fish It!</div>
+                    <div class="map-card" data-map="Pet Simulator 99"><span class="map-icon">🐾</span>Pet Sim 99</div>
+                    <div class="map-card" data-map="Dress To Impress"><span class="map-icon">👗</span>Dress To Impress</div>
+                </div>
+                <div class="custom-map-row">
+                    <input type="text" id="customMap" placeholder="أو اكتب اسم لعبة تانية يدوياً...">
+                </div>
+                <div class="map-preview" id="mapPreview">
+                    <span class="mp-icon">🗺️</span>
+                    <span id="mapPreviewText">—</span>
+                </div>
             </div>
         </div>
     </div>
@@ -357,6 +458,7 @@
     document.getElementById('authNotice').style.display  = 'block';
     document.getElementById('publishMain').style.display = 'none';
     document.getElementById('userInfo').style.display    = 'none';
+    document.getElementById('quickGuide').style.display  = 'none';
   }
 
   async function initAuth(){
@@ -391,6 +493,7 @@
     document.getElementById('ubAvatar').innerText = myUsername.charAt(0).toUpperCase();
     document.getElementById('ubName').innerText   = myUsername;
     document.getElementById('userInfo').style.display    = 'block';
+    document.getElementById('quickGuide').style.display  = 'block';
     document.getElementById('publishMain').style.display = 'block';
     document.getElementById('authNotice').style.display  = 'none';
 
