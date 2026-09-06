@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CCRAFT SPACE | تحميل الهاكات</title>
 <link rel="stylesheet" href="styles.css">
-    <script src="https://quge5.com/88/tag.min.js" data-zone="271790" async data-cfasync="false"></script>
 <style>
 
 body { min-height: 100svh; display: flex; flex-direction: column; }
@@ -230,13 +229,7 @@ header { flex-shrink: 0; }
     </div>
 
     <!-- ✅ warning-banner مقفولة صح -->
-    <div class="warning-banner">
-        <span class="wb-icon">⚠️</span>
-        <div class="wb-text">
-            <strong>تنبيه:</strong> استخدام الهاكات قد يخالف شروط خدمة Roblox.
-            استخدمها على مسؤوليتك الخاصة وفي السيرفرات الخاصة فقط.
-        </div>
-    </div>
+
 
     <div class="downloads-grid">
 
@@ -344,7 +337,11 @@ get(ref(db,'delta')).then(snapshot => {
         links.vpn     = data.vpn     || '';
         if (links.android) document.getElementById('androidBtn').disabled = false;
         if (links.ios)     document.getElementById('iosBtn').disabled     = false;
-        if (links.vpn)     document.getElementById('vpnBtn').disabled     = false;
+        // ⚠️ FIX: مفيش كارت VPN في الـ HTML خالص (اتشال)، فـ getElementById('vpnBtn')
+        // كان بيرجع null ولو Firebase فيه رابط vpn فعلي كان هيعمل crash هنا
+        // (TypeError: Cannot set properties of null). ضفنا تحقق إن العنصر موجود فعلاً.
+        const vpnBtnEl = document.getElementById('vpnBtn');
+        if (links.vpn && vpnBtnEl) vpnBtnEl.disabled = false;
         const n = [links.android,links.ios,links.vpn].filter(Boolean).length;
         setStatus('ready', `✅ جاهز — ${n} روابط متاحة`);
     } else {
@@ -359,6 +356,7 @@ window.handleDownload = function(type) {
     if (!link) return;
     const btn = document.getElementById(`${type}Btn`);
     const prg = document.getElementById(`prg-${type}`);
+    if (!btn || !prg) return; // دفاعي: يمنع أي crash لو نفس المشكلة تحصل تاني لأي نوع تاني
     btn.disabled = true;
     btn.innerHTML = '⏳ جارٍ التحميل...';
     prg.style.display = 'block';
