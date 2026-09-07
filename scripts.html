@@ -62,6 +62,11 @@ body { min-height: 100svh; }
 
 .page-hero h1 svg { flex-shrink: 0; }
 
+.page-hero-text { display: flex; flex-direction: column; gap: 4px; }
+.page-hero-sub {
+    font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;
+}
+
 .scripts-count-pill {
     display: inline-flex; align-items: center; gap: 7px;
     background: var(--bg-card); border: 1px solid var(--border-color);
@@ -74,6 +79,19 @@ body { min-height: 100svh; }
 }
 
 .search-section { margin-bottom: 22px; }
+
+.filter-group { margin-bottom: 14px; }
+.filter-group:last-child { margin-bottom: 0; }
+.filter-group-title {
+    font-size: 0.7rem; font-weight: 900; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+
+.search-hint {
+    font-size: 0.74rem; color: var(--text-muted); opacity: 0.75;
+    margin: -6px 2px 14px; line-height: 1.6;
+}
 
 .search-wrap {
     position: relative;
@@ -614,10 +632,13 @@ function toggleCodePreview(btn) {
 <div class="scripts-page">
 
     <div class="page-hero">
-        <h1>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
-            قائمة السكربتات
-        </h1>
+        <div class="page-hero-text">
+            <h1>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
+                قائمة السكربتات
+            </h1>
+            <div class="page-hero-sub">جميع سكربتات المجتمع في مكان واحد — ابحث، صنّف النتائج، وانسخ الكود الذي تحتاجه مباشرة</div>
+        </div>
         <div class="scripts-count-pill">
             إجمالي السكربتات: <span class="scp-num" id="scriptCount">—</span>
         </div>
@@ -634,6 +655,7 @@ function toggleCodePreview(btn) {
             </button>
             <div class="search-suggest" id="searchSuggest"></div>
         </div>
+        <div class="search-hint">💡 يفهم "البحث الذكي" المعنى (مثل "سرعة" أو "speed")، وليس الكلمة الحرفية فقط</div>
 
         <div class="ai-result-banner" id="aiBanner">
             <span class="aib-icon" id="aibIcon"></span>
@@ -641,17 +663,24 @@ function toggleCodePreview(btn) {
             <button class="aib-close" onclick="closeAiBanner()" aria-label="إغلاق"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
         </div>
 
-        <div class="filter-row">
-            <span class="filter-label">القسم:</span>
-            <button class="filter-btn active" data-cat="all"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.9-5 4.8 1.3 6.9L12 17.6 5.9 20.9 7.2 14l-5-4.8 6.9-.9z"/></svg>الكل</button>
-            <button class="filter-btn" data-cat="game"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10v4M5 12h4"/><circle cx="16" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="18.5" cy="13" r="1" fill="currentColor" stroke="none"/></svg>Game</button>
-            <button class="filter-btn" data-cat="admin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3.5v6c0 5-3.4 8.4-8 10.5-4.6-2.1-8-5.5-8-10.5v-6z"/></svg>Admin</button>
-            <button class="filter-btn" data-cat="ai"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/><circle cx="9" cy="14" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.2" fill="currentColor" stroke="none"/><path d="M2 13h2M20 13h2"/></svg>AI &amp; NPCs</button>
-            <button class="filter-btn" data-cat="سكربت من الادارة"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 3 5-7 5 7 4-3-2 11H5z"/></svg>من الإدارة</button>
-            <span class="filter-label" style="margin-right:auto"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M19 4l2 2"/></svg>المفتاح:</span>
-            <button class="filter-btn active" data-key="all">الكل</button>
-            <button class="filter-btn" data-key="yes"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>بمفتاح</button>
-            <button class="filter-btn" data-key="no"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7-2.6"/></svg>بدون مفتاح</button>
+        <div class="filter-group">
+            <div class="filter-group-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8A2 2 0 0 1 21 9.5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>القسم</div>
+            <div class="filter-row">
+                <button class="filter-btn active" data-cat="all"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.9-5 4.8 1.3 6.9L12 17.6 5.9 20.9 7.2 14l-5-4.8 6.9-.9z"/></svg>الكل</button>
+                <button class="filter-btn" data-cat="game"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10v4M5 12h4"/><circle cx="16" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="18.5" cy="13" r="1" fill="currentColor" stroke="none"/></svg>Game</button>
+                <button class="filter-btn" data-cat="admin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3.5v6c0 5-3.4 8.4-8 10.5-4.6-2.1-8-5.5-8-10.5v-6z"/></svg>Admin</button>
+                <button class="filter-btn" data-cat="ai"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/><circle cx="9" cy="14" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.2" fill="currentColor" stroke="none"/><path d="M2 13h2M20 13h2"/></svg>AI &amp; NPCs</button>
+                <button class="filter-btn" data-cat="سكربت من الادارة"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 3 5-7 5 7 4-3-2 11H5z"/></svg>من الإدارة</button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <div class="filter-group-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M19 4l2 2"/></svg>يحتاج مفتاح؟</div>
+            <div class="filter-row">
+                <button class="filter-btn active" data-key="all">الكل</button>
+                <button class="filter-btn" data-key="yes"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>بمفتاح</button>
+                <button class="filter-btn" data-key="no"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7-2.6"/></svg>بدون مفتاح</button>
+            </div>
         </div>
 
         <div class="sort-row" id="tagsFilterRow" style="display:none;flex-wrap:wrap"></div>
@@ -1221,7 +1250,7 @@ function escHTML(s) {
     return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-const UNVERIFIED_WARNING = '--[[\n\tتحذير هذا السكربت ليس تم التحقق منه من قبل cCraft space يرجي الحظر منه\n]]\n\n';
+const UNVERIFIED_WARNING = '--[[\n\tتحذير: لم يتم التحقق من هذا السكربت بعد من قبل فريق cCraft Space، يُرجى توخي الحذر عند استخدامه\n]]\n\n';
 
 function withCopyWarning(code, verified) {
     if (verified) return code;
@@ -1426,7 +1455,7 @@ async function aiSearch() {
     const list = document.getElementById('scriptsList');
     list.innerHTML = `<div class="ai-thinking">
         <div class="ai-dots"><span></span><span></span><span></span></div>
-        <span>Nova بتحلل البحث...</span>
+        <span>Nova تحلّل البحث...</span>
     </div>`;
 
     let results = [];
@@ -1472,7 +1501,7 @@ async function aiSearch() {
     } else {
         filteredIds = null;
         document.getElementById('aibIcon').innerHTML = ic('warning', 15);
-        showAiBanner(`لا نتائج لـ "${escHTML(query)}" — عارض الكل`);
+        showAiBanner(`لا توجد نتائج لـ "${escHTML(query)}" — يتم عرض جميع السكربتات`);
         renderScripts('');
     }
 
@@ -1601,7 +1630,12 @@ function renderStaticFallback() {
     try {
         const data = window.__SCRIPTS_DATA__;
         if (!data) return;
+        // ⚠️ FIX: نعكس ترتيب الإدخالات — scripts-data.js بيتحدّث بإضافة كل سكربت جديد
+        // في آخر الملف، فـ Object.entries بترجعه بترتيب الإدخال (الأقدم أولاً).
+        // بما إن ده أول محتوى يظهر لبوت جوجل قبل ما Supabase يخلص تحميل، بنعكس
+        // الترتيب عشان أحدث سكربت يظهر وينتفهرس أول حاجة بدل ما يتدفن آخر القائمة.
         allScripts = Object.entries(data)
+            .reverse()
             .map(([id,s]) => ({id,...s}))
             .filter(s => s.id && s.title && s.title.trim());
         document.getElementById('scriptCount').innerText = allScripts.length;
