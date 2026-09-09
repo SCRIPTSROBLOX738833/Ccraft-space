@@ -1213,29 +1213,41 @@ window.clearMapFilter = function () {
     renderScripts(document.getElementById('searchScripts').value.toLowerCase());
 };
 
-function renderTagsFilter() {
+let tagsExpanded = false; // بيحدد لو التاجات كلها ظاهرة ولا أول 3 بس
 
+function renderTagsFilter() {
     const row = document.getElementById('tagsFilterRow');
     const allTags = new Set();
     allScripts.forEach(s => (s.tags||[]).forEach(t => allTags.add(t)));
     if (!allTags.size) { row.style.display = 'none'; return; }
     row.style.display = 'flex';
+
+    const tagsArr = [...allTags];
+    const visibleTags = tagsExpanded ? tagsArr : tagsArr.slice(0, 3);
+    const hiddenCount = tagsArr.length - visibleTags.length;
+
     row.innerHTML = `<span class="sort-label">${ic('hash',13)}تاجات:</span>` +
-        [...allTags].map(t => `<button type="button" class="filter-btn" data-tag="${escHTML(t)}">#${escHTML(t)}</button>`).join('');
+        visibleTags.map(t => `<button type="button" class="filter-btn${activeTagFilter === t ? ' active' : ''}" data-tag="${escHTML(t)}">#${escHTML(t)}</button>`).join('') +
+        (hiddenCount > 0
+            ? `<button type="button" class="filter-btn" id="tagsMoreBtn">عرض المزيد (+${hiddenCount})</button>`
+            : (tagsArr.length > 3 ? `<button type="button" class="filter-btn" id="tagsMoreBtn">عرض أقل</button>` : ''));
+
     row.querySelectorAll('[data-tag]').forEach(btn => {
         btn.addEventListener('click', () => {
             const t = btn.dataset.tag;
-            if (activeTagFilter === t) {
-                activeTagFilter = null;
-                btn.classList.remove('active');
-            } else {
-                row.querySelectorAll('[data-tag]').forEach(b => b.classList.remove('active'));
-                activeTagFilter = t;
-                btn.classList.add('active');
-            }
+            activeTagFilter = (activeTagFilter === t) ? null : t;
+            renderTagsFilter();
             renderScripts(document.getElementById('searchScripts').value.toLowerCase());
         });
     });
+
+    const moreBtn = document.getElementById('tagsMoreBtn');
+    if (moreBtn) {
+        moreBtn.addEventListener('click', () => {
+            tagsExpanded = !tagsExpanded;
+            renderTagsFilter();
+        });
+    }
 }
 
 document.querySelectorAll('[data-key]').forEach(btn => {
