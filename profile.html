@@ -921,6 +921,16 @@ async function boot(authUser) {
     currentAuthUser = authUser;
 
     if (targetProfileId) {
+        if (authUser) {
+            const { data: myRow } = await supabase.from('users').select('*').eq('auth_uid', authUser.id).maybeSingle();
+            if (myRow && myRow.is_banned) {
+                await supabase.auth.signOut();
+                alert('🚫 حسابك محظور من CCRAFT SPACE.');
+                location.href = 'login.html';
+                return;
+            }
+            currentUserRow = myRow || null;
+        }
         await loadOtherProfile(targetProfileId);
         return;
     }
