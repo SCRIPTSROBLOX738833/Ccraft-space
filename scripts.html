@@ -63,9 +63,6 @@ body { min-height: 100svh; }
 .page-hero h1 svg { flex-shrink: 0; }
 
 .page-hero-text { display: flex; flex-direction: column; gap: 4px; }
-.page-hero-sub {
-    font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;
-}
 
 .scripts-count-pill {
     display: inline-flex; align-items: center; gap: 7px;
@@ -86,11 +83,6 @@ body { min-height: 100svh; }
     font-size: 0.7rem; font-weight: 900; color: var(--text-muted);
     text-transform: uppercase; letter-spacing: 0.6px;
     margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
-}
-
-.search-hint {
-    font-size: 0.74rem; color: var(--text-muted); opacity: 0.75;
-    margin: -6px 2px 14px; line-height: 1.6;
 }
 
 .search-wrap {
@@ -503,18 +495,20 @@ body { min-height: 100svh; }
 
 .loading-grid {
     grid-column: 1 / -1;
-    display: flex; flex-direction: column; gap: 12px;
+    display: contents;
 }
 
-.skeleton {
+.skeleton-card {
     background: var(--bg-card); border: 1px solid var(--border-color);
-    border-radius: 20px; padding: 20px; height: 180px;
-    animation: shimmer 1.5s ease infinite;
+    border-radius: 20px; overflow: hidden; animation: fadeIn 0.3s ease both;
 }
-
-@keyframes shimmer {
-    0%,100% { opacity: 1; } 50% { opacity: 0.5; }
-}
+.skel-thumb { height: 150px; background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.07) 37%, rgba(255,255,255,0.03) 63%); background-size: 400% 100%; animation: skelShimmer 1.6s ease infinite; }
+.skel-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.skel-line { height: 12px; border-radius: 6px; background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.07) 37%, rgba(255,255,255,0.03) 63%); background-size: 400% 100%; animation: skelShimmer 1.6s ease infinite; }
+.skel-line.w60 { width: 60%; }
+.skel-line.w40 { width: 40%; }
+.skel-line.w90 { height: 34px; border-radius: 10px; margin-top: 6px; }
+@keyframes skelShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
 
 .ai-thinking {
     grid-column: 1 / -1;
@@ -598,7 +592,92 @@ body { min-height: 100svh; }
 .ss-item .ss-meta { margin-right: auto; font-size: 0.68rem; color: var(--text-muted); opacity: 0.7; }
 .ss-item mark { background: rgba(139,92,246,0.25); color: #c084fc; border-radius: 3px; padding: 0 2px; }
 
+/* ============================================================
+   🔥 السكربتات الرائجة الآن — شريط أفقي قابل للتمرير
+   ============================================================ */
+.trending-section { margin-bottom: 26px; }
+.trending-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.trending-head h2 {
+    font-size: 0.92rem; font-weight: 900; color: var(--text-main);
+    display: flex; align-items: center; gap: 7px;
+}
+.trending-flame { animation: flameFlicker 1.6s ease infinite; }
+@keyframes flameFlicker { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12) rotate(-3deg)} }
+.trending-scroll {
+    display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px;
+    scroll-snap-type: x proximity;
+}
+.trending-scroll::-webkit-scrollbar { height: 6px; }
+.trending-scroll::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+.trending-card {
+    flex: 0 0 220px; scroll-snap-align: start;
+    background: linear-gradient(155deg, rgba(139,92,246,0.09), rgba(0,0,0,0));
+    border: 1px solid rgba(139,92,246,0.22); border-radius: 16px;
+    padding: 14px 16px; cursor: pointer; transition: var(--transition);
+    display: flex; flex-direction: column; gap: 8px; position: relative;
+}
+.trending-card:hover { border-color: rgba(139,92,246,0.5); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(139,92,246,0.18); }
+.trending-rank {
+    position: absolute; top: -8px; right: -8px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: linear-gradient(135deg,#f97316,#f43f5e); color: white;
+    font-size: 0.72rem; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(244,63,94,0.4);
+}
+.trending-title {
+    font-size: 0.86rem; font-weight: 800; color: var(--text-main); line-height: 1.35;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.trending-meta { display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: var(--text-muted); }
+.trending-meta strong { color: #fb923c; }
+
+/* ============================================================
+   🏆 الألعاب الأكثر سكربتات
+   ============================================================ */
+.top-games-section { margin-bottom: 26px; }
+.top-games-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.top-games-head h2 { font-size: 0.92rem; font-weight: 900; color: var(--text-main); display: flex; align-items: center; gap: 7px; }
+.top-games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.top-game-card {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 16px; padding: 16px; cursor: pointer; transition: var(--transition);
+    display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden;
+}
+.top-game-card::before {
+    content: ''; position: absolute; inset: 0; opacity: 0;
+    background: linear-gradient(135deg, rgba(139,92,246,0.12), transparent);
+    transition: opacity 0.25s;
+}
+.top-game-card:hover::before { opacity: 1; }
+.top-game-card:hover { border-color: rgba(139,92,246,0.4); transform: translateY(-3px); }
+.top-game-card.active { border-color: rgba(139,92,246,0.6); background: var(--primary-dim); }
+.tg-medal {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    position: relative; z-index: 1;
+}
+.tg-medal.gold   { background: linear-gradient(135deg,#fde68a,#f59e0b); }
+.tg-medal.silver { background: linear-gradient(135deg,#e5e7eb,#9ca3af); }
+.tg-medal.bronze { background: linear-gradient(135deg,#fdba74,#c2703d); }
+.tg-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.tg-name { font-size: 0.85rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tg-count { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+.tg-count strong { color: var(--primary); }
+.map-filter-active-pill {
+    display: none; align-items: center; gap: 8px;
+    background: var(--primary-dim); border: 1px solid rgba(139,92,246,0.4);
+    border-radius: 50px; padding: 6px 14px; font-size: 0.78rem; color: var(--primary);
+    font-weight: 700; margin-bottom: 14px; width: fit-content;
+}
+.map-filter-active-pill.show { display: inline-flex; }
+.map-filter-active-pill button { background: none; border: none; color: inherit; cursor: pointer; padding: 0; margin: 0; font-size: 0.9rem; display: flex; }
+
 @media (max-width: 640px) {
+    .top-games-grid { grid-template-columns: 1fr; }
+    .trending-card { flex-basis: 190px; }
     .scripts-grid { grid-template-columns: 1fr; }
     #searchScripts { padding-left: 110px; }
     .ai-search-btn span { display: none; }
@@ -637,11 +716,31 @@ function toggleCodePreview(btn) {
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
                 قائمة السكربتات
             </h1>
-            <div class="page-hero-sub">جميع سكربتات المجتمع في مكان واحد — ابحث، صنّف النتائج، وانسخ الكود الذي تحتاجه مباشرة</div>
         </div>
         <div class="scripts-count-pill">
             إجمالي السكربتات: <span class="scp-num" id="scriptCount">—</span>
         </div>
+    </div>
+
+    <!-- 🔥 رائجة الآن -->
+    <div class="trending-section" id="trendingSection" style="display:none">
+        <div class="trending-head">
+            <h2><span class="trending-flame">🔥</span> رائجة الآن</h2>
+        </div>
+        <div class="trending-scroll" id="trendingScroll"></div>
+    </div>
+
+    <!-- 🏆 الألعاب الأكثر سكربتات -->
+    <div class="top-games-section" id="topGamesSection" style="display:none">
+        <div class="top-games-head">
+            <h2>🏆 الألعاب الأكثر سكربتات</h2>
+        </div>
+        <div class="top-games-grid" id="topGamesGrid"></div>
+    </div>
+
+    <div class="map-filter-active-pill" id="mapFilterPill">
+        <span id="mapFilterPillText">—</span>
+        <button type="button" onclick="clearMapFilter()" aria-label="إلغاء الفلتر">✕</button>
     </div>
 
     <div class="search-section">
@@ -655,7 +754,6 @@ function toggleCodePreview(btn) {
             </button>
             <div class="search-suggest" id="searchSuggest"></div>
         </div>
-        <div class="search-hint">💡 يفهم "البحث الذكي" المعنى (مثل "سرعة" أو "speed")، وليس الكلمة الحرفية فقط</div>
 
         <div class="ai-result-banner" id="aiBanner">
             <span class="aib-icon" id="aibIcon"></span>
@@ -846,6 +944,7 @@ let activeFilter = 'all';
 let activeSort   = 'newest';
 let activeKeyFilter = 'all';
 let activeTagFilter = null;
+let activeMapFilter = null; // اسم رسمي للماب بعد التطبيع، أو null
 
 const codeStore = new Map();
 
@@ -882,6 +981,8 @@ async function loadScripts() {
 
     renderTagsFilter();
     renderAllScriptsIndex();
+    renderTrending();
+    renderTopGames();
 
     const q = getQuery();
     renderScripts(q);
@@ -944,7 +1045,176 @@ function getMap(s) {
     return s.map || (s.extra && s.extra.map) || '';
 }
 
+// ============================================================
+// 🗺️ محرك تطبيع أسماء المابات — يحل مشكلة إن نفس اللعبة تتكتب بأشكال
+// مختلفة (عربي/إنجليزي/بمسافات مختلفة/بأخطاء إملائية بسيطة) فتتفرق
+// في الإحصائيات وكأنها ألعاب مختلفة، بدل ما تتجمع تحت اسم واحد موحّد.
+// ============================================================
+function normalizeMapKey(raw) {
+    if (!raw) return '';
+    let s = raw.toString().trim().toLowerCase();
+    s = s.replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+    // نشيل أي مسافات أو علامات ترقيم عشان "Adopt Me" و"Adopt-Me" و"ادوبت  مي"
+    // كلهم يترجموا لنفس المفتاح
+    s = s.replace(/[\s\-_.!؟?٬،,'"()]+/g, '');
+    return s;
+}
+
+// كل لعبة: الاسم الرسمي (بيتعرض للمستخدم) + مجموعة صيغ شائعة (عربي/إنجليزي/أخطاء
+// إملائية متداولة) تتحول كلها لنفس الاسم الرسمي عند التطبيع
+const MAP_CANONICAL = [
+    { name: 'Brookhaven RP',          icon: '🌆', aliases: ['brookhaven','brookhavenrp','بروكهيفن','بروكهافن','بروكهيفينار بي','بروكهيفينرب'] },
+    { name: 'Adopt Me',               icon: '🏡', aliases: ['adoptme','adopt','ادوبتمي','أدوبتمي','ادوبمي','ادابتمي'] },
+    { name: 'Blox Fruits',            icon: '🍈', aliases: ['bloxfruits','bloxfruit','بلوكسفروتس','بلوكسفروت','بلوكسفروتز','بلوكس فروت'] },
+    { name: 'Grow a Garden',          icon: '🌱', aliases: ['growagarden','growgarden','جرواجاردن','جرواجارن','جرواجاردين'] },
+    { name: 'Steal a Brainrot',       icon: '🧠', aliases: ['stealabrainrot','stealbrainrot','ستيلابراينروت','ستيلبراينروت'] },
+    { name: '99 Nights in the Forest',icon: '🌲', aliases: ['99nights','99nightsintheforest','٩٩نايتس','تسعةوتسعينليلة'] },
+    { name: 'RIVALS',                 icon: '🔫', aliases: ['rivals','رايفلز','رايفالز'] },
+    { name: 'Murder Mystery 2',       icon: '🔪', aliases: ['mm2','murdermystery2','murdermystery','ميردرمستري','مم2'] },
+    { name: 'Jujutsu Shenanigans',    icon: '⚔️', aliases: ['jujutsushenanigans','jjs','جوجوتسو'] },
+    { name: 'Fish It!',               icon: '🎣', aliases: ['fishit','فيشات','فيشإت','فشإت'] },
+    { name: 'Pet Simulator 99',       icon: '🐾', aliases: ['petsim99','petsimulator99','petsimx','petsimulatorx','بيتسيم99','بيتسيميوليتور'] },
+    { name: 'Dress To Impress',       icon: '👗', aliases: ['dresstoimpress','dti','دريستوإمبريس'] },
+    // ألعاب أقدم لسه ممكن تكون موجودة في سكربتات قديمة
+    { name: 'Jailbreak',              icon: '🚔', aliases: ['jailbreak','جيلبريك','جيلبريك'] },
+    { name: 'Bloxburg',               icon: '🏗️', aliases: ['bloxburg','بلوكسبيرغ','بلوكسبيرج','بلوكسبورج'] },
+    { name: 'Arsenal',                icon: '🔫', aliases: ['arsenal','ارسنال','أرسنال'] },
+    { name: 'Bedwars',                icon: '🛏️', aliases: ['bedwars','بيدوورز','بدوورز'] },
+    { name: 'Doors',                  icon: '🚪', aliases: ['doors','دورز','دوورز'] },
+    { name: 'Da Hood',                icon: '🏙️', aliases: ['dahood','داهود'] },
+    { name: 'Anime Fighting Sim',     icon: '⚔️', aliases: ['animefightingsim','انميفايتنج','انميفايتينج'] },
+    { name: 'Tower of Hell',          icon: '🗼', aliases: ['towerofhell','تاوراوفهيل','تاورأوفهيل'] },
+];
+
+const _mapAliasIndex = new Map();
+MAP_CANONICAL.forEach(m => m.aliases.forEach(a => _mapAliasIndex.set(a, m)));
+
+// بيرجع { name, icon } الرسميين للماب، أو null لو الاسم فاضي، أو نفس النص
+// الأصلي (بعد تنظيف بسيط) لو ماب مش معروف في القائمة أعلاه (بدل ما نرفضه)
+function resolveMap(raw) {
+    const key = normalizeMapKey(raw);
+    if (!key) return null;
+
+    const exact = _mapAliasIndex.get(key);
+    if (exact) return exact;
+
+    // مطابقة تقريبية: يسمح بفروق بسيطة (زي حرف زيادة أو ناقص) بين الاسم
+    // المكتوب والصيغ المعروفة، من غير ما يتفرع كل خطأ إملائي لـ"ماب" جديد
+    for (const [aliasKey, canonical] of _mapAliasIndex) {
+        if (aliasKey.length >= 4 && (key.includes(aliasKey) || aliasKey.includes(key))) {
+            return canonical;
+        }
+    }
+
+    // ماب مش معروف في القائمة — نعرضه زي ما كتبه الناشر، من غير ما نجمعه
+    // مع حاجة تانية غلط
+    return { name: raw.trim(), icon: '🗺️' };
+}
+
+// ============================================================
+// 🔥 السكربتات الرائجة الآن — الأولوية لسكربتات آخر 14 يوم مرتبة
+// حسب اللايكات، ولو مفيش عدد كافي من سكربتات حديثة بيرجع لأعلى
+// السكربتات لايكات على الإطلاق عشان القسم مايفضلش فاضي
+// ============================================================
+function computeTrending() {
+    const cutoff = Date.now() - 14 * 86400000;
+    const recent = allScripts.filter(s => {
+        const t = s.created_at ? new Date(s.created_at).getTime() : 0;
+        return t >= cutoff;
+    });
+    const pool = recent.length >= 3 ? recent : allScripts;
+    return [...pool].sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0)).slice(0, 8);
+}
+
+function renderTrending() {
+    const section = document.getElementById('trendingSection');
+    const scroll  = document.getElementById('trendingScroll');
+    const list = computeTrending().filter(s => (s.likes_count || 0) > 0);
+
+    if (!list.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+
+    scroll.innerHTML = list.map((s, i) => `
+        <div class="trending-card" data-id="${s.id}">
+            <span class="trending-rank">${i + 1}</span>
+            <div class="trending-title">${escHTML(s.title || 'بدون عنوان')}</div>
+            <div class="trending-meta">${ic('thumb',12)}<strong>${s.likes_count || 0}</strong> إعجاب</div>
+        </div>
+    `).join('');
+
+    scroll.querySelectorAll('.trending-card').forEach(card => {
+        card.addEventListener('click', () => { location.href = `script.html?id=${encodeURIComponent(card.dataset.id)}`; });
+    });
+}
+
+// ============================================================
+// 🏆 الألعاب الأكثر سكربتات — بيجمع كل السكربتات حسب الاسم الرسمي
+// للماب (بعد التطبيع) عشان "Adopt Me" و"ادوبت مي" يتحسبوا مع بعض
+// ============================================================
+function computeTopGames() {
+    const counts = new Map(); // canonical name -> { count, icon }
+    allScripts.forEach(s => {
+        const resolved = resolveMap(getMap(s));
+        if (!resolved) return;
+        const cur = counts.get(resolved.name) || { name: resolved.name, icon: resolved.icon, count: 0 };
+        cur.count++;
+        counts.set(resolved.name, cur);
+    });
+    return [...counts.values()].sort((a, b) => b.count - a.count).slice(0, 3);
+}
+
+function renderTopGames() {
+    const section = document.getElementById('topGamesSection');
+    const grid = document.getElementById('topGamesGrid');
+    const top3 = computeTopGames();
+
+    if (!top3.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+
+    const medals = ['gold', 'silver', 'bronze'];
+    const medalIcons = ['🥇', '🥈', '🥉'];
+
+    grid.innerHTML = top3.map((g, i) => `
+        <div class="top-game-card${activeMapFilter === g.name ? ' active' : ''}" data-name="${escHTML(g.name)}">
+            <div class="tg-medal ${medals[i]}">${medalIcons[i]}</div>
+            <div class="tg-info">
+                <div class="tg-name">${g.icon} ${escHTML(g.name)}</div>
+                <div class="tg-count"><strong>${g.count}</strong> سكربت</div>
+            </div>
+        </div>
+    `).join('');
+
+    grid.querySelectorAll('.top-game-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const name = card.dataset.name;
+            activeMapFilter = (activeMapFilter === name) ? null : name;
+            renderTopGames();
+            updateMapFilterPill();
+            renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+        });
+    });
+}
+
+function updateMapFilterPill() {
+    const pill = document.getElementById('mapFilterPill');
+    const text = document.getElementById('mapFilterPillText');
+    if (activeMapFilter) {
+        text.textContent = `مفلتر حسب: ${activeMapFilter}`;
+        pill.classList.add('show');
+    } else {
+        pill.classList.remove('show');
+    }
+}
+
+window.clearMapFilter = function () {
+    activeMapFilter = null;
+    updateMapFilterPill();
+    renderTopGames();
+    renderScripts(document.getElementById('searchScripts').value.toLowerCase());
+};
+
 function renderTagsFilter() {
+
     const row = document.getElementById('tagsFilterRow');
     const allTags = new Set();
     allScripts.forEach(s => (s.tags||[]).forEach(t => allTags.add(t)));
@@ -998,6 +1268,10 @@ function renderScripts(query = '') {
     if (activeKeyFilter === 'yes') results = results.filter(s => s.has_key);
     if (activeKeyFilter === 'no')  results = results.filter(s => !s.has_key);
     if (activeTagFilter) results = results.filter(s => Array.isArray(s.tags) && s.tags.includes(activeTagFilter));
+    if (activeMapFilter) results = results.filter(s => {
+        const resolved = resolveMap(getMap(s));
+        return resolved && resolved.name === activeMapFilter;
+    });
 
     if (query && !filteredIds) {
         const fuzzy = smartSearchLocal(query, results);
@@ -1640,13 +1914,34 @@ function renderStaticFallback() {
             .filter(s => s.id && s.title && s.title.trim());
         document.getElementById('scriptCount').innerText = allScripts.length;
         renderAllScriptsIndex();
+        renderTrending();
+        renderTopGames();
         renderScripts(getQuery());
     } catch (e) { /* أي خطأ هنا لا يوقف تحميل الصفحة — Supabase هيكمل عادي بعد كده */ }
+}
+
+function renderSkeletons(n = 6) {
+    const list = document.getElementById('scriptsList');
+    if (!list) return;
+    let html = '';
+    for (let i = 0; i < n; i++) {
+        html += `
+            <div class="skeleton-card">
+                <div class="skel-thumb"></div>
+                <div class="skel-body">
+                    <div class="skel-line w90"></div>
+                    <div class="skel-line w60"></div>
+                    <div class="skel-line w40"></div>
+                </div>
+            </div>`;
+    }
+    list.innerHTML = html;
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     const q = new URLSearchParams(location.search).get('search') || '';
     if (q) document.getElementById('searchScripts').value = q;
+    renderSkeletons();
     renderStaticFallback();
     loadScripts();
 });
