@@ -2,19 +2,23 @@
 /**
  * generate-scripts-data.js
  * ------------------------------------------------------------
- * يجيب كل السكربتات من Firebase Realtime Database ويطلع ملف
+ * يجيب كل السكربتات من Supabase (REST/PostgREST) ويطلع ملف
  * scripts-data.js (window.__SCRIPTS_DATA__) — ده اللي بيستخدمه
  * script.html (صفحة عرض السكربت) و scripts.html (صفحة القائمة)
- * كرسم أولي فوري قبل ما Firebase يرد، لصالح السيو وبوتات الزحف.
+ * كرسم أولي فوري قبل ما Supabase يرد، لصالح السيو وبوتات الزحف.
  *
- * ملاحظة: مقصودًا بيستبعد حقل الصورة (image) لأنها base64 كبيرة
- * جدًا — ده اللي كان بيخلي scripts.html توصل 1.5 ميجا. الصور
- * بترجع عادي أول ما Firebase يرد فعليًا (JS الحي مش متأثر).
+ * ⚠️ هُجِّر المصدر من Firebase لـ Supabase — الموقع بالكامل بقى
+ * شغال على Supabase، وكانت النسخة القديمة بتجيب من Firebase وده
+ * كان معناه إن الملف الثابت بيعرض داتا قديمة/مش متزامنة خالص مع
+ * قاعدة البيانات الحقيقية.
  *
- * ⚠️ أمان: authorEmail اتشال نهائيًا من KEEP_FIELDS بعد ما لقينا
- * إنه كان بيتسرب في الملف الثابت (ده كان متاح للجميع من غير auth).
- * كمان مضاف safety net (stripSensitiveFields) بيشيل أي حقل اسمه
- * فيه "email" حتى لو اتضاف غلط تاني في المستقبل.
+ * ملاحظة: مقصودًا بيستبعد حقل الصورة (image_base64) لأنها base64
+ * كبيرة جدًا — ده اللي كان بيخلي scripts-data.js يكبر أوي. الصور
+ * بترجع عادي أول ما Supabase يرد فعليًا (JS الحي مش متأثر).
+ *
+ * ترتيب البيانات: created_at تصاعديًا (الأقدم أولاً) — ده مقصود
+ * ومتزامن مع scripts.html اللي بيعمل .reverse() على البيانات دي
+ * عشان يعرض الأحدث أولاً في الرسم الأولي (لصالح فهرسة جوجل).
  *
  * الاستخدام:
  *   node generate-scripts-data.js
@@ -29,20 +33,26 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const DATABASE_URL = 'https://ccraft-space-scripts-default-rtdb.firebaseio.com';
+// ⚠️ نفس مفتاح anon/publishable اللي مستخدم فعليًا جوه scripts.html —
+// آمن يتحط هنا لأن جدول scripts أصلاً مقروء بالكامل لأي حد
+// (RLS policy: scripts_select_all → SELECT true)
+const SUPABASE_URL = 'https://nthqrfsdshsreqdoksyv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_kHd5Y4bBnUDJxCFV-aKg-Q_T9XRJckN';
+
 const OUTPUT_FILE = path.join(__dirname, 'scripts-data.js');
+const PAGE_SIZE = 1000; // أقصى حجم صفحة يرجّعها PostgREST دفعة واحدة
 
-// الحقول اللي بنسيبها في الملف الثابت — من غير الصورة والتعليقات
-// (دول بيتحمّلوا لايف من Firebase أول ما الصفحة تفتح)
-// ⚠️ authorEmail اتشال عمدًا — ده كان سبب تسريب الإيميلات.
-const KEEP_FIELDS = [
-    'title', 'code', 'description', 'category', 'map',
-    'author', 'authorUid', 'timestamp',
-    'rating', 'votes', 'likes', 'hasKey', 'key', 'tags', 'verified',
-];
+// الحقول اللي بنجيبها من Supabase — من غير image_base64 (كبيرة جدًا)
+const SELECT_FIELDS = [
+    'id', 'title', 'code', 'description', 'category',
+    'author_name', 'uploader_id', 'created_at',
+    'rating', 'votes', 'likes_count', 'views',
+    'has_key', 'tags', 'is_verified', 'extra',
+].join(',');
 
-// شبكة أمان إضافية: أي حقل اسمه فيه "email" (بأي شكل كتابة)
-// بيتشال تلقائيًا حتى لو حد ضافه غلط في KEEP_FIELDS مستقبلًا.
+// شبكة أمان: أي حقل اسمه فيه "email" بيتشال تلقائيًا حتى لو حد
+// ضافه غلط لـ SELECT_FIELDS مستقبلًا (جدول scripts الحالي مفيهوش
+// عمود إيميل أصلاً، لكن ده احتياط لأي تغيير مستقبلي في السكيما)
 function stripSensitiveFields(obj) {
     for (const key of Object.keys(obj)) {
         if (/email/i.test(key)) delete obj[key];
@@ -50,12 +60,22 @@ function stripSensitiveFields(obj) {
     return obj;
 }
 
-function fetchJSON(url) {
+function fetchPage(offset) {
     return new Promise((resolve, reject) => {
-        https.get(url, res => {
+        const url = `${SUPABASE_URL}/rest/v1/scripts?select=${SELECT_FIELDS}&order=created_at.asc,id.asc`;
+        const options = {
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Range-Unit': 'items',
+                'Range': `${offset}-${offset + PAGE_SIZE - 1}`,
+            },
+        };
+        https.get(url, options, res => {
             if (res.statusCode < 200 || res.statusCode >= 300) {
-                reject(new Error(`HTTP ${res.statusCode} — ${url}`));
-                res.resume();
+                let errBody = '';
+                res.on('data', c => { errBody += c; });
+                res.on('end', () => reject(new Error(`HTTP ${res.statusCode} — ${url}\n${errBody}`)));
                 return;
             }
             let raw = '';
@@ -68,33 +88,66 @@ function fetchJSON(url) {
     });
 }
 
-function slim(script) {
-    const out = {};
-    for (const field of KEEP_FIELDS) {
-        if (script[field] !== undefined) out[field] = script[field];
+// يحوّل صف Supabase لشكل مسطّح — map/key بييجوا من جوه عمود extra
+// (jsonb)، بنفس الشكل اللي scripts.html بيتوقعه (getMap(s) بيدور
+// على s.map الأول، لو مش لاقيه يدوّر جوه s.extra.map)
+function slim(row) {
+    const out = {
+        title: row.title,
+        code: row.code,
+        description: row.description,
+        category: row.category,
+        author_name: row.author_name,
+        uploader_id: row.uploader_id,
+        created_at: row.created_at,
+        rating: row.rating,
+        votes: row.votes,
+        likes_count: row.likes_count,
+        views: row.views,
+        has_key: row.has_key,
+        tags: row.tags,
+        is_verified: row.is_verified,
+    };
+    if (row.extra && row.extra.map) out.map = row.extra.map;
+    if (row.extra && row.extra.key) out.key = row.extra.key;
+
+    // نشيل أي مفتاح undefined عشان الملف الناتج يبقى أنضف وأصغر
+    for (const k of Object.keys(out)) {
+        if (out[k] === undefined || out[k] === null) delete out[k];
     }
     return stripSensitiveFields(out);
 }
 
-async function main() {
-    console.log('⏳ جارٍ جلب السكربتات من Firebase...');
-    const raw = await fetchJSON(`${DATABASE_URL}/scripts.json`);
-
-    if (!raw || typeof raw !== 'object') {
-        throw new Error('الرد من Firebase فاضي أو غير متوقع — تأكد من DATABASE_URL وقواعد القراءة.');
+async function fetchAllScripts() {
+    let offset = 0;
+    let all = [];
+    while (true) {
+        const page = await fetchPage(offset);
+        if (!Array.isArray(page)) {
+            throw new Error('الرد من Supabase مش Array — تأكد من اسم الجدول والصلاحيات (RLS select).');
+        }
+        all = all.concat(page);
+        if (page.length < PAGE_SIZE) break;
+        offset += PAGE_SIZE;
     }
+    return all;
+}
+
+async function main() {
+    console.log('⏳ جارٍ جلب السكربتات من Supabase...');
+    const rows = await fetchAllScripts();
 
     const slimmed = {};
     let count = 0;
-    for (const [id, script] of Object.entries(raw)) {
-        if (!script || !script.title) continue; // تجاهل السجلات التالفة
-        slimmed[id] = slim(script);
+    for (const row of rows) {
+        if (!row || !row.id || !row.title) continue; // تجاهل السجلات التالفة
+        slimmed[row.id] = slim(row);
         count++;
     }
 
     const banner =
 `/* ============================================================
-   scripts-data.js — يتولّد أوتوماتيك، متعدلوش يدوي.
+   scripts-data.js — يتولّد أوتوماتيك من Supabase، متعدلوش يدوي.
    آخر تحديث: ${new Date().toISOString()}
    عدد السكربتات: ${count}
    ============================================================ */
