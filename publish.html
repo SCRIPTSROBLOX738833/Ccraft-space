@@ -799,7 +799,7 @@
         const verifyData = await verifyRes.json();
         if (!verifyData.success) throw new Error('turnstile verification failed');
     } catch (e) {
-        alert('❌ فشل التحقق الأمني — حاول تاني');
+        alert('❌ خطأ فعلي: ' + e.message);
         btn.disabled  = false;
         btn.innerText = '📤 نشر السكربت';
         if (typeof turnstile !== 'undefined') turnstile.reset();
