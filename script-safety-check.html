@@ -131,7 +131,7 @@
     </div>
 <h3>نصيحه علي السريع : سكربتات ماب mm2 االي تجمد التريد كلها تسرق
 سكربتات الي علي تيك توك بنسبه كبيره تسرق</h3>
-    
+
     <div class="search-card">
         <div class="search-row">
             <input type="text" id="scriptInput" placeholder="السكربت..." autocomplete="off">
@@ -173,14 +173,7 @@
 </div>
 
 <script type="module">
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, get, push, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-
-const fc = {apiKey:"AIzaSyD5GP4AjhiruLww-9Ow2DC3JCKyRUNKdz4",authDomain:"ccraft-space-scripts.firebaseapp.com",databaseURL:"https://ccraft-space-scripts-default-rtdb.firebaseio.com",projectId:"ccraft-space-scripts",storageBucket:"ccraft-space-scripts.firebasestorage.app",messagingSenderId:"816078027492",appId:"1:816078027492:web:6472cce474078fd4d90af1",measurementId:"G-MHDM7YYYBN"};
-const app = getApps().length ? getApp() : initializeApp(fc);
-const db  = getDatabase(app);
-
-let unsafeMap = {}; // key -> {originalName, reason, reportedAt}
+import { supabase } from "./supabase-config.js";
 
 function normalize(name) {
     return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
@@ -190,11 +183,6 @@ function toKey(normalizedName) {
 }
 function escapeHTML(str) {
     return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-async function loadUnsafeList() {
-    const snap = await get(ref(db, 'unsafeScripts'));
-    unsafeMap = snap.exists() ? snap.val() : {};
 }
 
 function showResult(type, data, matches) {
@@ -215,7 +203,7 @@ function showResult(type, data, matches) {
         matches.forEach(m => {
             const item = document.createElement('div');
             item.className = 'match-item';
-            item.innerHTML = `<div class="mi-name">⚠️ ${escapeHTML(m.originalName)}</div><div class="mi-reason">${escapeHTML(m.reason || 'تم الإبلاغ عنه')}</div>`;
+            item.innerHTML = `<div class="mi-name">⚠️ ${escapeHTML(m.original_name)}</div><div class="mi-reason">${escapeHTML(m.reason || 'تم الإبلاغ عنه')}</div>`;
             matchList.appendChild(item);
         });
     } else {
@@ -236,12 +224,32 @@ async function checkScript() {
     const normalized = normalize(rawName);
     const key = toKey(normalized);
 
-    if (unsafeMap[key]) {
-        showResult('unsafe', unsafeMap[key]);
-    } else {
-        // بحث جزئي في كل الأسماء المسجلة كـ غير آمنة
-        const matches = Object.values(unsafeMap).filter(e => normalize(e.originalName || '').includes(normalized) || normalized.includes(normalize(e.originalName || '')));
-        showResult('unknown', null, matches);
+    try {
+        // تطابق دقيق أول باستخدام script_key
+        const { data: exactMatch, error: exactErr } = await supabase
+            .from('unsafe_scripts')
+            .select('original_name, reason')
+            .eq('script_key', key)
+            .maybeSingle();
+
+        if (exactErr) throw exactErr;
+
+        if (exactMatch) {
+            showResult('unsafe', exactMatch);
+        } else {
+            // بحث جزئي لو مفيش تطابق دقيق
+            const { data: partial, error: partialErr } = await supabase
+                .from('unsafe_scripts')
+                .select('original_name, reason')
+                .ilike('original_name', `%${rawName.trim()}%`)
+                .limit(10);
+
+            if (partialErr) throw partialErr;
+            showResult('unknown', null, partial || []);
+        }
+    } catch (err) {
+        console.error(err);
+        showResult('unknown', null, []);
     }
 
     btn.disabled = false; btn.textContent = '🔍 فحص';
@@ -281,18 +289,33 @@ async function sendRequest() {
     sendBtn.disabled = true; sendBtn.textContent = '⏳ بيترسل...';
 
     try {
-        const reqRef = push(ref(db, 'scriptRequests'));
-        await set(reqRef, {
-            scriptName: name,
+        // لو المستخدم مسجل دخول، نربط الطلب بحسابه (اختياري)
+        let requestedBy = null;
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const { data: row } = await supabase
+                .from('users')
+                .select('id')
+                .eq('auth_uid', user.id)
+                .maybeSingle();
+            if (row) requestedBy = row.id;
+        }
+
+        const { error } = await supabase.from('script_requests').insert({
+            script_name: name,
             note: note || null,
             status: 'pending',
-            requestedAt: serverTimestamp()
+            requested_by: requestedBy,
         });
+
+        if (error) throw error;
+
         requestNote.className = 'modal-note show';
         requestNote.style.color = 'var(--success)';
         requestNote.textContent = '✅ اتبعت الطلب للإدارة، هيتراجع قريب.';
         setTimeout(closeModal, 1400);
     } catch (err) {
+        console.error(err);
         requestNote.className = 'modal-note show';
         requestNote.style.color = 'var(--danger)';
         requestNote.textContent = '❌ حصل خطأ وإحنا بنبعت الطلب، جرّب تاني.';
@@ -305,8 +328,6 @@ sendBtn.addEventListener('click', sendRequest);
 
 document.getElementById('checkBtn').addEventListener('click', checkScript);
 document.getElementById('scriptInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkScript(); });
-
-loadUnsafeList();
 </script>
 </body>
 </html>
