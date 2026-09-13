@@ -2,11 +2,17 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <title>CCRAFT SPACE | بروفايل</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+    /* ===== Global stability / anti layout-shift ===== */
+    html,body{overflow-x:hidden;max-width:100%;}
+    *{box-sizing:border-box;}
+    img{max-width:100%;}
+
     /* ===== Hero / Cover ===== */
     .profile-hero{max-width:820px;margin:24px auto 0;padding:0 20px;}
     .cover-wrap{position:relative;height:150px;border-radius:24px 24px 0 0;overflow:hidden;background:linear-gradient(120deg,#151022,#1a1430 45%,#0d1b22);border:1px solid var(--border-color);border-bottom:none;}
@@ -25,9 +31,9 @@
     .avatar-circle img{width:100%;height:100%;object-fit:cover;display:block;}
     .avatar-initials{font-size:2.2rem;font-weight:900;color:white;}
     .avatar-upload-wrap.editable{cursor:pointer;}
-    .avatar-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:var(--transition);font-size:1.3rem;}
+    .avatar-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:var(--transition);font-size:1.2rem;color:white;}
     .avatar-upload-wrap.editable:hover .avatar-overlay{opacity:1;}
-    .avatar-upload-wrap.uploading .avatar-overlay{opacity:1;font-size:0.95rem;}
+    .avatar-upload-wrap.uploading .avatar-overlay{opacity:1;font-size:1rem;}
     #avatarFileInput{display:none;}
     .online-dot{position:absolute;bottom:6px;left:6px;width:16px;height:16px;border-radius:50%;background:#4ade80;border:3px solid var(--bg-card);box-shadow:0 0 8px rgba(74,222,128,0.7);display:none;}
     .online-dot.show{display:block;}
@@ -38,34 +44,37 @@
     .edit-profile-btn{background:rgba(255,255,255,0.06);border:1px solid var(--border-color);border-radius:50px;padding:10px 20px;font-size:0.85rem;font-weight:800;color:var(--text-main);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);display:inline-flex;align-items:center;gap:6px;}
     .edit-profile-btn:hover{border-color:rgba(139,92,246,0.4);background:var(--primary-dim);transform:none;filter:none;}
 
-    .username-row{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap;}
-    .profile-info h2{font-size:1.5rem;font-weight:900;color:var(--text-main);margin:0;}
+    .username-row{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap;max-width:100%;}
+    .profile-info{max-width:100%;min-width:0;}
+    .profile-info h2{font-size:1.5rem;font-weight:900;color:var(--text-main);margin:0;overflow-wrap:anywhere;word-break:break-word;max-width:100%;}
     .meta-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--text-muted);font-size:0.82rem;margin-top:6px;}
-    .meta-row .dot-sep{width:4px;height:4px;border-radius:50%;background:var(--text-muted);opacity:0.5;}
+    .meta-row .dot-sep{width:4px;height:4px;border-radius:50%;background:var(--text-muted);opacity:0.5;flex-shrink:0;}
     .meta-row .online-label{color:#4ade80;font-weight:800;display:none;align-items:center;gap:5px;}
     .meta-row .online-label.show{display:inline-flex;}
-    .meta-row .online-label::before{content:'';width:7px;height:7px;border-radius:50%;background:#4ade80;}
-    .last-name-change-label{color:rgba(139,92,246,0.75);font-size:0.76rem;margin-top:4px;}
+    .meta-row .online-label i{font-size:0.55rem;}
+    .last-name-change-label{color:rgba(139,92,246,0.75);font-size:0.76rem;margin-top:4px;display:flex;align-items:center;gap:5px;}
 
     .secondary-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
 
     /* ===== Stats ===== */
     .stats-grid{max-width:820px;margin:16px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;animation:fadeIn 0.5s 0.1s ease both;}
-    .stat-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:14px 8px;text-align:center;transition:var(--transition);}
+    .stat-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:14px 8px;text-align:center;transition:var(--transition);min-width:0;}
     .stat-card:hover{border-color:var(--border-hover);transform:translateY(-3px);}
     .stat-card.clickable{cursor:pointer;}
-    .stat-num{font-size:1.4rem;font-weight:900;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:2px;}
+    .stat-num{font-size:1.4rem;font-weight:900;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     .stat-label{color:var(--text-muted);font-size:0.7rem;font-weight:700;}
 
     /* ===== Tabs ===== */
-    .tabs-bar{max-width:820px;margin:26px auto 0;padding:0 20px;display:flex;align-items:center;border-bottom:1px solid var(--border-color);gap:4px;}
-    .tab-btn{background:none;border:none;padding:14px 16px;font-family:'Tajawal',sans-serif;font-size:0.9rem;font-weight:800;color:var(--text-muted);cursor:pointer;position:relative;display:flex;align-items:center;gap:7px;margin:0;transition:color 0.2s;}
+    .tabs-bar{max-width:820px;margin:26px auto 0;padding:0 20px;display:flex;align-items:center;border-bottom:1px solid var(--border-color);gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .tabs-bar::-webkit-scrollbar{display:none;}
+    .tab-btn{background:none;border:none;padding:14px 16px;font-family:'Tajawal',sans-serif;font-size:0.9rem;font-weight:800;color:var(--text-muted);cursor:pointer;position:relative;display:flex;align-items:center;gap:7px;margin:0;transition:color 0.2s;flex-shrink:0;white-space:nowrap;}
     .tab-btn:hover{color:var(--text-main);background:none;transform:none;filter:none;}
     .tab-btn.active{color:var(--primary);}
     .tab-btn.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--accent-gradient);border-radius:2px;}
     .tabs-bar .settings-tab-btn{margin-right:auto;}
     .tab-panel{display:none;animation:fadeIn 0.35s ease both;}
     .tab-panel.active{display:block;}
+    #scriptsTabLabel{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;}
 
     /* ===== Settings / social modal ===== */
     .social-link-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 4px;border-bottom:1px solid var(--border-color);}
@@ -75,7 +84,7 @@
     .social-link-name{font-weight:800;font-size:0.88rem;color:var(--text-main);}
     .social-link-value{font-size:0.78rem;color:var(--text-muted);direction:ltr;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;}
     .social-link-actions{display:flex;gap:6px;flex-shrink:0;}
-    .sl-btn{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:6px 12px;font-size:0.72rem;font-weight:800;color:var(--primary);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);}
+    .sl-btn{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:6px 12px;font-size:0.72rem;font-weight:800;color:var(--primary);cursor:pointer;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
     .sl-btn:hover{background:var(--primary-dim);transform:none;filter:none;}
     .sl-btn.danger{background:rgba(248,113,113,0.08);border-color:rgba(248,113,113,0.2);color:var(--danger);}
     .sl-btn.danger:hover{background:var(--danger);color:white;}
@@ -106,18 +115,18 @@
 
     .flist-box{max-height:70vh;display:flex;flex-direction:column;}
     .flist-items{overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-top:6px;}
-    .flist-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid var(--border-color);text-decoration:none;transition:var(--transition);}
+    .flist-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid var(--border-color);text-decoration:none;transition:var(--transition);min-width:0;}
     .flist-item:hover{border-color:var(--border-hover);background:rgba(139,92,246,0.06);transform:none;filter:none;}
     .flist-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#8b5cf6,#00bcd4);color:white;font-weight:900;font-size:0.9rem;}
     .flist-avatar img{width:100%;height:100%;object-fit:cover;}
-    .flist-name{color:var(--text-main);font-weight:700;font-size:0.88rem;}
+    .flist-name{color:var(--text-main);font-weight:700;font-size:0.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
     .flist-empty{text-align:center;color:var(--text-muted);font-size:0.85rem;padding:30px 10px;}
 
     .vmodal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
     .vmodal-overlay.open{display:flex;}
     .vmodal-box{background:var(--bg-card);border:1px solid rgba(0,242,254,0.3);border-radius:22px;padding:28px;width:100%;max-width:440px;animation:fadeIn 0.3s ease both;position:relative;}
     .vmodal-box::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:linear-gradient(90deg,transparent,#00f2fe,transparent);}
-    .vmodal-title{font-size:1.05rem;font-weight:900;color:var(--text-main);margin-bottom:4px;}
+    .vmodal-title{font-size:1.05rem;font-weight:900;color:var(--text-main);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
     .vmodal-sub{font-size:0.78rem;color:var(--text-muted);margin-bottom:18px;line-height:1.6;}
     .vmodal-textarea{width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;color:var(--text-main);font-family:'Tajawal',sans-serif;font-size:0.88rem;min-height:90px;resize:vertical;outline:none;direction:rtl;margin-bottom:12px;transition:border-color 0.2s;}
     .vmodal-textarea:focus{border-color:rgba(0,242,254,0.35);}
@@ -127,7 +136,7 @@
     .modal-overlay.open{display:flex;}
     .modal-box{background:var(--bg-card);border:1px solid var(--border-color);border-radius:24px;padding:32px 28px;width:100%;max-width:420px;margin:20px;animation:fadeIn 0.3s ease both;position:relative;max-height:88vh;overflow-y:auto;}
     .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent-gradient);border-radius:24px 24px 0 0;}
-    .modal-title{font-size:1.1rem;font-weight:900;color:var(--text-main);margin-bottom:6px;}
+    .modal-title{font-size:1.1rem;font-weight:900;color:var(--text-main);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
     .modal-sub{font-size:0.8rem;color:var(--text-muted);margin-bottom:22px;line-height:1.6;}
     .username-input-wrap{position:relative;margin-bottom:10px;}
     .username-input-wrap input{width:100%;background:var(--bg-surface);border:2px solid var(--border-color);border-radius:14px;padding:13px 16px 13px 44px;color:var(--text-main);font-family:'Tajawal',sans-serif;font-size:1rem;font-weight:700;outline:none;transition:border-color 0.2s;direction:ltr;text-align:left;box-sizing:border-box;}
@@ -135,7 +144,7 @@
     .username-input-wrap input.valid{border-color:var(--success);}
     .username-input-wrap input.taken{border-color:var(--danger);}
     .username-prefix{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:0.9rem;color:var(--text-muted);font-weight:800;pointer-events:none;}
-    .status-indicator{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;transition:all 0.2s;}
+    .status-indicator{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;transition:all 0.2s;color:var(--text-muted);display:flex;align-items:center;}
     .username-rules{font-size:0.74rem;color:var(--text-muted);line-height:1.7;margin-bottom:18px;background:rgba(255,255,255,0.03);border:1px solid var(--border-color);border-radius:12px;padding:10px 14px;}
     .username-rules li{list-style:none;}
     .username-rules li::before{content:'· ';color:var(--primary);}
@@ -144,7 +153,7 @@
     .check-msg.err{color:var(--danger);}
     .check-msg.info{color:var(--text-muted);}
     .modal-actions{display:flex;gap:10px;}
-    .btn-save{flex:1;background:var(--accent-gradient);color:white;border:none;border-radius:14px;padding:13px;font-size:0.9rem;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif;transition:var(--transition);box-shadow:0 6px 16px rgba(139,92,246,0.3);}
+    .btn-save{flex:1;background:var(--accent-gradient);color:white;border:none;border-radius:14px;padding:13px;font-size:0.9rem;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif;transition:var(--transition);box-shadow:0 6px 16px rgba(139,92,246,0.3);display:inline-flex;align-items:center;justify-content:center;gap:7px;}
     .btn-save:hover{transform:translateY(-2px);filter:brightness(1.08);}
     .btn-save:disabled{opacity:0.4;cursor:not-allowed;transform:none;filter:none;}
     .btn-cancel{background:rgba(255,255,255,0.04);color:var(--text-muted);border:1px solid var(--border-color);border-radius:14px;padding:13px 20px;font-size:0.9rem;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif;transition:var(--transition);margin:0;}
@@ -166,55 +175,58 @@
     .abp-label{font-weight:900;}
     .abp-from{font-size:0.65rem;opacity:0.7;}
     #badgesGrid{max-width:820px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;animation:fadeIn 0.5s 0.15s ease both;}
-    .badge-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:20px 14px;text-align:center;transition:var(--transition);position:relative;overflow:hidden;}
+    .badge-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:20px 14px;text-align:center;transition:var(--transition);position:relative;overflow:visible;min-width:0;}
     .badge-card.earned:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(139,92,246,0.2);}
     .badge-card.locked{opacity:0.3;filter:grayscale(1);cursor:default;}
-    .badge-card.earned::before{content:'';position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:80px;height:80px;background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);pointer-events:none;}
-    .badge-card.new-badge::after{content:'✨ جديد';position:absolute;top:8px;left:8px;background:var(--accent-gradient);color:white;font-size:0.55rem;font-weight:900;padding:3px 8px;border-radius:50px;font-family:'Tajawal',sans-serif;}
-    .badge-icon{font-size:2.4rem;display:block;margin-bottom:10px;line-height:1;}
-    .badge-name{font-size:0.82rem;font-weight:800;color:var(--text-main);margin-bottom:5px;display:block;}
-    .badge-desc{font-size:0.7rem;color:var(--text-muted);line-height:1.5;}
+    .badge-card.earned::before{content:'';position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:80px;height:80px;background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);pointer-events:none;z-index:0;}
+    .new-flag{position:absolute;top:8px;left:8px;background:var(--accent-gradient);color:white;font-size:0.55rem;font-weight:900;padding:3px 8px;border-radius:50px;font-family:'Tajawal',sans-serif;display:inline-flex;align-items:center;gap:3px;z-index:1;}
+    .badge-icon{font-size:2.1rem;display:block;margin-bottom:10px;line-height:1;position:relative;z-index:1;}
+    .badge-name{font-size:0.82rem;font-weight:800;color:var(--text-main);margin-bottom:5px;display:block;position:relative;z-index:1;overflow-wrap:anywhere;}
+    .badge-desc{font-size:0.7rem;color:var(--text-muted);line-height:1.5;position:relative;z-index:1;overflow-wrap:anywhere;}
     .badges-count{max-width:820px;margin:12px auto 0;padding:0 20px;color:var(--text-muted);font-size:0.82rem;}
     .badges-count span{color:var(--primary);font-weight:800;}
     .points-referral{max-width:820px;margin:20px auto 0;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;animation:fadeIn 0.5s 0.12s ease both;}
-    .points-card{background:linear-gradient(135deg,rgba(251,191,36,0.1),rgba(245,158,11,0.05));border:1px solid rgba(251,191,36,0.3);border-radius:18px;padding:22px 20px;text-align:center;transition:var(--transition);}
+    .points-card{background:linear-gradient(135deg,rgba(251,191,36,0.1),rgba(245,158,11,0.05));border:1px solid rgba(251,191,36,0.3);border-radius:18px;padding:22px 20px;text-align:center;transition:var(--transition);min-width:0;}
     .points-card:hover{border-color:rgba(251,191,36,0.5);transform:translateY(-3px);}
-    .points-card .pc-icon{font-size:2rem;display:block;margin-bottom:8px;}
-    .points-card .pc-value{font-size:2.4rem;font-weight:900;color:#fbbf24;display:block;margin-bottom:4px;line-height:1;}
+    .points-card .pc-icon{font-size:1.8rem;display:block;margin-bottom:8px;color:#fbbf24;}
+    .points-card .pc-value{font-size:2.4rem;font-weight:900;color:#fbbf24;display:block;margin-bottom:4px;line-height:1;overflow:hidden;text-overflow:ellipsis;}
     .points-card .pc-label{font-size:0.78rem;color:var(--text-muted);font-weight:700;}
-    .referral-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:var(--transition);}
+    .referral-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:var(--transition);min-width:0;}
     .referral-card:hover{border-color:var(--border-hover);}
-    .referral-card h4{font-size:0.78rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+    .referral-card h4{font-size:0.78rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:6px;}
     .ref-link-box{display:flex;gap:8px;align-items:center;}
-    .ref-link-input{flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--border-color);border-radius:10px;padding:8px 12px;color:var(--text-muted);font-size:0.7rem;font-family:'Fira Code',monospace;outline:none;direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    .copy-ref-btn{background:var(--primary-dim);color:var(--primary);border:1px solid rgba(139,92,246,0.25);border-radius:10px;padding:8px 14px;font-size:0.75rem;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);flex-shrink:0;}
+    .ref-link-input{flex:1;min-width:0;background:rgba(0,0,0,0.3);border:1px solid var(--border-color);border-radius:10px;padding:8px 12px;color:var(--text-muted);font-size:0.7rem;font-family:'Fira Code',monospace;outline:none;direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .copy-ref-btn{background:var(--primary-dim);color:var(--primary);border:1px solid rgba(139,92,246,0.25);border-radius:10px;padding:8px 14px;font-size:0.75rem;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'Tajawal',sans-serif;margin:0;transition:var(--transition);flex-shrink:0;display:inline-flex;align-items:center;gap:5px;}
     .copy-ref-btn:hover{background:var(--primary);color:white;transform:none;filter:none;}
     .copy-ref-btn.copied{background:rgba(74,222,128,0.12);color:var(--success);border-color:rgba(74,222,128,0.3);}
     .ref-stats{display:flex;gap:14px;font-size:0.78rem;flex-wrap:wrap;}
     .ref-stat{color:var(--text-muted);}
     .ref-stat span{color:var(--text-main);font-weight:800;}
     .points-log{max-width:820px;margin:0 auto;padding:0 20px;display:flex;flex-direction:column;gap:8px;}
-    .log-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.02);border:1px solid var(--border-color);border-radius:12px;padding:10px 14px;font-size:0.82rem;animation:fadeIn 0.4s ease both;}
-    .log-item .li-icon{font-size:1.1rem;flex-shrink:0;}
-    .log-item .li-text{flex:1;color:var(--text-muted);}
-    .log-item .li-pts{font-weight:900;color:#fbbf24;white-space:nowrap;}
-    .log-item .li-time{font-size:0.68rem;color:var(--text-muted);white-space:nowrap;}
+    .log-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.02);border:1px solid var(--border-color);border-radius:12px;padding:10px 14px;font-size:0.82rem;animation:fadeIn 0.4s ease both;min-width:0;}
+    .log-item .li-icon{font-size:1.05rem;flex-shrink:0;color:#fbbf24;display:flex;align-items:center;}
+    .log-item .li-text{flex:1;min-width:0;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .log-item .li-pts{font-weight:900;color:#fbbf24;white-space:nowrap;flex-shrink:0;}
+    .log-item .li-time{font-size:0.68rem;color:var(--text-muted);white-space:nowrap;flex-shrink:0;}
     #userScripts{max-width:820px;margin:0 auto;padding:0 20px 80px;display:flex;flex-direction:column;gap:14px;}
     .mini-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:18px 22px;display:flex;align-items:center;gap:16px;transition:var(--transition);animation:fadeIn 0.4s ease both;}
     .mini-card:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.4);}
     .mini-card-info{flex:1;min-width:0;cursor:pointer;}
-    .mini-card-info h3{font-size:1rem;font-weight:800;color:var(--text-main);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .mini-card-info h3{font-size:1rem;font-weight:800;color:var(--text-main);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px;}
+    .mini-card-info h3 span.mc-title-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
     .mini-card-meta{display:flex;gap:12px;flex-wrap:wrap;}
-    .mini-card-meta span{font-size:0.78rem;color:var(--text-muted);}
+    .mini-card-meta span{font-size:0.78rem;color:var(--text-muted);display:inline-flex;align-items:center;gap:4px;}
     .cat-badge{background:var(--primary-dim);color:#b48bf8;padding:2px 10px;border-radius:50px;font-size:0.72rem;font-weight:700;}
-    .verified-badge-pill{background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.3);padding:2px 9px;border-radius:50px;font-size:0.68rem;font-weight:800;}
-    .delete-btn{background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:8px 14px;font-size:0.8rem;margin:0;flex-shrink:0;}
+    .verified-badge-pill{background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.3);padding:2px 9px;border-radius:50px;font-size:0.68rem;font-weight:800;display:inline-flex;align-items:center;gap:4px;flex-shrink:0;}
+    .delete-btn{background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:8px 14px;font-size:0.8rem;margin:0;flex-shrink:0;display:inline-flex;align-items:center;gap:5px;}
     .delete-btn:hover{background:var(--danger);color:white;filter:none;transform:none;}
     .empty-state{text-align:center;padding:48px 20px;color:var(--text-muted);}
     .empty-state p{font-size:1rem;margin-bottom:20px;}
+    .empty-state i.empty-icon{font-size:2rem;display:block;margin-bottom:14px;opacity:0.5;}
     .viewing-badge{display:none;max-width:820px;margin:14px auto 0;padding:0 20px;}
-    .viewing-badge .vb-inner{display:flex;align-items:center;gap:10px;background:rgba(0,242,254,0.06);border:1px solid rgba(0,242,254,0.2);border-radius:12px;padding:10px 16px;font-size:0.82rem;color:var(--text-muted);}
-    .viewing-badge .vb-inner span{color:var(--secondary);font-weight:800;}
+    .viewing-badge .vb-inner{display:flex;align-items:center;gap:10px;background:rgba(0,242,254,0.06);border:1px solid rgba(0,242,254,0.2);border-radius:12px;padding:10px 16px;font-size:0.82rem;color:var(--text-muted);flex-wrap:wrap;justify-content:center;}
+    .viewing-badge .vb-inner span{color:var(--secondary);font-weight:800;overflow-wrap:anywhere;word-break:break-word;}
+    #profileToast{display:flex;align-items:center;gap:8px;}
 
     @media(max-width:600px){
         .cover-wrap{height:110px;border-radius:20px 20px 0 0;}
@@ -227,9 +239,17 @@
         .stat-num{font-size:1.15rem;}
         .stat-label{font-size:0.64rem;}
         .tab-btn{padding:12px 10px;font-size:0.8rem;}
+        #scriptsTabLabel{max-width:80px;}
         #badgesGrid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
         .mini-card{flex-wrap:wrap;}
         .points-referral{grid-template-columns:1fr;}
+        .viewing-badge .vb-inner{font-size:0.76rem;padding:9px 12px;}
+    }
+    @media(max-width:420px){
+        .modal-box{padding:22px 16px;margin:12px;}
+        .vmodal-box{padding:18px;}
+        .ref-link-box{flex-wrap:wrap;}
+        .ref-link-box .copy-ref-btn{width:100%;justify-content:center;}
     }
     </style>
 </head>
@@ -237,12 +257,12 @@
 
 <div class="modal-overlay" id="usernameModal">
     <div class="modal-box">
-        <div class="modal-title" id="usernameModalTitle">✏️ تغيير اسم المستخدم</div>
+        <div class="modal-title" id="usernameModalTitle"><i class="fa-solid fa-pen"></i> تغيير اسم المستخدم</div>
         <div class="modal-sub" id="usernameModalSub">الاسم يظهر في البروفايل والسكربتات والشات. يمكن تغييره مرة كل أسبوع.</div>
         <div class="username-input-wrap">
             <span class="username-prefix">@</span>
             <input type="text" id="usernameInput" placeholder="اسمك_هنا" maxlength="20" autocomplete="off" spellcheck="false">
-            <span class="status-indicator" id="statusIcon">⌛</span>
+            <span class="status-indicator" id="statusIcon"><i class="fa-solid fa-clock"></i></span>
         </div>
         <ul class="username-rules">
             <li>3–20 حرف فقط</li>
@@ -253,15 +273,15 @@
         <div class="check-msg info" id="checkMsg">اكتب الاسم المطلوب</div>
         <div class="modal-actions">
             <button class="btn-cancel" id="usernameCancelBtn" onclick="closeModal()">إلغاء</button>
-            <button class="btn-save" id="saveNameBtn" disabled onclick="saveUsername()">💾 حفظ</button>
+            <button class="btn-save" id="saveNameBtn" disabled onclick="saveUsername()"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>
         </div>
     </div>
 </div>
 
-<!-- ⚙️ مودال الإعدادات: يجمع تعديل البروفايل + روابط تيك توك / روبلوكس في مكان واحد -->
+<!-- مودال الإعدادات: يجمع تعديل البروفايل + روابط تيك توك / روبلوكس في مكان واحد -->
 <div class="modal-overlay" id="settingsModal">
     <div class="modal-box">
-        <div class="modal-title">⚙️ إعدادات البروفايل</div>
+        <div class="modal-title"><i class="fa-solid fa-sliders"></i> إعدادات البروفايل</div>
         <div class="modal-sub">تحكم في اسمك وحساباتك المربوطة من هنا.</div>
         <div id="settingsSocialList"></div>
         <div class="modal-actions" style="margin-top:18px">
@@ -272,7 +292,7 @@
 
 <div class="modal-overlay" id="tiktokModal">
     <div class="modal-box">
-        <div class="modal-title">🎵 حساب تيك توك</div>
+        <div class="modal-title"><i class="fa-brands fa-tiktok"></i> حساب تيك توك</div>
         <div class="modal-sub">اربط حساب تيك توك بتاعك عشان يظهر في بروفايلك.</div>
         <div class="tiktok-input-wrap">
             <span class="tiktok-prefix">@</span>
@@ -280,14 +300,14 @@
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeTiktokModal()">إلغاء</button>
-            <button class="btn-save" id="saveTiktokBtn" onclick="saveTiktok()">💾 حفظ</button>
+            <button class="btn-save" id="saveTiktokBtn" onclick="saveTiktok()"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>
         </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="robloxLinkModal">
     <div class="modal-box">
-        <div class="modal-title">🎮 ربط حساب روبلوكس</div>
+        <div class="modal-title"><i class="fa-solid fa-gamepad"></i> ربط حساب روبلوكس</div>
         <div class="modal-sub" style="text-align:right">
             اكتب اسم المستخدم بتاعك على روبلوكس واضغط ربط.
         </div>
@@ -295,20 +315,20 @@
         <div id="rlResult" style="font-size:0.82rem;margin-bottom:14px;min-height:18px;"></div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeRobloxLinkModal()">إلغاء</button>
-            <button class="btn-save" id="rlVerifyBtn" onclick="verifyRobloxLink()">🔗 ربط الحساب</button>
+            <button class="btn-save" id="rlVerifyBtn" onclick="verifyRobloxLink()"><i class="fa-solid fa-link"></i> ربط الحساب</button>
         </div>
     </div>
 </div>
 
 <div class="vmodal-overlay" id="verifyModal">
     <div class="vmodal-box">
-        <div class="vmodal-title">🔍 طلب التحقق من سكربتاتك</div>
-        <div class="vmodal-sub">أرسل طلب للأدمن للتحقق من سكربتاتك. السكربتات الموثوقة تظهر بشارة ✅ في قائمة السكربتات وتحصل على مصداقية أعلى.</div>
+        <div class="vmodal-title"><i class="fa-solid fa-magnifying-glass"></i> طلب التحقق من سكربتاتك</div>
+        <div class="vmodal-sub">أرسل طلب للأدمن للتحقق من سكربتاتك. السكربتات الموثوقة تظهر بشارة توثيق في قائمة السكربتات وتحصل على مصداقية أعلى.</div>
         <textarea class="vmodal-textarea" id="verifyReason" placeholder="لماذا تريد التحقق؟ (اختياري) — مثال: نشرت سكربتات مفيدة وغير ضارة..." maxlength="300"></textarea>
         <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:14px">سيراجع الأدمن طلبك ويوثّق سكربتاتك إذا كانت تستوفي المعايير.</div>
         <div class="vmodal-actions">
             <button onclick="closeVerifyModal()" style="background:rgba(255,255,255,0.04);color:var(--text-muted);border:1px solid var(--border-color);border-radius:12px;padding:11px 18px;font-weight:800;font-family:Tajawal,sans-serif;cursor:pointer">إلغاء</button>
-            <button onclick="submitVerifyRequest()" style="flex:1;background:linear-gradient(135deg,#00bcd4,#0ea5e9);color:white;border:none;border-radius:12px;padding:11px;font-weight:800;font-size:0.9rem;font-family:Tajawal,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,188,212,0.3)">📨 إرسال الطلب</button>
+            <button onclick="submitVerifyRequest()" style="flex:1;background:linear-gradient(135deg,#00bcd4,#0ea5e9);color:white;border:none;border-radius:12px;padding:11px;font-weight:800;font-size:0.9rem;font-family:Tajawal,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,188,212,0.3);display:inline-flex;align-items:center;justify-content:center;gap:7px"><i class="fa-solid fa-paper-plane"></i> إرسال الطلب</button>
         </div>
     </div>
 </div>
@@ -324,13 +344,13 @@
 </div>
 
 <header>
-    <button onclick="location.href='scripts.html'">📜 السكربتات</button>
+    <button onclick="location.href='scripts.html'"><i class="fa-solid fa-scroll"></i> السكربتات</button>
     <button class="nav-button" onclick="location.href='index.html'">رجوع للصفحة الرئيسية</button>
 </header>
 
 <div class="viewing-badge" id="viewingBadge">
     <div class="vb-inner">
-        👁️ أنت تشاهد بروفايل <span id="viewingName">—</span>
+        <i class="fa-solid fa-eye"></i> أنت تشاهد بروفايل <span id="viewingName">—</span>
         &nbsp;—&nbsp;
         <a href="profile.html" style="color:var(--primary);font-weight:800;text-decoration:none">عرض بروفايلي ←</a>
     </div>
@@ -338,9 +358,9 @@
 
 <div class="profile-hero">
     <div class="cover-wrap" id="coverWrap">
-        <button class="cover-upload-btn" id="coverUploadBtn" style="display:none" title="تغيير صورة الغلاف">📷</button>
+        <button class="cover-upload-btn" id="coverUploadBtn" style="display:none" title="تغيير صورة الغلاف"><i class="fa-solid fa-camera"></i></button>
         <input type="file" id="coverFileInput" accept="image/png,image/jpeg,image/webp">
-        <a class="public-view-pill" id="publicViewPill" href="#" style="display:none">👁️ عرض البروفايل العام</a>
+        <a class="public-view-pill" id="publicViewPill" href="#" style="display:none"><i class="fa-solid fa-eye"></i> عرض البروفايل العام</a>
     </div>
     <div class="profile-card">
         <div class="identity-row">
@@ -358,7 +378,7 @@
             <div class="meta-row">
                 <span id="joinDate"></span>
                 <span class="dot-sep" id="onlineSep" style="display:none"></span>
-                <span class="online-label" id="onlineLabel">أونلاين الآن</span>
+                <span class="online-label" id="onlineLabel"><i class="fa-solid fa-circle"></i> أونلاين الآن</span>
             </div>
             <div class="last-name-change-label" id="lastNameChange"></div>
         </div>
@@ -374,10 +394,10 @@
 </div>
 
 <div class="tabs-bar">
-    <button class="tab-btn active" data-tab="scripts" onclick="switchTab('scripts')">📜 <span id="scriptsTabLabel">السكربتات</span></button>
-    <button class="tab-btn" data-tab="activity" onclick="switchTab('activity')">⚡ النشاط</button>
-    <button class="tab-btn" data-tab="stats" onclick="switchTab('stats')">📊 الإحصائيات</button>
-    <button class="icon-btn-round settings-tab-btn" id="settingsTabBtn" style="display:none" onclick="openSettingsModal()" title="الإعدادات">🎛️</button>
+    <button class="tab-btn active" data-tab="scripts" onclick="switchTab('scripts')"><i class="fa-solid fa-scroll"></i> <span id="scriptsTabLabel">السكربتات</span></button>
+    <button class="tab-btn" data-tab="activity" onclick="switchTab('activity')"><i class="fa-solid fa-bolt"></i> النشاط</button>
+    <button class="tab-btn" data-tab="stats" onclick="switchTab('stats')"><i class="fa-solid fa-chart-column"></i> الإحصائيات</button>
+    <button class="icon-btn-round settings-tab-btn" id="settingsTabBtn" style="display:none" onclick="openSettingsModal()" title="الإعدادات"><i class="fa-solid fa-sliders"></i></button>
 </div>
 
 <div class="tab-panel active" id="panel-scripts">
@@ -385,7 +405,7 @@
 </div>
 
 <div class="tab-panel" id="panel-activity">
-    <div class="section-title" style="margin-top:20px">📋 سجل النقاط والنشاط</div>
+    <div class="section-title" style="margin-top:20px"><i class="fa-solid fa-list-check"></i> سجل النقاط والنشاط</div>
     <div class="points-log" id="pointsLog" style="padding-bottom:60px">
         <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:0.85rem">لا يوجد نشاط بعد</div>
     </div>
@@ -393,27 +413,27 @@
 
 <div class="tab-panel" id="panel-stats">
     <div id="adminBadgesSection">
-        <div class="section-title" style="margin-top:20px">👑 بادجات خاصة من الأدمن</div>
+        <div class="section-title" style="margin-top:20px"><i class="fa-solid fa-crown"></i> بادجات خاصة من الأدمن</div>
         <div class="admin-badges-grid" id="adminBadgesGrid"></div>
     </div>
 
-    <div class="section-title" style="margin-top:20px">🏅 البادجات</div>
+    <div class="section-title" style="margin-top:20px"><i class="fa-solid fa-medal"></i> البادجات</div>
     <div class="badges-count">حصل على <span id="earnedCount">0</span> من <span id="totalCount">0</span> بادج</div>
     <div id="badgesGrid"></div>
 
     <div id="pointsSection" style="display:none">
-        <div class="section-title" style="margin-top:36px">⭐ النقاط والإحالة</div>
+        <div class="section-title" style="margin-top:36px"><i class="fa-solid fa-star"></i> النقاط والإحالة</div>
         <div class="points-referral">
             <div class="points-card">
-                <span class="pc-icon">⭐</span>
+                <i class="fa-solid fa-star pc-icon"></i>
                 <span class="pc-value" id="myPoints">0</span>
                 <span class="pc-label">نقطة مكتسبة</span>
             </div>
             <div class="referral-card">
-                <h4>🔗 رابط الدعوة الخاص بك</h4>
+                <h4><i class="fa-solid fa-link"></i> رابط الدعوة الخاص بك</h4>
                 <div class="ref-link-box">
                     <input class="ref-link-input" id="refLinkInput" type="text" readonly>
-                    <button class="copy-ref-btn" id="copyRefBtn">📋 نسخ</button>
+                    <button class="copy-ref-btn" id="copyRefBtn"><i class="fa-solid fa-copy"></i> <span class="crb-label">نسخ</span></button>
                 </div>
                 <div class="ref-stats">
                     <div class="ref-stat">دعوات: <span id="refCount">0</span></div>
@@ -424,13 +444,13 @@
                 </div>
             </div>
         </div>
-        <div class="section-title" style="margin-top:28px">🎟️ استبدال كود نقاط</div>
+        <div class="section-title" style="margin-top:28px"><i class="fa-solid fa-ticket"></i> استبدال كود نقاط</div>
         <div style="max-width:820px;margin:0 auto;padding:0 20px 60px">
             <div class="referral-card">
-                <h4>🎁 عندك كود نقاط؟</h4>
+                <h4><i class="fa-solid fa-gift"></i> عندك كود نقاط؟</h4>
                 <div class="ref-link-box">
                     <input class="ref-link-input" id="redeemInput" type="text" placeholder="اكتب الكود هنا..." style="color:var(--text-main);font-family:'Tajawal',sans-serif;font-size:0.85rem;direction:ltr;text-align:left">
-                    <button class="copy-ref-btn" id="redeemBtn">🎁 استبدال</button>
+                    <button class="copy-ref-btn" id="redeemBtn"><i class="fa-solid fa-gift"></i> <span class="rdb-label">استبدال</span></button>
                 </div>
                 <div id="redeemMsg" style="font-size:0.78rem;font-weight:700;min-height:16px"></div>
             </div>
@@ -454,7 +474,7 @@ const AVATAR_MAX_DIM = 320;
 const AVATAR_QUALITY = 0.75;
 const COVER_MAX_W = 900, COVER_MAX_H = 340;
 const COVER_QUALITY = 0.75;
-const IMAGES_BUCKET  = 'script-images'; // 🗄️ نفس bucket تخزين الصور المستخدم في publish.html
+const IMAGES_BUCKET  = 'script-images'; // نفس bucket تخزين الصور المستخدم في publish.html
 
 function isPlaceholderName(name) {
     return !name || !name.trim() || /^c?craft\s*space\s*user/i.test(name.trim());
@@ -494,7 +514,7 @@ function renderCover(coverUrl) {
     }
 }
 
-// 📦 يرجّع Blob (مش base64 string) — أخف وأسرع للرفع المباشر على Storage
+// يرجّع Blob (مش base64 string) — أخف وأسرع للرفع المباشر على Storage
 function compressImageToBlob(file, maxDim, quality, square) {
     return new Promise((resolve, reject) => {
         if (!file.type.startsWith('image/')) { reject(new Error('الملف المختار ليس صورة')); return; }
@@ -530,10 +550,13 @@ function compressImageToBlob(file, maxDim, quality, square) {
     });
 }
 
-function showToast(msg) {
+// توست موحّد بأيقونة + نص، بدل الإيموجي
+function showToast(msg, icon) {
+    icon = icon || 'circle-check';
     let t = document.getElementById('profileToast');
     if (!t) { t = document.createElement('div'); t.id = 'profileToast'; t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--bg-card);border:1px solid var(--primary);border-radius:50px;padding:10px 24px;font-size:0.85rem;font-weight:800;color:var(--text-main);z-index:600;transition:transform 0.35s cubic-bezier(0.175,0.885,0.32,1.275);box-shadow:0 8px 24px rgba(0,0,0,0.4);pointer-events:none;white-space:nowrap;'; document.body.appendChild(t); }
-    t.innerText = msg; t.style.transform = 'translateX(-50%) translateY(0)';
+    t.innerHTML = `<i class="fa-solid fa-${icon}"></i><span>${msg}</span>`;
+    t.style.transform = 'translateX(-50%) translateY(0)';
     setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(60px)'; }, 2800);
 }
 
@@ -554,15 +577,14 @@ function enableAvatarEditing(userRowId, name) {
     const wrap = document.getElementById('avatarWrap');
     const input = document.getElementById('avatarFileInput');
     wrap.classList.add('editable');
-    const dot = document.getElementById('onlineDot');
-    wrap.insertAdjacentHTML('beforeend', '<div class="avatar-overlay">🔄</div>');
+    wrap.insertAdjacentHTML('beforeend', '<div class="avatar-overlay"><i class="fa-solid fa-rotate"></i></div>');
     wrap.onclick = () => input.click();
     input.onchange = async () => {
         const file = input.files[0];
         if (!file) return;
         wrap.classList.add('uploading');
         const overlay = wrap.querySelector('.avatar-overlay');
-        if (overlay) overlay.innerHTML = '⏳';
+        if (overlay) overlay.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         try {
             const compressedBlob = await compressImageToBlob(file, AVATAR_MAX_DIM, AVATAR_QUALITY, true);
             const fileName = `users/${userRowId}.jpg`;
@@ -578,17 +600,18 @@ function enableAvatarEditing(userRowId, name) {
             await supabase.from('users').update({ photo_url: publicUrl }).eq('id', userRowId);
             renderAvatar(name, publicUrl);
         } catch (err) {
-            alert('❌ ' + err.message);
+            alert('حدث خطأ: ' + err.message);
             renderAvatar(name, null);
         } finally {
             wrap.classList.remove('uploading');
-            wrap.insertAdjacentHTML('beforeend', '<div class="avatar-overlay">🔄</div>');
+            const ov = wrap.querySelector('.avatar-overlay');
+            if (ov) ov.innerHTML = '<i class="fa-solid fa-rotate"></i>';
             input.value = '';
         }
     };
 }
 
-// 🖼️ رفع/تغيير صورة الغلاف — بتتخزن في extra.coverUrl عشان معندناش عمود مخصص لها في جدول users
+// رفع/تغيير صورة الغلاف — بتتخزن في extra.coverUrl عشان معندناش عمود مخصص لها في جدول users
 function enableCoverEditing(userRowId) {
     const btn = document.getElementById('coverUploadBtn');
     const input = document.getElementById('coverFileInput');
@@ -597,7 +620,7 @@ function enableCoverEditing(userRowId) {
     input.onchange = async () => {
         const file = input.files[0];
         if (!file) return;
-        btn.innerText = '⏳';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         try {
             const compressedBlob = await compressImageToBlob(file, { w: COVER_MAX_W, h: COVER_MAX_H }, COVER_QUALITY, false);
             const fileName = `covers/${userRowId}.jpg`;
@@ -610,17 +633,17 @@ function enableCoverEditing(userRowId) {
             const extra = await patchUserExtra(userRowId, { coverUrl: publicUrl });
             if (currentUserRow) currentUserRow.extra = extra;
             renderCover(publicUrl);
-            showToast('✅ تم تحديث صورة الغلاف');
+            showToast('تم تحديث صورة الغلاف', 'circle-check');
         } catch (err) {
-            alert('❌ ' + err.message);
+            alert('حدث خطأ: ' + err.message);
         } finally {
-            btn.innerText = '📷';
+            btn.innerHTML = '<i class="fa-solid fa-camera"></i>';
             input.value = '';
         }
     };
 }
 
-// 🟢 heartbeat بسيط: يحدّث extra.lastSeen كل 30 ثانية طول ما صاحب الحساب فاتح صفحته
+// heartbeat بسيط: يحدّث extra.lastSeen كل 30 ثانية طول ما صاحب الحساب فاتح صفحته
 let heartbeatInterval = null;
 function startHeartbeat(userRowId) {
     const beat = async () => { try { await patchUserExtra(userRowId, { lastSeen: Date.now() }); } catch {} };
@@ -641,12 +664,12 @@ let checkTimeout = null, nameIsValid = false;
 window.openModal = function (forced) {
     if (forced) {
         forceUsernameSetup = true;
-        document.getElementById('usernameModalTitle').innerText = '🎉 خطوة أخيرة لإنشاء حسابك';
+        document.getElementById('usernameModalTitle').innerHTML = '<i class="fa-solid fa-flag-checkered"></i> خطوة أخيرة لإنشاء حسابك';
         document.getElementById('usernameModalSub').innerText = 'اختر اسم مستخدم فريد يظهر بدل بريدك الإلكتروني في البروفايل والسكربتات والشات. حسابك لسه ما اتعملش فعليًا غير بعد ما تحفظ اسم هنا.';
         document.getElementById('usernameCancelBtn').style.display = 'none';
     } else {
         forceUsernameSetup = false;
-        document.getElementById('usernameModalTitle').innerText = '✏️ تغيير اسم المستخدم';
+        document.getElementById('usernameModalTitle').innerHTML = '<i class="fa-solid fa-pen"></i> تغيير اسم المستخدم';
         document.getElementById('usernameModalSub').innerText = 'الاسم يظهر في البروفايل والسكربتات والشات. يمكن تغييره مرة كل أسبوع.';
         document.getElementById('usernameCancelBtn').style.display = 'inline-block';
     }
@@ -657,7 +680,7 @@ window.closeModal = function () {
     if (forceUsernameSetup) return;
     document.getElementById('usernameModal').classList.remove('open');
     document.getElementById('usernameInput').value = '';
-    setCheckState('info', 'اكتب الاسم المطلوب', '⌛', '');
+    setCheckState('info', 'اكتب الاسم المطلوب', 'fa-clock', '');
     document.getElementById('saveNameBtn').disabled = true;
     nameIsValid = false;
 };
@@ -667,15 +690,15 @@ document.getElementById('usernameInput').addEventListener('input', e => {
     clearTimeout(checkTimeout);
     const val = e.target.value.trim();
     nameIsValid = false; document.getElementById('saveNameBtn').disabled = true;
-    if (!val) { setCheckState('info', 'اكتب الاسم المطلوب', '⌛', ''); return; }
-    if (!USERNAME_REGEX.test(val)) { setCheckState('err', '❌ حروف إنجليزية وأرقام وشرطة سفلية فقط (3-20 حرف)', '❌', 'taken'); return; }
-    setCheckState('info', '🔍 جارٍ التحقق...', '⏳', '');
+    if (!val) { setCheckState('info', 'اكتب الاسم المطلوب', 'fa-clock', ''); return; }
+    if (!USERNAME_REGEX.test(val)) { setCheckState('err', 'حروف إنجليزية وأرقام وشرطة سفلية فقط (3-20 حرف)', 'fa-circle-xmark', 'taken'); return; }
+    setCheckState('info', 'جارٍ التحقق...', 'fa-spinner fa-spin', '');
     checkTimeout = setTimeout(() => checkUsernameAvailable(val), 600);
 });
 
-function setCheckState(type, msg, icon, inputClass) {
+function setCheckState(type, msg, iconClass, inputClass) {
     const m = document.getElementById('checkMsg'), i = document.getElementById('statusIcon'), inp = document.getElementById('usernameInput');
-    m.className = `check-msg ${type}`; m.textContent = msg; i.textContent = icon; inp.className = inputClass;
+    m.className = `check-msg ${type}`; m.textContent = msg; i.innerHTML = `<i class="fa-solid ${iconClass}"></i>`; inp.className = inputClass;
 }
 
 async function checkUsernameAvailable(name) {
@@ -684,11 +707,11 @@ async function checkUsernameAvailable(name) {
         const { data, error } = await supabase.from('users').select('id').ilike('username', name).maybeSingle();
         if (error) throw error;
         if (data && data.id !== currentUserRow?.id) {
-            setCheckState('err', '❌ هذا الاسم مأخوذ — جرّب اسماً آخر', '❌', 'taken'); nameIsValid = false; document.getElementById('saveNameBtn').disabled = true;
+            setCheckState('err', 'هذا الاسم مأخوذ — جرّب اسماً آخر', 'fa-circle-xmark', 'taken'); nameIsValid = false; document.getElementById('saveNameBtn').disabled = true;
         } else {
-            setCheckState('ok', '✅ هذا الاسم متاح!', '✅', 'valid'); nameIsValid = true; document.getElementById('saveNameBtn').disabled = false;
+            setCheckState('ok', 'هذا الاسم متاح!', 'fa-circle-check', 'valid'); nameIsValid = true; document.getElementById('saveNameBtn').disabled = false;
         }
-    } catch { setCheckState('info', '⚠️ تعذّر التحقق', '⚠️', ''); }
+    } catch { setCheckState('info', 'تعذّر التحقق', 'fa-triangle-exclamation', ''); }
 }
 
 window.saveUsername = async function () {
@@ -701,11 +724,11 @@ window.saveUsername = async function () {
         const lastChangeIso = currentUserRow.extra?.usernameChangedAt || null;
         if (lastChangeIso) {
             const days = (Date.now() - new Date(lastChangeIso).getTime()) / (1000 * 60 * 60 * 24);
-            if (days < COOLDOWN_DAYS) { alert(`⏳ انتظر ${Math.ceil(COOLDOWN_DAYS - days)} يوم`); return; }
+            if (days < COOLDOWN_DAYS) { alert(`يجب الانتظار ${Math.ceil(COOLDOWN_DAYS - days)} يوم قبل تغيير الاسم مجدداً`); return; }
         }
     }
 
-    const btn = document.getElementById('saveNameBtn'); btn.disabled = true; btn.innerText = '⏳ جارٍ الحفظ...';
+    const btn = document.getElementById('saveNameBtn'); btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ الحفظ...';
     try {
         if (needsRowInsert) {
             const { data: created, error } = await supabase
@@ -733,18 +756,18 @@ window.saveUsername = async function () {
         updateLastChangeLabel(currentUserRow.extra?.usernameChangedAt || null);
         forceUsernameSetup = false;
         closeModalForce();
-        showToast(wasForced ? '🎉 تم إنشاء حسابك بنجاح!' : '✅ تم تغيير اسم المستخدم!');
+        showToast(wasForced ? 'تم إنشاء حسابك بنجاح!' : 'تم تغيير اسم المستخدم!', wasForced ? 'sparkles' : 'circle-check');
 
         if (wasForced) {
             await loadMyProfile(currentUserRow, currentAuthUser);
         }
     } catch (e) {
         if (e && e.code === '23505') {
-            setCheckState('err', '❌ الاسم اتاخد للتو، جرّب اسماً آخر', '❌', 'taken');
-            btn.disabled = false; btn.innerText = '💾 حفظ';
+            setCheckState('err', 'الاسم اتاخد للتو، جرّب اسماً آخر', 'fa-circle-xmark', 'taken');
+            btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> حفظ';
         } else {
-            alert('❌ خطأ: ' + e.message);
-            btn.disabled = false; btn.innerText = '💾 حفظ';
+            alert('خطأ: ' + e.message);
+            btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> حفظ';
         }
     }
 };
@@ -752,19 +775,19 @@ window.saveUsername = async function () {
 function closeModalForce() {
     document.getElementById('usernameModal').classList.remove('open');
     document.getElementById('usernameInput').value = '';
-    setCheckState('info', 'اكتب الاسم المطلوب', '⌛', '');
+    setCheckState('info', 'اكتب الاسم المطلوب', 'fa-clock', '');
     document.getElementById('saveNameBtn').disabled = true;
     nameIsValid = false;
 }
 
 function updateLastChangeLabel(iso) {
     const label = document.getElementById('lastNameChange');
-    if (!iso) { label.innerText = ''; return; }
+    if (!iso) { label.innerHTML = ''; return; }
     const daysLeft = Math.max(0, Math.ceil(COOLDOWN_DAYS - (Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24)));
     if (daysLeft > 0) {
-        label.innerText = `🔒 يمكن تغيير الاسم بعد ${daysLeft} يوم`;
+        label.innerHTML = `<i class="fa-solid fa-lock"></i> يمكن تغيير الاسم بعد ${daysLeft} يوم`;
     } else {
-        label.innerText = '';
+        label.innerHTML = '';
     }
 }
 
@@ -776,10 +799,10 @@ window.submitVerifyRequest = async function () {
     if (!currentUserRow) return;
     const reason = document.getElementById('verifyReason').value.trim();
     const { data: existing } = await supabase.from('verify_requests').select('id').eq('user_id', currentUserRow.id).eq('status', 'pending').maybeSingle();
-    if (existing) { alert('⏳ عندك طلب تحقق قيد المراجعة بالفعل'); closeVerifyModal(); return; }
+    if (existing) { alert('عندك طلب تحقق قيد المراجعة بالفعل'); closeVerifyModal(); return; }
     await supabase.from('verify_requests').insert({ user_id: currentUserRow.id, reason, status: 'pending' });
     closeVerifyModal();
-    showToast('📨 تم إرسال طلب التحقق — سيراجعه الأدمن قريباً');
+    showToast('تم إرسال طلب التحقق — سيراجعه الأدمن قريباً', 'paper-plane');
     renderVerifyBtn('pending');
 };
 
@@ -789,44 +812,44 @@ async function renderVerifyBtn(status) {
     const btn = document.createElement('button');
     if (!status || status === 'rejected') {
         btn.className = 'verify-request-btn';
-        btn.innerHTML = '🔍 طلب التحقق';
+        btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> طلب التحقق';
         btn.onclick = openVerifyModal;
         actions.appendChild(btn);
     } else if (status === 'pending') {
         btn.className = 'verify-request-btn pending';
-        btn.innerHTML = '⏳ طلب التحقق قيد المراجعة';
+        btn.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> طلب التحقق قيد المراجعة';
         actions.appendChild(btn);
     } else if (status === 'approved') {
         btn.className = 'verify-request-btn verified';
-        btn.innerHTML = '✅ موثّق من الأدمن';
+        btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> موثّق من الأدمن';
         actions.appendChild(btn);
         const reBtn = document.createElement('button');
         reBtn.className = 'reverify-btn';
-        reBtn.innerHTML = '🔄 إعادة طلب التوثيق';
+        reBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> إعادة طلب التوثيق';
         reBtn.onclick = openVerifyModal;
         actions.appendChild(reBtn);
     }
 }
 
 const ALL_BADGES = [
-    { id: 'first_script', icon: '🚀', name: 'الانطلاقة', desc: 'نشر أول سكربت', check: s => s.scripts >= 1, rarity: 'common' },
-    { id: 'five_scripts', icon: '📦', name: 'مجموعة', desc: 'نشر 5 سكربتات', check: s => s.scripts >= 5, rarity: 'common' },
-    { id: 'ten_scripts', icon: '💎', name: 'محترف', desc: 'نشر 10 سكربتات', check: s => s.scripts >= 10, rarity: 'rare' },
-    { id: 'first_like', icon: '👍', name: 'محبوب', desc: 'أول لايك', check: s => s.totalLikes >= 1, rarity: 'common' },
-    { id: 'ten_likes', icon: '🔥', name: 'مشهور', desc: '10 لايكات', check: s => s.totalLikes >= 10, rarity: 'common' },
-    { id: 'fifty_likes', icon: '⭐', name: 'نجم', desc: '50 لايك', check: s => s.totalLikes >= 50, rarity: 'rare' },
-    { id: 'hundred_likes', icon: '👑', name: 'أسطورة', desc: '100 لايك', check: s => s.totalLikes >= 100, rarity: 'epic' },
-    { id: 'good_rating', icon: '🏆', name: 'تقييم ممتاز', desc: 'متوسط تقييم 4+', check: s => s.avgRating >= 4, rarity: 'rare' },
-    { id: 'all_categories', icon: '🌈', name: 'متنوع', desc: '3 أقسام مختلفة', check: s => s.categories >= 3, rarity: 'common' },
-    { id: 'veteran', icon: '🎖️', name: 'مخضرم', desc: 'عضو أكثر من 30 يوم', check: s => s.daysOld >= 30, rarity: 'rare' },
-    { id: 'pts_first', icon: '🌱', name: 'أول خطوة', desc: 'اجمع 15 نقطة', check: s => s.points >= 15, rarity: 'common' },
-    { id: 'pts_50', icon: '💫', name: 'صاعد', desc: 'اجمع 50 نقطة', check: s => s.points >= 50, rarity: 'common' },
-    { id: 'pts_150', icon: '🌟', name: 'مؤثر', desc: 'اجمع 150 نقطة', check: s => s.points >= 150, rarity: 'rare' },
-    { id: 'pts_500', icon: '💥', name: 'قائد', desc: 'اجمع 500 نقطة', check: s => s.points >= 500, rarity: 'epic' },
-    { id: 'pts_1000', icon: '🔮', name: 'أسطورة الإحالة', desc: 'اجمع 1000 نقطة', check: s => s.points >= 1000, rarity: 'legendary' },
-    { id: 'ref_1', icon: '🤝', name: 'مُضيف', desc: 'دعوة شخص واحد', check: s => s.refs >= 1, rarity: 'common' },
-    { id: 'ref_5', icon: '📣', name: 'داعية', desc: 'دعوة 5 أشخاص', check: s => s.refs >= 5, rarity: 'rare' },
-    { id: 'ref_20', icon: '🌐', name: 'موسع المجتمع', desc: 'دعوة 20 شخصاً', check: s => s.refs >= 20, rarity: 'legendary' },
+    { id: 'first_script', icon: 'rocket', name: 'الانطلاقة', desc: 'نشر أول سكربت', check: s => s.scripts >= 1, rarity: 'common' },
+    { id: 'five_scripts', icon: 'box', name: 'مجموعة', desc: 'نشر 5 سكربتات', check: s => s.scripts >= 5, rarity: 'common' },
+    { id: 'ten_scripts', icon: 'gem', name: 'محترف', desc: 'نشر 10 سكربتات', check: s => s.scripts >= 10, rarity: 'rare' },
+    { id: 'first_like', icon: 'thumbs-up', name: 'محبوب', desc: 'أول لايك', check: s => s.totalLikes >= 1, rarity: 'common' },
+    { id: 'ten_likes', icon: 'fire', name: 'مشهور', desc: '10 لايكات', check: s => s.totalLikes >= 10, rarity: 'common' },
+    { id: 'fifty_likes', icon: 'star', name: 'نجم', desc: '50 لايك', check: s => s.totalLikes >= 50, rarity: 'rare' },
+    { id: 'hundred_likes', icon: 'crown', name: 'أسطورة', desc: '100 لايك', check: s => s.totalLikes >= 100, rarity: 'epic' },
+    { id: 'good_rating', icon: 'trophy', name: 'تقييم ممتاز', desc: 'متوسط تقييم 4+', check: s => s.avgRating >= 4, rarity: 'rare' },
+    { id: 'all_categories', icon: 'palette', name: 'متنوع', desc: '3 أقسام مختلفة', check: s => s.categories >= 3, rarity: 'common' },
+    { id: 'veteran', icon: 'medal', name: 'مخضرم', desc: 'عضو أكثر من 30 يوم', check: s => s.daysOld >= 30, rarity: 'rare' },
+    { id: 'pts_first', icon: 'seedling', name: 'أول خطوة', desc: 'اجمع 15 نقطة', check: s => s.points >= 15, rarity: 'common' },
+    { id: 'pts_50', icon: 'bolt', name: 'صاعد', desc: 'اجمع 50 نقطة', check: s => s.points >= 50, rarity: 'common' },
+    { id: 'pts_150', icon: 'meteor', name: 'مؤثر', desc: 'اجمع 150 نقطة', check: s => s.points >= 150, rarity: 'rare' },
+    { id: 'pts_500', icon: 'fire-flame-curved', name: 'قائد', desc: 'اجمع 500 نقطة', check: s => s.points >= 500, rarity: 'epic' },
+    { id: 'pts_1000', icon: 'wand-magic-sparkles', name: 'أسطورة الإحالة', desc: 'اجمع 1000 نقطة', check: s => s.points >= 1000, rarity: 'legendary' },
+    { id: 'ref_1', icon: 'handshake', name: 'مُضيف', desc: 'دعوة شخص واحد', check: s => s.refs >= 1, rarity: 'common' },
+    { id: 'ref_5', icon: 'bullhorn', name: 'داعية', desc: 'دعوة 5 أشخاص', check: s => s.refs >= 5, rarity: 'rare' },
+    { id: 'ref_20', icon: 'globe', name: 'موسع المجتمع', desc: 'دعوة 20 شخصاً', check: s => s.refs >= 20, rarity: 'legendary' },
 ];
 const RARITY_STYLES = { common: { border: 'rgba(139,92,246,0.3)', glow: 'rgba(139,92,246,0.15)', label: 'عادي', color: '#a78bfa' }, rare: { border: 'rgba(59,130,246,0.4)', glow: 'rgba(59,130,246,0.2)', label: 'نادر', color: '#60a5fa' }, epic: { border: 'rgba(168,85,247,0.5)', glow: 'rgba(168,85,247,0.25)', label: 'ملحمي', color: '#c084fc' }, legendary: { border: 'rgba(251,191,36,0.5)', glow: 'rgba(251,191,36,0.2)', label: 'أسطوري', color: '#fbbf24' } };
 
@@ -843,7 +866,7 @@ function renderSettingsSocialList() {
     const ttRow = document.createElement('div'); ttRow.className = 'social-link-row';
     ttRow.innerHTML = `
         <div class="social-link-left">
-            <div class="social-link-icon">🎵</div>
+            <div class="social-link-icon"><i class="fa-brands fa-tiktok"></i></div>
             <div>
                 <div class="social-link-name">تيك توك</div>
                 <div class="social-link-value">${tiktokHandle ? '@' + tiktokHandle : 'غير مربوط'}</div>
@@ -854,7 +877,7 @@ function renderSettingsSocialList() {
     const ttActions = ttRow.querySelector('#ttActions');
     if (tiktokIsOwner) {
         const editBtn = document.createElement('button');
-        editBtn.className = 'sl-btn'; editBtn.innerText = tiktokHandle ? '✏️ تغيير' : '➕ ربط';
+        editBtn.className = 'sl-btn'; editBtn.innerHTML = tiktokHandle ? '<i class="fa-solid fa-pen"></i> تغيير' : '<i class="fa-solid fa-plus"></i> ربط';
         editBtn.onclick = openTiktokModal;
         ttActions.appendChild(editBtn);
     }
@@ -863,7 +886,7 @@ function renderSettingsSocialList() {
     const rlRow = document.createElement('div'); rlRow.className = 'social-link-row';
     rlRow.innerHTML = `
         <div class="social-link-left">
-            <div class="social-link-icon">🎮</div>
+            <div class="social-link-icon"><i class="fa-solid fa-gamepad"></i></div>
             <div>
                 <div class="social-link-name">روبلوكس</div>
                 <div class="social-link-value">${robloxData?.username ? '@' + robloxData.username : 'غير مربوط'}</div>
@@ -876,17 +899,17 @@ function renderSettingsSocialList() {
         if (robloxData && robloxData.username) {
             if (robloxData.userId) {
                 const useBtn = document.createElement('button');
-                useBtn.className = 'sl-btn cyan'; useBtn.innerText = '🖼️ كصورة بروفايل';
+                useBtn.className = 'sl-btn cyan'; useBtn.innerHTML = '<i class="fa-solid fa-image"></i> كصورة بروفايل';
                 useBtn.onclick = () => useRobloxAvatar(robloxRowId, `https://Anas9vmhh.pythonanywhere.com/avatar/${robloxData.userId}`);
                 rlActions.appendChild(useBtn);
             }
             const unlinkBtn = document.createElement('button');
-            unlinkBtn.className = 'sl-btn danger'; unlinkBtn.innerText = '✕ إلغاء';
+            unlinkBtn.className = 'sl-btn danger'; unlinkBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> إلغاء';
             unlinkBtn.onclick = () => unlinkRoblox(robloxRowId);
             rlActions.appendChild(unlinkBtn);
         } else {
             const linkBtn = document.createElement('button');
-            linkBtn.className = 'sl-btn'; linkBtn.innerText = '➕ ربط';
+            linkBtn.className = 'sl-btn'; linkBtn.innerHTML = '<i class="fa-solid fa-plus"></i> ربط';
             linkBtn.onclick = openRobloxLinkModal;
             rlActions.appendChild(linkBtn);
         }
@@ -917,20 +940,20 @@ window.saveTiktok = async function () {
     handle = handle.replace(/^@/, '').replace(/^https?:\/\/(www\.)?tiktok\.com\/@?/i, '').replace(/\/.*$/, '');
     if (!handle) { alert('اكتب اسم المستخدم بتاعك في تيك توك'); return; }
     const btn = document.getElementById('saveTiktokBtn');
-    btn.disabled = true; btn.innerText = '⏳ جارٍ الحفظ...';
+    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ الحفظ...';
     try {
         const extra = await patchUserExtra(tiktokRowId, { tiktok: handle });
         if (currentUserRow) currentUserRow.extra = extra;
         setTiktokState(tiktokRowId, handle, true);
         renderSettingsSocialList();
         closeTiktokModal();
-        showToast('✅ تم ربط حساب تيك توك!');
-    } catch (e) { alert('❌ خطأ: ' + e.message); }
-    finally { btn.disabled = false; btn.innerText = '💾 حفظ'; }
+        showToast('تم ربط حساب تيك توك!', 'circle-check');
+    } catch (e) { alert('خطأ: ' + e.message); }
+    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> حفظ'; }
 };
 
 window.openRobloxLinkModal = function () {
-    document.getElementById('rlResult').innerText = '';
+    document.getElementById('rlResult').innerHTML = '';
     document.getElementById('rlUsername').value = '';
     document.getElementById('robloxLinkModal').classList.add('open');
 };
@@ -941,10 +964,10 @@ window.verifyRobloxLink = async function () {
     if (!robloxIsOwner || !robloxRowId) return;
     const username = document.getElementById('rlUsername').value.trim();
     const resultDiv = document.getElementById('rlResult');
-    if (!username) { resultDiv.innerText = '⚠️ اكتب اليوزرنيم الأول'; return; }
+    if (!username) { resultDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> اكتب اليوزرنيم الأول'; return; }
     const btn = document.getElementById('rlVerifyBtn');
-    btn.disabled = true; btn.innerText = '⏳ جارٍ الربط...';
-    resultDiv.innerText = '⏳ جاري الربط...';
+    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جارٍ الربط...';
+    resultDiv.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الربط...';
     try {
         const res = await fetch('https://Anas9vmhh.pythonanywhere.com/lookup', {
             method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username })
@@ -954,24 +977,24 @@ window.verifyRobloxLink = async function () {
             const newRobloxData = { userId: data.userId, username: data.username, avatarUrl: data.avatarUrl || null, linkedAt: Date.now() };
             const extra = await patchUserExtra(robloxRowId, { roblox: newRobloxData });
             if (currentUserRow) currentUserRow.extra = extra;
-            resultDiv.innerHTML = '✅ ' + data.message;
+            resultDiv.innerHTML = '<i class="fa-solid fa-circle-check"></i> ' + data.message;
             setRobloxState(robloxRowId, newRobloxData, true);
             renderSettingsSocialList();
             setTimeout(closeRobloxLinkModal, 1000);
-            showToast('✅ تم ربط حساب روبلوكس!');
+            showToast('تم ربط حساب روبلوكس!', 'circle-check');
         } else {
-            resultDiv.innerHTML = '❌ ' + data.message;
+            resultDiv.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> ' + data.message;
         }
-    } catch (err) { resultDiv.innerHTML = '⚠️ حصل خطأ في الاتصال بالسيرفر'; }
-    finally { btn.disabled = false; btn.innerText = '🔗 ربط الحساب'; }
+    } catch (err) { resultDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> حصل خطأ في الاتصال بالسيرفر'; }
+    finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-link"></i> ربط الحساب'; }
 };
 
 async function useRobloxAvatar(rowId, avatarUrl) {
     try {
         await supabase.from('users').update({ photo_url: avatarUrl }).eq('id', rowId);
         renderAvatar(currentUserRow?.username, avatarUrl);
-        showToast('✅ اتحطت صورة روبلوكس كصورة بروفايلك');
-    } catch (e) { alert('❌ خطأ: ' + e.message); }
+        showToast('اتحطت صورة روبلوكس كصورة بروفايلك', 'circle-check');
+    } catch (e) { alert('خطأ: ' + e.message); }
 }
 
 async function unlinkRoblox(rowId) {
@@ -981,8 +1004,8 @@ async function unlinkRoblox(rowId) {
         if (currentUserRow) currentUserRow.extra = extra;
         setRobloxState(rowId, null, true);
         renderSettingsSocialList();
-        showToast('تم إلغاء الربط');
-    } catch (e) { alert('❌ خطأ: ' + e.message); }
+        showToast('تم إلغاء الربط', 'link-slash');
+    } catch (e) { alert('خطأ: ' + e.message); }
 }
 
 let viewedProfileRowId = null;
@@ -1003,7 +1026,7 @@ async function renderFollowButton(targetRowId) {
     if (!currentUserRow) {
         const btn = document.createElement('button');
         btn.className = 'follow-btn';
-        btn.innerHTML = '➕ متابعة';
+        btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> متابعة';
         btn.onclick = () => { location.href = 'login.html'; };
         actions.prepend(btn);
         return;
@@ -1014,7 +1037,7 @@ async function renderFollowButton(targetRowId) {
 
     const btn = document.createElement('button');
     btn.className = 'follow-btn' + (isFollowing ? ' following' : '');
-    btn.innerHTML = isFollowing ? '✓ متابَع' : '➕ متابعة';
+    btn.innerHTML = isFollowing ? '<i class="fa-solid fa-check"></i> متابَع' : '<i class="fa-solid fa-user-plus"></i> متابعة';
     btn.onclick = () => toggleFollow(targetRowId, btn);
     actions.prepend(btn);
 }
@@ -1027,15 +1050,15 @@ window.toggleFollow = async function (targetRowId, btn) {
         if (existing) {
             await supabase.from('follows').delete().eq('follower_id', currentUserRow.id).eq('following_id', targetRowId);
             btn.className = 'follow-btn';
-            btn.innerHTML = '➕ متابعة';
+            btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> متابعة';
         } else {
             await supabase.from('follows').insert({ follower_id: currentUserRow.id, following_id: targetRowId });
             btn.className = 'follow-btn following';
-            btn.innerHTML = '✓ متابَع';
-            showToast('✅ بدأت متابعة هذا المستخدم');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> متابَع';
+            showToast('بدأت متابعة هذا المستخدم', 'user-plus');
         }
         await renderFollowStats(targetRowId);
-    } catch (e) { alert('❌ خطأ: ' + e.message); }
+    } catch (e) { alert('خطأ: ' + e.message); }
     finally { btn.disabled = false; }
 };
 
@@ -1043,7 +1066,7 @@ window.openFollowListModal = async function (type) {
     if (!viewedProfileRowId) return;
     const title = document.getElementById('flistTitle');
     const itemsBox = document.getElementById('flistItems');
-    title.innerText = type === 'followers' ? '👥 المتابِعين' : '👥 يتابع';
+    title.innerHTML = type === 'followers' ? '<i class="fa-solid fa-users"></i> المتابِعين' : '<i class="fa-solid fa-users"></i> يتابع';
     itemsBox.innerHTML = '<div class="flist-empty">جارٍ التحميل...</div>';
     document.getElementById('followListModal').classList.add('open');
     try {
@@ -1093,7 +1116,7 @@ async function boot(authUser) {
             const { data: myRow } = await supabase.from('users').select('*').eq('auth_uid', authUser.id).maybeSingle();
             if (myRow && myRow.is_banned) {
                 await supabase.auth.signOut();
-                alert('🚫 حسابك محظور من CCRAFT SPACE.');
+                alert('حسابك محظور من CCRAFT SPACE.');
                 location.href = 'login.html';
                 return;
             }
@@ -1118,7 +1141,7 @@ async function boot(authUser) {
 
     if (row && row.is_banned) {
         await supabase.auth.signOut();
-        alert('🚫 حسابك محظور من CCRAFT SPACE.');
+        alert('حسابك محظور من CCRAFT SPACE.');
         location.href = 'login.html';
         return;
     }
@@ -1158,10 +1181,10 @@ async function loadMyProfile(row, authUser) {
     updateLastChangeLabel(row.extra?.usernameChangedAt || null);
 
     document.getElementById('identityActions').innerHTML = `
-        <button class="edit-profile-btn" onclick="openModal(false)">✏️ تعديل البروفايل</button>
+        <button class="edit-profile-btn" onclick="openModal(false)"><i class="fa-solid fa-pen"></i> تعديل البروفايل</button>
     `;
     document.getElementById('profileActions').innerHTML = `
-        <button id="logoutBtn" style="background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.2);border-radius:var(--radius-btn);padding:9px 16px;font-size:0.8rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;">🚪 خروج</button>
+        <button id="logoutBtn" style="background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.2);border-radius:var(--radius-btn);padding:9px 16px;font-size:0.8rem;cursor:pointer;font-family:Tajawal,sans-serif;font-weight:800;display:inline-flex;align-items:center;gap:6px;"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
     `;
     document.getElementById('logoutBtn').onclick = async () => { await supabase.auth.signOut(); location.href = 'index.html'; };
     document.getElementById('scriptsTabLabel').innerText = 'سكربتاتي';
@@ -1200,7 +1223,7 @@ async function loadOtherProfile(rowId) {
     await loadViews(rowId, true);
 }
 
-// 👁️ عداد المشاهدات: بيتسجل view واحدة لما حد غير صاحب الحساب يفتح البروفايل، ومخزّن في extra.views
+// عداد المشاهدات: بيتسجل view واحدة لما حد غير صاحب الحساب يفتح البروفايل، ومخزّن في extra.views
 async function loadViews(rowId, isVisitorView) {
     try {
         const { data: row } = await supabase.from('users').select('extra').eq('id', rowId).maybeSingle();
@@ -1248,9 +1271,9 @@ async function renderBadges(rowId, stats, canAward) {
         const rs = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
         if (isEarned) earned++;
         if (isNew) { newBadges[badge.id] = { earnedAt: Date.now(), rarity: badge.rarity }; extraChanged = true; }
-        const card = document.createElement('div'); card.className = `badge-card ${isEarned ? 'earned' : 'locked'} ${isNew ? 'new-badge' : ''}`;
+        const card = document.createElement('div'); card.className = `badge-card ${isEarned ? 'earned' : 'locked'}`;
         if (isEarned) { card.style.borderColor = rs.border; card.style.background = `linear-gradient(145deg,${rs.glow} 0%,rgba(0,0,0,0) 100%)`; }
-        card.innerHTML = `<span class="badge-icon">${badge.icon}</span><span class="badge-name">${badge.name}</span><span class="badge-desc">${badge.desc}</span>${isEarned ? `<span style="font-size:0.6rem;font-weight:900;color:${rs.color};margin-top:6px;display:block;letter-spacing:1px">${rs.label}</span>` : ''}`;
+        card.innerHTML = `${isNew ? '<span class="new-flag"><i class="fa-solid fa-sparkles"></i> جديد</span>' : ''}<span class="badge-icon"><i class="fa-solid fa-${badge.icon}"></i></span><span class="badge-name">${badge.name}</span><span class="badge-desc">${badge.desc}</span>${isEarned ? `<span style="font-size:0.6rem;font-weight:900;color:${rs.color};margin-top:6px;display:block;letter-spacing:1px">${rs.label}</span>` : ''}`;
         grid.appendChild(card);
     }
     if (extraChanged) await patchUserExtra(rowId, { badges: newBadges });
@@ -1261,7 +1284,7 @@ async function renderBadges(rowId, stats, canAward) {
 function renderScriptsList(rowId, scripts, canDelete) {
     const container = document.getElementById('userScripts'); container.innerHTML = '';
     if (!scripts.length) {
-        container.innerHTML = `<div class="empty-state"><p>${canDelete ? 'ما نشرتش أي سكربت لحد دلوقتي 😅' : 'المستخدم ده ما نشرش أي سكربت بعد.'}</p>${canDelete ? `<button onclick="location.href='publish.html'" style="background:var(--accent-gradient);color:white;border:none;border-radius:50px;padding:13px 30px;font-family:Tajawal,sans-serif;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(139,92,246,0.3)">📤 انشر أول سكربت</button>` : ''}</div>`;
+        container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-scroll empty-icon"></i><p>${canDelete ? 'ما نشرتش أي سكربت لحد دلوقتي' : 'المستخدم ده ما نشرش أي سكربت بعد.'}</p>${canDelete ? `<button onclick="location.href='publish.html'" style="background:var(--accent-gradient);color:white;border:none;border-radius:50px;padding:13px 30px;font-family:Tajawal,sans-serif;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(139,92,246,0.3);display:inline-flex;align-items:center;gap:8px"><i class="fa-solid fa-upload"></i> انشر أول سكربت</button>` : ''}</div>`;
         return;
     }
     scripts.forEach((s, i) => {
@@ -1269,14 +1292,14 @@ function renderScriptsList(rowId, scripts, canDelete) {
         const card = document.createElement('div'); card.className = 'mini-card'; card.style.animationDelay = `${i * 0.06}s`;
         card.innerHTML = `
             <div class="mini-card-info">
-                <h3>${s.title || 'بدون عنوان'} ${s.is_verified ? '<span class="verified-badge-pill">✅ موثوق</span>' : ''}</h3>
+                <h3><span class="mc-title-text">${s.title || 'بدون عنوان'}</span> ${s.is_verified ? '<span class="verified-badge-pill"><i class="fa-solid fa-circle-check"></i> موثوق</span>' : ''}</h3>
                 <div class="mini-card-meta">
                     <span class="cat-badge">${s.category || 'عام'}</span>
-                    <span>👍 ${s.likes_count || 0}</span>
-                    <span>⭐ ${avg}</span>
+                    <span><i class="fa-solid fa-thumbs-up"></i> ${s.likes_count || 0}</span>
+                    <span><i class="fa-solid fa-star"></i> ${avg}</span>
                 </div>
             </div>
-            ${canDelete ? `<button class="delete-btn" data-id="${s.id}">🗑️ حذف</button>` : ''}
+            ${canDelete ? `<button class="delete-btn" data-id="${s.id}"><i class="fa-solid fa-trash"></i> حذف</button>` : ''}
         `;
         card.querySelector('.mini-card-info').onclick = () => location.href = `script.html?id=${s.id}`;
         if (canDelete) {
@@ -1297,8 +1320,8 @@ async function loadPoints(rowId) {
     document.getElementById('refLinkInput').value = refLink;
     document.getElementById('copyRefBtn').onclick = () => {
         navigator.clipboard.writeText(refLink).then(() => {
-            const btn = document.getElementById('copyRefBtn'); btn.innerText = '✅ تم'; btn.classList.add('copied');
-            setTimeout(() => { btn.innerText = '📋 نسخ'; btn.classList.remove('copied'); }, 2000);
+            const btn = document.getElementById('copyRefBtn'); btn.innerHTML = '<i class="fa-solid fa-check"></i> <span class="crb-label">تم</span>'; btn.classList.add('copied');
+            setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> <span class="crb-label">نسخ</span>'; btn.classList.remove('copied'); }, 2000);
         });
     };
     const { data: row } = await supabase.from('users').select('points, extra').eq('id', rowId).maybeSingle();
@@ -1315,7 +1338,7 @@ async function loadPoints(rowId) {
     entries.forEach(([ts, l]) => {
         const item = document.createElement('div'); item.className = 'log-item';
         const date = new Date(parseInt(ts)).toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        item.innerHTML = `<span class="li-icon">🎁</span><span class="li-text">${l.type === 'admin' ? 'نقاط من الأدمن' : l.type === 'code' ? `كود: ${l.code || ''}` : 'شخص فتح رابط الدعوة'}</span><span class="li-pts">+${l.points} ⭐</span><span class="li-time">${date}</span>`;
+        item.innerHTML = `<span class="li-icon"><i class="fa-solid fa-gift"></i></span><span class="li-text">${l.type === 'admin' ? 'نقاط من الأدمن' : l.type === 'code' ? `كود: ${l.code || ''}` : 'شخص فتح رابط الدعوة'}</span><span class="li-pts">+${l.points}</span><span class="li-time">${date}</span>`;
         logDiv.appendChild(item);
     });
 }
@@ -1342,15 +1365,15 @@ document.getElementById('redeemBtn')?.addEventListener('click', async () => {
     if (!code) return;
 
     const btn = document.getElementById('redeemBtn');
-    btn.disabled = true; btn.innerText = '⏳';
-    msg.textContent = '';
+    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    msg.innerHTML = '';
 
     try {
         const { data: codeRow } = await supabase.from('redeem_codes').select('code, points').eq('code', code).maybeSingle();
-        if (!codeRow) { msg.style.color = 'var(--danger)'; msg.textContent = '❌ الكود غير صحيح'; return; }
+        if (!codeRow) { msg.style.color = 'var(--danger)'; msg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> الكود غير صحيح'; return; }
 
         const { data: usedRow } = await supabase.from('redeem_code_uses').select('code').eq('code', code).eq('user_id', currentUserRow.id).maybeSingle();
-        if (usedRow) { msg.style.color = 'var(--danger)'; msg.textContent = '⚠️ استخدمت هذا الكود من قبل'; return; }
+        if (usedRow) { msg.style.color = 'var(--danger)'; msg.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> استخدمت هذا الكود من قبل'; return; }
 
         const pts = codeRow.points || 0;
         const { data: row } = await supabase.from('users').select('points, extra').eq('id', currentUserRow.id).maybeSingle();
@@ -1361,13 +1384,13 @@ document.getElementById('redeemBtn')?.addEventListener('click', async () => {
         await supabase.from('users').update({ points: newPoints, extra: { ...(row?.extra || {}), pointsLog: newLog } }).eq('id', currentUserRow.id);
         await supabase.from('redeem_code_uses').insert({ code, user_id: currentUserRow.id, used_at: new Date().toISOString() });
 
-        msg.style.color = 'var(--success)'; msg.textContent = `✅ تم! حصلت على ${pts} نقطة`;
+        msg.style.color = 'var(--success)'; msg.innerHTML = `<i class="fa-solid fa-circle-check"></i> تم! حصلت على ${pts} نقطة`;
         input.value = '';
         await loadPoints(currentUserRow.id);
     } catch (e) {
-        msg.style.color = 'var(--danger)'; msg.textContent = '❌ حدث خطأ، حاول تاني';
+        msg.style.color = 'var(--danger)'; msg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> حدث خطأ، حاول تاني';
     } finally {
-        btn.disabled = false; btn.innerText = '🎁 استبدال';
+        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-gift"></i> <span class="rdb-label">استبدال</span>';
     }
 });
 
