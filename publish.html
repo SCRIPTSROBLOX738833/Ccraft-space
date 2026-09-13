@@ -229,10 +229,13 @@
     /* ---- Add tag button ---- */
     #addTagBtn { white-space: nowrap; padding: 10px 18px; }
 
+    /* ---- Turnstile widget wrapper ---- */
+    #turnstileWrap { display: flex; justify-content: center; margin: 4px 0 4px; }
+
     #publishBtn { margin-top: 4px; }
 
   </style>
-<script src="https://www.google.com/recaptcha/api.js?render=6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -413,6 +416,18 @@
         </div>
     </div>
 
+    <!-- ============================================================
+         🛡️ التحقق الأمني (Cloudflare Turnstile)
+         ============================================================ -->
+    <div id="turnstileWrap">
+        <div class="cf-turnstile"
+             data-sitekey="0x4AAAAAAEx_Hbq9CGAsny-v"
+             data-theme="dark"
+             data-callback="onTurnstileSuccess"
+             data-expired-callback="onTurnstileExpired"
+             data-error-callback="onTurnstileError"></div>
+    </div>
+
     <button type="button" id="publishBtn">📤 نشر السكربت</button>
   </form>
 </main>
@@ -439,6 +454,15 @@
   const TARGET_WIDTH   = 800;  // العرض المستهدف بعد الضغط
   const JPEG_QUALITY   = 0.82; // جودة الضغط
   const PUBLISH_COOLDOWN_MS = 60 * 1000; // ⏳ دقيقة بين كل نشر والتاني (app-level، مش أمان كامل)
+
+  // 🛡️ Cloudflare Turnstile
+  // غيّر الرابط ده لرابط الـ Flask app بتاعك على PythonAnywhere
+  const FLASK_VERIFY_URL = "https://YOUR-USERNAME.pythonanywhere.com/verify-turnstile";
+  let turnstileToken = null;
+
+  window.onTurnstileSuccess = (token) => { turnstileToken = token; };
+  window.onTurnstileExpired = () => { turnstileToken = null; };
+  window.onTurnstileError   = () => { turnstileToken = null; };
 
   const ALL_BADGES = [
     { id:'first_script',   icon:'🚀', name:'الانطلاقة',   desc:'نشر أول سكربت',      check:s=>s.scripts>=1    },
@@ -755,30 +779,31 @@
         alert('مطلوب كل الحقول!'); return;
     }
 
+    // 🛡️ لازم يكمل تحدي Turnstile قبل ما نكمل
+    if (!turnstileToken) {
+        alert('❌ من فضلك أكمل التحقق الأمني (المربع فوق زرار النشر) الأول');
+        return;
+    }
+
     const btn = document.getElementById('publishBtn');
     btn.disabled  = true;
     btn.innerText = '⏳ جارٍ التحقق الأمني...';
 
-    // 🔐 reCAPTCHA v3 — لازم يتولد توكن بنجاح قبل ما نكمل النشر
-    let captchaToken = null;
+    // 🔐 تحقق من توكن Turnstile عن طريق سيرفر Flask قبل أي insert
     try {
-        captchaToken = await new Promise((resolve, reject) => {
-            if (typeof grecaptcha === 'undefined') { reject(new Error('recaptcha not loaded')); return; }
-            grecaptcha.ready(() => {
-                grecaptcha.execute('6LdA7YYtAAAAACNdrhaLxSVYQ0cHsfdkIqLW_rh7', { action: 'publish' })
-                    .then(resolve).catch(reject);
-            });
+        const verifyRes = await fetch(FLASK_VERIFY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: turnstileToken })
         });
+        const verifyData = await verifyRes.json();
+        if (!verifyData.success) throw new Error('turnstile verification failed');
     } catch (e) {
-        alert('❌ تعذّر التحقق الأمني (reCAPTCHA) — تأكد إن حظر الإعلانات أو الإضافات مش مانع تحميله وحاول تاني');
-        btn.disabled  = false;
-        btn.innerText = '📤 نشر السكربت';
-        return;
-    }
-    if (!captchaToken) {
         alert('❌ فشل التحقق الأمني — حاول تاني');
         btn.disabled  = false;
         btn.innerText = '📤 نشر السكربت';
+        if (typeof turnstile !== 'undefined') turnstile.reset();
+        turnstileToken = null;
         return;
     }
 
@@ -845,6 +870,10 @@
         scriptTags = [];
         noKeyBtn.click();
         renderTags();
+
+        // 🛡️ Reset الـ Turnstile عشان تتطلب تحقق جديد للنشر الجاي
+        if (typeof turnstile !== 'undefined') turnstile.reset();
+        turnstileToken = null;
     } catch (err) {
         console.error(err);
         alert('❌ حصل خطأ أثناء النشر، حاول تاني.');
