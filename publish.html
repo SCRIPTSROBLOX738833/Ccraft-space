@@ -444,7 +444,7 @@
   let dbUser       = null; // الصف بتاعه في جدول users (فيه id الداخلي، username، extra...)
   let myUsername   = 'cCraft Space User'; // ✅ اسم المستخدم الحقيقي (مش الإيميل) — بيتحمّل من البروفايل
   let selectedMap  = null;
-  let imageBase64  = null;   // الصورة المضغوطة جاهزة للحفظ
+  let imageBlob    = null;   // 📦 الصورة المضغوطة (Blob) جاهزة للرفع على Supabase Storage
   let hasKey       = false;  // ✅ هل السكربت يحتاج مفتاح
   let scriptTags   = [];     // ✅ تاجات السكربت
   let isAutoVerified = false; // 🎖️ هل صاحب الحساب موثّق دائم
@@ -454,6 +454,7 @@
   const TARGET_WIDTH   = 800;  // العرض المستهدف بعد الضغط
   const JPEG_QUALITY   = 0.82; // جودة الضغط
   const PUBLISH_COOLDOWN_MS = 60 * 1000; // ⏳ دقيقة بين كل نشر والتاني (app-level، مش أمان كامل)
+  const IMAGES_BUCKET  = 'script-images'; // 🗄️ اسم bucket تخزين الصور
 
   // 🛡️ Cloudflare Turnstile
   // غيّر الرابط ده لرابط الـ Flask app بتاعك على PythonAnywhere
@@ -594,7 +595,7 @@
   addTagBtn.addEventListener('click', addTag);
 
   /* ============================================================
-     Image Upload System
+     Image Upload System (📦 Blob بدل base64 — بيترفع على Storage وقت النشر)
      ============================================================ */
 
   const uploadZone    = document.getElementById('uploadZone');
@@ -629,7 +630,8 @@
   window.triggerUpload = (e) => { e.stopPropagation(); imageInput.click(); };
   window.removeImage   = (e) => {
     e.stopPropagation();
-    imageBase64 = null;
+    if (imagePreview.src && imagePreview.src.startsWith('blob:')) URL.revokeObjectURL(imagePreview.src);
+    imageBlob = null;
     imagePreview.src = '';
     imagePreview.style.display = 'none';
     placeholder.style.display  = 'block';
@@ -655,16 +657,17 @@
     showProgress(20);
 
     try {
-        const compressed = await compressImage(file);
+        const compressedBlob = await compressImage(file);
         showProgress(90);
 
-        imageBase64 = compressed;
-        imagePreview.src = compressed;
+        imageBlob = compressedBlob;
+        if (imagePreview.src && imagePreview.src.startsWith('blob:')) URL.revokeObjectURL(imagePreview.src);
+        imagePreview.src = URL.createObjectURL(compressedBlob);
         imagePreview.style.display = 'block';
         placeholder.style.display  = 'none';
         uploadZone.classList.add('has-image');
 
-        const sizeMB = ((compressed.length * 0.75) / 1024 / 1024).toFixed(2);
+        const sizeMB = (compressedBlob.size / 1024 / 1024).toFixed(2);
         setImgStatus('ok', `✅ الصورة جاهزة — حجم تقريبي: ${sizeMB} MB`);
         showProgress(100);
         setTimeout(() => { compressBar.classList.remove('show'); }, 600);
@@ -675,6 +678,7 @@
     }
   }
 
+  // 📦 يرجّع Blob (مش base64 string) — أخف وأسرع للرفع المباشر على Storage
   function compressImage(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -695,7 +699,9 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+                canvas.toBlob(blob => {
+                    if (blob) resolve(blob); else reject(new Error('فشل ضغط الصورة'));
+                }, 'image/jpeg', JPEG_QUALITY);
             };
             img.onerror = reject;
             img.src = e.target.result;
@@ -781,7 +787,7 @@
 
     // 🛡️ لازم يكمل تحدي Turnstile قبل ما نكمل
     if (!turnstileToken) {
-        alert('❌ خطأ فعلي: ' + e.message);
+        alert('❌ لازم تكمل التحقق الأمني (Turnstile) قبل النشر');
         return;
     }
 
@@ -818,6 +824,28 @@
         return;
     }
 
+    btn.innerText = '⏳ جارٍ رفع الصورة...';
+
+    // 🖼️ 📦 ارفع الصورة على Supabase Storage الأول (لو المستخدم اختار صورة)
+    // بدل ما نحطها base64 جوه العمود، بنرفعها كملف حقيقي ونخزن الرابط بس
+    let imageUrl = null;
+    if (imageBlob) {
+        const fileName = `scripts/${dbUser.id}-${Date.now()}.jpg`;
+        const { error: uploadError } = await supabase.storage
+            .from(IMAGES_BUCKET)
+            .upload(fileName, imageBlob, { contentType: 'image/jpeg', upsert: true });
+
+        if (uploadError) {
+            alert('❌ فشل رفع الصورة: ' + uploadError.message);
+            btn.disabled  = false;
+            btn.innerText = '📤 نشر السكربت';
+            return;
+        }
+
+        const { data: urlData } = supabase.storage.from(IMAGES_BUCKET).getPublicUrl(fileName);
+        imageUrl = urlData.publicUrl;
+    }
+
     btn.innerText = '⏳ جارٍ النشر...';
 
     // 🗺️/🔑 الماب والمفتاح النصي مفيهمش عمود مخصص في scripts، فبيتخزنوا جوه extra
@@ -837,7 +865,7 @@
         likes_count:  0,
         has_key:      hasKey,                          // ✅ فلاج واضح للمفتاح
         tags:         scriptTags.length ? scriptTags : null,
-        image_base64: imageBase64 || null,
+        image_url:    imageUrl || null,   // 🔗 رابط Storage بدل base64
         extra:        Object.keys(extraData).length ? extraData : null,
     };
 
