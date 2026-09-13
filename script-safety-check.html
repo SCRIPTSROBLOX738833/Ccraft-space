@@ -185,6 +185,67 @@ function escapeHTML(str) {
     return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+/* ============================================================
+   🧬 نفس منطق تشابه الكود المستخدم في لوحة الأدمن (وقت النشر)
+   عشان الفحص العام يكتشف كود قريب من كود ضار معروف، مش بس
+   مطابقة حرفية 100%
+   ============================================================ */
+function normalizeCode(code){
+  return (code||'')
+    .toLowerCase()
+    .replace(/--\[\[[\s\S]*?\]\]/g,'')
+    .replace(/--.*$/gm,'')
+    .replace(/["'][^"']*["']/g,'"s"')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function bigrams(s){
+  const out=new Set();
+  for(let i=0;i<s.length-1;i++)out.add(s.slice(i,i+2));
+  return out;
+}
+function similarity(a,b){
+  if(!a||!b)return 0;
+  if(a===b)return 1;
+  const A=bigrams(a),B=bigrams(b);
+  if(!A.size||!B.size)return 0;
+  let inter=0;
+  A.forEach(g=>{if(B.has(g))inter++;});
+  return (2*inter)/(A.size+B.size);
+}
+
+const UNSAFE_SIMILARITY_THRESHOLD = 0.82; // ⚠️ نفس القيمة بالظبط المستخدمة في الأدمن
+
+// كود مقابل اسم: لو النص فيه سطر جديد أو طوله كبير أو فيه كلمات كود شائعة، نعامله كـ"كود"
+function looksLikeCode(text){
+  const t = (text||'').trim();
+  if (!t) return false;
+  if (t.includes('\n')) return true;
+  if (t.length > 60) return true;
+  return /loadstring|function\s*\(|local\s+\w+\s*=|game\s*:|require\s*\(/i.test(t);
+}
+
+async function checkCodeAgainstSignatures(code){
+  const norm = normalizeCode(code);
+  const { data: sigs, error } = await supabase
+      .from('unsafe_code_signatures')
+      .select('name, code, reason');
+
+  if (error || !sigs) return { blocked:false, score:0 };
+
+  let best = 0, bestName = null, bestReason = null;
+  for (const sig of sigs) {
+    const sc = similarity(norm, normalizeCode(sig.code || ''));
+    if (sc > best) { best = sc; bestName = sig.name; bestReason = sig.reason; }
+  }
+
+  if (best >= UNSAFE_SIMILARITY_THRESHOLD) {
+    return { blocked:true, matchName:bestName, reason:bestReason, score:best };
+  }
+  return { blocked:false, score:best };
+}
+
 function showResult(type, data, matches) {
     const result = document.getElementById('result');
     const title   = document.getElementById('resultTitle');
@@ -215,16 +276,30 @@ function showResult(type, data, matches) {
 async function checkScript() {
     const input = document.getElementById('scriptInput');
     const btn   = document.getElementById('checkBtn');
-    const rawName = input.value;
+    const rawText = input.value;
 
-    if (!rawName.trim()) { input.focus(); return; }
+    if (!rawText.trim()) { input.focus(); return; }
 
     btn.disabled = true; btn.textContent = '⏳ بيفحص...';
 
-    const normalized = normalize(rawName);
-    const key = toKey(normalized);
-
     try {
+        // 🧬 لو اللي اتلصق شكله كود فعلي، افحصه بنفس منطق التشابه بتاع الأدمن
+        if (looksLikeCode(rawText)) {
+            const codeResult = await checkCodeAgainstSignatures(rawText);
+            if (codeResult.blocked) {
+                showResult('unsafe', {
+                    reason: `الكود ده مطابق بنسبة ${Math.round(codeResult.score * 100)}% لكود ضار معروف باسم "${codeResult.matchName}"` +
+                            (codeResult.reason ? ` — ${codeResult.reason}` : '')
+                });
+                btn.disabled = false; btn.textContent = '🔍 فحص';
+                return;
+            }
+            // مفيش تطابق كود خطير — نكمل نفحص بالاسم كمان (لو حابب يفحص جزء من الاسم جوه الكود)
+        }
+
+        const normalized = normalize(rawText);
+        const key = toKey(normalized);
+
         // تطابق دقيق أول باستخدام script_key
         const { data: exactMatch, error: exactErr } = await supabase
             .from('unsafe_scripts')
@@ -237,15 +312,18 @@ async function checkScript() {
         if (exactMatch) {
             showResult('unsafe', exactMatch);
         } else {
-            // بحث جزئي لو مفيش تطابق دقيق
-            const { data: partial, error: partialErr } = await supabase
-                .from('unsafe_scripts')
-                .select('original_name, reason')
-                .ilike('original_name', `%${rawName.trim()}%`)
-                .limit(10);
-
-            if (partialErr) throw partialErr;
-            showResult('unknown', null, partial || []);
+            // بحث جزئي لو مفيش تطابق دقيق (بس لو النص مش كود طويل، عشان ilike ميبقاش عبيط)
+            let partial = [];
+            if (!looksLikeCode(rawText)) {
+                const { data, error: partialErr } = await supabase
+                    .from('unsafe_scripts')
+                    .select('original_name, reason')
+                    .ilike('original_name', `%${rawText.trim()}%`)
+                    .limit(10);
+                if (partialErr) throw partialErr;
+                partial = data || [];
+            }
+            showResult('unknown', null, partial);
         }
     } catch (err) {
         console.error(err);
