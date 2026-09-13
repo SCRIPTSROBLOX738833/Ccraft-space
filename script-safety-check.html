@@ -226,16 +226,52 @@ function looksLikeCode(text){
   return /loadstring|function\s*\(|local\s+\w+\s*=|game\s*:|require\s*\(/i.test(t);
 }
 
+// ⚠️ نفس منطق isSimpleLoader بتاع الأدمن بالظبط — لازم نكشف الـ loaders
+// البسيطة (سطر واحد لـ 3 أسطر) لأن normalizeCode بيمسح أي لينك جوه
+// علامات تنصيص ويستبدله بـ "s"، فلو قارنّا الكود المُطبّع لأي 2 loader
+// هيطلعوا متطابقين 100% حتى لو اللينكات مختلفة تمامًا — ده باگ لازم نتفاداه
+function isSimpleLoader(code){
+  const c=(code||'').trim();
+  const lines=c.split('\n').map(l=>l.trim()).filter(Boolean);
+  if(!lines.length||lines.length>3) return false;
+  const loaderLine=/^(local\s+\w+\s*=\s*)?loadstring\s*\(\s*game\s*:\s*HttpGet\s*\(\s*['"][^'"]+['"]\s*(,\s*(true|false))?\s*\)\s*\)\s*\(\s*\)$/i;
+  const keyLine=/^(local\s+)?\w+\s*=\s*['"][^'"]*['"]$/;
+  return lines.every(l=>loaderLine.test(l)||keyLine.test(l)) && lines.some(l=>loaderLine.test(l));
+}
+
+function extractLoaderUrl(code){
+  const m=(code||'').match(/HttpGet\s*\(\s*['"]([^'"]+)['"]/i);
+  return m?m[1]:null;
+}
+
 async function checkCodeAgainstSignatures(code){
-  const norm = normalizeCode(code);
   const { data: sigs, error } = await supabase
       .from('unsafe_code_signatures')
       .select('name, code, reason');
 
   if (error || !sigs) return { blocked:false, score:0 };
 
+  // 🔗 لو السكربت loader بسيط، قارن اللينك نفسه مباشرة (مش الكود المُطبّع)
+  if (isSimpleLoader(code)) {
+    const url = extractLoaderUrl(code);
+    if (!url) return { blocked:false, score:0 };
+
+    for (const sig of sigs) {
+      if (!isSimpleLoader(sig.code || '')) continue;
+      const sigUrl = extractLoaderUrl(sig.code || '');
+      if (sigUrl && sigUrl.trim().toLowerCase() === url.trim().toLowerCase()) {
+        return { blocked:true, matchName:sig.name, reason:sig.reason, score:1 };
+      }
+    }
+    // لينك مختلف عن أي loader مسجّل = مش معروف، مش بالضرورة آمن
+    return { blocked:false, score:0 };
+  }
+
+  // كود عادي (مش loader بسيط) → قارن بالتشابه زي ما هو
+  const norm = normalizeCode(code);
   let best = 0, bestName = null, bestReason = null;
   for (const sig of sigs) {
+    if (isSimpleLoader(sig.code || '')) continue; // متقارنش كود عادي بـ loader
     const sc = similarity(norm, normalizeCode(sig.code || ''));
     if (sc > best) { best = sc; bestName = sig.name; bestReason = sig.reason; }
   }
