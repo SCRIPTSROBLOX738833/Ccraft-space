@@ -87,7 +87,7 @@ body { min-height: 100svh; display: flex; flex-direction: column; }
     <div class="api-hero">
         <div class="api-badge">🔌 Public API — مجاني للجميع</div>
         <h1>🚀 CCRAFT SPACE API</h1>
-        <p>اربط موقعك أو تطبيقك أو بوتك بمحتوى CCRAFT SPACE — سكربتات ومحتوى المجتمع، عن طريق مفتاح API خاص بيك.</p>
+        <p>اربط موقعك أو تطبيقك أو الروبوت الخاص بك بمحتوى CCRAFT SPACE — السكربتات ومحتوى المجتمع، عبر مفتاح API خاص بك.</p>
         <div class="base-url-box">
             <span>Base URL</span>
             https://ghgh62131r.pythonanywhere.com
@@ -97,47 +97,116 @@ body { min-height: 100svh; display: flex; flex-direction: column; }
     <div class="notice-box">
         <span class="nb-icon">ℹ️</span>
         <div class="nb-text">
-            الـ API الجديد مبني على <strong>سيرفر Flask خاص بينا</strong> فوق قاعدة بيانات Supabase —
-            كل طلب لازم يبعت مفتاحك في هيدر <strong>X-API-Key</strong>. المفاتيح مجانية،
-            وكل مفتاح ليه حد أقصى <strong>60 طلب في الدقيقة</strong>.
+            هذا الـ API مبني على <strong>خادم Flask خاص بالمنصة</strong> فوق قاعدة بيانات Supabase.
+            يجب إرسال المفتاح في ترويسة <strong>X-API-Key</strong> مع كل طلب. المفاتيح مجانية،
+            ولكل مفتاح حد أقصى قدره <strong>60 طلبًا في الدقيقة</strong>.
         </div>
     </div>
 
     <!-- ============ إنشاء مفتاح ============ -->
-    <div class="sec-title">🔑 اعمل مفتاح API بتاعك</div>
+    <div class="sec-title">🔑 إنشاء مفتاح API الخاص بك</div>
 
     <div class="key-creator">
         <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:14px">
-            لازم تكون مسجل دخول على الموقع الأول. المفتاح بيتعرض مرة واحدة بس — احفظه في مكان آمن.
+            يلزم تسجيل الدخول إلى الموقع أولًا. يُعرض المفتاح الكامل مرة واحدة فقط — احتفظ به في مكان آمن.
         </p>
         <div class="kc-row">
-            <input type="text" id="keyLabel" placeholder="اسم وصفي للمفتاح (مثلاً: بوت تلجرام)">
+            <input type="text" id="keyLabel" placeholder="اسم وصفي للمفتاح (مثلًا: روبوت تيليجرام)">
             <button id="createKeyBtn">🔑 إنشاء مفتاح</button>
         </div>
         <div class="key-result" id="keyResult">
-            <div style="font-weight:800;font-size:0.85rem;color:#4ade80">✅ اتعمل المفتاح بنجاح</div>
+            <div style="font-weight:800;font-size:0.85rem;color:#4ade80">✅ تم إنشاء المفتاح بنجاح</div>
             <div class="kr-key" id="krKeyValue"></div>
-            <div class="kr-warn">⚠️ ده هيظهر مرة واحدة بس — انسخه واحفظه دلوقتي، مش هنقدر نوريهولك تاني.</div>
+            <div class="kr-warn">⚠️ سيظهر هذا المفتاح مرة واحدة فقط — انسخه واحفظه الآن، إذ لن نتمكن من عرضه لك مرة أخرى.</div>
         </div>
         <div class="key-error" id="keyError"></div>
     </div>
 
+    <!-- ============ إدارة المفاتيح الحالية ============ -->
+    <div class="sec-title">📂 مفاتيحي</div>
+    <div class="key-creator">
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px">
+            لا يُحتفظ بالمفتاح الكامل لدينا بعد إنشائه، بل بصيغة مشفّرة فقط. لذا في حال فقدانه،
+            لن يكون بالإمكان استرجاعه — والحل هو إلغاء المفتاح القديم وإنشاء مفتاح جديد بدلًا منه.
+        </p>
+        <button id="refreshKeysBtn" style="background:transparent;color:var(--primary);border:1.5px solid var(--primary);border-radius:12px;padding:10px 20px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.82rem;cursor:pointer;margin:0 0 14px">🔄 تحديث القائمة</button>
+        <div id="keysListBox"></div>
+    </div>
+
     <!-- ============ ENDPOINTS ============ -->
-    <div class="sec-title">📡 الـ Endpoints العامة</div>
+    <div class="sec-title">📡 الواجهات البرمجية العامة</div>
+
+    <div class="endpoint-card" style="border-color:rgba(139,92,246,0.35)">
+        <div style="font-weight:900;font-size:0.95rem;color:var(--text-main);margin-bottom:6px">🧭 كيفية الحصول على سكربت بكوده الكامل</div>
+        <div class="ep-desc" style="margin-bottom:16px">هناك طريقتان، اختر الأنسب لحالتك:</div>
+
+        <table class="params-table">
+            <thead><tr><th>الطريقة</th><th>الوصف</th></tr></thead>
+            <tbody>
+                <tr><td><strong style="color:var(--text-main)">السريعة</strong></td><td style="color:var(--text-muted)">أضِف <span class="param-name">?include_code=true</span> إلى واجهة القائمة — يعيد الكود مع كل سكربت ضمن الطلب نفسه</td></tr>
+                <tr><td><strong style="color:var(--text-main)">الدقيقة</strong></td><td style="color:var(--text-muted)">اجلب القائمة أولًا (دون كود)، ثم اطلب أي سكربت بعينه كاملًا باستخدام معرّفه</td></tr>
+            </tbody>
+        </table>
+
+        <div class="code-block" style="margin-top:14px">
+            <button class="copy-code-btn" onclick="copyCode(this)">📋 نسخ</button>
+            <pre><span class="c-comment">// الطريقة السريعة — الكود ضمن القائمة مباشرة</span>
+<span class="c-key">const</span> res = <span class="c-key">await</span> fetch(<span class="c-str">'https://ghgh62131r.pythonanywhere.com/api/v1/scripts?include_code=true&limit=10'</span>, {
+  headers: { <span class="c-str">'X-API-Key'</span>: <span class="c-str">'ccsk_...'</span> }
+});
+<span class="c-key">const</span> { scripts } = <span class="c-key">await</span> res.json();
+console.log(scripts[<span class="c-num">0</span>].code); <span class="c-comment">// الكود موجود مباشرة</span></pre>
+        </div>
+
+        <div class="code-block" style="margin-top:10px">
+            <button class="copy-code-btn" onclick="copyCode(this)">📋 نسخ</button>
+            <pre><span class="c-comment">// الطريقة الدقيقة — خطوتان</span>
+<span class="c-key">const</span> list = <span class="c-key">await</span> fetch(<span class="c-str">'https://ghgh62131r.pythonanywhere.com/api/v1/scripts'</span>, {
+  headers: { <span class="c-str">'X-API-Key'</span>: <span class="c-str">'ccsk_...'</span> }
+}).then(r => r.json());
+
+<span class="c-key">const</span> id = list.scripts[<span class="c-num">0</span>].id;
+<span class="c-key">const</span> full = <span class="c-key">await</span> fetch(<span class="c-str">`https://ghgh62131r.pythonanywhere.com/api/v1/scripts/${id}`</span>, {
+  headers: { <span class="c-str">'X-API-Key'</span>: <span class="c-str">'ccsk_...'</span> }
+}).then(r => r.json());
+
+console.log(full.script.code);</pre>
+        </div>
+    </div>
+
+    <div class="endpoint-card">
+        <div class="ep-header">
+            <span class="ep-method get">GET</span>
+            <span class="ep-path">/api/v1/scripts/{id}</span>
+            <span class="ep-auth">🔑 يتطلب X-API-Key</span>
+        </div>
+        <div class="ep-desc">جلب سكربت واحد <strong style="color:var(--text-main)">كاملًا بكوده</strong> — يُستخدم بعد الحصول على المعرّف من واجهة القائمة أدناه.</div>
+
+        <div class="code-block">
+            <button class="copy-code-btn" onclick="copyCode(this)">📋 نسخ</button>
+            <pre><span class="c-comment">// JavaScript</span>
+<span class="c-key">const</span> res = <span class="c-key">await</span> fetch(<span class="c-str">'https://ghgh62131r.pythonanywhere.com/api/v1/scripts/SCRIPT_ID'</span>, {
+  headers: { <span class="c-str">'X-API-Key'</span>: <span class="c-str">'ccsk_...'</span> }
+});
+<span class="c-key">const</span> { script } = <span class="c-key">await</span> res.json();
+console.log(script.code); <span class="c-comment">// الكود الكامل هنا</span></pre>
+        </div>
+    </div>
 
     <div class="endpoint-card">
         <div class="ep-header">
             <span class="ep-method get">GET</span>
             <span class="ep-path">/api/v1/scripts</span>
-            <span class="ep-auth">🔑 محتاج X-API-Key</span>
+            <span class="ep-auth">🔑 يتطلب X-API-Key</span>
         </div>
-        <div class="ep-desc">جلب قائمة السكربتات (أحدثها أولاً). تقدر تفلتر بالقسم وتحدد عدد النتائج.</div>
+        <div class="ep-desc">جلب قائمة السكربتات (الأحدث أولًا)، مع إمكانية الفلترة بالقسم وتحديد عدد النتائج.</div>
 
         <table class="params-table">
             <thead><tr><th>البارامتر</th><th>النوع</th><th>الوصف</th></tr></thead>
             <tbody>
-                <tr><td><span class="param-name">limit</span></td><td><span class="param-opt">اختياري</span></td><td style="color:var(--text-muted)">عدد النتائج (افتراضي 20)</td></tr>
+                <tr><td><span class="param-name">limit</span></td><td><span class="param-opt">اختياري</span></td><td style="color:var(--text-muted)">عدد النتائج (الافتراضي 20)</td></tr>
                 <tr><td><span class="param-name">category</span></td><td><span class="param-opt">اختياري</span></td><td style="color:var(--text-muted)">game / admin / ai</td></tr>
+                <tr><td><span class="param-name">include_code</span></td><td><span class="param-opt">اختياري</span></td><td style="color:var(--text-muted)">true لإعادة الكود مع كل سكربت ضمن الطلب نفسه</td></tr>
             </tbody>
         </table>
 
@@ -164,17 +233,16 @@ res = requests.get(
 scripts = res.json()[<span class="c-str">"scripts"</span>]</pre>
         </div>
 
-        <p class="ep-desc" style="margin-top:12px;margin-bottom:0">📦 <strong style="color:var(--text-main)">الـ Response:</strong></p>
+        <p class="ep-desc" style="margin-top:12px;margin-bottom:0">📦 <strong style="color:var(--text-main)">الاستجابة:</strong></p>
         <div class="code-block" style="margin-top:8px">
             <pre>{
   <span class="c-key">"scripts"</span>: [
     {
-      <span class="c-key">"code"</span>:         <span class="c-str">"loadstring-..."</span>,
       <span class="c-key">"id"</span>:           <span class="c-str">"a1b2c3d4-..."</span>,
       <span class="c-key">"title"</span>:        <span class="c-str">"Speed Hack"</span>,
       <span class="c-key">"description"</span>:  <span class="c-str">"..."</span>,
       <span class="c-key">"category"</span>:     <span class="c-str">"game"</span>,
-      <span class="c-key">"author_name"</span>:  <span class="c-str">"CCRAFT SPACE user"</span>,
+      <span class="c-key">"author_name"</span>:  <span class="c-str">"username123"</span>,
       <span class="c-key">"likes_count"</span>:  <span class="c-num">42</span>,
       <span class="c-key">"rating"</span>:       <span class="c-num">4.5</span>,
       <span class="c-key">"votes"</span>:        <span class="c-num">12</span>,
@@ -185,23 +253,30 @@ scripts = res.json()[<span class="c-str">"scripts"</span>]</pre>
         </div>
     </div>
 
-    
+    <div class="endpoint-card">
+        <div class="ep-header">
+            <span class="ep-method post">POST</span>
+            <span class="ep-path">/api-keys/create</span>
+            <span class="ep-auth">🔒 يتطلب تسجيل الدخول</span>
+        </div>
+        <div class="ep-desc">إنشاء مفتاح API جديد. يتطلب access_token الخاص بحسابك (من Supabase Auth) — يُفضّل استخدام النموذج أعلاه بدلًا من تنفيذ هذا يدويًا.</div>
+    </div>
 
     <!-- ============ شروط الاستخدام ============ -->
     <div class="sec-title">📋 شروط الاستخدام</div>
 
     <div class="notice-box" style="background:rgba(74,222,128,0.06);border-color:rgba(74,222,128,0.2)">
         <span class="nb-icon">✅</span>
-        <div class="nb-text"><strong style="color:#4ade80">مسموح:</strong> قراءة السكربتات وعرضها — الربط بصفحة السكربت الأصلية — بناء بوتات وأدوات للمجتمع.</div>
+        <div class="nb-text"><strong style="color:#4ade80">مسموح:</strong> قراءة السكربتات وعرضها — الربط بصفحة السكربت الأصلية — بناء روبوتات وأدوات لخدمة المجتمع.</div>
     </div>
     <div class="notice-box" style="background:rgba(248,113,113,0.06);border-color:rgba(248,113,113,0.2);margin-top:0">
         <span class="nb-icon">❌</span>
-        <div class="nb-text"><strong style="color:#f87171">غير مسموح:</strong> مشاركة مفتاحك مع حد تاني — نسخ السكربتات بدون نسب إلى CCRAFT SPACE — استخدامها تجاريًا بدون إذن.</div>
+        <div class="nb-text"><strong style="color:#f87171">غير مسموح:</strong> مشاركة المفتاح مع أي طرف آخر — نسخ السكربتات دون الإشارة إلى CCRAFT SPACE — استخدامها لأغراض تجارية دون إذن.</div>
     </div>
 
     <div style="text-align:center;padding:24px 0;color:var(--text-muted);font-size:0.82rem">
         للتواصل أو طلب صلاحيات إضافية:
-        <a href="https://t.me/cCraftspace" target="_blank" style="color:var(--primary);font-weight:800;text-decoration:none">قناة تلجرام ←</a>
+        <a href="https://t.me/cCraftspace" target="_blank" style="color:var(--primary);font-weight:800;text-decoration:none">قناة تيليجرام ←</a>
     </div>
 
 </div>
@@ -222,7 +297,7 @@ document.getElementById('createKeyBtn').addEventListener('click', async () => {
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-        errorBox.textContent = '❌ لازم تسجّل دخول الأول عشان تعمل مفتاح API.';
+        errorBox.textContent = '❌ يلزم تسجيل الدخول أولًا لإنشاء مفتاح API.';
         errorBox.classList.add('show');
         return;
     }
@@ -241,8 +316,9 @@ document.getElementById('createKeyBtn').addEventListener('click', async () => {
         document.getElementById('krKeyValue').textContent = data.api_key;
         resultBox.classList.add('show');
         document.getElementById('keyLabel').value = '';
+        loadMyKeys();
     } catch (err) {
-        errorBox.textContent = '❌ حصل خطأ: ' + err.message;
+        errorBox.textContent = '❌ حدث خطأ: ' + err.message;
         errorBox.classList.add('show');
     }
 
@@ -258,6 +334,73 @@ window.copyCode = function(btn) {
         setTimeout(() => { btn.innerText = '📋 نسخ'; btn.classList.remove('copied'); }, 2000);
     });
 };
+
+/* ============================================================
+   📂 عرض وإلغاء المفاتيح الحالية
+   ============================================================ */
+function escapeHTML(str) {
+    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function loadMyKeys() {
+    const box = document.getElementById('keysListBox');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+        box.innerHTML = '<p style="color:var(--text-muted);font-size:0.82rem">يلزم تسجيل الدخول أولًا لعرض مفاتيحك.</p>';
+        return;
+    }
+
+    box.innerHTML = '<p style="color:var(--text-muted);font-size:0.82rem">⏳ جارٍ التحميل...</p>';
+
+    try {
+        const res = await fetch(`${FLASK_BASE}/api-keys/list`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ access_token: session.access_token })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'فشل التحميل');
+
+        if (!data.keys.length) {
+            box.innerHTML = '<p style="color:var(--text-muted);font-size:0.82rem">لا توجد مفاتيح بعد.</p>';
+            return;
+        }
+
+        box.innerHTML = data.keys.map(k => `
+            <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.2);border:1px solid var(--border-color);border-radius:10px;padding:10px 14px;margin-bottom:8px;flex-wrap:wrap">
+                <div style="flex:1;min-width:160px">
+                    <div style="font-family:'Fira Code',monospace;font-size:0.78rem;color:${k.is_active ? '#60a5fa' : 'var(--text-muted)'}">${escapeHTML(k.key_prefix)}</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted)">${escapeHTML(k.label || 'بدون اسم')} — ${k.is_active ? 'فعّال ✅' : 'ملغى ❌'}</div>
+                </div>
+                ${k.is_active ? `<button data-id="${k.id}" class="revoke-key-btn" style="background:rgba(248,113,113,0.1);color:var(--danger);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:7px 14px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.76rem;cursor:pointer;margin:0">إلغاء</button>` : ''}
+            </div>
+        `).join('');
+
+        box.querySelectorAll('.revoke-key-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                btn.disabled = true; btn.textContent = '⏳...';
+                try {
+                    const r = await fetch(`${FLASK_BASE}/api-keys/revoke`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ access_token: session.access_token, key_id: btn.dataset.id })
+                    });
+                    const d = await r.json();
+                    if (!d.success) throw new Error(d.error || 'فشل الإلغاء');
+                    loadMyKeys();
+                } catch (e) {
+                    alert('❌ حدث خطأ: ' + e.message);
+                    btn.disabled = false; btn.textContent = 'إلغاء';
+                }
+            });
+        });
+    } catch (err) {
+        box.innerHTML = `<p style="color:var(--danger);font-size:0.82rem">❌ ${escapeHTML(err.message)}</p>`;
+    }
+}
+
+document.getElementById('refreshKeysBtn').addEventListener('click', loadMyKeys);
+loadMyKeys();
 </script>
 
 </body>
