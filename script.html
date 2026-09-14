@@ -397,7 +397,7 @@ body {
         const extra = data.extra || {};
         const isVerified = data.is_verified ?? data.verified;
         const authorName = data.author_name ?? data.author;
-        const imageVal   = data.image_base64 ?? data.image;
+        const imageVal   = data.image_url ?? data.image_base64 ?? data.image;
         const likesVal   = data.likes_count ?? data.likes;
         const hasKeyVal  = data.has_key ?? data.hasKey;
         const mapVal     = data.map ?? extra.map;
@@ -680,10 +680,11 @@ async function loadScript() {
         };
     }
 
-    if (data.image_base64) {
-        document.getElementById('scriptImage').src     = data.image_base64;
+    if (data.image_url || data.image_base64) {
+        const imgSrc = data.image_url || data.image_base64;
+        document.getElementById('scriptImage').src     = imgSrc;
         document.getElementById('scriptImageWrap').classList.add('show');
-        document.getElementById('sideThumbImg').src    = data.image_base64;
+        document.getElementById('sideThumbImg').src    = imgSrc;
         document.getElementById('sidebarThumb').classList.add('show');
         document.getElementById('sidebarThumb').onclick = openLightbox;
     }
@@ -929,7 +930,7 @@ function buildCommentRow(c) {
     const row = document.createElement('div');
     row.className = 'cmt-row';
 
-    const pic = buildAvatarEl(c.user_id, c.author_name, c.author_avatar, 'cmt-pic');
+    const pic = buildAvatarEl(c.user_id, c.author_name, c.avatar_url, 'cmt-pic');
     row.appendChild(pic);
 
     const main = document.createElement('div');
@@ -1026,7 +1027,7 @@ function buildCommentRow(c) {
             parent_comment_id: c.id,
             user_id: currentUserRow.id,
             author_name: replierName,
-            author_avatar: currentUserRow.photo_url || null,
+            avatar_url: currentUserRow.photo_url || null,
             text,
         };
         try {
@@ -1071,7 +1072,7 @@ function buildReplyRow(parentComment, r) {
     const row = document.createElement('div');
     row.className = 'reply-row';
 
-    const pic = buildAvatarEl(r.user_id, r.author_name, r.author_avatar, 'reply-pic');
+    const pic = buildAvatarEl(r.user_id, r.author_name, r.avatar_url, 'reply-pic');
     row.appendChild(pic);
 
     const main = document.createElement('div');
@@ -1152,7 +1153,7 @@ document.getElementById('submitComment').addEventListener('click', async () => {
         parent_comment_id: null,
         user_id: currentUserRow.id,
         author_name: commenterName,
-        author_avatar: currentUserRow.photo_url || null,
+        avatar_url: currentUserRow.photo_url || null,
         text,
         likes_count: 0,
         dislikes_count: 0,
