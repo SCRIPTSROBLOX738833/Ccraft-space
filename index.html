@@ -989,11 +989,15 @@ function animCount(el, target) {
 }
 
 // ---------- visits tracking ----------
+// Counts one visit per browser per day (localStorage flag), not once per page load/refresh.
 async function trackVisitToday() {
-    // ASSUMPTION: RPC function increment_daily_visit(p_day text) exists
     const key = todayKey();
+    const flagKey = `ccraft_visited_${key}`;
+    if (localStorage.getItem(flagKey)) return;
     try {
-        await supabase.rpc('increment_daily_visit', { p_day: key });
+        const { error } = await supabase.rpc('increment_daily_visit', { p_day: key });
+        if (error) throw error;
+        localStorage.setItem(flagKey, '1');
     } catch (e) {
         console.error('trackVisitToday error:', e);
     }
@@ -1128,13 +1132,23 @@ async function loadOnlineCount() {
     }
 }
 
+// Anonymous visitors get a stable random id stored in localStorage so they still
+// get a presence row (and count toward "online") without needing to log in.
+function getPresenceId() {
+    if (currentUser?.rowId) return `u_${currentUser.rowId}`;
+    let anonId = localStorage.getItem('ccraft_anon_id');
+    if (!anonId) {
+        anonId = 'a_' + crypto.randomUUID();
+        localStorage.setItem('ccraft_anon_id', anonId);
+    }
+    return anonId;
+}
+
 // Keeps this browser's presence row alive so it counts toward "online" for
-// everyone else. presence_upsert_own / presence_update_own RLS policies allow
-// the session owner to write only their own row (id = current_user_row_id()).
+// everyone else — logged-in users AND anonymous visitors alike.
 async function heartbeatPresence() {
-    if (!currentUser?.rowId) return;
     try {
-        await supabase.from('presence').upsert({ id: currentUser.rowId, ts: Date.now() });
+        await supabase.from('presence').upsert({ id: getPresenceId(), ts: Date.now() });
     } catch (e) {
         console.error('heartbeatPresence error:', e);
     }
