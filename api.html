@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CCRAFT SPACE | API للمطورين</title>
 <link rel="stylesheet" href="styles.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
 
 body { min-height: 100svh; display: flex; flex-direction: column; }
@@ -113,6 +114,14 @@ body { min-height: 100svh; display: flex; flex-direction: column; }
         <div class="kc-row">
             <input type="text" id="keyLabel" placeholder="اسم وصفي للمفتاح (مثلًا: روبوت تيليجرام)">
             <button id="createKeyBtn">🔑 إنشاء مفتاح</button>
+        </div>
+        <div style="display:flex;justify-content:center;margin:4px 0 12px">
+            <div class="cf-turnstile"
+                 data-sitekey="0x4AAAAAAEx_Hbq9CGAsny-v"
+                 data-theme="dark"
+                 data-callback="onTurnstileSuccess"
+                 data-expired-callback="onTurnstileExpired"
+                 data-error-callback="onTurnstileError"></div>
         </div>
         <div class="key-result" id="keyResult">
             <div style="font-weight:800;font-size:0.85rem;color:#4ade80">✅ تم إنشاء المفتاح بنجاح</div>
@@ -286,6 +295,11 @@ import { supabase } from "./supabase-config.js";
 
 const FLASK_BASE = "https://ghgh62131r.pythonanywhere.com";
 
+let turnstileToken = null;
+window.onTurnstileSuccess = (token) => { turnstileToken = token; };
+window.onTurnstileExpired = () => { turnstileToken = null; };
+window.onTurnstileError   = () => { turnstileToken = null; };
+
 document.getElementById('createKeyBtn').addEventListener('click', async () => {
     const btn = document.getElementById('createKeyBtn');
     const resultBox = document.getElementById('keyResult');
@@ -302,13 +316,19 @@ document.getElementById('createKeyBtn').addEventListener('click', async () => {
         return;
     }
 
+    if (!turnstileToken) {
+        errorBox.textContent = '❌ يرجى إكمال التحقق الأمني أولًا (المربع أعلى الزر).';
+        errorBox.classList.add('show');
+        return;
+    }
+
     btn.disabled = true; btn.textContent = '⏳ جارٍ الإنشاء...';
 
     try {
         const res = await fetch(`${FLASK_BASE}/api-keys/create`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ access_token: session.access_token, label })
+            body: JSON.stringify({ access_token: session.access_token, label, turnstile_token: turnstileToken })
         });
         const data = await res.json();
         if (!data.success) throw new Error(data.error || 'فشل الإنشاء');
@@ -322,6 +342,8 @@ document.getElementById('createKeyBtn').addEventListener('click', async () => {
         errorBox.classList.add('show');
     }
 
+    if (typeof turnstile !== 'undefined') turnstile.reset();
+    turnstileToken = null;
     btn.disabled = false; btn.textContent = '🔑 إنشاء مفتاح';
 });
 
