@@ -123,6 +123,17 @@ body { min-height: 100svh; display: flex; flex-direction: column; }
                  data-expired-callback="onTurnstileExpired"
                  data-error-callback="onTurnstileError"></div>
         </div>
+
+        <!-- ⚠️ سكريبت عادي (مش module) — يشتغل دايمًا بغض النظر عن
+             أي مشكلة في تحميل supabase-config.js أو أي كود تاني في
+             الصفحة. التوكن بيتخزن على window مباشرة عشان يفضل
+             متاح لأي كود تاني حتى لو الموديول فشل. -->
+        <script>
+          window.__turnstileToken = null;
+          function onTurnstileSuccess(token) { window.__turnstileToken = token; }
+          function onTurnstileExpired() { window.__turnstileToken = null; }
+          function onTurnstileError() { window.__turnstileToken = null; }
+        </script>
         <div class="key-result" id="keyResult">
             <div style="font-weight:800;font-size:0.85rem;color:#4ade80">✅ تم إنشاء المفتاح بنجاح</div>
             <div class="kr-key" id="krKeyValue"></div>
@@ -295,11 +306,6 @@ import { supabase } from "./supabase-config.js";
 
 const FLASK_BASE = "https://ghgh62131r.pythonanywhere.com";
 
-let turnstileToken = null;
-window.onTurnstileSuccess = (token) => { turnstileToken = token; };
-window.onTurnstileExpired = () => { turnstileToken = null; };
-window.onTurnstileError   = () => { turnstileToken = null; };
-
 document.getElementById('createKeyBtn').addEventListener('click', async () => {
     const btn = document.getElementById('createKeyBtn');
     const resultBox = document.getElementById('keyResult');
@@ -316,7 +322,7 @@ document.getElementById('createKeyBtn').addEventListener('click', async () => {
         return;
     }
 
-    if (!turnstileToken) {
+    if (!window.__turnstileToken) {
         errorBox.textContent = '❌ يرجى إكمال التحقق الأمني أولًا (المربع أعلى الزر).';
         errorBox.classList.add('show');
         return;
@@ -328,7 +334,7 @@ document.getElementById('createKeyBtn').addEventListener('click', async () => {
         const res = await fetch(`${FLASK_BASE}/api-keys/create`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ access_token: session.access_token, label, turnstile_token: turnstileToken })
+            body: JSON.stringify({ access_token: session.access_token, label, turnstile_token: window.__turnstileToken })
         });
         const data = await res.json();
         if (!data.success) throw new Error(data.error || 'فشل الإنشاء');
@@ -343,7 +349,7 @@ document.getElementById('createKeyBtn').addEventListener('click', async () => {
     }
 
     if (typeof turnstile !== 'undefined') turnstile.reset();
-    turnstileToken = null;
+    window.__turnstileToken = null;
     btn.disabled = false; btn.textContent = '🔑 إنشاء مفتاح';
 });
 
