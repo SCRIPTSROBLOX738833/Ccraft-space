@@ -219,12 +219,14 @@
   let myUsername  = 'cCraft Space User';
   let categories  = [];
   let selectedCategoryId = null;
-  let coverBase64 = null;
+  let coverBlob = null;       // Blob بدل base64 string
+  let coverPreviewUrl = null; // object URL محلي للمعاينة فقط
   let youtubeId   = null;
 
-  const TARGET_WIDTH = 800;
-  const JPEG_QUALITY = 0.82;
+  const TARGET_WIDTH  = 800;
+  const JPEG_QUALITY   = 0.82;
   const MAX_SIZE_BYTES = 12 * 1024 * 1024;
+  const IMAGES_BUCKET  = 'script-images'; // نفس bucket المستخدم في profile.html
 
   function showLoggedOut(){
     document.getElementById('authNotice').style.display  = 'block';
@@ -384,7 +386,9 @@
   window.triggerUpload = e => { e.stopPropagation(); coverInput.click(); };
   window.removeCover = e => {
     e.stopPropagation();
-    coverBase64 = null;
+    if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
+    coverBlob = null;
+    coverPreviewUrl = null;
     coverPreview.src = '';
     coverPreview.style.display = 'none';
     uploadPlaceholder.style.display = 'block';
@@ -396,9 +400,11 @@
     if (!file.type.startsWith('image/')) { alert('❌ الملف المختار ليس صورة'); return; }
     if (file.size > MAX_SIZE_BYTES) { alert('❌ الصورة أكبر من 12 ميجا'); return; }
     try {
-        const compressed = await compressImage(file);
-        coverBase64 = compressed;
-        coverPreview.src = compressed;
+        const blob = await compressImageToBlob(file);
+        coverBlob = blob;
+        if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
+        coverPreviewUrl = URL.createObjectURL(blob);
+        coverPreview.src = coverPreviewUrl;
         coverPreview.style.display = 'block';
         uploadPlaceholder.style.display = 'none';
         uploadZone.classList.add('has-image');
@@ -407,7 +413,8 @@
     }
   }
 
-  function compressImage(file) {
+  // بيرجع Blob (مش base64) عشان يترفع مباشرة على Supabase Storage
+  function compressImageToBlob(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = e => {
@@ -418,7 +425,9 @@
                 if (width > TARGET_WIDTH) { height = Math.round(height * TARGET_WIDTH / width); width = TARGET_WIDTH; }
                 canvas.width = width; canvas.height = height;
                 canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+                canvas.toBlob(blob => {
+                    if (blob) resolve(blob); else reject(new Error('فشل ضغط الصورة'));
+                }, 'image/jpeg', JPEG_QUALITY);
             };
             img.onerror = reject;
             img.src = e.target.result;
@@ -444,9 +453,21 @@
     btn.disabled = true;
     btn.innerText = '⏳ جارٍ النشر...';
 
-    const thumbnailUrl = coverBase64 || `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
-
     try {
+        let thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+
+        // لو المستخدم اختار صورة غلاف مخصصة، ارفعها على Storage الأول واستخدم رابطها العام
+        if (coverBlob) {
+            const fileName = `tutorials/${dbUser.id}-${Date.now()}.jpg`;
+            const { error: uploadError } = await supabase.storage
+                .from(IMAGES_BUCKET)
+                .upload(fileName, coverBlob, { contentType: 'image/jpeg', upsert: false });
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = supabase.storage.from(IMAGES_BUCKET).getPublicUrl(fileName);
+            thumbnailUrl = urlData.publicUrl;
+        }
+
         const { error } = await supabase.from('tutorials').insert({
             category_id:   selectedCategoryId,
             youtube_url:   url,
