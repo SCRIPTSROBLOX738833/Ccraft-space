@@ -295,8 +295,23 @@
 
     #publishBtn { margin-top: 4px; }
 
+    /* ---- Custom confirm modal (بدل confirm() الأصلي عشان يفضل شغال في المتصفحات
+         اللي بتفصل الـ user-gesture بعد أي modal نيتف، وبيمنع فتح اختيار الملفات) ---- */
+    .custom-confirm-overlay {
+        display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+        z-index: 9999; align-items: center; justify-content: center; padding: 24px;
+    }
+    .custom-confirm-box {
+        background: var(--bg-card); border: 1px solid var(--border-color);
+        border-radius: 18px; padding: 26px 22px; max-width: 380px; width: 100%;
+        text-align: center; animation: fadeIn 0.25s ease both;
+    }
+    .custom-confirm-box p { font-size: 0.92rem; color: var(--text-main); line-height: 1.8; margin-bottom: 20px; white-space: pre-line; }
+    .custom-confirm-btns { display: flex; gap: 10px; justify-content: center; }
+    .custom-confirm-btns button { margin: 0; padding: 11px 22px; }
+
   </style>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
 
@@ -507,17 +522,25 @@
          🛡️ التحقق الأمني (Cloudflare Turnstile)
          ============================================================ -->
     <div id="turnstileWrap">
-        <div class="cf-turnstile"
-             data-sitekey="0x4AAAAAAEx_Hbq9CGAsny-v"
-             data-theme="dark"
-             data-callback="onTurnstileSuccess"
-             data-expired-callback="onTurnstileExpired"
-             data-error-callback="onTurnstileError"></div>
+        <div id="turnstileContainer"></div>
     </div>
 
     <button type="button" id="publishBtn">📤 نشر السكربت</button>
   </form>
 </main>
+
+<!-- ============================================================
+     🪟 مودال تأكيد مخصص (بدل confirm() الأصلي بتاع المتصفح)
+     ============================================================ -->
+<div id="customConfirmOverlay" class="custom-confirm-overlay">
+    <div class="custom-confirm-box">
+        <p id="customConfirmMsg"></p>
+        <div class="custom-confirm-btns">
+            <button type="button" class="no-map-btn active" id="customConfirmYes">✅ متأكد</button>
+            <button type="button" class="no-map-btn" id="customConfirmNo">إلغاء</button>
+        </div>
+    </div>
+</div>
 
 
 <script type="module">
@@ -552,11 +575,71 @@
   const NOVA_BACKEND = "https://ghgh62131R.pythonanywhere.com";
   const FLASK_VERIFY_URL = NOVA_BACKEND + "/verify-turnstile";
   const MAP_SEARCH_URL   = NOVA_BACKEND + "/roblox-search-games";
-  let turnstileToken = null;
+  let turnstileToken    = null;
+  let turnstileWidgetId = null;
+  let turnstileRendered = false;
 
-  window.onTurnstileSuccess = (token) => { turnstileToken = token; };
-  window.onTurnstileExpired = () => { turnstileToken = null; };
-  window.onTurnstileError   = () => { turnstileToken = null; };
+  function onTurnstileSuccess(token) { turnstileToken = token; }
+  function onTurnstileExpired() { turnstileToken = null; }
+  function onTurnstileError()   { turnstileToken = null; }
+
+  // 🛡️ نعمل render صريح (explicit) للـ Turnstile بس وقت ما الفورم فعلاً بيبقى ظاهر.
+  // لو عملناه وهو جوه container مخفي (display:none) بيبوظ ومايشتغلش صح حتى لو
+  // اتحل بعدين — عشان كده بنستنى لحد لما publishMain يظهر فعلاً (شوف revealMainForm).
+  function ensureTurnstileRendered(){
+    if (turnstileRendered) return;
+    if (typeof turnstile === 'undefined' || !turnstile.render) {
+        setTimeout(ensureTurnstileRendered, 150);
+        return;
+    }
+    turnstileWidgetId = turnstile.render('#turnstileContainer', {
+        sitekey: '0x4AAAAAAEx_Hbq9CGAsny-v',
+        theme: 'dark',
+        callback: onTurnstileSuccess,
+        'expired-callback': onTurnstileExpired,
+        'error-callback': onTurnstileError,
+    });
+    turnstileRendered = true;
+  }
+
+  function resetTurnstile(){
+    turnstileToken = null;
+    if (typeof turnstile !== 'undefined' && turnstileWidgetId !== null) {
+        turnstile.reset(turnstileWidgetId);
+    }
+  }
+
+  /* ============================================================
+     🪟 مودال تأكيد مخصص — بدل confirm() الأصلي.
+     بعض المتصفحات (خصوصًا على الموبايل / متصفحات داخل تطبيقات زي
+     فيسبوك وانستجرام) بتفصل الـ "user activation" بعد أي نافذة confirm()
+     نيتف، فبعدها فتح اختيار الصور (imageInput.click()) مابيشتغلش —
+     وده كان سبب إن "ارفع صورة" مابيظهرش. المودال ده عنصر عادي في
+     الصفحة، فزرار "متأكد" فيه هو نفسه ضغطة مستخدم حقيقية.
+     ============================================================ */
+  const confirmOverlay = document.getElementById('customConfirmOverlay');
+  const confirmMsgEl   = document.getElementById('customConfirmMsg');
+  const confirmYesBtn  = document.getElementById('customConfirmYes');
+  const confirmNoBtn   = document.getElementById('customConfirmNo');
+  let pendingConfirmAction = null;
+
+  function askConfirm(message, onYes){
+    pendingConfirmAction = onYes;
+    confirmMsgEl.textContent = message;
+    confirmOverlay.style.display = 'flex';
+  }
+
+  confirmYesBtn.addEventListener('click', () => {
+    confirmOverlay.style.display = 'none';
+    const action = pendingConfirmAction;
+    pendingConfirmAction = null;
+    if (action) action(); // بتتنفذ جوه نفس الـ click handler ده — يعني لسه فيه user gesture حقيقي
+  });
+
+  confirmNoBtn.addEventListener('click', () => {
+    confirmOverlay.style.display = 'none';
+    pendingConfirmAction = null;
+  });
 
   const ALL_BADGES = [
     { id:'first_script',   icon:'🚀', name:'الانطلاقة',   desc:'نشر أول سكربت',      check:s=>s.scripts>=1    },
@@ -696,6 +779,8 @@
     } else {
         selectedMapChipEl.style.display = 'none';
     }
+    // ✅ دلوقتي الفورم فعلاً ظاهر على الشاشة — نعمل render لـ Turnstile هنا بالظبط
+    ensureTurnstileRendered();
   }
 
   scopeAllBtn.addEventListener('click', () => {
@@ -895,13 +980,16 @@
   window.triggerUpload = (e) => {
     e.stopPropagation();
     if (mapAutoImageUrl && !mapImageOverridden) {
-        const ok = confirm(
-            `صورة الماب "${selectedMap}" محطوطة تلقائيًا، مش محتاج ترفع صورة تانية.\n\nهل متأكد إنك عايز تستبدلها بصورة من عندك؟`
+        askConfirm(
+            `صورة الماب "${selectedMap}" محطوطة تلقائيًا، مش محتاج ترفع صورة تانية.\n\nهل متأكد إنك عايز تستبدلها بصورة من عندك؟`,
+            () => {
+                mapImageOverridden = true;
+                updateMapAutoBadge();
+                uploadZone.classList.remove('map-image');
+                imageInput.click();
+            }
         );
-        if (!ok) return;
-        mapImageOverridden = true;
-        updateMapAutoBadge();
-        uploadZone.classList.remove('map-image');
+        return;
     }
     imageInput.click();
   };
@@ -911,15 +999,22 @@
 
     // لو الصورة الحالية صورة ماب تلقائية، اسأل تأكيد قبل الحذف
     if (mapAutoImageUrl && !mapImageOverridden) {
-        const ok = confirm(
-            `دي صورة الماب "${selectedMap}" التلقائية. لو مسحتها مش هيبقى فيه صورة للسكربت خالص.\n\nمتأكد إنك عايز تمسحها؟`
+        askConfirm(
+            `دي صورة الماب "${selectedMap}" التلقائية. لو مسحتها مش هيبقى فيه صورة للسكربت خالص.\n\nمتأكد إنك عايز تمسحها؟`,
+            () => {
+                mapImageOverridden = true; // عشان منعرضهاش تاني كإعادة تلقائية
+                mapAutoImageUrl = null;
+                updateMapAutoBadge();
+                doRemoveImage();
+            }
         );
-        if (!ok) return;
-        mapImageOverridden = true; // عشان منعرضهاش تاني كإعادة تلقائية
-        mapAutoImageUrl = null;
-        updateMapAutoBadge();
+        return;
     }
 
+    doRemoveImage();
+  };
+
+  function doRemoveImage(){
     if (imagePreview.src && imagePreview.src.startsWith('blob:')) URL.revokeObjectURL(imagePreview.src);
     imageBlob = null;
     imagePreview.src = '';
@@ -929,7 +1024,22 @@
     uploadZone.classList.remove('map-image');
     imageInput.value = '';
     setImgStatus('', '');
-  };
+  }
+
+  // ⚠️ لو تحميل الصورة (blob محلي أو رابط صورة الماب) فشل، وضّح السبب للمستخدم
+  // بدل ما تفضل الصورة "مش ظاهرة" من غير أي تفسير
+  imagePreview.addEventListener('error', () => {
+    if (mapAutoImageUrl && !mapImageOverridden) {
+        setImgStatus('err', '❌ تعذر تحميل صورة الماب تلقائيًا — جرب ترفع صورة بنفسك');
+        imagePreview.style.display = 'none';
+        placeholder.style.display  = 'block';
+        uploadZone.classList.remove('has-image', 'map-image');
+        mapAutoImageUrl = null;
+        updateMapAutoBadge();
+    } else if (imageBlob) {
+        setImgStatus('err', '❌ تعذر عرض الصورة اللي رفعتها — جرب صورة تانية (JPG أو PNG)');
+    }
+  });
 
   // Drag & Drop
   uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
@@ -941,13 +1051,16 @@
     if (!file) return;
 
     if (mapAutoImageUrl && !mapImageOverridden) {
-        const ok = confirm(
-            `صورة الماب "${selectedMap}" محطوطة تلقائيًا، مش محتاج ترفع صورة تانية.\n\nهل متأكد إنك عايز تستبدلها بصورة من عندك؟`
+        askConfirm(
+            `صورة الماب "${selectedMap}" محطوطة تلقائيًا، مش محتاج ترفع صورة تانية.\n\nهل متأكد إنك عايز تستبدلها بصورة من عندك؟`,
+            () => {
+                mapImageOverridden = true;
+                updateMapAutoBadge();
+                uploadZone.classList.remove('map-image');
+                processImage(file);
+            }
         );
-        if (!ok) return;
-        mapImageOverridden = true;
-        updateMapAutoBadge();
-        uploadZone.classList.remove('map-image');
+        return;
     }
     processImage(file);
   });
@@ -968,6 +1081,16 @@
     // تحقق من الحجم قبل الضغط
     if (file.size > MAX_SIZE_BYTES) {
         setImgStatus('err', `❌ الصورة أكبر من ${MAX_SIZE_MB} ميجا (${(file.size/1024/1024).toFixed(1)} MB)`);
+        return;
+    }
+
+    // 📵 صيغة HEIC/HEIF (شائعة جدًا في صور آيفون) المتصفح مش بيقدر يعرضها
+    // أو يضغطها — لازم نوقف هنا ونوضح للمستخدم بدل ما "الصورة متظهرش" من غير سبب
+    const nameLower = (file.name || '').toLowerCase();
+    const isLikelyHeic = file.type === 'image/heic' || file.type === 'image/heif'
+        || nameLower.endsWith('.heic') || nameLower.endsWith('.heif');
+    if (isLikelyHeic) {
+        setImgStatus('err', '❌ صيغة HEIC مش مدعومة في المتصفح — حوّل الصورة لـ JPG أو PNG الأول (من إعدادات الكاميرا أو أي أداة تحويل) وارفعها تاني');
         return;
     }
 
@@ -1083,8 +1206,7 @@
         alert('❌ خطأ فعلي: ' + e.message);
         btn.disabled  = false;
         btn.innerText = '📤 نشر السكربت';
-        if (typeof turnstile !== 'undefined') turnstile.reset();
-        turnstileToken = null;
+        resetTurnstile();
         return;
     }
 
@@ -1178,8 +1300,7 @@
         renderTags();
 
         // 🛡️ Reset الـ Turnstile عشان تتطلب تحقق جديد للنشر الجاي
-        if (typeof turnstile !== 'undefined') turnstile.reset();
-        turnstileToken = null;
+        resetTurnstile();
 
         // 🧭 رجّعه لخطوة 0 عشان ينشر سكربت جديد من الأول لو حابب
         goToStep0();
