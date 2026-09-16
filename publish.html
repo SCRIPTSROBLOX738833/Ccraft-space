@@ -42,6 +42,71 @@
     .ub-badge.auto-verify { background: rgba(0,242,254,0.1); color: #67e8f9; }
 
     /* ============================================================
+         🧭 خطوة 0: نوع السكربت — كل المابات ولا ماب معين
+         ============================================================ */
+    #step0 { display: none; max-width: 800px; margin: 0 auto 22px; padding: 0 24px; }
+    .step0-card {
+        background: var(--bg-card); border: 1px solid var(--border-color);
+        border-radius: 20px; padding: 26px 24px; animation: fadeIn 0.4s ease both;
+    }
+    .step0-card h2 { font-size: 1.15rem; font-weight: 900; margin-bottom: 4px; }
+    .step0-card .step0-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px; }
+    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width:560px){ .scope-grid{ grid-template-columns: 1fr; } }
+    .scope-card {
+        background: rgba(255,255,255,0.03); border: 2px solid var(--border-color);
+        border-radius: 16px; padding: 22px 18px; text-align: center; cursor: pointer;
+        font-family: 'Tajawal', sans-serif; transition: var(--transition); margin: 0;
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .scope-card:hover { border-color: rgba(139,92,246,0.5); transform: translateY(-3px); filter:none; }
+    .scope-card .sc-icon { font-size: 2.2rem; }
+    .scope-card .sc-title { font-weight: 900; font-size: 0.98rem; color: var(--text-main); }
+    .scope-card .sc-desc  { font-size: 0.76rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ---- بحث الماب ---- */
+    #mapSearchStep { display: none; max-width: 800px; margin: 0 auto 22px; padding: 0 24px; }
+    .back-to-step0 {
+        background: none; border: none; color: var(--text-muted);
+        font-family:'Tajawal',sans-serif; font-size: 0.82rem; font-weight: 700;
+        cursor: pointer; margin: 0 0 14px; padding: 0; box-shadow:none;
+    }
+    .back-to-step0:hover { color: var(--text-main); transform:none; filter:none; }
+    #mapSearchInput { margin: 0 0 14px; border-radius: 14px; padding: 13px 18px; font-size: 0.92rem; }
+    .map-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 10px; margin-bottom: 14px; }
+    .map-result-card {
+        background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);
+        border-radius: 14px; padding: 12px; text-align: center; cursor: pointer;
+        transition: var(--transition); display:flex; flex-direction:column; align-items:center; gap:8px;
+    }
+    .map-result-card:hover { border-color: rgba(139,92,246,0.45); transform: translateY(-2px); }
+    .map-result-card img { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; background: rgba(255,255,255,0.06); }
+    .map-result-card .mrc-name { font-size: 0.78rem; font-weight: 800; color: var(--text-main); line-height: 1.3; }
+    .map-search-status { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+    .map-manual-row { display:flex; gap:10px; align-items:center; margin-top: 6px; }
+    .map-manual-row input { flex:1; margin:0; border-radius:14px; padding:11px 16px; font-size:0.85rem; }
+    .map-manual-row button { white-space:nowrap; padding: 11px 18px; }
+
+    /* ---- شريحة الماب المختار ---- */
+    #selectedMapChip { display: none; max-width: 800px; margin: 0 auto 18px; padding: 0 24px; }
+    .chip-card {
+        background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,242,254,0.05));
+        border: 1px solid rgba(139,92,246,0.3); border-radius: 16px;
+        padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .chip-card img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; flex-shrink:0; }
+    .chip-card .chip-icon-fallback { width:42px; height:42px; border-radius:10px; flex-shrink:0; background:var(--accent-gradient); display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+    .chip-card .chip-text { flex: 1; }
+    .chip-card .chip-label { font-size: 0.72rem; color: var(--text-muted); font-weight:700; }
+    .chip-card .chip-name  { font-size: 0.95rem; font-weight: 900; color: var(--text-main); }
+    .chip-card .chip-change {
+        background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-color);
+        border-radius: 10px; padding: 8px 14px; font-size: 0.76rem; font-weight: 800; margin: 0;
+        font-family:'Tajawal',sans-serif; cursor:pointer; box-shadow:none;
+    }
+    .chip-card .chip-change:hover { color: var(--text-main); transform:none; filter:none; }
+
+    /* ============================================================
          📘 دليل النشر السريع — عشان اللي مش فاهم يبدأ منين
          ============================================================ */
     #quickGuide { display: none; max-width: 800px; margin: 0 auto 22px; padding: 0 24px; }
@@ -109,6 +174,14 @@
         font-weight: 700; margin-bottom: 10px;
     }
 
+    .map-auto-badge {
+        display: none; align-items: center; gap: 8px;
+        background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3);
+        border-radius: 12px; padding: 10px 14px; margin-bottom: 10px;
+        font-size: 0.78rem; font-weight: 700; color: #c4b5fd;
+    }
+    .map-auto-badge.show { display: flex; }
+
     .upload-zone {
         border: 2px dashed var(--border-color);
         border-radius: 16px;
@@ -124,6 +197,7 @@
     .upload-zone:hover { border-color: var(--primary); background: rgba(139,92,246,0.05); }
     .upload-zone.drag-over { border-color: var(--primary); background: rgba(139,92,246,0.1); }
     .upload-zone.has-image { border-style: solid; border-color: rgba(139,92,246,0.4); padding: 0; }
+    .upload-zone.map-image { border-color: rgba(0,242,254,0.4); }
 
     .uz-icon  { font-size: 2.2rem; display: block; margin-bottom: 10px; }
     .uz-text  { font-size: 0.88rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
@@ -183,23 +257,6 @@
         width: 0%; transition: width 0.4s ease;
     }
 
-    /* Map Section */
-    .map-section { display: flex; flex-direction: column; gap: 12px; }
-    .map-toggle-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .no-map-btn { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); border-radius: var(--radius-btn); padding: 10px 20px; font-size: 0.88rem; font-family: 'Tajawal', sans-serif; font-weight: 700; cursor: pointer; transition: var(--transition); margin: 0; }
-    .no-map-btn.active { background: rgba(74,222,128,0.1); color: var(--success); border-color: rgba(74,222,128,0.4); }
-    .no-map-btn:hover  { transform: translateY(-2px); filter: none; }
-    .map-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
-    .map-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 8px; text-align: center; cursor: pointer; transition: var(--transition); font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .map-card:hover { border-color: rgba(139,92,246,0.4); color: var(--text-main); transform: translateY(-2px); }
-    .map-card.selected { background: var(--primary-dim); border-color: rgba(139,92,246,0.5); color: var(--primary); }
-    .map-card .map-icon { font-size: 1.4rem; }
-    .custom-map-row { display: flex; gap: 10px; align-items: center; }
-    .custom-map-row input { flex: 1; margin: 0; border-radius: 14px; padding: 12px 18px; font-size: 0.9rem; }
-    .map-preview { display: none; align-items: center; gap: 10px; background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.25); border-radius: 12px; padding: 10px 16px; font-size: 0.85rem; color: var(--text-main); font-weight: 700; }
-    .map-preview.show { display: flex; }
-    .map-preview .mp-icon { font-size: 1.2rem; }
-
     /* ---- Key Field (optional) ---- */
     .key-section {
         margin-top: 4px; display: flex; flex-direction: column; gap: 8px;
@@ -215,6 +272,10 @@
     }
     #scriptKey { margin: 0; border-radius: 14px; padding: 12px 18px; font-size: 0.9rem; }
     .key-hint { font-size: 0.72rem; color: var(--text-muted); opacity: 0.75; }
+
+    .no-map-btn { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-color); border-radius: var(--radius-btn); padding: 10px 20px; font-size: 0.88rem; font-family: 'Tajawal', sans-serif; font-weight: 700; cursor: pointer; transition: var(--transition); margin: 0; }
+    .no-map-btn.active { background: rgba(74,222,128,0.1); color: var(--success); border-color: rgba(74,222,128,0.4); }
+    .no-map-btn:hover  { transform: translateY(-2px); filter: none; }
 
     /* ---- Tag chips ---- */
     .tag-chip {
@@ -267,6 +328,64 @@
 </div>
 
 <!-- ============================================================
+     🧭 خطوة 0: هتنشر سكربت لكل المابات ولا لماب معين؟
+     ============================================================ -->
+<div id="step0">
+    <div class="step0-card">
+        <h2>📤 هتنشر سكربت لأنهي حاجة؟</h2>
+        <div class="step0-sub">اختار الأول عشان نظبطلك باقي خطوات النشر</div>
+        <div class="scope-grid">
+            <button type="button" class="scope-card" id="scopeAllBtn">
+                <span class="sc-icon">🌐</span>
+                <span class="sc-title">سكربت لكل المابات</span>
+                <span class="sc-desc">مش مخصص للعبة معينة، شغال بشكل عام</span>
+            </button>
+            <button type="button" class="scope-card" id="scopeMapBtn">
+                <span class="sc-icon">🎯</span>
+                <span class="sc-title">سكربت لماب معين</span>
+                <span class="sc-desc">مخصص للعبة (ماب) واحدة بالتحديد</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     🔎 بحث واختيار الماب (يظهر لو اختار "ماب معين")
+     ============================================================ -->
+<div id="mapSearchStep">
+    <div class="form-section">
+        <button type="button" class="back-to-step0" id="backToStep0Btn">⬅️ رجوع لاختيار النوع</button>
+        <div class="fs-head"><span class="fs-num">🗺️</span><span class="fs-title">دور على الماب</span></div>
+        <div class="fs-sub">اكتب اسم اللعبة (مثال: steal) وهيظهرلك أقرب 5 مابات، اختار الصح منهم</div>
+
+        <input type="text" id="mapSearchInput" placeholder="اكتب اسم اللعبة هنا...">
+        <div class="map-search-status" id="mapSearchStatus"></div>
+        <div class="map-results-grid" id="mapResultsGrid"></div>
+
+        <div class="key-hint" style="margin-bottom:6px">مش لاقي الماب في النتايج؟ اكتب اسمه يدوي (من غير صورة تلقائية):</div>
+        <div class="map-manual-row">
+            <input type="text" id="manualMapInput" placeholder="اسم اللعبة يدوي...">
+            <button type="button" class="no-map-btn" id="confirmManualMapBtn">✅ تأكيد</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     ✅ شريحة الماب المختار
+     ============================================================ -->
+<div id="selectedMapChip">
+    <div class="chip-card">
+        <img id="chipImg" alt="">
+        <div class="chip-icon-fallback" id="chipImgFallback" style="display:none">🗺️</div>
+        <div class="chip-text">
+            <div class="chip-label">الماب المختار</div>
+            <div class="chip-name" id="chipName">—</div>
+        </div>
+        <button type="button" class="chip-change" id="chipChangeBtn">🔄 تغيير</button>
+    </div>
+</div>
+
+<!-- ============================================================
      📘 دليل سريع لأي حد أول مرة ينشر سكربت
      ============================================================ -->
 <div id="quickGuide">
@@ -279,7 +398,7 @@
             </div>
             <div class="guide-step">
                 <span class="gs-num">2</span>
-                <span class="gs-text"><strong>اختار القسم</strong> اللي يناسب السكربت (Game / Admin / AI)، وممكن كمان تختار الماب لو السكربت مخصص للعبة معينة.</span>
+                <span class="gs-text"><strong>اختار القسم</strong> اللي يناسب السكربت (Game / Admin / AI).</span>
             </div>
             <div class="guide-step">
                 <span class="gs-num">3</span>
@@ -334,7 +453,7 @@
         <!-- 🔑 المفتاح -->
         <div class="key-section" style="margin-bottom:18px">
             <label class="key-label">🔑 هل السكربت يحتاج مفتاح (Key)؟</label>
-            <div class="map-toggle-row">
+            <div class="map-toggle-row" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
                 <button type="button" class="no-map-btn active" id="noKeyBtn">🔓 لا، بدون مفتاح</button>
                 <button type="button" class="no-map-btn" id="yesKeyBtn">🔒 نعم، يحتاج مفتاح</button>
             </div>
@@ -345,7 +464,7 @@
         <!-- 🏷️ التاجات -->
         <div class="key-section" style="margin-bottom:18px">
             <label class="key-label">🏷️ تاجات السكربت <span class="key-optional-tag">اختياري</span></label>
-            <div class="custom-map-row">
+            <div class="custom-map-row" style="display:flex;gap:10px;align-items:center">
                 <input type="text" id="tagInput" placeholder="اكتب تاج واضغط Enter (مثال: ESP، سرعة، مجاني)...">
                 <button type="button" class="no-map-btn" id="addTagBtn">➕ إضافة</button>
             </div>
@@ -354,8 +473,12 @@
         </div>
 
         <!-- 🖼️ الصورة -->
-        <div class="image-upload-section" style="margin-bottom:18px">
+        <div class="image-upload-section">
             <label class="image-upload-label">🖼️ صورة السكربت <span class="key-optional-tag">اختياري — حد أقصى 12 ميجا</span></label>
+
+            <div class="map-auto-badge" id="mapAutoBadge">
+                🗺️ <span>الصورة دي صورة الماب "<strong id="mapAutoBadgeName">—</strong>" — اتحطت تلقائيًا، مش لازم ترفع صورة تانية</span>
+            </div>
 
             <div class="upload-zone" id="uploadZone">
                 <img id="imagePreview" alt="معاينة الصورة">
@@ -376,42 +499,6 @@
             <div class="img-status" id="imgStatus"></div>
             <div class="compress-progress" id="compressProgress">
                 <div class="cp-bar" id="cpBar"></div>
-            </div>
-        </div>
-
-        <!-- 🗺️ الماب -->
-        <div>
-            <label style="display:block;color:var(--text-muted);font-size:0.85rem;font-weight:700;margin-bottom:10px">
-                🗺️ الماب المخصص للسكربت <span class="key-optional-tag">اختياري</span>
-            </label>
-
-            <div class="map-section">
-                <div class="map-toggle-row">
-                    <button type="button" class="no-map-btn active" id="noMapBtn">🌐 ليس لماب محدد</button>
-                    <span style="color:var(--text-muted);font-size:0.78rem">أو اختر ماب من الأسفل</span>
-                </div>
-                <!-- قائمة الألعاب الأكثر شهرة حاليًا في Roblox (2026) -->
-                <div class="map-grid" id="mapGrid">
-                    <div class="map-card" data-map="Brookhaven RP"><span class="map-icon">🌆</span>Brookhaven</div>
-                    <div class="map-card" data-map="Adopt Me"><span class="map-icon">🏡</span>Adopt Me</div>
-                    <div class="map-card" data-map="Blox Fruits"><span class="map-icon">🍈</span>Blox Fruits</div>
-                    <div class="map-card" data-map="Grow a Garden"><span class="map-icon">🌱</span>Grow a Garden</div>
-                    <div class="map-card" data-map="Steal a Brainrot"><span class="map-icon">🧠</span>Steal a Brainrot</div>
-                    <div class="map-card" data-map="99 Nights in the Forest"><span class="map-icon">🌲</span>99 Nights</div>
-                    <div class="map-card" data-map="RIVALS"><span class="map-icon">🔫</span>RIVALS</div>
-                    <div class="map-card" data-map="Murder Mystery 2"><span class="map-icon">🔪</span>MM2</div>
-                    <div class="map-card" data-map="Jujutsu Shenanigans"><span class="map-icon">⚔️</span>Jujutsu Shenanigans</div>
-                    <div class="map-card" data-map="Fish It!"><span class="map-icon">🎣</span>Fish It!</div>
-                    <div class="map-card" data-map="Pet Simulator 99"><span class="map-icon">🐾</span>Pet Sim 99</div>
-                    <div class="map-card" data-map="Dress To Impress"><span class="map-icon">👗</span>Dress To Impress</div>
-                </div>
-                <div class="custom-map-row">
-                    <input type="text" id="customMap" placeholder="أو اكتب اسم لعبة تانية يدوياً...">
-                </div>
-                <div class="map-preview" id="mapPreview">
-                    <span class="mp-icon">🗺️</span>
-                    <span id="mapPreviewText">—</span>
-                </div>
             </div>
         </div>
     </div>
@@ -443,11 +530,16 @@
   let currentUser  = null; // Supabase auth user (من supabase.auth.getUser())
   let dbUser       = null; // الصف بتاعه في جدول users (فيه id الداخلي، username، extra...)
   let myUsername   = 'cCraft Space User'; // ✅ اسم المستخدم الحقيقي (مش الإيميل) — بيتحمّل من البروفايل
-  let selectedMap  = null;
-  let imageBlob    = null;   // 📦 الصورة المضغوطة (Blob) جاهزة للرفع على Supabase Storage
+  let imageBlob    = null;   // 📦 الصورة المضغوطة (Blob) جاهزة للرفع على Supabase Storage — لو المستخدم رفع صورة بنفسه
   let hasKey       = false;  // ✅ هل السكربت يحتاج مفتاح
   let scriptTags   = [];     // ✅ تاجات السكربت
   let isAutoVerified = false; // 🎖️ هل صاحب الحساب موثّق دائم
+
+  // 🧭 خطوة 0: نوع السكربت + الماب
+  let scriptScope     = null;  // 'all' | 'specific'
+  let selectedMap      = null; // اسم الماب المختار (لو فيه)
+  let mapAutoImageUrl  = null; // رابط صورة الماب التلقائية (لو موجودة)
+  let mapImageOverridden = false; // هل المستخدم اختار يرفع صورة بنفسه بدل صورة الماب
 
   const MAX_SIZE_MB   = 12;
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
@@ -456,9 +548,10 @@
   const PUBLISH_COOLDOWN_MS = 60 * 1000; // ⏳ دقيقة بين كل نشر والتاني (app-level، مش أمان كامل)
   const IMAGES_BUCKET  = 'script-images'; // 🗄️ اسم bucket تخزين الصور
 
-  // 🛡️ Cloudflare Turnstile
-  // غيّر الرابط ده لرابط الـ Flask app بتاعك على PythonAnywhere
-  const FLASK_VERIFY_URL = "https://ghgh62131R.pythonanywhere.com/verify-turnstile";
+  // 🛡️ Cloudflare Turnstile / 🎮 باك إند Nova AI (نفس السيرفر المستخدم في التحقق الأمني)
+  const NOVA_BACKEND = "https://ghgh62131R.pythonanywhere.com";
+  const FLASK_VERIFY_URL = NOVA_BACKEND + "/verify-turnstile";
+  const MAP_SEARCH_URL   = NOVA_BACKEND + "/roblox-search-games";
   let turnstileToken = null;
 
   window.onTurnstileSuccess = (token) => { turnstileToken = token; };
@@ -484,6 +577,9 @@
     document.getElementById('publishMain').style.display = 'none';
     document.getElementById('userInfo').style.display    = 'none';
     document.getElementById('quickGuide').style.display  = 'none';
+    document.getElementById('step0').style.display       = 'none';
+    document.getElementById('mapSearchStep').style.display = 'none';
+    document.getElementById('selectedMapChip').style.display = 'none';
   }
 
   async function initAuth(){
@@ -518,8 +614,6 @@
     document.getElementById('ubAvatar').innerText = myUsername.charAt(0).toUpperCase();
     document.getElementById('ubName').innerText   = myUsername;
     document.getElementById('userInfo').style.display    = 'block';
-    document.getElementById('quickGuide').style.display  = 'block';
-    document.getElementById('publishMain').style.display = 'block';
     document.getElementById('authNotice').style.display  = 'none';
 
     // 🎖️ توثيق دائم — متخزن جوه extra.verified لأن عمود مخصص مش موجود في users
@@ -529,10 +623,180 @@
         b.textContent = '🎖️ موثّق دائم';
         b.classList.add('auto-verify');
     }
+
+    // 🧭 بعد التأكد من تسجيل الدخول: نبدأ من خطوة 0 (نوع السكربت)
+    goToStep0();
   }
 
   initAuth();
   supabase.auth.onAuthStateChange(() => { initAuth(); });
+
+  /* ============================================================
+     🧭 خطوة 0: نوع السكربت (كل المابات / ماب معين) + بحث الماب
+     ============================================================ */
+
+  const step0El          = document.getElementById('step0');
+  const mapSearchStepEl   = document.getElementById('mapSearchStep');
+  const selectedMapChipEl = document.getElementById('selectedMapChip');
+  const quickGuideEl      = document.getElementById('quickGuide');
+  const publishMainEl     = document.getElementById('publishMain');
+
+  const scopeAllBtn   = document.getElementById('scopeAllBtn');
+  const scopeMapBtn   = document.getElementById('scopeMapBtn');
+  const backToStep0Btn = document.getElementById('backToStep0Btn');
+  const chipChangeBtn  = document.getElementById('chipChangeBtn');
+
+  const mapSearchInput  = document.getElementById('mapSearchInput');
+  const mapSearchStatus = document.getElementById('mapSearchStatus');
+  const mapResultsGrid  = document.getElementById('mapResultsGrid');
+  const manualMapInput  = document.getElementById('manualMapInput');
+  const confirmManualMapBtn = document.getElementById('confirmManualMapBtn');
+
+  const chipImg         = document.getElementById('chipImg');
+  const chipImgFallback = document.getElementById('chipImgFallback');
+  const chipName        = document.getElementById('chipName');
+
+  const mapAutoBadge     = document.getElementById('mapAutoBadge');
+  const mapAutoBadgeName = document.getElementById('mapAutoBadgeName');
+
+  function hideAllSteps(){
+    step0El.style.display = 'none';
+    mapSearchStepEl.style.display = 'none';
+    selectedMapChipEl.style.display = 'none';
+    quickGuideEl.style.display = 'none';
+    publishMainEl.style.display = 'none';
+  }
+
+  function goToStep0(){
+    hideAllSteps();
+    // Reset scope/map state لأي اختيار سابق
+    scriptScope = null;
+    selectedMap = null;
+    mapAutoImageUrl = null;
+    mapImageOverridden = false;
+    mapSearchInput.value = '';
+    manualMapInput.value = '';
+    mapResultsGrid.innerHTML = '';
+    mapSearchStatus.textContent = '';
+    updateMapAutoBadge();
+    step0El.style.display = 'block';
+  }
+
+  function goToMapSearch(){
+    hideAllSteps();
+    mapSearchStepEl.style.display = 'block';
+    mapSearchInput.focus();
+  }
+
+  function revealMainForm(){
+    quickGuideEl.style.display = 'block';
+    publishMainEl.style.display = 'block';
+    if (scriptScope === 'specific' && selectedMap) {
+        selectedMapChipEl.style.display = 'block';
+    } else {
+        selectedMapChipEl.style.display = 'none';
+    }
+  }
+
+  scopeAllBtn.addEventListener('click', () => {
+    scriptScope = 'all';
+    selectedMap = null;
+    mapAutoImageUrl = null;
+    mapImageOverridden = false;
+    updateMapAutoBadge();
+    step0El.style.display = 'none';
+    revealMainForm();
+  });
+
+  scopeMapBtn.addEventListener('click', () => {
+    scriptScope = 'specific';
+    goToMapSearch();
+  });
+
+  backToStep0Btn.addEventListener('click', goToStep0);
+  chipChangeBtn.addEventListener('click', () => {
+    mapImageOverridden = false;
+    goToMapSearch();
+  });
+
+  // ---- بحث المابات (debounce) ----
+  let mapSearchTimer = null;
+  mapSearchInput.addEventListener('input', () => {
+    clearTimeout(mapSearchTimer);
+    const q = mapSearchInput.value.trim();
+    if (!q || q.length < 2) {
+        mapResultsGrid.innerHTML = '';
+        mapSearchStatus.textContent = '';
+        return;
+    }
+    mapSearchStatus.textContent = '⏳ جارٍ البحث...';
+    mapSearchTimer = setTimeout(() => runMapSearch(q), 400);
+  });
+
+  async function runMapSearch(query){
+    try {
+        const res = await fetch(`${MAP_SEARCH_URL}?query=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        const games = (data.games || []).slice(0, 5);
+
+        if (!games.length) {
+            mapResultsGrid.innerHTML = '';
+            mapSearchStatus.textContent = '😕 مفيش نتايج — جرب اسم تاني أو اكتبه يدوي تحت';
+            return;
+        }
+
+        mapSearchStatus.textContent = `📋 ${games.length} نتيجة — اختار الماب الصح`;
+        mapResultsGrid.innerHTML = games.map((g, i) => `
+            <div class="map-result-card" data-i="${i}">
+                <img src="${g.icon || ''}" alt="${escP(g.name)}" onerror="this.style.visibility='hidden'">
+                <div class="mrc-name">${escP(g.name)}</div>
+            </div>
+        `).join('');
+
+        mapResultsGrid.querySelectorAll('.map-result-card').forEach((el, i) => {
+            el.addEventListener('click', () => selectMap(games[i].name, games[i].icon || null));
+        });
+    } catch (e) {
+        mapSearchStatus.textContent = '❌ حصل خطأ في البحث، جرب تاني أو اكتب اسم اللعبة يدوي';
+    }
+  }
+
+  confirmManualMapBtn.addEventListener('click', () => {
+    const val = manualMapInput.value.trim();
+    if (!val) { manualMapInput.focus(); return; }
+    selectMap(val, null); // ✅ ماب يدوي — من غير صورة تلقائية
+  });
+
+  function selectMap(name, iconUrl){
+    selectedMap = name;
+    mapAutoImageUrl = iconUrl || null;
+    mapImageOverridden = false;
+
+    chipName.textContent = name;
+    if (iconUrl) {
+        chipImg.src = iconUrl;
+        chipImg.style.display = 'block';
+        chipImgFallback.style.display = 'none';
+    } else {
+        chipImg.style.display = 'none';
+        chipImgFallback.style.display = 'flex';
+    }
+
+    updateMapAutoBadge();
+    applyMapImageToUploadZone();
+
+    mapSearchStepEl.style.display = 'none';
+    revealMainForm();
+  }
+
+  function updateMapAutoBadge(){
+    if (scriptScope === 'specific' && mapAutoImageUrl && !mapImageOverridden) {
+        mapAutoBadgeName.textContent = selectedMap || '';
+        mapAutoBadge.classList.add('show');
+    } else {
+        mapAutoBadge.classList.remove('show');
+    }
+  }
 
   /* ============================================================
      🔑 هل يحتاج مفتاح؟ (Toggle)
@@ -596,6 +860,7 @@
 
   /* ============================================================
      Image Upload System (📦 Blob بدل base64 — بيترفع على Storage وقت النشر)
+     أو صورة الماب التلقائية (رابط جاهز، من غير رفع)
      ============================================================ */
 
   const uploadZone    = document.getElementById('uploadZone');
@@ -606,10 +871,65 @@
   const cpBar         = document.getElementById('cpBar');
   const placeholder   = document.getElementById('uploadPlaceholder');
 
+  // ✅ تحط صورة الماب التلقائية في زون الرفع (كمعاينة بس، من غير رفعها كـ Blob)
+  function applyMapImageToUploadZone(){
+    if (mapAutoImageUrl && !mapImageOverridden) {
+        imagePreview.src = mapAutoImageUrl;
+        imagePreview.style.display = 'block';
+        placeholder.style.display  = 'none';
+        uploadZone.classList.add('has-image');
+        uploadZone.classList.add('map-image');
+        setImgStatus('ok', `🗺️ صورة الماب "${escP(selectedMap||'')}" اتحطت تلقائيًا`);
+    }
+  }
+
   // كليك على الـ zone
   uploadZone.addEventListener('click', () => {
-    if (!uploadZone.classList.contains('has-image')) imageInput.click();
+    if (uploadZone.classList.contains('has-image')) return; // فيه overlay بيتحكم في التغيير/الحذف
+
+    // 🚨 لو صورة الماب التلقائية متحطاش لسه بس فيها نص (نادر)، أو الزون فاضي أصلاً
+    imageInput.click();
   });
+
+  // 🔄 زرار "تغيير" جوه الـ overlay — هنا بنتحقق لو الصورة الحالية صورة ماب تلقائية
+  window.triggerUpload = (e) => {
+    e.stopPropagation();
+    if (mapAutoImageUrl && !mapImageOverridden) {
+        const ok = confirm(
+            `صورة الماب "${selectedMap}" محطوطة تلقائيًا، مش محتاج ترفع صورة تانية.\n\nهل متأكد إنك عايز تستبدلها بصورة من عندك؟`
+        );
+        if (!ok) return;
+        mapImageOverridden = true;
+        updateMapAutoBadge();
+        uploadZone.classList.remove('map-image');
+    }
+    imageInput.click();
+  };
+
+  window.removeImage   = (e) => {
+    e.stopPropagation();
+
+    // لو الصورة الحالية صورة ماب تلقائية، اسأل تأكيد قبل الحذف
+    if (mapAutoImageUrl && !mapImageOverridden) {
+        const ok = confirm(
+            `دي صورة الماب "${selectedMap}" التلقائية. لو مسحتها مش هيبقى فيه صورة للسكربت خالص.\n\nمتأكد إنك عايز تمسحها؟`
+        );
+        if (!ok) return;
+        mapImageOverridden = true; // عشان منعرضهاش تاني كإعادة تلقائية
+        mapAutoImageUrl = null;
+        updateMapAutoBadge();
+    }
+
+    if (imagePreview.src && imagePreview.src.startsWith('blob:')) URL.revokeObjectURL(imagePreview.src);
+    imageBlob = null;
+    imagePreview.src = '';
+    imagePreview.style.display = 'none';
+    placeholder.style.display  = 'block';
+    uploadZone.classList.remove('has-image');
+    uploadZone.classList.remove('map-image');
+    imageInput.value = '';
+    setImgStatus('', '');
+  };
 
   // Drag & Drop
   uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
@@ -618,7 +938,18 @@
     e.preventDefault();
     uploadZone.classList.remove('drag-over');
     const file = e.dataTransfer.files[0];
-    if (file) processImage(file);
+    if (!file) return;
+
+    if (mapAutoImageUrl && !mapImageOverridden) {
+        const ok = confirm(
+            `صورة الماب "${selectedMap}" محطوطة تلقائيًا، مش محتاج ترفع صورة تانية.\n\nهل متأكد إنك عايز تستبدلها بصورة من عندك؟`
+        );
+        if (!ok) return;
+        mapImageOverridden = true;
+        updateMapAutoBadge();
+        uploadZone.classList.remove('map-image');
+    }
+    processImage(file);
   });
 
   // اختيار ملف
@@ -626,19 +957,6 @@
     const file = e.target.files[0];
     if (file) processImage(file);
   });
-
-  window.triggerUpload = (e) => { e.stopPropagation(); imageInput.click(); };
-  window.removeImage   = (e) => {
-    e.stopPropagation();
-    if (imagePreview.src && imagePreview.src.startsWith('blob:')) URL.revokeObjectURL(imagePreview.src);
-    imageBlob = null;
-    imagePreview.src = '';
-    imagePreview.style.display = 'none';
-    placeholder.style.display  = 'block';
-    uploadZone.classList.remove('has-image');
-    imageInput.value = '';
-    setImgStatus('', '');
-  };
 
   async function processImage(file) {
     // تحقق من النوع
@@ -666,6 +984,7 @@
         imagePreview.style.display = 'block';
         placeholder.style.display  = 'none';
         uploadZone.classList.add('has-image');
+        uploadZone.classList.remove('map-image');
 
         const sizeMB = (compressedBlob.size / 1024 / 1024).toFixed(2);
         setImgStatus('ok', `✅ الصورة جاهزة — حجم تقريبي: ${sizeMB} MB`);
@@ -722,58 +1041,14 @@
   }
 
   /* ============================================================
-     Map Logic
-     ============================================================ */
-
-  const noMapBtn    = document.getElementById('noMapBtn');
-  const mapPreview  = document.getElementById('mapPreview');
-  const mapPrevText = document.getElementById('mapPreviewText');
-  const customMap   = document.getElementById('customMap');
-
-  function setMap(name) {
-    selectedMap = name;
-    document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
-    if (name) {
-        noMapBtn.classList.remove('active');
-        mapPreview.classList.add('show');
-        mapPrevText.innerText = name;
-    } else {
-        noMapBtn.classList.add('active');
-        mapPreview.classList.remove('show');
-        customMap.value = '';
-    }
-  }
-
-  noMapBtn.addEventListener('click', () => setMap(null));
-
-  document.querySelectorAll('.map-card').forEach(card => {
-    card.addEventListener('click', () => {
-        document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        customMap.value = '';
-        setMap(card.dataset.map);
-    });
-  });
-
-  customMap.addEventListener('input', () => {
-    const val = customMap.value.trim();
-    if (val) {
-        document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
-        noMapBtn.classList.remove('active');
-        mapPreview.classList.add('show');
-        mapPrevText.innerText = val;
-        selectedMap = val;
-    } else {
-        setMap(null);
-    }
-  });
-
-  /* ============================================================
      نشر السكربت
      ============================================================ */
 
   document.getElementById('publishBtn').addEventListener('click', async () => {
     if (!currentUser || !dbUser) { location.href = 'login.html'; return; }
+
+    if (!scriptScope) { alert('اختار الأول نوع السكربت (كل المابات / ماب معين)'); goToStep0(); return; }
+    if (scriptScope === 'specific' && !selectedMap) { alert('اختار الماب الأول'); goToMapSearch(); return; }
 
     const title       = document.getElementById('scriptTitle').value.trim();
     const code        = document.getElementById('scriptCode').value.trim();
@@ -824,12 +1099,14 @@
         return;
     }
 
-    btn.innerText = '⏳ جارٍ رفع الصورة...';
-
-    // 🖼️ 📦 ارفع الصورة على Supabase Storage الأول (لو المستخدم اختار صورة)
-    // بدل ما نحطها base64 جوه العمود، بنرفعها كملف حقيقي ونخزن الرابط بس
+    // 🖼️ حدد رابط الصورة النهائي:
+    // 1) لو المستخدم رفع صورة بنفسه (imageBlob) — ارفعها على Supabase Storage
+    // 2) لو مفيش رفع يدوي وفيه صورة ماب تلقائية — استخدم رابطها مباشرة (من غير رفع)
+    // 3) غير كده مفيش صورة خالص
     let imageUrl = null;
+
     if (imageBlob) {
+        btn.innerText = '⏳ جارٍ رفع الصورة...';
         const fileName = `scripts/${dbUser.id}-${Date.now()}.jpg`;
         const { error: uploadError } = await supabase.storage
             .from(IMAGES_BUCKET)
@@ -844,13 +1121,15 @@
 
         const { data: urlData } = supabase.storage.from(IMAGES_BUCKET).getPublicUrl(fileName);
         imageUrl = urlData.publicUrl;
+    } else if (mapAutoImageUrl && !mapImageOverridden) {
+        imageUrl = mapAutoImageUrl; // ✅ رابط صورة الماب جاهز، مفيش داعي نرفعها تاني
     }
 
     btn.innerText = '⏳ جارٍ النشر...';
 
     // 🗺️/🔑 الماب والمفتاح النصي مفيهمش عمود مخصص في scripts، فبيتخزنوا جوه extra
     const extraData = {};
-    if (selectedMap) extraData.map = selectedMap;
+    if (scriptScope === 'specific' && selectedMap) extraData.map = selectedMap;
     if (key) extraData.key = key;
 
     const scriptData = {
@@ -865,7 +1144,7 @@
         likes_count:  0,
         has_key:      hasKey,                          // ✅ فلاج واضح للمفتاح
         tags:         scriptTags.length ? scriptTags : null,
-        image_url:    imageUrl || null,   // 🔗 رابط Storage بدل base64
+        image_url:    imageUrl || null,   // 🔗 رابط Storage أو رابط صورة الماب التلقائية
         extra:        Object.keys(extraData).length ? extraData : null,
     };
 
@@ -890,8 +1169,7 @@
         await checkAndAwardBadges();
 
         document.getElementById('publishForm').reset();
-        setMap(null);
-        removeImage({ stopPropagation: () => {} });
+        removeImageSilently();
 
         // ✅ Reset حقول المفتاح والتاجات
         hasKey = false;
@@ -902,6 +1180,9 @@
         // 🛡️ Reset الـ Turnstile عشان تتطلب تحقق جديد للنشر الجاي
         if (typeof turnstile !== 'undefined') turnstile.reset();
         turnstileToken = null;
+
+        // 🧭 رجّعه لخطوة 0 عشان ينشر سكربت جديد من الأول لو حابب
+        goToStep0();
     } catch (err) {
         console.error(err);
         alert('❌ حصل خطأ أثناء النشر، حاول تاني.');
@@ -910,6 +1191,18 @@
         btn.innerText = '📤 نشر السكربت';
     }
   });
+
+  function removeImageSilently(){
+    if (imagePreview.src && imagePreview.src.startsWith('blob:')) URL.revokeObjectURL(imagePreview.src);
+    imageBlob = null;
+    imagePreview.src = '';
+    imagePreview.style.display = 'none';
+    placeholder.style.display  = 'block';
+    uploadZone.classList.remove('has-image');
+    uploadZone.classList.remove('map-image');
+    imageInput.value = '';
+    setImgStatus('', '');
+  }
 
   /* ============================================================
      البادجات
