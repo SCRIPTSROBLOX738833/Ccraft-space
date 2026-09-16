@@ -582,6 +582,17 @@
   let turnstileWidgetId = null;
   let turnstileRendered = false;
 
+  // 🖼️ الباك إند بيرجّع رابط صورة الماب كمسار نسبي زي "/roblox-image-proxy?url=..."
+  // (بروكسي بيجيب الصورة من Roblox نيابة عن المتصفح عشان يضمن إنها تتحمّل دايمًا).
+  // بما إن الفرونت إند شغال على دومين مختلف عن الباك إند، لازم نكمّل الرابط بدومين
+  // الباك إند نفسه (NOVA_BACKEND) قبل ما نحطه في src أي صورة — وإلا هيتفسّر كمسار
+  // نسبي على دومين الفرونت إند نفسه وهيفشل التحميل.
+  function resolveBackendUrl(url) {
+    if (!url) return null;
+    if (/^https?:\/\//i.test(url)) return url; // رابط كامل أصلاً (نادر، بس لو حصل نسيبه زي ما هو)
+    return NOVA_BACKEND + (url.startsWith('/') ? url : '/' + url);
+  }
+
   function onTurnstileSuccess(token) { turnstileToken = token; }
   function onTurnstileExpired() { turnstileToken = null; }
   function onTurnstileError()   { turnstileToken = null; }
@@ -833,7 +844,12 @@
     try {
         const res = await fetch(`${MAP_SEARCH_URL}?query=${encodeURIComponent(query)}`);
         const data = await res.json();
-        const games = (data.games || []).slice(0, 5);
+        // 🖼️ نكمّل رابط كل أيقونة بدومين الباك إند (شوف resolveBackendUrl فوق)
+        // عشان الباك إند بيرجّعها كمسار نسبي زي "/roblox-image-proxy?url=..."
+        const games = (data.games || []).slice(0, 5).map(g => ({
+            ...g,
+            icon: resolveBackendUrl(g.icon),
+        }));
 
         if (!games.length) {
             mapResultsGrid.innerHTML = '';
@@ -869,7 +885,7 @@
 
   function selectMap(name, iconUrl){
     selectedMap = name;
-    mapAutoImageUrl = iconUrl || null;
+    mapAutoImageUrl = iconUrl || null; // ✅ iconUrl جاي هنا كامل بالفعل (اتحل في runMapSearch)
     mapImageOverridden = false;
     mapImageRetried = false;
 
@@ -1310,7 +1326,7 @@
         const { data: urlData } = supabase.storage.from(IMAGES_BUCKET).getPublicUrl(fileName);
         imageUrl = urlData.publicUrl;
     } else if (mapAutoImageUrl && !mapImageOverridden) {
-        imageUrl = mapAutoImageUrl; // ✅ رابط صورة الماب جاهز، مفيش داعي نرفعها تاني
+        imageUrl = mapAutoImageUrl; // ✅ رابط صورة الماب (بروكسي الباك إند) جاهز، مفيش داعي نرفعها تاني
     }
 
     btn.innerText = '⏳ جارٍ النشر...';
@@ -1332,7 +1348,7 @@
         likes_count:  0,
         has_key:      hasKey,                          // ✅ فلاج واضح للمفتاح
         tags:         scriptTags.length ? scriptTags : null,
-        image_url:    imageUrl || null,   // 🔗 رابط Storage أو رابط صورة الماب التلقائية
+        image_url:    imageUrl || null,   // 🔗 رابط Storage أو رابط بروكسي صورة الماب التلقائية
         extra:        Object.keys(extraData).length ? extraData : null,
     };
 
