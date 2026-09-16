@@ -75,6 +75,18 @@ body { min-height: 100svh; }
     font-weight: 900; color: var(--primary); font-size: 0.95rem;
 }
 
+.offline-mode-banner {
+    display: none;
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 12px; padding: 10px 16px;
+    margin-bottom: 18px;
+    font-size: 0.8rem; color: #fbbf24;
+    align-items: center; gap: 8px;
+    line-height: 1.6;
+}
+.offline-mode-banner.show { display: flex; }
+
 .search-section { margin-bottom: 22px; }
 
 .filter-group { margin-bottom: 14px; }
@@ -732,6 +744,11 @@ function toggleCodePreview(btn) {
         </div>
     </div>
 
+    <!-- ⚠️ يظهر تلقائيًا فقط لو Supabase مش متاح واحنا شغالين من ملف JSON الثابت -->
+    <div class="offline-mode-banner" id="offlineModeBanner">
+        ⚠️ الخادم الرئيسي غير متاح مؤقتًا — يتم عرض السكربتات من نسخة محفوظة. بعض الميزات (الإعجاب، التقييم، عدد المشاهدات) غير متاحة حاليًا.
+    </div>
+
     <!-- 🔥 رائجة الآن -->
     <div class="trending-section" id="trendingSection" style="display:none">
         <div class="trending-head">
@@ -832,16 +849,19 @@ const SB_HEADERS = {
     'Prefer': 'return=representation'
 };
 
+// ⚠️ بيتحدّث لـ true لو Supabase فشل وبنشتغل من ملف scripts-data.js الثابت
+let offlineMode = false;
+
 const db = {
     async getScripts() {
         try {
             const res = await fetch(`${SUPABASE_URL}/rest/v1/scripts?select=*&order=created_at.desc`, { headers: SB_HEADERS });
-            if (!res.ok) return {};
+            if (!res.ok) return null; // null = فشل (مش زي {} اللي معناها فاضي فعلاً)
             const rows = await res.json();
             const obj = {};
             rows.forEach(r => { obj[r.id] = r; });
             return obj;
-        } catch { return {}; }
+        } catch { return null; }
     },
     async getField(table, id, field) {
         try {
@@ -980,6 +1000,7 @@ let activeMapFilter = null; // اسم رسمي للماب بعد التطبيع�
 const codeStore = new Map();
 
 async function incrementViews(id) {
+    if (offlineMode) return; // مفيش داعي نحاول نكتب في Supabase وهو واقف
     try {
         const current = await db.getField('scripts', id, 'views');
         const newViews = (current || 0) + 1;
@@ -1000,15 +1021,39 @@ async function loadUnsafeNames() {
     } catch { unsafeNameSet = new Set(); }
 }
 
+function showOfflineBanner(show) {
+    const banner = document.getElementById('offlineModeBanner');
+    if (!banner) return;
+    banner.classList.toggle('show', !!show);
+}
+
 async function loadScripts() {
     await loadUnsafeNames();
     await loadMyLikes();
     const data = await db.getScripts();
 
-    allScripts = Object.entries(data)
-        .map(([id,s]) => ({id,...s}))
-        .filter(s => s.id && s.title && s.title.trim())
-        .filter(s => !unsafeNameSet.has(normalizeScriptName(s.title)));
+    // ⚠️ لو Supabase فشل تمامًا (مش بس رجع فاضي)، نرجع لملف scripts-data.js
+    // الثابت عشان الصفحة تفضل شغالة للزوار وقت أي توقف/قيد على قاعدة البيانات
+    if (data === null) {
+        offlineMode = true;
+        showOfflineBanner(true);
+        console.warn('Supabase غير متاح — تم التحويل تلقائيًا لملف scripts-data.js الثابت');
+
+        const fallbackData = window.__SCRIPTS_DATA__ || {};
+        allScripts = Object.entries(fallbackData)
+            .reverse() // آخر سكربت اتضاف يظهر الأول
+            .map(([id,s]) => ({id,...s}))
+            .filter(s => s.id && s.title && s.title.trim());
+    } else {
+        offlineMode = false;
+        showOfflineBanner(false);
+
+        allScripts = Object.entries(data)
+            .map(([id,s]) => ({id,...s}))
+            .filter(s => s.id && s.title && s.title.trim())
+            .filter(s => !unsafeNameSet.has(normalizeScriptName(s.title)));
+    }
+
     document.getElementById('scriptCount').innerText = allScripts.length;
 
     renderTagsFilter();
@@ -1475,6 +1520,11 @@ function renderVisibleCards() {
             e.stopPropagation();
             if (liked || likeBtn.disabled) return;
 
+            if (offlineMode) {
+                alert('هذه الميزة غير متاحة حاليًا بسبب توقف الخادم الرئيسي مؤقتًا. حاول لاحقًا.');
+                return;
+            }
+
             if (!currentUser) {
                 alert('يجب تسجيل الدخول لإضافة إعجاب');
                 location.href = 'login.html';
@@ -1539,6 +1589,10 @@ function renderVisibleCards() {
             star.addEventListener('click', async e => {
                 e.stopPropagation();
                 if (starsEl.dataset.rated === 'true') return;
+                if (offlineMode) {
+                    alert('هذه الميزة غير متاحة حاليًا بسبب توقف الخادم الرئيسي مؤقتًا. حاول لاحقًا.');
+                    return;
+                }
                 const val = parseInt(star.dataset.v);
                 const curRating = await db.getField('scripts', s.id, 'rating') || 0;
                 const curVotes  = await db.getField('scripts', s.id, 'votes')  || 0;
@@ -1796,6 +1850,29 @@ async function aiSearch() {
     const query = document.getElementById('searchScripts').value.trim();
     if (!query) return;
     hideSuggestions();
+
+    if (offlineMode) {
+        // Nova AI محتاج السيرفر شغال — لو أوفلاين نرجع للبحث المحلي مباشرة
+        const localResults = smartSearchLocal(query);
+        if (localResults.length) {
+            filteredIds = localResults.map(s => s.id);
+            const scoreMap = Object.fromEntries(localResults.map(s => [s.id, s._score]));
+            const savedSort = activeSort;
+            activeSort = '__ai__';
+            window.__aiScoreMap = scoreMap;
+            document.getElementById('aibIcon').innerHTML = ic('robot', 15);
+            showAiBanner(`<strong>${localResults.length}</strong> نتيجة (بحث محلي — الوضع الاحتياطي مفعّل)`);
+            renderScripts(query);
+            activeSort = savedSort;
+            delete window.__aiScoreMap;
+        } else {
+            filteredIds = null;
+            document.getElementById('aibIcon').innerHTML = ic('warning', 15);
+            showAiBanner(`لا توجد نتائج لـ "${escHTML(query)}" — يتم عرض جميع السكربتات`);
+            renderScripts('');
+        }
+        return;
+    }
 
     const btn = document.getElementById('aiSearchBtn');
     btn.disabled = true;
