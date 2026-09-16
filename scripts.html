@@ -662,6 +662,16 @@ body { min-height: 100svh; }
 .tg-medal.gold   { background: linear-gradient(135deg,#fde68a,#f59e0b); }
 .tg-medal.silver { background: linear-gradient(135deg,#e5e7eb,#9ca3af); }
 .tg-medal.bronze { background: linear-gradient(135deg,#fdba74,#c2703d); }
+.tg-medal img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.tg-medal-badge {
+    position: absolute; bottom: -3px; left: -3px; z-index: 2;
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.62rem; border: 2px solid var(--bg-card);
+}
+.tg-medal-badge.gold   { background: linear-gradient(135deg,#fde68a,#f59e0b); }
+.tg-medal-badge.silver { background: linear-gradient(135deg,#e5e7eb,#9ca3af); }
+.tg-medal-badge.bronze { background: linear-gradient(135deg,#fdba74,#c2703d); }
 .tg-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
 .tg-name { font-size: 0.85rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tg-count { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
@@ -1149,15 +1159,20 @@ function renderTrending() {
 
 // ============================================================
 // 🏆 الألعاب الأكثر سكربتات — بيجمع كل السكربتات حسب الاسم الرسمي
-// للماب (بعد التطبيع) عشان "Adopt Me" و"ادوبت مي" يتحسبوا مع بعض
+// للماب (بعد التطبيع) عشان "Adopt Me" و"ادوبت مي" يتحسبوا مع بعض.
+// كل لعبة بناخدلها صورة تمثيلية من أعلى سكربت (لايكات) عنده صورة
+// مرفوعة (image_url أو image_base64) بنفس اسم الماب المطبّع.
 // ============================================================
 function computeTopGames() {
-    const counts = new Map(); // canonical name -> { count, icon }
+    const counts = new Map(); // canonical name -> { count, icon, image, imageLikes }
     allScripts.forEach(s => {
         const resolved = resolveMap(getMap(s));
         if (!resolved) return;
-        const cur = counts.get(resolved.name) || { name: resolved.name, icon: resolved.icon, count: 0 };
+        const cur = counts.get(resolved.name) || { name: resolved.name, icon: resolved.icon, count: 0, image: null, imageLikes: -1 };
         cur.count++;
+        const img = s.image_url || s.image_base64 || null;
+        const likes = s.likes_count || 0;
+        if (img && likes > cur.imageLikes) { cur.image = img; cur.imageLikes = likes; }
         counts.set(resolved.name, cur);
     });
     return [...counts.values()].sort((a, b) => b.count - a.count).slice(0, 3);
@@ -1176,7 +1191,9 @@ function renderTopGames() {
 
     grid.innerHTML = top3.map((g, i) => `
         <div class="top-game-card${activeMapFilter === g.name ? ' active' : ''}" data-name="${escHTML(g.name)}">
-            <div class="tg-medal ${medals[i]}">${medalIcons[i]}</div>
+            ${g.image
+                ? `<div class="tg-medal" style="position:relative"><img src="${g.image}" alt="${escHTML(g.name)}" loading="lazy"><span class="tg-medal-badge ${medals[i]}">${medalIcons[i]}</span></div>`
+                : `<div class="tg-medal ${medals[i]}">${medalIcons[i]}</div>`}
             <div class="tg-info">
                 <div class="tg-name">${g.icon} ${escHTML(g.name)}</div>
                 <div class="tg-count"><strong>${g.count}</strong> سكربت</div>
@@ -1356,10 +1373,11 @@ function renderVisibleCards() {
         const tagBadges = (s.tags||[]).map(t => `<span class="sc-tag-badge">#${escHTML(t)}</span>`).join('');
 
         const scriptUrl = `script.html?id=${encodeURIComponent(s.id)}`;
+        const thumbSrc = s.image_url || s.image_base64 || '';
 
         card.innerHTML = `
             <a href="${scriptUrl}" class="sc-card-link" aria-label="${escHTML(s.title || 'عرض السكربت')}">${escHTML(s.title || 'عرض السكربت')}</a>
-            ${s.image_base64 ? `<div style="overflow:hidden;border-radius:20px 20px 0 0"><img class="sc-thumb" src="${s.image_base64}" alt="صورة السكربت" loading="lazy"></div>` : ''}
+            ${thumbSrc ? `<div style="overflow:hidden;border-radius:20px 20px 0 0"><img class="sc-thumb" src="${thumbSrc}" alt="صورة السكربت" loading="lazy" onerror="this.closest('div').remove()"></div>` : ''}
             <div class="sc-body">
                 <div class="sc-header">
                     <div class="sc-title">${titleHTML}</div>
