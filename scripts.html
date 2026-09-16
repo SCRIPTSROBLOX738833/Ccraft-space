@@ -853,12 +853,18 @@ const db = {
     },
     async setField(table, id, field, value) {
         try {
-            await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
                 method: 'PATCH',
                 headers: SB_HEADERS,
                 body: JSON.stringify({ [field]: value })
             });
-        } catch { /* تجاهل */ }
+            if (!res.ok) { console.warn('setField failed:', res.status, await res.text().catch(()=> '')); return false; }
+            const rows = await res.json().catch(() => []);
+            // لو الـ RLS مرفوض التحديث، Supabase بيرجّع 200 بمصفوفة فاضية
+            // بدل ما يديّك 4xx — فلازم نتأكد إن في صف فعلاً اتحدّث
+            if (!Array.isArray(rows) || rows.length === 0) { console.warn('setField: no rows updated (RLS?)'); return false; }
+            return true;
+        } catch (e) { console.warn('setField error:', e); return false; }
     },
     async getUnsafeNames() {
         try {
@@ -891,17 +897,32 @@ const db = {
 
 let currentUser = null;
 let myUsernameCache = null;
+let likedScriptIds = new Set();
+
+async function loadMyLikes() {
+    if (!currentUser) { likedScriptIds = new Set(); return; }
+    try {
+        const { data, error } = await supabase
+            .from('script_likes')
+            .select('script_id')
+            .eq('user_id', currentUser.uid);
+        if (!error && data) likedScriptIds = new Set(data.map(r => r.script_id));
+    } catch { /* تجاهل */ }
+}
 
 supabase.auth.onAuthStateChange(async (_event, session) => {
     const authUser = session?.user || null;
     myUsernameCache = null;
-    if (!authUser) { currentUser = null; return; }
+    if (!authUser) { currentUser = null; likedScriptIds = new Set(); return; }
     try {
         const { data: row } = await supabase.from('users').select('*').eq('auth_uid', authUser.id).maybeSingle();
         currentUser = row ? { uid: row.id, ...row } : { uid: authUser.id };
     } catch {
         currentUser = { uid: authUser.id };
     }
+    await loadMyLikes();
+    // نعيد رسم الكروت اللي ظاهرة عشان زرار الإعجاب يعكس حالة اليوزر الصحيحة
+    if (allScripts.length) renderScripts(document.getElementById('searchScripts').value.toLowerCase());
 });
 
 const NOVA_URL = "https://ghgh62131r.pythonanywhere.com";
@@ -981,6 +1002,7 @@ async function loadUnsafeNames() {
 
 async function loadScripts() {
     await loadUnsafeNames();
+    await loadMyLikes();
     const data = await db.getScripts();
 
     allScripts = Object.entries(data)
@@ -1353,7 +1375,7 @@ function renderVisibleCards() {
         const isNew      = (now - createdAtMs) < 3 * 24 * 3600 * 1000;
         const isAiMatch  = isAiSearch;
         const avg    = s.votes ? (s.rating / s.votes) : 0;
-        const liked  = !!localStorage.getItem(`liked_${s.id}`);
+        const liked  = likedScriptIds.has(s.id) || !!localStorage.getItem(`liked_${s.id}`);
         const rated  = !!localStorage.getItem(`rated_${s.id}`);
         const mapVal = getMap(s);
 
@@ -1452,22 +1474,45 @@ function renderVisibleCards() {
         likeBtn.onclick = async e => {
             e.stopPropagation();
             if (liked || likeBtn.disabled) return;
-            const currentLikes = await db.getField('scripts', s.id, 'likes_count');
-            const newLikes = (currentLikes || 0) + 1;
-            await db.setField('scripts', s.id, 'likes_count', newLikes);
-            likeBtn.querySelector('.lc').innerText = newLikes;
-            likeBtn.classList.add('liked');
-            likeBtn.querySelector('.like-icon').innerHTML = ic('heartFill', 14);
+
+            if (!currentUser) {
+                alert('يجب تسجيل الدخول لإضافة إعجاب');
+                location.href = 'login.html';
+                return;
+            }
+
             likeBtn.disabled = true;
-            localStorage.setItem(`liked_${s.id}`, 'true');
 
-            likeBtn.classList.add('pulse');
-            spawnLikeBurst(likeBtn.querySelector('.like-burst'));
-            setTimeout(() => likeBtn.classList.remove('pulse'), 600);
+            try {
+                const { error: insertError } = await supabase
+                    .from('script_likes')
+                    .insert({ script_id: s.id, user_id: currentUser.uid });
+                if (insertError) throw insertError;
 
-            if (currentUser) {
+                const { data: row } = await supabase
+                    .from('scripts')
+                    .select('likes_count')
+                    .eq('id', s.id)
+                    .maybeSingle();
+                const newLikes = (row?.likes_count || 0) + 1;
+                await supabase.from('scripts').update({ likes_count: newLikes }).eq('id', s.id);
+
+                likeBtn.querySelector('.lc').innerText = newLikes;
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('.like-icon').innerHTML = ic('heartFill', 14);
+                localStorage.setItem(`liked_${s.id}`, 'true');
+                likedScriptIds.add(s.id);
+
+                likeBtn.classList.add('pulse');
+                spawnLikeBurst(likeBtn.querySelector('.like-burst'));
+                setTimeout(() => likeBtn.classList.remove('pulse'), 600);
+
                 const likerName = await getMyDisplayName();
                 notifyAuthor(s.uploader_id, `${likerName} أعجب بسكربتك: ${s.title || 'سكربت'}`);
+            } catch (err) {
+                console.warn('like failed:', err);
+                likeBtn.disabled = false;
+                alert('تعذّر تسجيل الإعجاب. جرّب تاني.');
             }
         };
 
