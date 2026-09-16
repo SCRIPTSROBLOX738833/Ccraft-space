@@ -1076,6 +1076,9 @@
             return;
         }
 
+        // 🩺 اطبع الرابط اللي فشل في الـ Console — افتح Developer Tools (F12) وشوفه
+        // وحاول تفتحه في تاب جديد، ده أسرع طريقة تعرف بيها هل المشكلة في الرابط نفسه أو في حاجة تانية
+        console.warn('🛑 فشل تحميل صورة الماب بعد محاولتين. الرابط:', mapAutoImageUrl);
         setImgStatus('err', '❌ تعذر تحميل صورة الماب تلقائيًا — جرب ترفع صورة بنفسك');
         imagePreview.style.display = 'none';
         placeholder.style.display  = 'block';
